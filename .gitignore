@@ -1,0 +1,65 @@
+model_store
+*.swp
+*.swo
+*.pyc
+*.png
+*.jpg
+*.pkl
+core
+*.out
+__pycache__
+*DS_STORE
+res.cvs
+*.csv
+*.cvs
+*.json
+*.so
+*.o
+*.c
+*~
+train_log
+weights
+*.odgt
+*.odgt.refine
+*.bak
+pred
+epoch*
+lastest
+detetction
+output_dir
+conf_res
+__pycache__
+localib
+model.dump.py
+mAP.txt
+.nfs*
+meg_kernels
+*.refine
+
+# TensorRT output
+caffemodel
+calibration_cache
+engines
+
+# face_evaluate_tools output
+result
+
+# IPython
+.ipynb_*
+
+# checkpoints
+*.brainmodel
+*.pkl
+*epoch*
+
+# input files
+*.jpg
+*.avi
+*.mp4
+
+configs/lizuoxin
+
+log.txt
+.idea/
+tmp/
+*.protobuf
