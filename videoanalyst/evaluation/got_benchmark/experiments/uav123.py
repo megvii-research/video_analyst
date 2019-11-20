@@ -18,8 +18,7 @@ class ExperimentUAV123(ExperimentOTB):
         report_dir (string, optional): Directory for storing performance
             evaluation results. Default is ``./reports``.
     """
-    def __init__(self, root_dir, version='UAV123',
-                 result_dir='results', report_dir='reports'):
+    def __init__(self, root_dir, version='UAV123', result_dir='results', report_dir='reports'):
         assert version.upper() in ['UAV123', 'UAV20L']
         self.dataset = UAV123(root_dir, version)
         self.result_dir = os.path.join(result_dir, version.upper())
@@ -36,6 +35,5 @@ class ExperimentUAV123(ExperimentOTB):
             return None, None
         else:
             ious = rect_iou(boxes[valid, :], anno[valid, :])
-            center_errors = center_error(
-                boxes[valid, :], anno[valid, :])
+            center_errors = center_error(boxes[valid, :], anno[valid, :])
             return ious, center_errors

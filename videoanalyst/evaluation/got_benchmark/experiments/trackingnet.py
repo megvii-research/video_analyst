@@ -23,8 +23,12 @@ class ExperimentTrackingNet(ExperimentOTB):
         report_dir (string, optional): Directory for storing performance
             evaluation results. Default is ``./reports``.
     """
-    def __init__(self, root_dir, subset='test', return_meta=False,
-                 result_dir='results', report_dir='reports'):
+    def __init__(self,
+                 root_dir,
+                 subset='test',
+                 return_meta=False,
+                 result_dir='results',
+                 report_dir='reports'):
         assert subset.upper() in ['TRAIN', 'TEST']
         self.dataset = TrackingNet(root_dir, subset, return_meta=return_meta)
         self.result_dir = result_dir

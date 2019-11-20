@@ -42,57 +42,58 @@ class SiamTrack(nn.Module):
             fcos_ctr_prob_final: shape=(B, HW, 1): center-ness score
         """
         # phase: train
-        if phase=='train':
+        if phase == 'train':
             target_img, search_img = args
-        # backbone feature
+            # backbone feature
             f_z = self.backbone(target_img)
             f_x = self.backbone(search_img)
-        # feature adjustment
+            # feature adjustment
             c_z_k = self.c_z_k(f_z)
             r_z_k = self.r_z_k(f_z)
             c_x = self.c_x(f_x)
             r_x = self.r_x(f_x)
-        # feature matching
+            # feature matching
             r_out = xcorr_depthwise(r_x, r_z_k)
             c_out = xcorr_depthwise(c_x, c_z_k)
-        # head
+            # head
             fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final = self.head(c_out, r_out)
             # fcos_cls_prob_final = torch.sigmoid(fcos_cls_score_final)
             # fcos_ctr_prob_final = torch.sigmoid(fcos_ctr_score_final)
-        # output
+            # output
             out_list = fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final
 # phase: feature
-        elif phase=='feature':
+        elif phase == 'feature':
             target_img, = args
-        # backbone feature
+            # backbone feature
             f_z = self.basemodel(target_img)
-        # template as kernel
+            # template as kernel
             c_z_k = self.c_z_k(f_z)
             r_z_k = self.r_z_k(f_z)
-        # output
+            # output
             out_list = [c_z_k, r_z_k]
+
+
 # phase: track
-        elif phase=='track':
+        elif phase == 'track':
             search_img, c_z_k, r_z_k = args
-        # backbone feature
+            # backbone feature
             f_x = self.basemodel(search_img)
-        # feature adjustment
+            # feature adjustment
             c_x = self.c_x(f_x)
             r_x = self.r_x(f_x)
-        # feature matching
+            # feature matching
             r_out = xcorr_depthwise(r_x, r_z_k)
             c_out = xcorr_depthwise(c_x, c_z_k)
-        # head
+            # head
             fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final = self.head(c_out, r_out)
-        # apply sigmoid
+            # apply sigmoid
             fcos_cls_prob_final = torch.sigmoid(fcos_cls_score_final)
             fcos_ctr_prob_final = torch.sigmoid(fcos_ctr_score_final)
-        # apply centerness correction
+            # apply centerness correction
             fcos_score_final = fcos_cls_prob_final * fcos_ctr_prob_final
-        # output
+            # output
             out_list = fcos_score_final, fcos_bbox_final, fcos_cls_prob_final, fcos_ctr_prob_final
         else:
             raise ValueError("Phase non-implemented.")
 
         return out_list
-

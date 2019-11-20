@@ -29,21 +29,18 @@ class UAV123(object):
         self._check_integrity(root_dir, version)
 
         # sequence meta information
-        meta_file = os.path.join(
-            os.path.dirname(__file__), 'uav123.json')
+        meta_file = os.path.join(os.path.dirname(__file__), 'uav123.json')
         with open(meta_file) as f:
             self.seq_metas = json.load(f)
 
         # sequence and annotation paths
-        self.anno_files = sorted(glob.glob(
-            os.path.join(root_dir, 'anno/%s/*.txt' % version)))
-        self.seq_names = [
-            os.path.basename(f)[:-4] for f in self.anno_files]
+        self.anno_files = sorted(glob.glob(os.path.join(root_dir, 'anno/%s/*.txt' % version)))
+        self.seq_names = [os.path.basename(f)[:-4] for f in self.anno_files]
         self.seq_dirs = [os.path.join(
             root_dir, 'data_seq/UAV123/%s' % \
                 self.seq_metas[version][n]['folder_name'])
             for n in self.seq_names]
-    
+
     def __getitem__(self, index):
         r"""        
         Args:
@@ -59,13 +56,12 @@ class UAV123(object):
             index = self.seq_names.index(index)
 
         # valid frame range
-        start_frame = self.seq_metas[self.version][
-            self.seq_names[index]]['start_frame']
-        end_frame = self.seq_metas[self.version][
-            self.seq_names[index]]['end_frame']
-        img_files = [os.path.join(
-            self.seq_dirs[index], '%06d.jpg' % f)
-            for f in range(start_frame, end_frame + 1)]
+        start_frame = self.seq_metas[self.version][self.seq_names[index]]['start_frame']
+        end_frame = self.seq_metas[self.version][self.seq_names[index]]['end_frame']
+        img_files = [
+            os.path.join(self.seq_dirs[index], '%06d.jpg' % f)
+            for f in range(start_frame, end_frame + 1)
+        ]
 
         # load annotations
         anno = np.loadtxt(self.anno_files[index], delimiter=',')
@@ -79,8 +75,7 @@ class UAV123(object):
 
     def _check_integrity(self, root_dir, version):
         # sequence meta information
-        meta_file = os.path.join(
-            os.path.dirname(__file__), 'uav123.json')
+        meta_file = os.path.join(os.path.dirname(__file__), 'uav123.json')
         with open(meta_file) as f:
             seq_metas = json.load(f)
         seq_names = list(seq_metas[version].keys())

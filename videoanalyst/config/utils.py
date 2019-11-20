@@ -23,5 +23,3 @@ def setup(cfg: CfgNode):
 
     cfg.auto.model_dir = os.path.join(cfg.auto.exp_dir, "models")
     ensure_dir(cfg.auto.model_dir)
-
-

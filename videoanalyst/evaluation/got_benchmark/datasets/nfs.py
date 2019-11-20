@@ -26,14 +26,12 @@ class NfS(object):
         self.root_dir = root_dir
         self._check_integrity(root_dir)
 
-        self.anno_files = sorted(glob.glob(
-            os.path.join(root_dir, '*/%d/*.txt' % fps)))
-        self.seq_names = [
-            os.path.basename(f)[:-4] for f in self.anno_files]
-        self.seq_dirs = [os.path.join(
-            os.path.dirname(f), n)
-            for f, n in zip(self.anno_files, self.seq_names)]
-    
+        self.anno_files = sorted(glob.glob(os.path.join(root_dir, '*/%d/*.txt' % fps)))
+        self.seq_names = [os.path.basename(f)[:-4] for f in self.anno_files]
+        self.seq_dirs = [
+            os.path.join(os.path.dirname(f), n) for f, n in zip(self.anno_files, self.seq_names)
+        ]
+
     def __getitem__(self, index):
         r"""        
         Args:
@@ -48,11 +46,10 @@ class NfS(object):
                 raise Exception('Sequence {} not found.'.format(index))
             index = self.seq_names.index(index)
 
-        img_files = sorted(glob.glob(
-            os.path.join(self.seq_dirs[index], '*.jpg')))
+        img_files = sorted(glob.glob(os.path.join(self.seq_dirs[index], '*.jpg')))
         anno = np.loadtxt(self.anno_files[index], dtype=str)
         anno = anno[:, 1:5].astype(float)  # [left, top, right, bottom]
-        anno[:, 2:] -= anno[:, :2]         # [left, top, width, height]
+        anno[:, 2:] -= anno[:, :2]  # [left, top, width, height]
 
         # handle inconsistent lengths
         if not len(img_files) == len(anno):

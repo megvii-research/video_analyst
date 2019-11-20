@@ -22,11 +22,10 @@ class DTB70(object):
         self.root_dir = root_dir
         self._check_integrity(root_dir)
 
-        self.anno_files = sorted(glob.glob(
-            os.path.join(root_dir, '*/groundtruth_rect.txt')))
+        self.anno_files = sorted(glob.glob(os.path.join(root_dir, '*/groundtruth_rect.txt')))
         self.seq_dirs = [os.path.dirname(f) for f in self.anno_files]
         self.seq_names = [os.path.basename(d) for d in self.seq_dirs]
-    
+
     def __getitem__(self, index):
         r"""        
         Args:
@@ -41,8 +40,7 @@ class DTB70(object):
                 raise Exception('Sequence {} not found.'.format(index))
             index = self.seq_names.index(index)
 
-        img_files = sorted(glob.glob(
-            os.path.join(self.seq_dirs[index], 'img/*.jpg')))
+        img_files = sorted(glob.glob(os.path.join(self.seq_dirs[index], 'img/*.jpg')))
         anno = np.loadtxt(self.anno_files[index], delimiter=',')
         assert len(img_files) == len(anno)
         assert anno.shape[1] == 4

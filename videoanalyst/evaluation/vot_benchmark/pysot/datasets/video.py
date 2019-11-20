@@ -13,8 +13,7 @@ from glob import glob
 
 
 class Video(object):
-    def __init__(self, name, root, video_dir, init_rect, img_names,
-            gt_rect, attr):
+    def __init__(self, name, root, video_dir, init_rect, img_names, gt_rect, attr):
         self.name = name
         self.video_dir = video_dir
         self.init_rect = init_rect
@@ -31,16 +30,14 @@ class Video(object):
             tracker_name(list): name of tracker
         """
         if not tracker_names:
-            tracker_names = [x.split('/')[-1] for x in glob(path)
-                    if os.path.isdir(x)]
+            tracker_names = [x.split('/')[-1] for x in glob(path) if os.path.isdir(x)]
         if isinstance(tracker_names, str):
             tracker_names = [tracker_names]
         for name in tracker_names:
-            traj_file = os.path.join(path, name, self.name+'.txt')
+            traj_file = os.path.join(path, name, self.name + '.txt')
             if os.path.exists(traj_file):
-                with open(traj_file, 'r') as f :
-                    pred_traj = [list(map(float, x.strip().split(',')))
-                            for x in f.readlines()]
+                with open(traj_file, 'r') as f:
+                    pred_traj = [list(map(float, x.strip().split(','))) for x in f.readlines()]
                 if len(pred_traj) != len(self.gt_traj):
                     print(name, len(pred_traj), len(self.gt_traj), self.name)
                 if store:
@@ -53,8 +50,7 @@ class Video(object):
 
     def load_img(self):
         if self.imgs is None:
-            self.imgs = [cv2.imread(x)
-                            for x in self.img_names]
+            self.imgs = [cv2.imread(x) for x in self.img_names]
             self.width = self.imgs[0].shape[1]
             self.height = self.imgs[0].shape[0]
 

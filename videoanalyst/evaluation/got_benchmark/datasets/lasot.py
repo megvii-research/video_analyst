@@ -31,16 +31,12 @@ class LaSOT(object):
         self.return_meta = return_meta
         self._check_integrity(root_dir)
 
-        self.anno_files = sorted(glob.glob(
-            os.path.join(root_dir, '*/*/groundtruth.txt')))
-        self.seq_dirs = [os.path.join(
-            os.path.dirname(f), 'img') for f in self.anno_files]
-        self.seq_names = [os.path.basename(
-            os.path.dirname(f)) for f in self.anno_files]
-        
+        self.anno_files = sorted(glob.glob(os.path.join(root_dir, '*/*/groundtruth.txt')))
+        self.seq_dirs = [os.path.join(os.path.dirname(f), 'img') for f in self.anno_files]
+        self.seq_names = [os.path.basename(os.path.dirname(f)) for f in self.anno_files]
+
         # load subset sequence names
-        split_file = os.path.join(
-            os.path.dirname(__file__), 'lasot.json')
+        split_file = os.path.join(os.path.dirname(__file__), 'lasot.json')
         with open(split_file, 'r') as f:
             splits = json.load(f)
         self.seq_names = []
@@ -48,12 +44,10 @@ class LaSOT(object):
             self.seq_names.extend(splits[s])
 
         # image and annotation paths
-        self.seq_dirs = [os.path.join(
-            root_dir, n[:n.rfind('-')], n, 'img')
-            for n in self.seq_names]
-        self.anno_files = [os.path.join(
-            os.path.dirname(d), 'groundtruth.txt')
-            for d in self.seq_dirs]
+        self.seq_dirs = [os.path.join(root_dir, n[:n.rfind('-')], n, 'img') for n in self.seq_names]
+        self.anno_files = [
+            os.path.join(os.path.dirname(d), 'groundtruth.txt') for d in self.seq_dirs
+        ]
 
     def __getitem__(self, index):
         r"""        
@@ -71,8 +65,7 @@ class LaSOT(object):
                 raise Exception('Sequence {} not found.'.format(index))
             index = self.seq_names.index(index)
 
-        img_files = sorted(glob.glob(os.path.join(
-            self.seq_dirs[index], '*.jpg')))
+        img_files = sorted(glob.glob(os.path.join(self.seq_dirs[index], '*.jpg')))
         anno = np.loadtxt(self.anno_files[index], delimiter=',')
 
         if self.return_meta:
@@ -106,7 +99,7 @@ class LaSOT(object):
         for att in ['full_occlusion', 'out_of_view']:
             att_file = os.path.join(seq_dir, att + '.txt')
             meta[att] = np.loadtxt(att_file, delimiter=',')
-        
+
         # nlp
         nlp_file = os.path.join(seq_dir, 'nlp.txt')
         with open(nlp_file, 'r') as f:

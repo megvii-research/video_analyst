@@ -9,15 +9,17 @@ import numpy as np
 
 from videoanalyst.model.common_opr.common_block import conv_bn_relu
 
+
 def get_xy_ctr(config):
     batch, fm_height, fm_width = 1, config.score_size, config.score_size
 
-    y_list = torch.linspace(0., fm_height - 1., fm_height).reshape(
-        1, fm_height, 1, 1).repeat(1, 1, fm_width, 1)  # .broadcast([1, fm_height, fm_width, 1])
-    x_list = torch.linspace(0., fm_width - 1., fm_width).reshape(
-        1, 1, fm_width, 1).repeat(1, fm_height, 1, 1)  # .broadcast([1, fm_height, fm_width, 1])
+    y_list = torch.linspace(0., fm_height - 1., fm_height).reshape(1, fm_height, 1, 1).repeat(
+        1, 1, fm_width, 1)  # .broadcast([1, fm_height, fm_width, 1])
+    x_list = torch.linspace(0., fm_width - 1., fm_width).reshape(1, 1, fm_width, 1).repeat(
+        1, fm_height, 1, 1)  # .broadcast([1, fm_height, fm_width, 1])
     xy_list = config.score_offset + torch.cat([x_list, y_list], 3) * config.total_stride
-    xy_ctr = xy_list.repeat(batch, 1, 1, 1).reshape(batch, -1, 2)  # .broadcast([batch, fm_height, fm_width, 2]).reshape(batch, -1, 2)
+    xy_ctr = xy_list.repeat(batch, 1, 1, 1).reshape(
+        batch, -1, 2)  # .broadcast([batch, fm_height, fm_width, 2]).reshape(batch, -1, 2)
     xy_ctr = xy_ctr.type(torch.Tensor)
     return xy_ctr
 
@@ -65,18 +67,21 @@ class DenseboxHead(nn.Module):
         self.fm_ctr.require_grad = False
 
         # initialze head
-        conv_list = [self.cls_p5_conv1.conv, self.cls_p5_conv2.conv, self.cls_score_p5.conv, self.ctr_score_p5.conv,
-                     self.bbox_p5_conv1.conv, self.bbox_p5_conv2.conv, self.bbox_offsets_p5.conv]
+        conv_list = [
+            self.cls_p5_conv1.conv, self.cls_p5_conv2.conv, self.cls_score_p5.conv,
+            self.ctr_score_p5.conv, self.bbox_p5_conv1.conv, self.bbox_p5_conv2.conv,
+            self.bbox_offsets_p5.conv
+        ]
         conv_classifier = [self.cls_score_p5.conv]
         assert all(elem in conv_list for elem in conv_classifier)
 
         pi = 0.01
-        bv = - np.log((1-pi)/pi)
+        bv = -np.log((1 - pi) / pi)
         for ith in range(len(conv_list)):
             # fetch conv from list
             conv = conv_list[ith]
             # torch.nn.init.normal_(conv.weight, std=0.01) # from megdl impl.
-            torch.nn.init.normal_(conv.weight, std=0.001)#0.0001)
+            torch.nn.init.normal_(conv.weight, std=0.001)  #0.0001)
             # nn.init.kaiming_uniform_(conv.weight, a=np.sqrt(5))  # from PyTorch default implementation
             # nn.init.kaiming_uniform_(conv.weight, a=0)  # from PyTorch default implementation
             if conv in conv_classifier:
@@ -88,18 +93,17 @@ class DenseboxHead(nn.Module):
                 bound = 1 / np.sqrt(fan_in)
                 nn.init.uniform_(conv.bias, -bound, bound)
 
-
     def forward(self, c_out, r_out):
         # classification head
         cls = self.cls_p5_conv1(c_out)
         cls = self.cls_p5_conv2(cls)
-        cls = self.cls_p5_conv3(cls) #todo
+        cls = self.cls_p5_conv3(cls)  #todo
         # classification score
-        cls_score = self.cls_score_p5(cls) #todo
+        cls_score = self.cls_score_p5(cls)  #todo
         cls_score = cls_score.permute(0, 2, 3, 1)
         cls_score = cls_score.reshape(cls_score.shape[0], -1, 1)
         # center-ness score
-        ctr_score = self.ctr_score_p5(cls) #todo
+        ctr_score = self.ctr_score_p5(cls)  #todo
         ctr_score = ctr_score.permute(0, 2, 3, 1)
         ctr_score = ctr_score.reshape(ctr_score.shape[0], -1, 1)
         # regression head

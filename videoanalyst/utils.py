@@ -1,10 +1,12 @@
 import os
 
+
 def ensure(dir_path: str):
     if os.path.exists(dir_path):
         return
     else:
         os.makedirs(dir_path)
+
 
 def _register_generic(module_dict, module_name, module):
     assert module_name not in module_dict, print(module_name, module_dict)
@@ -31,4 +33,3 @@ class Registry(dict):
     def register(self, module):
         _register_generic(self, module.__name__, module)
         return module
-

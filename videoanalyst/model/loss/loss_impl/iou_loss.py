@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*
 import torch
 from torch import nn
@@ -19,27 +18,31 @@ class SafeLog(nn.Module):
     def forward(self, t):
         return torch.log(torch.max(self.t_eps, t))
 
+
 TRACK_LOSSES.register
+
+
 class IOULoss(ModuleBase):
 
-    default_hyper_params = {"background": 0, "ignore_label":-1}
+    default_hyper_params = {"background": 0, "ignore_label": -1}
+
     def __init__(self, background=0, ignore_label=-1):
         super().__init__()
         self.safelog = SafeLog()
         self.register_buffer("t_one", torch.tensor(1., requires_grad=False))
         self.register_buffer("t_zero", torch.tensor(0., requires_grad=False))
-    
+
     def update_params(self):
         self.background = self._hyper_params["background"]
         self.ignore_label = self._hyper_params["ignore_label"]
 
-
     def forward(self, pred, gt, cls_gt):
-        mask = ((1 - (cls_gt==self.background)) * (1 - (cls_gt==self.ignore_label))).detach()
+        mask = ((1 - (cls_gt == self.background)) * (1 - (cls_gt == self.ignore_label))).detach()
         mask = mask.type(torch.Tensor).squeeze(2).to(pred.device)
 
         aog = torch.abs(gt[:, :, 2] - gt[:, :, 0] + 1) * torch.abs(gt[:, :, 3] - gt[:, :, 1] + 1)
-        aop = torch.abs(pred[:, :, 2] - pred[:, :, 0] + 1) * torch.abs(pred[:, :, 3] - pred[:, :, 1] + 1)
+        aop = torch.abs(pred[:, :, 2] - pred[:, :, 0] + 1) * torch.abs(pred[:, :, 3] -
+                                                                       pred[:, :, 1] + 1)
 
         iw = torch.min(pred[:, :, 2], gt[:, :, 2]) - torch.max(pred[:, :, 0], gt[:, :, 0]) + 1
         ih = torch.min(pred[:, :, 3], gt[:, :, 3]) - torch.max(pred[:, :, 1], gt[:, :, 1]) + 1
@@ -47,7 +50,7 @@ class IOULoss(ModuleBase):
 
         union = aog + aop - inter
         iou = torch.max(inter / union, self.t_zero)
-        loss = - self.safelog(iou)
+        loss = -self.safelog(iou)
 
         # from IPython import embed;embed()
         loss = (loss * mask).sum() / torch.max(mask.sum(), self.t_one)

@@ -33,11 +33,17 @@ class VOT(object):
         list_file (string, optional): If provided, only read sequences
             specified by the file.
     """
-    __valid_versions = [2013, 2014, 2015, 2016, 2017, 2018, 'LT2018',
-                        2019, 'LT2019', 'RGBD2019', 'RGBT2019']
+    __valid_versions = [
+        2013, 2014, 2015, 2016, 2017, 2018, 'LT2018', 2019, 'LT2019', 'RGBD2019', 'RGBT2019'
+    ]
 
-    def __init__(self, root_dir, version=2017, anno_type='rect',
-                 download=True, return_meta=False, list_file=None):
+    def __init__(self,
+                 root_dir,
+                 version=2017,
+                 anno_type='rect',
+                 download=True,
+                 return_meta=False,
+                 list_file=None):
         super(VOT, self).__init__()
         assert version in self.__valid_versions, 'Unsupport VOT version.'
         assert anno_type in ['default', 'rect'], 'Unknown annotation type.'
@@ -56,8 +62,7 @@ class VOT(object):
         with open(list_file, 'r') as f:
             self.seq_names = f.read().strip().split('\n')
         self.seq_dirs = [os.path.join(root_dir, s) for s in self.seq_names]
-        self.anno_files = [os.path.join(s, 'groundtruth.txt')
-                           for s in self.seq_dirs]
+        self.anno_files = [os.path.join(s, 'groundtruth.txt') for s in self.seq_dirs]
 
     def __getitem__(self, index):
         r"""        
@@ -75,8 +80,7 @@ class VOT(object):
                 raise Exception('Sequence {} not found.'.format(index))
             index = self.seq_names.index(index)
 
-        img_files = sorted(glob.glob(
-            os.path.join(self.seq_dirs[index], 'color', '*.jpg')))
+        img_files = sorted(glob.glob(os.path.join(self.seq_dirs[index], 'color', '*.jpg')))
         anno = np.loadtxt(self.anno_files[index], delimiter=',')
         assert len(img_files) == len(anno), (len(img_files), len(anno))
         assert anno.shape[1] in [4, 8]
@@ -84,8 +88,7 @@ class VOT(object):
             anno = self._corner2rect(anno)
 
         if self.return_meta:
-            meta = self._fetch_meta(
-                self.seq_dirs[index], len(img_files))
+            meta = self._fetch_meta(self.seq_dirs[index], len(img_files))
             return img_files, anno, meta
         else:
             return img_files, anno
@@ -125,7 +128,7 @@ class VOT(object):
             year = int(version[4:])
             url = url + 'vot{}/rgbtir/'.format(year)
             homepage = url + 'meta/'
-        
+
         # download description file
         bundle_url = homepage + 'description.json'
         bundle_file = os.path.join(root_dir, 'description.json')
@@ -145,7 +148,7 @@ class VOT(object):
                 for chunk in iter(lambda: f.read(4096), b""):
                     hash_md5.update(chunk)
             return hash_md5.hexdigest()
-        
+
         # download all sequences
         seq_names = []
         for seq in bundle['sequences']:
@@ -159,9 +162,7 @@ class VOT(object):
                 seq_url = seq['channels'][cn]['url']
                 if not seq_url.startswith(('http', 'https')):
                     seq_url = url + seq_url[seq_url.find('sequence'):]
-                seq_file = os.path.join(
-                    root_dir,
-                    '{}_{}.zip'.format(seq_name, cn))
+                seq_file = os.path.join(root_dir, '{}_{}.zip'.format(seq_name, cn))
                 if not os.path.isfile(seq_file) or \
                     md5(seq_file) != seq['channels'][cn]['checksum']:
                     print('\nDownloading %s...' % seq_name)
@@ -241,7 +242,7 @@ class VOT(object):
             tag = os.path.basename(f)
             tag = tag[:tag.rfind('.')]
             meta[tag] = np.loadtxt(f)
-        
+
         # practical
         practical_file = os.path.join(seq_dir, 'practical')
         if os.path.isfile(practical_file + '.value'):
@@ -252,7 +253,6 @@ class VOT(object):
         # pad zeros if necessary
         for tag, val in meta.items():
             if len(val) < frame_num:
-                meta[tag] = np.pad(
-                    val, (0, frame_num - len(val)), 'constant')
+                meta[tag] = np.pad(val, (0, frame_num - len(val)), 'constant')
 
         return meta

@@ -24,14 +24,18 @@ class GOT10k(object):
         list_file (string, optional): If provided, only read sequences
             specified by the file instead of all sequences in the subset.
     """
-    def __init__(self, root_dir, subset='test', return_meta=False,
-                 list_file=None, check_integrity=True):
+    def __init__(self,
+                 root_dir,
+                 subset='test',
+                 return_meta=False,
+                 list_file=None,
+                 check_integrity=True):
         super(GOT10k, self).__init__()
         assert subset in ['train', 'val', 'test'], 'Unknown subset.'
         self.root_dir = root_dir
         self.subset = subset
         self.return_meta = False if subset == 'test' else return_meta
-        
+
         if list_file is None:
             list_file = os.path.join(root_dir, subset, 'list.txt')
         if check_integrity:
@@ -39,11 +43,9 @@ class GOT10k(object):
 
         with open(list_file, 'r') as f:
             self.seq_names = f.read().strip().split('\n')
-        self.seq_dirs = [os.path.join(root_dir, subset, s)
-                         for s in self.seq_names]
-        self.anno_files = [os.path.join(d, 'groundtruth.txt')
-                           for d in self.seq_dirs]
-    
+        self.seq_dirs = [os.path.join(root_dir, subset, s) for s in self.seq_names]
+        self.anno_files = [os.path.join(d, 'groundtruth.txt') for d in self.seq_dirs]
+
     def __getitem__(self, index):
         r"""        
         Args:
@@ -60,8 +62,7 @@ class GOT10k(object):
                 raise Exception('Sequence {} not found.'.format(index))
             index = self.seq_names.index(index)
 
-        img_files = sorted(glob.glob(os.path.join(
-            self.seq_dirs[index], '*.jpg')))
+        img_files = sorted(glob.glob(os.path.join(self.seq_dirs[index], '*.jpg')))
         anno = np.loadtxt(self.anno_files[index], delimiter=',')
 
         if self.subset == 'test' and anno.ndim == 1:
@@ -87,7 +88,7 @@ class GOT10k(object):
         if os.path.isfile(list_file):
             with open(list_file, 'r') as f:
                 seq_names = f.read().strip().split('\n')
-            
+
             # check each sequence folder
             for seq_name in seq_names:
                 seq_dir = os.path.join(root_dir, subset, seq_name)

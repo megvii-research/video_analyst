@@ -30,5 +30,3 @@ class ModuleBase(nn.Module):
         r"""
         an interface for update params
         """
-
-

@@ -17,7 +17,6 @@ else:
     _srcfile = __file__
 _srcfile = os.path.normcase(_srcfile)
 
-
 logs = set()
 
 
@@ -25,7 +24,8 @@ class Filter:
     def __init__(self, flag):
         self.flag = flag
 
-    def filter(self, x): return self.flag
+    def filter(self, x):
+        return self.flag
 
 
 class Dummy:
@@ -33,7 +33,9 @@ class Dummy:
         pass
 
     def __getattr__(self, arg):
-        def dummy(*args, **kwargs): pass
+        def dummy(*args, **kwargs):
+            pass
+
         return dummy
 
 
@@ -50,7 +52,7 @@ def get_format(logger, level):
     return formatter
 
 
-def init_log(name, level = logging.INFO, format_func=get_format):
+def init_log(name, level=logging.INFO, format_func=get_format):
     if (name, level) in logs: return
     logs.add((name, level))
     logger = logging.getLogger(name)
@@ -63,7 +65,7 @@ def init_log(name, level = logging.INFO, format_func=get_format):
     return logger
 
 
-def add_file_handler(name, log_file, level = logging.INFO):
+def add_file_handler(name, log_file, level=logging.INFO):
     logger = logging.getLogger(name)
     fh = logging.FileHandler(log_file)
     fh.setFormatter(get_format(logger, level))
@@ -71,4 +73,3 @@ def add_file_handler(name, log_file, level = logging.INFO):
 
 
 init_log('global')
-

@@ -25,8 +25,12 @@ class ExperimentLaSOT(ExperimentOTB):
         report_dir (string, optional): Directory for storing performance
             evaluation results. Default is ``./reports``.
     """
-    def __init__(self, root_dir, subset='test', return_meta=False,
-                 result_dir='results', report_dir='reports'):
+    def __init__(self,
+                 root_dir,
+                 subset='test',
+                 return_meta=False,
+                 result_dir='results',
+                 report_dir='reports'):
         # assert subset.upper() in ['TRAIN', 'TEST']
         self.dataset = LaSOT(root_dir, subset, return_meta=return_meta)
         self.result_dir = result_dir
@@ -56,30 +60,27 @@ class ExperimentLaSOT(ExperimentOTB):
             norm_prec_curve = np.zeros((seq_num, self.nbins_nce))
             speeds = np.zeros(seq_num)
 
-            performance.update({name: {
-                'overall': {},
-                'seq_wise': {}}})
+            performance.update({name: {'overall': {}, 'seq_wise': {}}})
 
             for s, (_, anno) in enumerate(self.dataset):
                 seq_name = self.dataset.seq_names[s]
-                record_file = os.path.join(
-                    self.result_dir, name, '%s.txt' % seq_name)
+                record_file = os.path.join(self.result_dir, name, '%s.txt' % seq_name)
                 boxes = np.loadtxt(record_file, delimiter=',')
                 boxes[0] = anno[0]
                 if not (len(boxes) == len(anno)):
                     # from IPython import embed;embed()
-                    print('warning: %s anno donnot match boxes'%seq_name)
-                    len_min = min(len(boxes),len(anno))
+                    print('warning: %s anno donnot match boxes' % seq_name)
+                    len_min = min(len(boxes), len(anno))
                     boxes = boxes[:len_min]
                     anno = anno[:len_min]
                 assert len(boxes) == len(anno)
 
                 ious, center_errors, norm_center_errors = self._calc_metrics(boxes, anno)
-                succ_curve[s], prec_curve[s], norm_prec_curve[s] = self._calc_curves(ious, center_errors, norm_center_errors)
+                succ_curve[s], prec_curve[s], norm_prec_curve[s] = self._calc_curves(
+                    ious, center_errors, norm_center_errors)
 
                 # calculate average tracking speed
-                time_file = os.path.join(
-                    self.result_dir, name, 'times/%s_time.txt' % seq_name)
+                time_file = os.path.join(self.result_dir, name, 'times/%s_time.txt' % seq_name)
                 if os.path.isfile(time_file):
                     times = np.loadtxt(time_file)
                     times = times[times > 0]
@@ -87,15 +88,18 @@ class ExperimentLaSOT(ExperimentOTB):
                         speeds[s] = np.mean(1. / times)
 
                 # store sequence-wise performance
-                performance[name]['seq_wise'].update({seq_name: {
-                    'success_curve': succ_curve[s].tolist(),
-                    'precision_curve': prec_curve[s].tolist(),
-                    'normalized_precision_curve': norm_prec_curve[s].tolist(),
-                    'success_score': np.mean(succ_curve[s]),
-                    'precision_score': prec_curve[s][20],
-                    'normalized_precision_score': np.mean(norm_prec_curve[s]),
-                    'success_rate': succ_curve[s][self.nbins_iou // 2],
-                    'speed_fps': speeds[s] if speeds[s] > 0 else -1}})
+                performance[name]['seq_wise'].update({
+                    seq_name: {
+                        'success_curve': succ_curve[s].tolist(),
+                        'precision_curve': prec_curve[s].tolist(),
+                        'normalized_precision_curve': norm_prec_curve[s].tolist(),
+                        'success_score': np.mean(succ_curve[s]),
+                        'precision_score': prec_curve[s][20],
+                        'normalized_precision_score': np.mean(norm_prec_curve[s]),
+                        'success_rate': succ_curve[s][self.nbins_iou // 2],
+                        'speed_fps': speeds[s] if speeds[s] > 0 else -1
+                    }
+                })
 
             succ_curve = np.mean(succ_curve, axis=0)
             prec_curve = np.mean(prec_curve, axis=0)
@@ -111,14 +115,23 @@ class ExperimentLaSOT(ExperimentOTB):
 
             # store overall performance
             performance[name]['overall'].update({
-                'success_curve': succ_curve.tolist(),
-                'precision_curve': prec_curve.tolist(),
-                'normalized_precision_curve': norm_prec_curve.tolist(),
-                'success_score': succ_score,
-                'precision_score': prec_score,
-                'normalized_precision_score': norm_prec_score,
-                'success_rate': succ_rate,
-                'speed_fps': avg_speed})
+                'success_curve':
+                succ_curve.tolist(),
+                'precision_curve':
+                prec_curve.tolist(),
+                'normalized_precision_curve':
+                norm_prec_curve.tolist(),
+                'success_score':
+                succ_score,
+                'precision_score':
+                prec_score,
+                'normalized_precision_score':
+                norm_prec_score,
+                'success_rate':
+                succ_rate,
+                'speed_fps':
+                avg_speed
+            })
 
         # report the performance
         with open(report_file, 'w') as f:
@@ -135,10 +148,8 @@ class ExperimentLaSOT(ExperimentOTB):
             return None, None, None
         else:
             ious = rect_iou(boxes[valid, :], anno[valid, :])
-            center_errors = center_error(
-                boxes[valid, :], anno[valid, :])
-            norm_center_errors = normalized_center_error(
-                boxes[valid, :], anno[valid, :])
+            center_errors = center_error(boxes[valid, :], anno[valid, :])
+            norm_center_errors = normalized_center_error(boxes[valid, :], anno[valid, :])
             return ious, center_errors, norm_center_errors
 
     def _calc_curves(self, ious, center_errors, norm_center_errors):
@@ -175,9 +186,9 @@ class ExperimentLaSOT(ExperimentOTB):
         with open(report_file) as f:
             performance = json.load(f)
 
-        succ_file = os.path.join(report_dir, 'success_plots'+extension)
-        prec_file = os.path.join(report_dir, 'precision_plots'+extension)
-        norm_prec_file = os.path.join(report_dir, 'norm_precision_plots'+extension)
+        succ_file = os.path.join(report_dir, 'success_plots' + extension)
+        prec_file = os.path.join(report_dir, 'precision_plots' + extension)
+        norm_prec_file = os.path.join(report_dir, 'norm_precision_plots' + extension)
         key = 'overall'
 
         # markers
@@ -185,7 +196,7 @@ class ExperimentLaSOT(ExperimentOTB):
         markers = [c + m for m in markers for c in [''] * 10]
 
         # filter performance by tracker_names
-        performance = {k:v for k,v in performance.items() if k in tracker_names}
+        performance = {k: v for k, v in performance.items() if k in tracker_names}
 
         # sort trackers by success score
         tracker_names = list(performance.keys())
@@ -199,8 +210,7 @@ class ExperimentLaSOT(ExperimentOTB):
         lines = []
         legends = []
         for i, name in enumerate(tracker_names):
-            line, = ax.plot(thr_iou,
-                            performance[name][key]['success_curve'],
+            line, = ax.plot(thr_iou, performance[name][key]['success_curve'],
                             markers[i % len(markers)])
             lines.append(line)
             legends.append('%s: [%.3f]' % (name, performance[name][key]['success_score']))
@@ -211,7 +221,8 @@ class ExperimentLaSOT(ExperimentOTB):
         matplotlib.rcParams.update({'font.size': 9})
         ax.set(xlabel='Overlap threshold',
                ylabel='Success rate',
-               xlim=(0, 1), ylim=(0, 1),
+               xlim=(0, 1),
+               ylim=(0, 1),
                title='Success plots on LaSOT')
         ax.grid(True)
         fig.tight_layout()
@@ -220,10 +231,7 @@ class ExperimentLaSOT(ExperimentOTB):
         # ax.set_aspect('equal', 'box')
 
         print('Saving success plots to', succ_file)
-        fig.savefig(succ_file,
-                    bbox_extra_artists=(legend,),
-                    bbox_inches='tight',
-                    dpi=300)
+        fig.savefig(succ_file, bbox_extra_artists=(legend, ), bbox_inches='tight', dpi=300)
 
         # sort trackers by precision score
         tracker_names = list(performance.keys())
@@ -237,8 +245,7 @@ class ExperimentLaSOT(ExperimentOTB):
         lines = []
         legends = []
         for i, name in enumerate(tracker_names):
-            line, = ax.plot(thr_ce,
-                            performance[name][key]['precision_curve'],
+            line, = ax.plot(thr_ce, performance[name][key]['precision_curve'],
                             markers[i % len(markers)])
             lines.append(line)
             legends.append('%s: [%.3f]' % (name, performance[name][key]['precision_score']))
@@ -249,7 +256,8 @@ class ExperimentLaSOT(ExperimentOTB):
         matplotlib.rcParams.update({'font.size': 9})
         ax.set(xlabel='Location error threshold',
                ylabel='Precision',
-               xlim=(0, thr_ce.max()), ylim=(0, 1),
+               xlim=(0, thr_ce.max()),
+               ylim=(0, 1),
                title='Precision plots on LaSOT')
         ax.grid(True)
         fig.tight_layout()
@@ -260,7 +268,7 @@ class ExperimentLaSOT(ExperimentOTB):
         print('Saving precision plots to', prec_file)
         fig.savefig(prec_file, dpi=300)
 
-# added by user
+        # added by user
         # sort trackers by normalized precision score
         tracker_names = list(performance.keys())
         prec = [t[key]['normalized_precision_score'] for t in performance.values()]
@@ -273,11 +281,11 @@ class ExperimentLaSOT(ExperimentOTB):
         lines = []
         legends = []
         for i, name in enumerate(tracker_names):
-            line, = ax.plot(thr_nce,
-                            performance[name][key]['normalized_precision_curve'],
+            line, = ax.plot(thr_nce, performance[name][key]['normalized_precision_curve'],
                             markers[i % len(markers)])
             lines.append(line)
-            legends.append('%s: [%.3f]' % (name, performance[name][key]['normalized_precision_score']))
+            legends.append('%s: [%.3f]' %
+                           (name, performance[name][key]['normalized_precision_score']))
         matplotlib.rcParams.update({'font.size': 7.4})
         # legend = ax.legend(lines, legends, loc='center left', bbox_to_anchor=(1, 0.5))
         legend = ax.legend(lines, legends, loc='lower right', bbox_to_anchor=(1., 0.))
@@ -285,7 +293,8 @@ class ExperimentLaSOT(ExperimentOTB):
         matplotlib.rcParams.update({'font.size': 9})
         ax.set(xlabel='Normalized location error threshold',
                ylabel='Normalized precision',
-               xlim=(0, thr_ce.max()), ylim=(0, 1),
+               xlim=(0, thr_ce.max()),
+               ylim=(0, 1),
                title='Normalized precision plots on LaSOT')
         ax.grid(True)
         fig.tight_layout()
@@ -295,4 +304,3 @@ class ExperimentLaSOT(ExperimentOTB):
 
         print('Saving normalized precision plots to', norm_prec_file)
         fig.savefig(norm_prec_file, dpi=300)
-
