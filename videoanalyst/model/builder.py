@@ -25,6 +25,7 @@ def build_model(
         print("model for task {} is not complted".format(task))
         exit(-1)
 
+
 def get_config() -> Dict[str, CfgNode]:
     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
 

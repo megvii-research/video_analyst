@@ -15,6 +15,7 @@ for task in task_list:
     cfg[task]["model"] = get_model_cfg()[task]
     #cfg[task]["optimize"] = get_opt_cfg()
 
+
 def specify_task(cfg: CfgNode) -> (str, CfgNode):
     r"""
     get task's short name from config, and specify task config

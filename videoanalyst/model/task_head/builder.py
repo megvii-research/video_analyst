@@ -9,7 +9,8 @@ from videoanalyst.model.module_base import ModuleBase
 
 logger = logging.getLogger(__file__)
 
-def build(task:str, cfg:CfgNode):
+
+def build(task: str, cfg: CfgNode):
     if task == "track":
         head_modules = TRACK_HEADS
     elif task == "vos":
@@ -17,7 +18,7 @@ def build(task:str, cfg:CfgNode):
     else:
         logger.error("no task model for task {}".format(task))
         exit(-1)
-    
+
     head_name = cfg.name
     if task == "track":
         # head settings
@@ -34,6 +35,7 @@ def build(task:str, cfg:CfgNode):
     else:
         logger.error("task model {} is not completed".format(task))
         exit(-1)
+
 
 def get_config() -> Dict[str, CfgNode]:
     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}

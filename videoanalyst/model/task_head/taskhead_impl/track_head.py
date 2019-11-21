@@ -42,14 +42,15 @@ def get_box(xy_ctr, offsets):
 
     return bboxes_pred
 
+
 @TRACK_HEADS.register
 class DenseboxHead(ModuleBase):
     default_hyper_params = {
         "total_stride": 8,
         "score_size": 17,
         "score_offset": 43,
-
     }
+
     def __init__(self):
         super(DenseboxHead, self).__init__()
         self.cls_p5_conv1 = conv_bn_relu(256, 256, stride=1, kszie=3, pad=0, has_bn=False)
@@ -67,7 +68,6 @@ class DenseboxHead(ModuleBase):
 
         self.bi = torch.nn.Parameter(torch.tensor(0.).type(torch.Tensor))
         self.si = torch.nn.Parameter(torch.tensor(1.).type(torch.Tensor))
-
 
         # initialze head
         conv_list = [

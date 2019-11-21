@@ -8,7 +8,8 @@ from .backbone_base import (TRACK_BACKBONES, VOS_BACKBONES)
 
 logger = logging.getLogger(__file__)
 
-def build(task:str, cfg:CfgNode):
+
+def build(task: str, cfg: CfgNode):
     if task == "track":
         modules = TRACK_BACKBONES
     elif task == "vos":
@@ -16,7 +17,7 @@ def build(task:str, cfg:CfgNode):
     else:
         logger.error("no backbone for task {}".format(task))
         exit(-1)
-    
+
     name = cfg.name
     assert name in modules, "backbone {} not registered for {}!".format(name, task)
     module = modules[name]()
@@ -29,10 +30,10 @@ def build(task:str, cfg:CfgNode):
     module.update_params()
     return module
 
+
 def get_config() -> Dict[str, CfgNode]:
     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
-    for cfg_name, module in zip(["track", "vos"],
-                                [TRACK_BACKBONES, VOS_BACKBONES]):
+    for cfg_name, module in zip(["track", "vos"], [TRACK_BACKBONES, VOS_BACKBONES]):
         cfg = cfg_dict[cfg_name]
         cfg["name"] = "unknown"
         for name in module:
@@ -42,5 +43,3 @@ def get_config() -> Dict[str, CfgNode]:
             for hp_name in hps:
                 cfg[name][hp_name] = hps[hp_name]
     return cfg_dict
-
-

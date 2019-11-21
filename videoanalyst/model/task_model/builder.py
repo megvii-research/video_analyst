@@ -9,7 +9,8 @@ from videoanalyst.model.module_base import ModuleBase
 
 logger = logging.getLogger(__file__)
 
-def build(task:str, cfg:CfgNode, backbone:ModuleBase, head: ModuleBase, loss:ModuleBase):
+
+def build(task: str, cfg: CfgNode, backbone: ModuleBase, head: ModuleBase, loss: ModuleBase):
     if task == "track":
         task_modules = TRACK_TASKMODELS
     elif task == "vos":
@@ -17,7 +18,7 @@ def build(task:str, cfg:CfgNode, backbone:ModuleBase, head: ModuleBase, loss:Mod
     else:
         logger.error("no task model for task {}".format(task))
         exit(-1)
-    
+
     if task == "track":
         taskmodel_name = cfg.name
         task_module = task_modules[taskmodel_name](backbone, head, loss)
@@ -25,6 +26,7 @@ def build(task:str, cfg:CfgNode, backbone:ModuleBase, head: ModuleBase, loss:Mod
     else:
         logger.error("task model {} is not completed".format(task))
         exit(-1)
+
 
 def get_config() -> Dict[str, CfgNode]:
     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}

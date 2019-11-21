@@ -11,10 +11,12 @@ from videoanalyst.model.task_model.taskmodel_base import VOS_TASKMODELS, TRACK_T
 from videoanalyst.model.common_opr.common_block import conv_bn_relu, xcorr_depthwise
 from videoanalyst.model.module_base import ModuleBase
 
+
 @TRACK_TASKMODELS.register
 class SiamTrack(ModuleBase):
 
     default_hyper_params = {"pretrain_model_path": ""}
+
     def __init__(self, backbone, head, loss):
         super(SiamTrack, self).__init__()
         self.backbone = backbone
@@ -74,7 +76,6 @@ class SiamTrack(ModuleBase):
             # output
             out_list = [c_z_k, r_z_k]
 
-
         # phase: track
         elif phase == 'track':
             search_img, c_z_k, r_z_k = args
@@ -99,8 +100,8 @@ class SiamTrack(ModuleBase):
             raise ValueError("Phase non-implemented.")
 
         return out_list
+
     def update_params(self):
         if self._hyper_params["pretrain_model_path"] != "":
             state_dict = torch.load(self._hyper_params["pretrain_model_path"])
             self.load_state_dict(state_dict, strict=False)
-

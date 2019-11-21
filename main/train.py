@@ -7,7 +7,6 @@ from videoanalyst.config.config import cfg as whole_cfg
 from videoanalyst.config.config import specify_task
 import videoanalyst.model.builder as model_builder
 
-
 whole_cfg.merge_from_file("experiments/siamfc++/alexnet_siamfc++.yaml")
 print(whole_cfg)
 task, config = specify_task(whole_cfg)

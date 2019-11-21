@@ -8,7 +8,8 @@ from videoanalyst.model.loss.loss_base import (TRACK_LOSSES, VOS_LOSSES)
 
 logger = logging.getLogger(__file__)
 
-def build(task:str, cfg:CfgNode):
+
+def build(task: str, cfg: CfgNode):
     if task == "track":
         modules = TRACK_LOSSES
     elif task == "vos":
@@ -16,7 +17,7 @@ def build(task:str, cfg:CfgNode):
     else:
         logger.error("no loss for task {}".format(task))
         exit(-1)
-    
+
     names = cfg.names
     ret = list()
     for name in names:
@@ -32,10 +33,10 @@ def build(task:str, cfg:CfgNode):
         ret.append(module)
     return ret
 
+
 def get_config() -> Dict[str, CfgNode]:
     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
-    for cfg_name, module in zip(["track", "vos"],
-                                [TRACK_LOSSES, VOS_LOSSES]):
+    for cfg_name, module in zip(["track", "vos"], [TRACK_LOSSES, VOS_LOSSES]):
         cfg = cfg_dict[cfg_name]
         cfg["names"] = list()
         for name in module:

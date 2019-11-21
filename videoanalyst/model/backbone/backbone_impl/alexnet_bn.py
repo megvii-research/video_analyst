@@ -11,6 +11,7 @@ from videoanalyst.model.module_base import ModuleBase
 @TRACK_BACKBONES.register
 class AlexNet(ModuleBase):
     default_hyper_params = {"pretrain_model_path": ""}
+
     def __init__(self):
         super(AlexNet, self).__init__()
         self.conv1 = conv_bn_relu(3, 96, stride=2, kszie=11, pad=0)
@@ -35,4 +36,3 @@ class AlexNet(ModuleBase):
         if self._hyper_params["pretrain_model_path"] != "":
             state_dict = torch.load(self._hyper_params["pretrain_model_path"])
             self.load_state_dict(state_dict, strict=False)
-
