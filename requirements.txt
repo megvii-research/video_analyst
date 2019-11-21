@@ -1,0 +1,7 @@
+tqdm
+pylint
+yacs
+pillow
+Cython
+yapf==0.28.0
+opencv-python
