@@ -29,3 +29,9 @@
 │   ├── test.py # 模型测试入口 
 └── utils # 实用工具
 ```
+
+debug test
+
+```
+mdl main/train.py
+```
