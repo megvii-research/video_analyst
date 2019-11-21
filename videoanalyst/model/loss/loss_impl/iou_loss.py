@@ -22,7 +22,7 @@ class SafeLog(nn.Module):
 @TRACK_LOSSES.register
 class IOULoss(ModuleBase):
 
-    default_hyper_params = {"background": 0, "ignore_label": -1}
+    default_hyper_params = {"background": 0, "ignore_label": -1, "weight": 1.0}
 
     def __init__(self, background=0, ignore_label=-1):
         super().__init__()
@@ -33,6 +33,7 @@ class IOULoss(ModuleBase):
     def update_params(self):
         self.background = self._hyper_params["background"]
         self.ignore_label = self._hyper_params["ignore_label"]
+        self.weight = self._hyper_params["weight"]
 
     def forward(self, pred, gt, cls_gt):
         mask = ((1 - (cls_gt == self.background)) * (1 - (cls_gt == self.ignore_label))).detach()
@@ -51,7 +52,7 @@ class IOULoss(ModuleBase):
         loss = -self.safelog(iou)
 
         # from IPython import embed;embed()
-        loss = (loss * mask).sum() / torch.max(mask.sum(), self.t_one)
+        loss = (loss * mask).sum() / torch.max(mask.sum(), self.t_one) * self.weight
         iou = iou.detach()
         iou = (iou * mask).sum() / torch.max(mask.sum(), self.t_one)
 

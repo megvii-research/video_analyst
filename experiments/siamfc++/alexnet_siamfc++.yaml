@@ -8,6 +8,8 @@ track:
       names: ["IOULoss"]
     task_model:
       name: "SiamTrack"
+      SiamTrack:
+        pretrain_model_path: "/data/model_zoo/sot/ao_373_lr_52_pen_21_win_04_epoch-19.pkl"
     task_head:
       name: "DenseboxHead"
 

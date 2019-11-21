@@ -6,11 +6,13 @@ import torch.nn.functional as F
 torch.set_printoptions(precision=8)
 from collections import OrderedDict
 import numpy as np
+import logging
 
 from videoanalyst.model.task_model.taskmodel_base import VOS_TASKMODELS, TRACK_TASKMODELS
 from videoanalyst.model.common_opr.common_block import conv_bn_relu, xcorr_depthwise
 from videoanalyst.model.module_base import ModuleBase
 
+logger = logging.getLogger(__file__)
 
 @TRACK_TASKMODELS.register
 class SiamTrack(ModuleBase):
@@ -19,7 +21,7 @@ class SiamTrack(ModuleBase):
 
     def __init__(self, backbone, head, loss):
         super(SiamTrack, self).__init__()
-        self.backbone = backbone
+        self.basemodel = backbone
         # feature adjustment
         self.r_z_k = conv_bn_relu(256, 256, 1, 3, 0, has_relu=False)
         self.c_z_k = conv_bn_relu(256, 256, 1, 3, 0, has_relu=False)
@@ -49,8 +51,8 @@ class SiamTrack(ModuleBase):
         if phase == 'train':
             target_img, search_img = args
             # backbone feature
-            f_z = self.backbone(target_img)
-            f_x = self.backbone(search_img)
+            f_z = self.basemodel(target_img)
+            f_x = self.basemodel(search_img)
             # feature adjustment
             c_z_k = self.c_z_k(f_z)
             r_z_k = self.r_z_k(f_z)
@@ -103,5 +105,11 @@ class SiamTrack(ModuleBase):
 
     def update_params(self):
         if self._hyper_params["pretrain_model_path"] != "":
-            state_dict = torch.load(self._hyper_params["pretrain_model_path"])
-            self.load_state_dict(state_dict, strict=False)
+            try:
+                state_dict = torch.load(self._hyper_params["pretrain_model_path"], map_location=torch.device("gpu"))
+            except:
+                state_dict = torch.load(self._hyper_params["pretrain_model_path"], map_location=torch.device("cpu"))
+            if "model_state_dict" in state_dict:
+                state_dict = state_dict["model_state_dict"]
+            self.load_state_dict(state_dict, strict=True)
+            logger.info("loaded pretrain weights from {}".format(self._hyper_params["pretrain_model_path"]))

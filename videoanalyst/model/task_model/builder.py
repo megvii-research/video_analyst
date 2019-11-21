@@ -22,6 +22,12 @@ def build(task: str, cfg: CfgNode, backbone: ModuleBase, head: ModuleBase, loss:
     if task == "track":
         taskmodel_name = cfg.name
         task_module = task_modules[taskmodel_name](backbone, head, loss)
+        hps = task_module.get_hps()
+        for hp_name in hps:
+            new_value = cfg[taskmodel_name][hp_name]
+            hps[hp_name] = new_value
+        task_module.set_hps(hps)
+        task_module.update_params()
         return task_module
     else:
         logger.error("task model {} is not completed".format(task))

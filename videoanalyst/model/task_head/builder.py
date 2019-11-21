@@ -31,7 +31,7 @@ def build(task: str, cfg: CfgNode):
         head_module.set_hps(hps)
         head_module.update_params()
 
-        return head_name
+        return head_module
     else:
         logger.error("task model {} is not completed".format(task))
         exit(-1)
@@ -48,5 +48,4 @@ def get_config() -> Dict[str, CfgNode]:
             hps = task_model.default_hyper_params
             for hp_name in hps:
                 cfg[name][hp_name] = hps[hp_name]
-            cfg[name]["head_name"] = "unknown"
     return cfg_dict
