@@ -35,7 +35,9 @@ class AlexNet(ModuleBase):
     def update_params(self):
         if self._hyper_params["pretrain_model_path"] != "":
             try:
-                state_dict = torch.load(self._hyper_params["pretrain_model_path"], map_location=torch.device("gpu"))
+                state_dict = torch.load(self._hyper_params["pretrain_model_path"],
+                                        map_location=torch.device("gpu"))
             except:
-                state_dict = torch.load(self._hyper_params["pretrain_model_path"], map_location=torch.device("cpu"))
+                state_dict = torch.load(self._hyper_params["pretrain_model_path"],
+                                        map_location=torch.device("cpu"))
             self.load_state_dict(state_dict, strict=False)
