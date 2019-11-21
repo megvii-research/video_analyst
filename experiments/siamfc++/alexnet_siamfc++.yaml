@@ -1,0 +1,14 @@
+track:
+  exp_name: "alexnet_siamfc++"
+  exp_save: "/data/video_analyst/siamfc++/"
+  model:
+    backbone:
+      name: "AlexNet"
+    losses: 
+      names: ["IOULoss"]
+    task_model:
+      name: "SiamTrack"
+    task_head:
+      name: "DenseboxHead"
+
+    

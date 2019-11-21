@@ -19,9 +19,7 @@ class SafeLog(nn.Module):
         return torch.log(torch.max(self.t_eps, t))
 
 
-TRACK_LOSSES.register
-
-
+@TRACK_LOSSES.register
 class IOULoss(ModuleBase):
 
     default_hyper_params = {"background": 0, "ignore_label": -1}

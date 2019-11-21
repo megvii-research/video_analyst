@@ -11,6 +11,7 @@ class ModuleBase(nn.Module):
     default_hyper_params = dict()
 
     def __init__(self):
+        super(ModuleBase, self).__init__()
         self._hyper_params = deepcopy(self.default_hyper_params)
 
     def get_hps(self) -> dict():

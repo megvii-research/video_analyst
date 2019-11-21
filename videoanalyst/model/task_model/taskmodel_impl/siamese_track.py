@@ -7,15 +7,15 @@ torch.set_printoptions(precision=8)
 from collections import OrderedDict
 import numpy as np
 
-from videoanalyst.model.taskmodel.taskmodel_base import VOS_TASKMODELS, TRACK_TASKMODELS
+from videoanalyst.model.task_model.taskmodel_base import VOS_TASKMODELS, TRACK_TASKMODELS
 from videoanalyst.model.common_opr.common_block import conv_bn_relu, xcorr_depthwise
+from videoanalyst.model.module_base import ModuleBase
 
+@TRACK_TASKMODELS.register
+class SiamTrack(ModuleBase):
 
-class SiamTrack(nn.Module):
-
-    default__hyper_params = {}
-
-    def __init__(self, backbone, head):
+    default_hyper_params = {"pretrain_model_path": ""}
+    def __init__(self, backbone, head, loss):
         super(SiamTrack, self).__init__()
         self.backbone = backbone
         # feature adjustment
@@ -25,6 +25,8 @@ class SiamTrack(nn.Module):
         self.c_x = conv_bn_relu(256, 256, 1, 3, 0, has_relu=False)
         # head
         self.head = head
+        # loss
+        self.loss = loss
         # initialze head
         conv_list = [self.r_z_k.conv, self.c_z_k.conv, self.r_x.conv, self.c_x.conv]
         for ith in range(len(conv_list)):
@@ -61,7 +63,7 @@ class SiamTrack(nn.Module):
             # fcos_ctr_prob_final = torch.sigmoid(fcos_ctr_score_final)
             # output
             out_list = fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final
-# phase: feature
+        # phase: feature
         elif phase == 'feature':
             target_img, = args
             # backbone feature
@@ -73,7 +75,7 @@ class SiamTrack(nn.Module):
             out_list = [c_z_k, r_z_k]
 
 
-# phase: track
+        # phase: track
         elif phase == 'track':
             search_img, c_z_k, r_z_k = args
             # backbone feature
@@ -97,3 +99,8 @@ class SiamTrack(nn.Module):
             raise ValueError("Phase non-implemented.")
 
         return out_list
+    def update_params(self):
+        if self._hyper_params["pretrain_model_path"] != "":
+            state_dict = torch.load(self._hyper_params["pretrain_model_path"])
+            self.load_state_dict(state_dict, strict=False)
+
