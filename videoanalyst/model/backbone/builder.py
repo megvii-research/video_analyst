@@ -24,8 +24,9 @@ def build(task: str, cfg: CfgNode):
     hps = module.get_hps()
 
     for hp_name in hps:
-        new_value = cfg[name][hp_name]
-        hps[hp_name] = new_value
+        if hp_name in cfg[name]:
+            new_value = cfg[name][hp_name]
+            hps[hp_name] = new_value
     module.set_hps(hps)
     module.update_params()
     return module

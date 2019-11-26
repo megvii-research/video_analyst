@@ -63,3 +63,8 @@ log.txt
 .idea/
 tmp/
 *.protobuf
+
+/logs
+/debug
+/bash_scripts
+

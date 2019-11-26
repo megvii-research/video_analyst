@@ -1,5 +1,5 @@
 import os
-
+from yacs.config import CfgNode as CN
 
 def ensure(dir_path: str):
     if os.path.exists(dir_path):
@@ -33,3 +33,14 @@ class Registry(dict):
     def register(self, module):
         _register_generic(self, module.__name__, module)
         return module
+
+def load_cfg(path: str):
+    """
+    Load yaml with yacs
+    :param path: yaml path
+    :return:
+    """
+    with open(path, 'r') as f:
+        config_node = CN.load_cfg(f)
+
+    return config_node

@@ -25,7 +25,6 @@ from neupeak.utils import imgproc
 
 _oss_prefix = "s3://"
 
-
 def get_json(path, oss_file=True):
     # if oss_file:
     if oss_file and path.startswith(_oss_prefix):
@@ -33,18 +32,17 @@ def get_json(path, oss_file=True):
             print('OSS not exists!')
             exit()
         if isinstance(path, str):
-            p = OSSPath(path)
+            p=OSSPath(path)
         else:
-            p = path
-        f = p.download()
-        f = f.read()
-        f = f.decode()
-        f = json.loads(f)
+            p=path
+        f=p.download()
+        f=f.read()
+        f=f.decode()
+        f=json.loads(f)
         return f
     else:
         with open(path) as f:
             return json.load(f)
-
 
 def get_txt(path, oss_file=True):
     # if oss_file:
@@ -53,18 +51,17 @@ def get_txt(path, oss_file=True):
             print('OSS not exists!')
             exit()
         if isinstance(path, str):
-            p = OSSPath(path)
+            p=OSSPath(path)
         else:
-            p = path
-        f = p.download()
-        f = f.read()
-        f = f.decode()
+            p=path
+        f=p.download()
+        f=f.read()
+        f=f.decode()
         return f
 
     else:
         with open(path) as f:
             return f.read()
-
 
 def get_img(path, oss_file=True):
     # if oss_file:
@@ -72,10 +69,10 @@ def get_img(path, oss_file=True):
         if not has_OSS:
             print('OSS not exists!')
             exit()
-        if isinstance(path, str):
-            p = OSSPath(path)
+        if isinstance(path,str):
+            p=OSSPath(path)
         else:
-            p = path
+            p=path
 
         p = OSSPath(path)
         f = p.download().read()
@@ -84,27 +81,25 @@ def get_img(path, oss_file=True):
         img = cv2.imread(path)
     return img
 
-
-def get_files(path, suffix, oss_file):
+def get_files(path,suffix, oss_file):
     # if oss_file:
     if oss_file and path.startswith(_oss_prefix):
         if not has_OSS:
             print('OSS not exists!')
             exit()
-        if isinstance(path, str):
-            p = OSSPath(path)
+        if isinstance(path,str):
+            p=OSSPath(path)
         else:
-            p = path
-        list_dir = list(p.list_all())
+            p=path
+        list_dir=list(p.list_all())
     else:
-        if isinstance(path, str):
-            p = Path(path)
+        if isinstance(path,str):
+            p=Path(path)
         else:
-            p = path
-        list_dir = list(p.glob('*'))
-    result = [x.name for x in list_dir if x.suffix == suffix]
+            p=path
+        list_dir=list(p.glob('*'))
+    result=[x.name for x in list_dir if x.suffix==suffix]
     return result
-
 
 def get_dataset_zoo():
     root = realpath(join(dirname(__file__), '../data'))
@@ -121,7 +116,6 @@ def get_dataset_zoo():
     zoos = list(filter(valid, zoos))
     return zoos
 
-
 #
 # dataset_zoo = get_dataset_zoo()
 
@@ -134,24 +128,23 @@ def load_dataset(vot_path, dataset, oss_file=True):
         #     logging.error("Please download test dataset!!!")
         #     exit()
         list_path = join(base_path, 'list.txt')
-        f = get_txt(list_path, oss_file)
+        f=get_txt(list_path, oss_file)
         videos = [v.strip() for v in f.strip().split('\n')]
         #print(videos)
         for video in videos:
             video_path = join(base_path, video)
             image_path = join(video_path, 'color')
-            image_files = sorted(get_files(image_path, '.jpg', oss_file))
-            image_files = [join(image_path, x) for x in image_files]
+            image_files = sorted(get_files(image_path,'.jpg', oss_file))
+            image_files=[join(image_path,x) for x in image_files]
             gt_path = join(video_path, 'groundtruth.txt')
             gt = get_txt(gt_path, oss_file)
-            gt = gt.strip().split('\n')
+            gt=gt.strip().split('\n')
 
-            gt = np.asarray([line.split(',') for line in gt], np.float32)
+            gt=np.asarray([line.split(',') for line in gt],np.float32)
 
             if gt.shape[1] == 4:
-                gt = np.column_stack(
-                    (gt[:, 0], gt[:, 1], gt[:, 0], gt[:, 1] + gt[:, 3] - 1, gt[:, 0] + gt[:, 2] - 1,
-                     gt[:, 1] + gt[:, 3] - 1, gt[:, 0] + gt[:, 2] - 1, gt[:, 1]))
+                gt = np.column_stack((gt[:, 0], gt[:, 1], gt[:, 0], gt[:, 1] + gt[:, 3]-1,
+                                      gt[:, 0] + gt[:, 2]-1, gt[:, 1] + gt[:, 3]-1, gt[:, 0] + gt[:, 2]-1, gt[:, 1]))
             info[video] = {'image_files': image_files, 'gt': gt, 'name': video}
 
     return info

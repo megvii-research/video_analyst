@@ -10,7 +10,7 @@ from videoanalyst.model.module_base import ModuleBase
 logger = logging.getLogger(__file__)
 
 
-def build(task: str, cfg: CfgNode, backbone: ModuleBase, head: ModuleBase, loss: ModuleBase):
+def build(task: str, cfg: CfgNode, backbone: ModuleBase, head: ModuleBase, loss: ModuleBase = None):
     if task == "track":
         task_modules = TRACK_TASKMODELS
     elif task == "vos":

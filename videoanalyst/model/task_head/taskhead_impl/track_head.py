@@ -45,11 +45,12 @@ def get_box(xy_ctr, offsets):
 
 @TRACK_HEADS.register
 class DenseboxHead(ModuleBase):
-    default_hyper_params = {
-        "total_stride": 8,
-        "score_size": 17,
-        "score_offset": 43,
-    }
+    default_hyper_params = dict(
+        total_stride=8,
+        score_size=17,
+        x_size=303,
+        # "score_offset": 87,
+    )
 
     def __init__(self):
         super(DenseboxHead, self).__init__()
@@ -122,9 +123,15 @@ class DenseboxHead(ModuleBase):
         return [cls_score, ctr_score, fcos_bbox]
 
     def update_params(self):
+        x_size = self._hyper_params["x_size"]
+        score_size = self._hyper_params["score_size"]
+        total_stride = self._hyper_params["total_stride"]
+        score_offset = (x_size-1 - (score_size-1)*total_stride) // 2
+        self._hyper_params["score_offset"] = score_offset
+
         self.score_size = self._hyper_params["score_size"]
-        self.score_offset = self._hyper_params["score_offset"]
         self.total_stride = self._hyper_params["total_stride"]
+        self.score_offset = self._hyper_params["score_offset"]
         ctr = get_xy_ctr(self.score_size, self.score_offset, self.total_stride)
         self.fm_ctr = ctr
         self.fm_ctr.require_grad = False

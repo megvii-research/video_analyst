@@ -6,8 +6,9 @@ from torch import nn
 
 class ModuleBase(nn.Module):
     r"""
-    Define your hyper-parameters here in your sub-class.
+    Module/component base class
     """
+    # Define your default hyper-parameters here in your sub-class.
     default_hyper_params = dict()
 
     def __init__(self):

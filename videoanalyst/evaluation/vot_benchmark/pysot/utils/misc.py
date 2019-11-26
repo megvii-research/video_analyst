@@ -8,7 +8,6 @@
 # --------------------------------------------------------
 import numpy as np
 
-
 def determine_thresholds(confidence, resolution=100):
     """choose threshold according to confidence
 
@@ -28,9 +27,9 @@ def determine_thresholds(confidence, resolution=100):
     assert len(confidence) > resolution and resolution > 2
 
     thresholds = np.ones((resolution))
-    thresholds[0] = -np.inf
+    thresholds[0] = - np.inf
     thresholds[-1] = np.inf
     delta = np.floor(len(confidence) / (resolution - 2))
-    idxs = np.linspace(delta, len(confidence) - delta, resolution - 2, dtype=np.int32)
-    thresholds[1:-1] = confidence[idxs]
+    idxs = np.linspace(delta, len(confidence)-delta, resolution-2, dtype=np.int32)
+    thresholds[1:-1] =  confidence[idxs]
     return thresholds

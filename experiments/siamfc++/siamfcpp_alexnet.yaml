@@ -1,0 +1,29 @@
+track:
+  exp_name: "alexnet_siamfc++"
+  exp_save: "/data/video_analyst/siamfc++/"
+  model:
+    backbone:
+      name: "AlexNet"
+      AlexNet: []
+    losses:
+      names: [] # "IOULoss"
+    task_head:
+      name: "DenseboxHead"
+      DenseboxHead: []
+    task_model:
+      name: "SiamTrack"
+      SiamTrack:
+        pretrain_model_path: "/data/Models/videoanalyst_debug/siamfcpp/alexnet/eao_373_lr_52_pen_21_win_04/epoch-19.pkl"
+  pipeline:
+    name: "SiamFCppTracker"
+    SiamFCppTracker:
+      test_lr: 0.52
+      window_influence: 0.21
+      penalty_k: 0.04
+test:
+  dataset: "VOT2018"
+
+
+
+
+    
