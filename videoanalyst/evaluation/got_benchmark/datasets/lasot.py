@@ -31,9 +31,14 @@ class LaSOT(object):
         self.return_meta = return_meta
         self._check_integrity(root_dir)
 
-        self.anno_files = sorted(glob.glob(os.path.join(root_dir, '*/*/groundtruth.txt')))
-        self.seq_dirs = [os.path.join(os.path.dirname(f), 'img') for f in self.anno_files]
-        self.seq_names = [os.path.basename(os.path.dirname(f)) for f in self.anno_files]
+        self.anno_files = sorted(
+            glob.glob(os.path.join(root_dir, '*/*/groundtruth.txt')))
+        self.seq_dirs = [
+            os.path.join(os.path.dirname(f), 'img') for f in self.anno_files
+        ]
+        self.seq_names = [
+            os.path.basename(os.path.dirname(f)) for f in self.anno_files
+        ]
 
         # load subset sequence names
         split_file = os.path.join(os.path.dirname(__file__), 'lasot.json')
@@ -44,9 +49,13 @@ class LaSOT(object):
             self.seq_names.extend(splits[s])
 
         # image and annotation paths
-        self.seq_dirs = [os.path.join(root_dir, n[:n.rfind('-')], n, 'img') for n in self.seq_names]
+        self.seq_dirs = [
+            os.path.join(root_dir, n[:n.rfind('-')], n, 'img')
+            for n in self.seq_names
+        ]
         self.anno_files = [
-            os.path.join(os.path.dirname(d), 'groundtruth.txt') for d in self.seq_dirs
+            os.path.join(os.path.dirname(d), 'groundtruth.txt')
+            for d in self.seq_dirs
         ]
 
     def __getitem__(self, index):

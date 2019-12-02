@@ -32,7 +32,8 @@ class TrackingNet(object):
         self._check_integrity(root_dir, self.subset_dirs)
 
         self.anno_files = [
-            glob.glob(os.path.join(root_dir, c, 'anno/*.txt')) for c in self.subset_dirs
+            glob.glob(os.path.join(root_dir, c, 'anno/*.txt'))
+            for c in self.subset_dirs
         ]
         self.anno_files = sorted(sum(self.anno_files, []))
         self.seq_dirs = [

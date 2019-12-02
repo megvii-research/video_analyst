@@ -21,7 +21,8 @@ def build(task: str, cfg: CfgNode):
     names = cfg.names
     ret = list()
     for name in names:
-        assert name in modules, "loss {} not registered for {}!".format(name, task)
+        assert name in modules, "loss {} not registered for {}!".format(
+            name, task)
         module = modules[name]()
         hps = module.get_hps()
 

@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 from .bbox import cxywh2xyxy
 
+
 def get_axis_aligned_bbox(region):
     """
     Get axis-aligned bbox (needed by VOT benchmark)
@@ -10,8 +11,10 @@ def get_axis_aligned_bbox(region):
     :return:
     """
     try:
-        region = np.array([region[0][0][0], region[0][0][1], region[0][1][0], region[0][1][1],
-                           region[0][2][0], region[0][2][1], region[0][3][0], region[0][3][1]])
+        region = np.array([
+            region[0][0][0], region[0][0][1], region[0][1][0], region[0][1][1],
+            region[0][2][0], region[0][2][1], region[0][3][0], region[0][3][1]
+        ])
     except:
         region = np.array(region)
     cx = np.mean(region[0::2])
@@ -39,21 +42,37 @@ def get_subwindow_tracking(im, pos, model_sz, original_sz, avg_chans=(0, 0, 0)):
     :param avg_chans: average values per channel
     :return:
     """
-    crop_cxywh = np.concatenate([np.array(pos), np.array((original_sz, original_sz))], axis=-1)
+    crop_cxywh = np.concatenate(
+        [np.array(pos), np.array((original_sz, original_sz))], axis=-1)
     crop_xyxy = cxywh2xyxy(crop_cxywh)
     # warpAffine transform matrix
     M_13 = crop_xyxy[0]
     M_23 = crop_xyxy[1]
-    M_11 = (crop_xyxy[2]-M_13)/(model_sz-1)
-    M_22 = (crop_xyxy[3]-M_23)/(model_sz-1)
-    mat2x3 = np.array([M_11, 0   , M_13,
-                       0   , M_22, M_23, ]).reshape(2, 3)
-    im_patch = cv2.warpAffine(im, mat2x3, (model_sz, model_sz), flags=(cv2.INTER_LINEAR|cv2.WARP_INVERSE_MAP),
-                              borderMode=cv2.BORDER_CONSTANT, borderValue=tuple(map(int, avg_chans)))
+    M_11 = (crop_xyxy[2] - M_13) / (model_sz - 1)
+    M_22 = (crop_xyxy[3] - M_23) / (model_sz - 1)
+    mat2x3 = np.array([
+        M_11,
+        0,
+        M_13,
+        0,
+        M_22,
+        M_23,
+    ]).reshape(2, 3)
+    im_patch = cv2.warpAffine(im,
+                              mat2x3, (model_sz, model_sz),
+                              flags=(cv2.INTER_LINEAR | cv2.WARP_INVERSE_MAP),
+                              borderMode=cv2.BORDER_CONSTANT,
+                              borderValue=tuple(map(int, avg_chans)))
     return im_patch
 
 
-def get_crop(im, target_pos, target_sz, z_size, x_size=None, avg_chans=(0, 0, 0), context_amount=0.5,
+def get_crop(im,
+             target_pos,
+             target_sz,
+             z_size,
+             x_size=None,
+             avg_chans=(0, 0, 0),
+             context_amount=0.5,
              func_get_subwindow=get_subwindow_tracking):
     """
     Get cropped patch for tracking

@@ -72,34 +72,40 @@ class ExperimentGOT10k(object):
                 if r > 0 and tracker.is_deterministic:
                     break
                 elif r == 3 and self._check_deterministic(tracker.name, seq_name):
-                    print('  Detected a deterministic tracker, ' + 'skipping remaining trials.')
+                    print('  Detected a deterministic tracker, ' +
+                          'skipping remaining trials.')
                     break
                 print(' Repetition: %d' % (r + 1))
 
                 # skip if results exist
-                record_file = os.path.join(self.result_dir, tracker.name, seq_name,
+                record_file = os.path.join(self.result_dir, tracker.name,
+                                           seq_name,
                                            '%s_%03d.txt' % (seq_name, r + 1))
                 if os.path.exists(record_file):
                     print('  Found results, skipping', seq_name)
                     continue
 
                 # tracking loop
-                boxes, times = tracker.track(img_files, anno[0, :], visualize=visualize)
+                boxes, times = tracker.track(img_files,
+                                             anno[0, :],
+                                             visualize=visualize)
 
                 # record results
                 self._record(record_file, boxes, times)
 
             # save videos
             if save_video:
-                video_dir = os.path.join(os.path.dirname(os.path.dirname(self.result_dir)),
-                                         'videos', 'GOT-10k', tracker.name)
+                video_dir = os.path.join(
+                    os.path.dirname(os.path.dirname(self.result_dir)), 'videos',
+                    'GOT-10k', tracker.name)
                 video_file = os.path.join(video_dir, '%s.avi' % seq_name)
 
                 if not os.path.isdir(video_dir):
                     os.makedirs(video_dir)
                 image = Image.open(img_files[0])
                 img_W, img_H = image.size
-                out_video = cv2.VideoWriter(video_file, cv2.VideoWriter_fourcc(*'MJPG'), 10,
+                out_video = cv2.VideoWriter(video_file,
+                                            cv2.VideoWriter_fourcc(*'MJPG'), 10,
                                             (img_W, img_H))
                 for ith, (img_file, pred) in enumerate(zip(img_files, boxes)):
                     image = Image.open(img_file)
@@ -107,11 +113,13 @@ class ExperimentGOT10k(object):
                         image = image.convert('RGB')
                     img = np.array(image)[:, :, ::-1].copy()
                     pred = pred.astype(int)
-                    cv2.rectangle(img, (pred[0], pred[1]), (pred[0] + pred[2], pred[1] + pred[3]),
+                    cv2.rectangle(img, (pred[0], pred[1]),
+                                  (pred[0] + pred[2], pred[1] + pred[3]),
                                   self.color['pred'], 2)
                     if ith < anno.shape[0]:
                         gt = anno[ith].astype(int)
-                        cv2.rectangle(img, (gt[0], gt[1]), (gt[0] + gt[2], gt[1] + gt[3]),
+                        cv2.rectangle(img, (gt[0], gt[1]),
+                                      (gt[0] + gt[2], gt[1] + gt[3]),
                                       self.color['gt'], 2)
                     out_video.write(img)
                 out_video.release()
@@ -165,9 +173,11 @@ class ExperimentGOT10k(object):
                 for s, (_, anno, meta) in enumerate(self.dataset):
                     seq_name = self.dataset.seq_names[s]
                     record_files = glob.glob(
-                        os.path.join(self.result_dir, name, seq_name, '%s_[0-9]*.txt' % seq_name))
+                        os.path.join(self.result_dir, name, seq_name,
+                                     '%s_[0-9]*.txt' % seq_name))
                     if len(record_files) == 0:
-                        raise Exception('Results for sequence %s not found.' % seq_name)
+                        raise Exception('Results for sequence %s not found.' %
+                                        seq_name)
 
                     # read results of all repetitions
                     boxes = [np.loadtxt(f, delimiter=',') for f in record_files]
@@ -175,7 +185,9 @@ class ExperimentGOT10k(object):
 
                     # calculate and stack all ious
                     bound = ast.literal_eval(meta['resolution'])
-                    seq_ious = [rect_iou(b[1:], anno[1:], bound=bound) for b in boxes]
+                    seq_ious = [
+                        rect_iou(b[1:], anno[1:], bound=bound) for b in boxes
+                    ]
                     # only consider valid frames where targets are visible
                     seq_ious = [t[covers[seq_name] > 0] for t in seq_ious]
                     seq_ious = np.concatenate(seq_ious)
@@ -239,12 +251,14 @@ class ExperimentGOT10k(object):
         self.dataset.return_meta = False
 
         for s, seq_name in enumerate(seq_names):
-            print('[%d/%d] Showing results on %s...' % (s + 1, len(seq_names), seq_name))
+            print('[%d/%d] Showing results on %s...' %
+                  (s + 1, len(seq_names), seq_name))
 
             # load all tracking results
             records = {}
             for name in tracker_names:
-                record_file = os.path.join(self.result_dir, name, seq_name, '%s_001.txt' % seq_name)
+                record_file = os.path.join(self.result_dir, name, seq_name,
+                                           '%s_001.txt' % seq_name)
                 records[name] = np.loadtxt(record_file, delimiter=',')
 
             # loop over the sequence and display results
@@ -254,11 +268,13 @@ class ExperimentGOT10k(object):
                     continue
                 image = Image.open(img_file)
                 boxes = [anno[f]] + [records[name][f] for name in tracker_names]
-                show_frame(
-                    image,
-                    boxes,
-                    legends=['GroundTruth'] + tracker_names,
-                    colors=['w', 'r', 'g', 'b', 'c', 'm', 'y', 'orange', 'purple', 'brown', 'pink'])
+                show_frame(image,
+                           boxes,
+                           legends=['GroundTruth'] + tracker_names,
+                           colors=[
+                               'w', 'r', 'g', 'b', 'c', 'm', 'y', 'orange',
+                               'purple', 'brown', 'pink'
+                           ])
 
     def _record(self, record_file, boxes, times):
         # record bounding boxes
@@ -283,7 +299,8 @@ class ExperimentGOT10k(object):
 
     def _check_deterministic(self, tracker_name, seq_name):
         record_dir = os.path.join(self.result_dir, tracker_name, seq_name)
-        record_files = sorted(glob.glob(os.path.join(record_dir, '%s_[0-9]*.txt' % seq_name)))
+        record_files = sorted(
+            glob.glob(os.path.join(record_dir, '%s_[0-9]*.txt' % seq_name)))
 
         if len(record_files) < 3:
             return False
@@ -355,7 +372,10 @@ class ExperimentGOT10k(object):
             lines.append(line)
             legends.append('%s: [%.3f]' % (name, performance[name][key]['ao']))
         matplotlib.rcParams.update({'font.size': 7.4})
-        legend = ax.legend(lines, legends, loc='lower left', bbox_to_anchor=(0., 0.))
+        legend = ax.legend(lines,
+                           legends,
+                           loc='lower left',
+                           bbox_to_anchor=(0., 0.))
 
         matplotlib.rcParams.update({'font.size': 9})
         ax.set(xlabel='Overlap threshold',
@@ -370,4 +390,7 @@ class ExperimentGOT10k(object):
         # ax.set_aspect('equal', 'box')
 
         print('Saving success plots to', succ_file)
-        fig.savefig(succ_file, bbox_extra_artists=(legend, ), bbox_inches='tight', dpi=300)
+        fig.savefig(succ_file,
+                    bbox_extra_artists=(legend, ),
+                    bbox_inches='tight',
+                    dpi=300)

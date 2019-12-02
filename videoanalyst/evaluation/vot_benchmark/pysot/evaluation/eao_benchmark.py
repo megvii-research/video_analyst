@@ -59,9 +59,10 @@ class EAOBenchmark:
             result: returned dict from function eval
         """
         if len(self.tags) == 1:
-            tracker_name_len = max((max([len(x) for x in result.keys()])+2), 12)
-            header = ("|{:^"+str(tracker_name_len)+"}|{:^10}|").format('Tracker Name', 'EAO')
-            bar = '-'*len(header)
+            tracker_name_len = max((max([len(x) for x in result.keys()]) + 2), 12)
+            header = ("|{:^" + str(tracker_name_len) + "}|{:^10}|").format(
+                'Tracker Name', 'EAO')
+            bar = '-' * len(header)
             formatter = "|{:^20}|{:^10.3f}|"
             print(bar)
             print(header)
@@ -74,8 +75,9 @@ class EAOBenchmark:
             print(bar)
         else:
             header = "|{:^20}|".format('Tracker Name')
-            header += "{:^7}|{:^15}|{:^14}|{:^15}|{:^13}|{:^11}|{:^7}|".format(*self.tags)
-            bar = '-'*len(header)
+            header += "{:^7}|{:^15}|{:^14}|{:^15}|{:^13}|{:^11}|{:^7}|".format(
+                *self.tags)
+            bar = '-' * len(header)
             formatter = "{:^7.3f}|{:^15.3f}|{:^14.3f}|{:^15.3f}|{:^13.3f}|{:^11.3f}|{:^7.3f}|"
             print(bar)
             print(header)
@@ -85,7 +87,7 @@ class EAOBenchmark:
                                    reverse=True)[:topk]
             sorted_tacker = [x[0] for x in sorted_tacker]
             for tracker_name in sorted_tacker:
-                print("|{:^20}|".format(tracker_name)+formatter.format(
+                print("|{:^20}|".format(tracker_name) + formatter.format(
                     *[result[tracker_name][x] for x in self.tags]))
             print(bar)
 
@@ -96,9 +98,10 @@ class EAOBenchmark:
             result: returned dict from function eval
         """
         if len(self.tags) == 1:
-            tracker_name_len = max((max([len(x) for x in result.keys()])+2), 12)
-            header = ("|{:^"+str(tracker_name_len)+"}|{:^10}|").format('Tracker Name', 'EAO')
-            bar = '-'*len(header)
+            tracker_name_len = max((max([len(x) for x in result.keys()]) + 2), 12)
+            header = ("|{:^" + str(tracker_name_len) + "}|{:^10}|").format(
+                'Tracker Name', 'EAO')
+            bar = '-' * len(header)
             formatter = "|{:^20}|{:^10.3f}|"
             print(bar)
             print(header)
@@ -111,8 +114,9 @@ class EAOBenchmark:
             print(bar)
         else:
             header = "|{:^20}|".format('Tracker Name')
-            header += "{:^7}|{:^15}|{:^14}|{:^15}|{:^13}|{:^11}|{:^7}|".format(*self.tags)
-            bar = '-'*len(header)
+            header += "{:^7}|{:^15}|{:^14}|{:^15}|{:^13}|{:^11}|{:^7}|".format(
+                *self.tags)
+            bar = '-' * len(header)
             formatter = "{:^7.3f}|{:^15.3f}|{:^14.3f}|{:^15.3f}|{:^13.3f}|{:^11.3f}|{:^7.3f}|"
             print(bar)
             print(header)
@@ -122,7 +126,7 @@ class EAOBenchmark:
                                    reverse=True)[:topk]
             sorted_tacker = [x[0] for x in sorted_tacker]
             for tracker_name in sorted_tacker:
-                print("|{:^20}|".format(tracker_name)+formatter.format(
+                print("|{:^20}|".format(tracker_name) + formatter.format(
                     *[result[tracker_name][x] for x in self.tags]))
             print(bar)
 
@@ -133,7 +137,8 @@ class EAOBenchmark:
         """
         if len(self.tags) == 1:
             tracker_name_len = max((max([len(x) for x in result.keys()]) + 2), 12)
-            header = ("|{:^" + str(tracker_name_len) + "}|{:^10}|").format('Tracker Name', 'EAO')
+            header = ("|{:^" + str(tracker_name_len) + "}|{:^10}|").format(
+                'Tracker Name', 'EAO')
             bar = '-' * len(header)
             formatter = "|{:^20}|{:^10.3f}|"
             result_file.write(bar + '\n')
@@ -147,7 +152,8 @@ class EAOBenchmark:
             result_file.write(bar + '\n')
         else:
             header = "|{:^20}|".format('Tracker Name')
-            header += "{:^7}|{:^15}|{:^14}|{:^15}|{:^13}|{:^11}|{:^7}|".format(*self.tags)
+            header += "{:^7}|{:^15}|{:^14}|{:^15}|{:^13}|{:^11}|{:^7}|".format(
+                *self.tags)
             bar = '-' * len(header)
             formatter = "{:^7.3f}|{:^15.3f}|{:^14.3f}|{:^15.3f}|{:^13.3f}|{:^11.3f}|{:^7.3f}|"
             result_file.write(bar + '\n')
@@ -158,8 +164,9 @@ class EAOBenchmark:
                                    reverse=True)[:topk]
             sorted_tacker = [x[0] for x in sorted_tacker]
             for tracker_name in sorted_tacker:
-                result_file.write("|{:^20}|".format(tracker_name) + formatter.format(
-                    *[result[tracker_name][x] for x in self.tags]) + '\n')
+                result_file.write(
+                    "|{:^20}|".format(tracker_name) + formatter.format(
+                        *[result[tracker_name][x] for x in self.tags]) + '\n')
             result_file.write(bar + '\n')
 
     def _calculate_eao(self, tracker_name, tags):
@@ -170,20 +177,23 @@ class EAOBenchmark:
         for video in self.dataset:
             gt_traj = video.gt_traj
             if tracker_name not in video.pred_trajs:
-                tracker_trajs = video.load_tracker(self.dataset.tracker_path, tracker_name, False)
+                tracker_trajs = video.load_tracker(self.dataset.tracker_path,
+                                                   tracker_name, False)
             else:
                 tracker_trajs = video.pred_trajs[tracker_name]
             for tracker_traj in tracker_trajs:
                 gt_traj_length.append(len(gt_traj))
                 video_names.append(video.name)
-                overlaps = calculate_accuracy(tracker_traj, gt_traj, bound=(video.width-1, video.height-1))[1]
+                overlaps = calculate_accuracy(tracker_traj,
+                                              gt_traj,
+                                              bound=(video.width - 1,
+                                                     video.height - 1))[1]
                 failures = calculate_failures(tracker_traj)[1]
                 all_overlaps.append(overlaps)
                 all_failures.append(failures)
-        fragment_num = sum([len(x)+1 for x in all_failures])
+        fragment_num = sum([len(x) + 1 for x in all_failures])
         max_len = max([len(x) for x in all_overlaps])
         seq_weight = 1 / len(tracker_trajs)
-
 
         eao = {}
         for tag in tags:
@@ -191,27 +201,32 @@ class EAOBenchmark:
             fweights = np.ones((fragment_num)) * np.nan
             fragments = np.ones((fragment_num, max_len)) * np.nan
             seg_counter = 0
-            for name, traj_len, failures, overlaps in zip(video_names, gt_traj_length,
-                    all_failures, all_overlaps):
+            for name, traj_len, failures, overlaps in zip(
+                    video_names, gt_traj_length, all_failures, all_overlaps):
                 if len(failures) > 0:
-                    points = [x+self.skipping for x in failures if
-                            x+self.skipping <= len(overlaps)]
+                    points = [
+                        x + self.skipping for x in failures
+                        if x + self.skipping <= len(overlaps)
+                    ]
                     points.insert(0, 0)
                     for i in range(len(points)):
                         if i != len(points) - 1:
-                            fragment = np.array(overlaps[points[i]:points[i+1]+1])
+                            fragment = np.array(overlaps[points[i]:points[i + 1] +
+                                                         1])
                             fragments[seg_counter, :] = 0
                         else:
                             fragment = np.array(overlaps[points[i]:])
                         fragment[np.isnan(fragment)] = 0
                         fragments[seg_counter, :len(fragment)] = fragment
                         if i != len(points) - 1:
-                            tag_value = self.dataset[name].select_tag(tag, points[i], points[i+1]+1)
-                            w = sum(tag_value) / (points[i+1] - points[i]+1)
+                            tag_value = self.dataset[name].select_tag(
+                                tag, points[i], points[i + 1] + 1)
+                            w = sum(tag_value) / (points[i + 1] - points[i] + 1)
                             fweights[seg_counter] = seq_weight * w
                         else:
-                            tag_value = self.dataset[name].select_tag(tag, points[i], len(overlaps))
-                            w = sum(tag_value) / (traj_len - points[i]+1e-16)
+                            tag_value = self.dataset[name].select_tag(
+                                tag, points[i], len(overlaps))
+                            w = sum(tag_value) / (traj_len - points[i] + 1e-16)
                             fweights[seg_counter] = seq_weight * w
                         seg_counter += 1
                 else:
@@ -226,8 +241,9 @@ class EAOBenchmark:
             expected_overlaps = calculate_expected_overlap(fragments, fweights)
             # caculate eao
             weight = np.zeros((len(expected_overlaps)))
-            weight[self.low-1:self.high-1+1] = 1
+            weight[self.low - 1:self.high - 1 + 1] = 1
             is_valid = np.logical_not(np.isnan(expected_overlaps))
-            eao_ = np.sum(expected_overlaps[is_valid] * weight[is_valid]) / np.sum(weight[is_valid])
+            eao_ = np.sum(expected_overlaps[is_valid] *
+                          weight[is_valid]) / np.sum(weight[is_valid])
             eao[tag] = eao_
         return eao

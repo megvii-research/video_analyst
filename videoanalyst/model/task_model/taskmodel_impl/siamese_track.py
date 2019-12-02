@@ -33,7 +33,9 @@ class SiamTrack(ModuleBase):
         # loss
         self.loss = loss
         # initialze head
-        conv_list = [self.r_z_k.conv, self.c_z_k.conv, self.r_x.conv, self.c_x.conv]
+        conv_list = [
+            self.r_z_k.conv, self.c_z_k.conv, self.r_x.conv, self.c_x.conv
+        ]
         for ith in range(len(conv_list)):
             conv = conv_list[ith]
             torch.nn.init.normal_(conv.weight, std=0.01)
@@ -63,7 +65,8 @@ class SiamTrack(ModuleBase):
             r_out = xcorr_depthwise(r_x, r_z_k)
             c_out = xcorr_depthwise(c_x, c_z_k)
             # head
-            fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final = self.head(c_out, r_out)
+            fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final = self.head(
+                c_out, r_out)
             # fcos_cls_prob_final = torch.sigmoid(fcos_cls_score_final)
             # fcos_ctr_prob_final = torch.sigmoid(fcos_ctr_score_final)
             # output
@@ -91,7 +94,8 @@ class SiamTrack(ModuleBase):
             r_out = xcorr_depthwise(r_x, r_z_k)
             c_out = xcorr_depthwise(c_x, c_z_k)
             # head
-            fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final = self.head(c_out, r_out)
+            fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final = self.head(
+                c_out, r_out)
             # apply sigmoid
             fcos_cls_prob_final = torch.sigmoid(fcos_cls_score_final)
             fcos_ctr_prob_final = torch.sigmoid(fcos_ctr_score_final)
@@ -108,9 +112,11 @@ class SiamTrack(ModuleBase):
         if self._hyper_params["pretrain_model_path"] != "":
             model_path = self._hyper_params["pretrain_model_path"]
             try:
-                state_dict = torch.load(model_path, map_location=torch.device("gpu"))
+                state_dict = torch.load(model_path,
+                                        map_location=torch.device("gpu"))
             except:
-                state_dict = torch.load(model_path, map_location=torch.device("cpu"))
+                state_dict = torch.load(model_path,
+                                        map_location=torch.device("cpu"))
             if "model_state_dict" in state_dict:
                 state_dict = state_dict["model_state_dict"]
             self.load_state_dict(state_dict, strict=True)

@@ -24,7 +24,10 @@ class ImageNetVID(object):
         cache_dir (string, optional): Directory for caching the paths and annotations
             for speeding up loading. Default is ``cache/imagenet_vid``.
     """
-    def __init__(self, root_dir, subset=('train', 'val'), cache_dir='cache/imagenet_vid'):
+    def __init__(self,
+                 root_dir,
+                 subset=('train', 'val'),
+                 cache_dir='cache/imagenet_vid'):
         self.root_dir = root_dir
         self.cache_dir = cache_dir
         if isinstance(subset, str):
@@ -77,7 +80,9 @@ class ImageNetVID(object):
         anno_dirs = []
         if 'train' in self.subset:
             seq_dirs_ = sorted(
-                glob.glob(os.path.join(self.root_dir, 'Data/VID/train/ILSVRC*/ILSVRC*')))
+                glob.glob(
+                    os.path.join(self.root_dir,
+                                 'Data/VID/train/ILSVRC*/ILSVRC*')))
             anno_dirs_ = [
                 os.path.join(self.root_dir, 'Annotations/VID/train',
                              *s.split('/')[-2:]) for s in seq_dirs_
@@ -86,7 +91,8 @@ class ImageNetVID(object):
             anno_dirs += anno_dirs_
         if 'val' in self.subset:
             seq_dirs_ = sorted(
-                glob.glob(os.path.join(self.root_dir, 'Data/VID/val/ILSVRC2015_val_*')))
+                glob.glob(
+                    os.path.join(self.root_dir, 'Data/VID/val/ILSVRC2015_val_*')))
             anno_dirs_ = [
                 os.path.join(self.root_dir, 'Annotations/VID/val',
                              s.split('/')[-1]) for s in seq_dirs_
@@ -108,7 +114,9 @@ class ImageNetVID(object):
                 print('--Caching sequence %d/%d: %s' % \
                     (s + 1, len(seq_names), seq_name))
             anno_files = sorted(glob.glob(os.path.join(anno_dirs[s], '*.xml')))
-            objects = [ET.ElementTree(file=f).findall('object') for f in anno_files]
+            objects = [
+                ET.ElementTree(file=f).findall('object') for f in anno_files
+            ]
 
             # find all track ids
             track_ids, counts = np.unique(

@@ -15,13 +15,16 @@ from videoanalyst.model.task_head.taskhead_base import TRACK_HEADS
 def get_xy_ctr(score_size, score_offset, total_stride):
     batch, fm_height, fm_width = 1, score_size, score_size
 
-    y_list = torch.linspace(0., fm_height - 1., fm_height).reshape(1, fm_height, 1, 1).repeat(
-        1, 1, fm_width, 1)  # .broadcast([1, fm_height, fm_width, 1])
-    x_list = torch.linspace(0., fm_width - 1., fm_width).reshape(1, 1, fm_width, 1).repeat(
-        1, fm_height, 1, 1)  # .broadcast([1, fm_height, fm_width, 1])
+    y_list = torch.linspace(0., fm_height - 1., fm_height).reshape(
+        1, fm_height, 1, 1).repeat(1, 1, fm_width,
+                                   1)  # .broadcast([1, fm_height, fm_width, 1])
+    x_list = torch.linspace(0., fm_width - 1., fm_width).reshape(
+        1, 1, fm_width, 1).repeat(1, fm_height, 1,
+                                  1)  # .broadcast([1, fm_height, fm_width, 1])
     xy_list = score_offset + torch.cat([x_list, y_list], 3) * total_stride
     xy_ctr = xy_list.repeat(batch, 1, 1, 1).reshape(
-        batch, -1, 2)  # .broadcast([batch, fm_height, fm_width, 2]).reshape(batch, -1, 2)
+        batch, -1,
+        2)  # .broadcast([batch, fm_height, fm_width, 2]).reshape(batch, -1, 2)
     xy_ctr = xy_ctr.type(torch.Tensor)
     return xy_ctr
 
@@ -54,26 +57,62 @@ class DenseboxHead(ModuleBase):
 
     def __init__(self):
         super(DenseboxHead, self).__init__()
-        self.cls_p5_conv1 = conv_bn_relu(256, 256, stride=1, kszie=3, pad=0, has_bn=False)
-        self.cls_p5_conv2 = conv_bn_relu(256, 256, stride=1, kszie=3, pad=0, has_bn=False)
+        self.cls_p5_conv1 = conv_bn_relu(256,
+                                         256,
+                                         stride=1,
+                                         kszie=3,
+                                         pad=0,
+                                         has_bn=False)
+        self.cls_p5_conv2 = conv_bn_relu(256,
+                                         256,
+                                         stride=1,
+                                         kszie=3,
+                                         pad=0,
+                                         has_bn=False)
         self.cls_p5_conv3 = conv_bn_relu(256, 256, stride=1, kszie=3, pad=0)
 
-        self.cls_score_p5 = conv_bn_relu(256, 1, stride=1, kszie=1, pad=0, has_relu=False)
-        self.ctr_score_p5 = conv_bn_relu(256, 1, stride=1, kszie=1, pad=0, has_relu=False)
+        self.cls_score_p5 = conv_bn_relu(256,
+                                         1,
+                                         stride=1,
+                                         kszie=1,
+                                         pad=0,
+                                         has_relu=False)
+        self.ctr_score_p5 = conv_bn_relu(256,
+                                         1,
+                                         stride=1,
+                                         kszie=1,
+                                         pad=0,
+                                         has_relu=False)
 
-        self.bbox_p5_conv1 = conv_bn_relu(256, 256, stride=1, kszie=3, pad=0, has_bn=False)
-        self.bbox_p5_conv2 = conv_bn_relu(256, 256, stride=1, kszie=3, pad=0, has_bn=False)
+        self.bbox_p5_conv1 = conv_bn_relu(256,
+                                          256,
+                                          stride=1,
+                                          kszie=3,
+                                          pad=0,
+                                          has_bn=False)
+        self.bbox_p5_conv2 = conv_bn_relu(256,
+                                          256,
+                                          stride=1,
+                                          kszie=3,
+                                          pad=0,
+                                          has_bn=False)
         self.bbox_p5_conv3 = conv_bn_relu(256, 256, stride=1, kszie=3, pad=0)
 
-        self.bbox_offsets_p5 = conv_bn_relu(256, 4, stride=1, kszie=1, pad=0, has_relu=False)
+        self.bbox_offsets_p5 = conv_bn_relu(256,
+                                            4,
+                                            stride=1,
+                                            kszie=1,
+                                            pad=0,
+                                            has_relu=False)
 
         self.bi = torch.nn.Parameter(torch.tensor(0.).type(torch.Tensor))
         self.si = torch.nn.Parameter(torch.tensor(1.).type(torch.Tensor))
 
         # initialze head
         conv_list = [
-            self.cls_p5_conv1.conv, self.cls_p5_conv2.conv, self.cls_score_p5.conv,
-            self.ctr_score_p5.conv, self.bbox_p5_conv1.conv, self.bbox_p5_conv2.conv,
+            self.cls_p5_conv1.conv, self.cls_p5_conv2.conv,
+            self.cls_score_p5.conv, self.ctr_score_p5.conv,
+            self.bbox_p5_conv1.conv, self.bbox_p5_conv2.conv,
             self.bbox_offsets_p5.conv
         ]
         conv_classifier = [self.cls_score_p5.conv]
@@ -126,7 +165,7 @@ class DenseboxHead(ModuleBase):
         x_size = self._hyper_params["x_size"]
         score_size = self._hyper_params["score_size"]
         total_stride = self._hyper_params["total_stride"]
-        score_offset = (x_size-1 - (score_size-1)*total_stride) // 2
+        score_offset = (x_size - 1 - (score_size - 1) * total_stride) // 2
         self._hyper_params["score_offset"] = score_offset
 
         self.score_size = self._hyper_params["score_size"]

@@ -1,6 +1,7 @@
 import os
 from yacs.config import CfgNode as CN
 
+
 def ensure(dir_path: str):
     if os.path.exists(dir_path):
         return
@@ -33,6 +34,7 @@ class Registry(dict):
     def register(self, module):
         _register_generic(self, module.__name__, module)
         return module
+
 
 def load_cfg(path: str):
     """

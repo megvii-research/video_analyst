@@ -64,7 +64,8 @@ class ExperimentLaSOT(ExperimentOTB):
 
             for s, (_, anno) in enumerate(self.dataset):
                 seq_name = self.dataset.seq_names[s]
-                record_file = os.path.join(self.result_dir, name, '%s.txt' % seq_name)
+                record_file = os.path.join(self.result_dir, name,
+                                           '%s.txt' % seq_name)
                 boxes = np.loadtxt(record_file, delimiter=',')
                 boxes[0] = anno[0]
                 if not (len(boxes) == len(anno)):
@@ -75,12 +76,15 @@ class ExperimentLaSOT(ExperimentOTB):
                     anno = anno[:len_min]
                 assert len(boxes) == len(anno)
 
-                ious, center_errors, norm_center_errors = self._calc_metrics(boxes, anno)
-                succ_curve[s], prec_curve[s], norm_prec_curve[s] = self._calc_curves(
-                    ious, center_errors, norm_center_errors)
+                ious, center_errors, norm_center_errors = self._calc_metrics(
+                    boxes, anno)
+                succ_curve[s], prec_curve[s], norm_prec_curve[
+                    s] = self._calc_curves(ious, center_errors,
+                                           norm_center_errors)
 
                 # calculate average tracking speed
-                time_file = os.path.join(self.result_dir, name, 'times/%s_time.txt' % seq_name)
+                time_file = os.path.join(self.result_dir, name,
+                                         'times/%s_time.txt' % seq_name)
                 if os.path.isfile(time_file):
                     times = np.loadtxt(time_file)
                     times = times[times > 0]
@@ -149,7 +153,8 @@ class ExperimentLaSOT(ExperimentOTB):
         else:
             ious = rect_iou(boxes[valid, :], anno[valid, :])
             center_errors = center_error(boxes[valid, :], anno[valid, :])
-            norm_center_errors = normalized_center_error(boxes[valid, :], anno[valid, :])
+            norm_center_errors = normalized_center_error(boxes[valid, :],
+                                                         anno[valid, :])
             return ious, center_errors, norm_center_errors
 
     def _calc_curves(self, ious, center_errors, norm_center_errors):
@@ -188,7 +193,8 @@ class ExperimentLaSOT(ExperimentOTB):
 
         succ_file = os.path.join(report_dir, 'success_plots' + extension)
         prec_file = os.path.join(report_dir, 'precision_plots' + extension)
-        norm_prec_file = os.path.join(report_dir, 'norm_precision_plots' + extension)
+        norm_prec_file = os.path.join(report_dir,
+                                      'norm_precision_plots' + extension)
         key = 'overall'
 
         # markers
@@ -213,10 +219,14 @@ class ExperimentLaSOT(ExperimentOTB):
             line, = ax.plot(thr_iou, performance[name][key]['success_curve'],
                             markers[i % len(markers)])
             lines.append(line)
-            legends.append('%s: [%.3f]' % (name, performance[name][key]['success_score']))
+            legends.append('%s: [%.3f]' %
+                           (name, performance[name][key]['success_score']))
         matplotlib.rcParams.update({'font.size': 7.4})
         # legend = ax.legend(lines, legends, loc='center left', bbox_to_anchor=(1, 0.5))
-        legend = ax.legend(lines, legends, loc='lower left', bbox_to_anchor=(0., 0.))
+        legend = ax.legend(lines,
+                           legends,
+                           loc='lower left',
+                           bbox_to_anchor=(0., 0.))
 
         matplotlib.rcParams.update({'font.size': 9})
         ax.set(xlabel='Overlap threshold',
@@ -231,7 +241,10 @@ class ExperimentLaSOT(ExperimentOTB):
         # ax.set_aspect('equal', 'box')
 
         print('Saving success plots to', succ_file)
-        fig.savefig(succ_file, bbox_extra_artists=(legend, ), bbox_inches='tight', dpi=300)
+        fig.savefig(succ_file,
+                    bbox_extra_artists=(legend, ),
+                    bbox_inches='tight',
+                    dpi=300)
 
         # sort trackers by precision score
         tracker_names = list(performance.keys())
@@ -248,10 +261,14 @@ class ExperimentLaSOT(ExperimentOTB):
             line, = ax.plot(thr_ce, performance[name][key]['precision_curve'],
                             markers[i % len(markers)])
             lines.append(line)
-            legends.append('%s: [%.3f]' % (name, performance[name][key]['precision_score']))
+            legends.append('%s: [%.3f]' %
+                           (name, performance[name][key]['precision_score']))
         matplotlib.rcParams.update({'font.size': 7.4})
         # legend = ax.legend(lines, legends, loc='center left', bbox_to_anchor=(1, 0.5))
-        legend = ax.legend(lines, legends, loc='lower right', bbox_to_anchor=(1., 0.))
+        legend = ax.legend(lines,
+                           legends,
+                           loc='lower right',
+                           bbox_to_anchor=(1., 0.))
 
         matplotlib.rcParams.update({'font.size': 9})
         ax.set(xlabel='Location error threshold',
@@ -271,7 +288,9 @@ class ExperimentLaSOT(ExperimentOTB):
         # added by user
         # sort trackers by normalized precision score
         tracker_names = list(performance.keys())
-        prec = [t[key]['normalized_precision_score'] for t in performance.values()]
+        prec = [
+            t[key]['normalized_precision_score'] for t in performance.values()
+        ]
         inds = np.argsort(prec)[::-1]
         tracker_names = [tracker_names[i] for i in inds]
 
@@ -281,14 +300,19 @@ class ExperimentLaSOT(ExperimentOTB):
         lines = []
         legends = []
         for i, name in enumerate(tracker_names):
-            line, = ax.plot(thr_nce, performance[name][key]['normalized_precision_curve'],
+            line, = ax.plot(thr_nce,
+                            performance[name][key]['normalized_precision_curve'],
                             markers[i % len(markers)])
             lines.append(line)
-            legends.append('%s: [%.3f]' %
-                           (name, performance[name][key]['normalized_precision_score']))
+            legends.append(
+                '%s: [%.3f]' %
+                (name, performance[name][key]['normalized_precision_score']))
         matplotlib.rcParams.update({'font.size': 7.4})
         # legend = ax.legend(lines, legends, loc='center left', bbox_to_anchor=(1, 0.5))
-        legend = ax.legend(lines, legends, loc='lower right', bbox_to_anchor=(1., 0.))
+        legend = ax.legend(lines,
+                           legends,
+                           loc='lower right',
+                           bbox_to_anchor=(1., 0.))
 
         matplotlib.rcParams.update({'font.size': 9})
         ax.set(xlabel='Normalized location error threshold',

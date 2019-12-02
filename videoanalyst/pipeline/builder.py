@@ -8,11 +8,8 @@ from yacs.config import CfgNode
 from .tracker import builder as tracker_builder
 # from .segmenter import builder as segmenter_builder
 
-def build_pipeline(
-        task: str,
-        cfg: CfgNode,
-        **kwargs
-):
+
+def build_pipeline(task: str, cfg: CfgNode, **kwargs):
     if task == "track":
         track_pipeline = tracker_builder.build(cfg, **kwargs)
         return track_pipeline

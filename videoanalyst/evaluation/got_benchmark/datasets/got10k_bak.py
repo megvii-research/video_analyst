@@ -43,8 +43,12 @@ class GOT10k(object):
 
         with open(list_file, 'r') as f:
             self.seq_names = f.read().strip().split('\n')
-        self.seq_dirs = [os.path.join(root_dir, subset, s) for s in self.seq_names]
-        self.anno_files = [os.path.join(d, 'groundtruth.txt') for d in self.seq_dirs]
+        self.seq_dirs = [
+            os.path.join(root_dir, subset, s) for s in self.seq_names
+        ]
+        self.anno_files = [
+            os.path.join(d, 'groundtruth.txt') for d in self.seq_dirs
+        ]
 
     def __getitem__(self, index):
         r"""        

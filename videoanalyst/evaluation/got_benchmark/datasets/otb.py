@@ -26,30 +26,35 @@ class OTB(object):
             downloaded again.
     """
     __otb13_seqs = [
-        'Basketball', 'Bolt', 'Boy', 'Car4', 'CarDark', 'CarScale', 'Coke', 'Couple', 'Crossing',
-        'David', 'David2', 'David3', 'Deer', 'Dog1', 'Doll', 'Dudek', 'FaceOcc1', 'FaceOcc2',
-        'Fish', 'FleetFace', 'Football', 'Football1', 'Freeman1', 'Freeman3', 'Freeman4', 'Girl',
-        'Ironman', 'Jogging', 'Jumping', 'Lemming', 'Liquor', 'Matrix', 'Mhyang', 'MotorRolling',
-        'MountainBike', 'Shaking', 'Singer1', 'Singer2', 'Skating1', 'Skiing', 'Soccer', 'Subway',
-        'Suv', 'Sylvester', 'Tiger1', 'Tiger2', 'Trellis', 'Walking', 'Walking2', 'Woman'
+        'Basketball', 'Bolt', 'Boy', 'Car4', 'CarDark', 'CarScale', 'Coke',
+        'Couple', 'Crossing', 'David', 'David2', 'David3', 'Deer', 'Dog1', 'Doll',
+        'Dudek', 'FaceOcc1', 'FaceOcc2', 'Fish', 'FleetFace', 'Football',
+        'Football1', 'Freeman1', 'Freeman3', 'Freeman4', 'Girl', 'Ironman',
+        'Jogging', 'Jumping', 'Lemming', 'Liquor', 'Matrix', 'Mhyang',
+        'MotorRolling', 'MountainBike', 'Shaking', 'Singer1', 'Singer2',
+        'Skating1', 'Skiing', 'Soccer', 'Subway', 'Suv', 'Sylvester', 'Tiger1',
+        'Tiger2', 'Trellis', 'Walking', 'Walking2', 'Woman'
     ]
 
     __tb50_seqs = [
-        'Basketball', 'Biker', 'Bird1', 'BlurBody', 'BlurCar2', 'BlurFace', 'BlurOwl', 'Bolt',
-        'Box', 'Car1', 'Car4', 'CarDark', 'CarScale', 'ClifBar', 'Couple', 'Crowds', 'David',
-        'Deer', 'Diving', 'DragonBaby', 'Dudek', 'Football', 'Freeman4', 'Girl', 'Human3', 'Human4',
-        'Human6', 'Human9', 'Ironman', 'Jump', 'Jumping', 'Liquor', 'Matrix', 'MotorRolling',
-        'Panda', 'RedTeam', 'Shaking', 'Singer2', 'Skating1', 'Skating2', 'Skiing', 'Soccer',
-        'Surfer', 'Sylvester', 'Tiger2', 'Trellis', 'Walking', 'Walking2', 'Woman'
+        'Basketball', 'Biker', 'Bird1', 'BlurBody', 'BlurCar2', 'BlurFace',
+        'BlurOwl', 'Bolt', 'Box', 'Car1', 'Car4', 'CarDark', 'CarScale',
+        'ClifBar', 'Couple', 'Crowds', 'David', 'Deer', 'Diving', 'DragonBaby',
+        'Dudek', 'Football', 'Freeman4', 'Girl', 'Human3', 'Human4', 'Human6',
+        'Human9', 'Ironman', 'Jump', 'Jumping', 'Liquor', 'Matrix',
+        'MotorRolling', 'Panda', 'RedTeam', 'Shaking', 'Singer2', 'Skating1',
+        'Skating2', 'Skiing', 'Soccer', 'Surfer', 'Sylvester', 'Tiger2',
+        'Trellis', 'Walking', 'Walking2', 'Woman'
     ]
 
     __tb100_seqs = [
-        'Bird2', 'BlurCar1', 'BlurCar3', 'BlurCar4', 'Board', 'Bolt2', 'Boy', 'Car2', 'Car24',
-        'Coke', 'Coupon', 'Crossing', 'Dancer', 'Dancer2', 'David2', 'David3', 'Dog', 'Dog1',
-        'Doll', 'FaceOcc1', 'FaceOcc2', 'Fish', 'FleetFace', 'Football1', 'Freeman1', 'Freeman3',
-        'Girl2', 'Gym', 'Human2', 'Human5', 'Human7', 'Human8', 'Jogging', 'KiteSurf', 'Lemming',
-        'Man', 'Mhyang', 'MountainBike', 'Rubik', 'Singer1', 'Skater', 'Skater2', 'Subway', 'Suv',
-        'Tiger1', 'Toy', 'Trans', 'Twinnings', 'Vase'
+        'Bird2', 'BlurCar1', 'BlurCar3', 'BlurCar4', 'Board', 'Bolt2', 'Boy',
+        'Car2', 'Car24', 'Coke', 'Coupon', 'Crossing', 'Dancer', 'Dancer2',
+        'David2', 'David3', 'Dog', 'Dog1', 'Doll', 'FaceOcc1', 'FaceOcc2', 'Fish',
+        'FleetFace', 'Football1', 'Freeman1', 'Freeman3', 'Girl2', 'Gym',
+        'Human2', 'Human5', 'Human7', 'Human8', 'Jogging', 'KiteSurf', 'Lemming',
+        'Man', 'Mhyang', 'MountainBike', 'Rubik', 'Singer1', 'Skater', 'Skater2',
+        'Subway', 'Suv', 'Tiger1', 'Toy', 'Trans', 'Twinnings', 'Vase'
     ] + __tb50_seqs
 
     __otb15_seqs = __tb100_seqs
@@ -77,7 +82,8 @@ class OTB(object):
         self.anno_files = sorted(
             list(
                 chain.from_iterable(
-                    glob.glob(os.path.join(root_dir, s, 'groundtruth*.txt')) for s in valid_seqs)))
+                    glob.glob(os.path.join(root_dir, s, 'groundtruth*.txt'))
+                    for s in valid_seqs)))
         # remove empty annotation files
         # (e.g., groundtruth_rect.1.txt of Human4)
         self.anno_files = self._filter_files(self.anno_files)
@@ -101,7 +107,8 @@ class OTB(object):
                 raise Exception('Sequence {} not found.'.format(index))
             index = self.seq_names.index(index)
 
-        img_files = sorted(glob.glob(os.path.join(self.seq_dirs[index], 'img/*.jpg')))
+        img_files = sorted(
+            glob.glob(os.path.join(self.seq_dirs[index], 'img/*.jpg')))
 
         # special sequences
         # (visit http://cvlab.hanyang.ac.kr/tracker_benchmark/index.html for detail)

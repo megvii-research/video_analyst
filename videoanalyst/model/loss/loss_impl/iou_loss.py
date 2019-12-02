@@ -36,15 +36,19 @@ class IOULoss(ModuleBase):
         self.weight = self._hyper_params["weight"]
 
     def forward(self, pred, gt, cls_gt):
-        mask = ((1 - (cls_gt == self.background)) * (1 - (cls_gt == self.ignore_label))).detach()
+        mask = ((1 - (cls_gt == self.background)) *
+                (1 - (cls_gt == self.ignore_label))).detach()
         mask = mask.type(torch.Tensor).squeeze(2).to(pred.device)
 
-        aog = torch.abs(gt[:, :, 2] - gt[:, :, 0] + 1) * torch.abs(gt[:, :, 3] - gt[:, :, 1] + 1)
-        aop = torch.abs(pred[:, :, 2] - pred[:, :, 0] + 1) * torch.abs(pred[:, :, 3] -
-                                                                       pred[:, :, 1] + 1)
+        aog = torch.abs(gt[:, :, 2] - gt[:, :, 0] +
+                        1) * torch.abs(gt[:, :, 3] - gt[:, :, 1] + 1)
+        aop = torch.abs(pred[:, :, 2] - pred[:, :, 0] +
+                        1) * torch.abs(pred[:, :, 3] - pred[:, :, 1] + 1)
 
-        iw = torch.min(pred[:, :, 2], gt[:, :, 2]) - torch.max(pred[:, :, 0], gt[:, :, 0]) + 1
-        ih = torch.min(pred[:, :, 3], gt[:, :, 3]) - torch.max(pred[:, :, 1], gt[:, :, 1]) + 1
+        iw = torch.min(pred[:, :, 2], gt[:, :, 2]) - torch.max(
+            pred[:, :, 0], gt[:, :, 0]) + 1
+        ih = torch.min(pred[:, :, 3], gt[:, :, 3]) - torch.max(
+            pred[:, :, 1], gt[:, :, 1]) + 1
         inter = torch.max(iw, self.t_zero) * torch.max(ih, self.t_zero)
 
         union = aog + aop - inter
@@ -52,7 +56,8 @@ class IOULoss(ModuleBase):
         loss = -self.safelog(iou)
 
         # from IPython import embed;embed()
-        loss = (loss * mask).sum() / torch.max(mask.sum(), self.t_one) * self.weight
+        loss = (loss * mask).sum() / torch.max(mask.sum(),
+                                               self.t_one) * self.weight
         iou = iou.detach()
         iou = (iou * mask).sum() / torch.max(mask.sum(), self.t_one)
 

@@ -46,7 +46,8 @@ def center2corner(center):
 
 
 def cxy_wh_2_rect(pos, sz):
-    return np.array([pos[0]-sz[0]/2, pos[1]-sz[1]/2, sz[0], sz[1]])  # 0-index
+    return np.array([pos[0] - sz[0] / 2, pos[1] - sz[1] / 2, sz[0],
+                     sz[1]])  # 0-index
 
 
 def get_axis_aligned_bbox(region):
@@ -58,7 +59,9 @@ def get_axis_aligned_bbox(region):
         x2 = max(region[0::2])
         y1 = min(region[1::2])
         y2 = max(region[1::2])
-        A1 = np.linalg.norm(region[0:2] - region[2:4]) * np.linalg.norm(region[2:4] - region[4:6])
+        A1 = np.linalg.norm(region[0:2] -
+                            region[2:4]) * np.linalg.norm(region[2:4] -
+                                                          region[4:6])
         A2 = (x2 - x1) * (y2 - y1)
         s = np.sqrt(A1 / A2)
         w = s * (x2 - x1) + 1
@@ -68,9 +71,7 @@ def get_axis_aligned_bbox(region):
         y = region[1]
         w = region[2]
         h = region[3]
-        cx = x+(w-1)/2
-        cy = y+(h-1)/2
+        cx = x + (w - 1) / 2
+        cy = y + (h - 1) / 2
 
     return cx, cy, w, h
-
-

@@ -34,7 +34,8 @@ class VOT(object):
             specified by the file.
     """
     __valid_versions = [
-        2013, 2014, 2015, 2016, 2017, 2018, 'LT2018', 2019, 'LT2019', 'RGBD2019', 'RGBT2019'
+        2013, 2014, 2015, 2016, 2017, 2018, 'LT2018', 2019, 'LT2019', 'RGBD2019',
+        'RGBT2019'
     ]
 
     def __init__(self,
@@ -62,7 +63,9 @@ class VOT(object):
         with open(list_file, 'r') as f:
             self.seq_names = f.read().strip().split('\n')
         self.seq_dirs = [os.path.join(root_dir, s) for s in self.seq_names]
-        self.anno_files = [os.path.join(s, 'groundtruth.txt') for s in self.seq_dirs]
+        self.anno_files = [
+            os.path.join(s, 'groundtruth.txt') for s in self.seq_dirs
+        ]
 
     def __getitem__(self, index):
         r"""        
@@ -80,7 +83,8 @@ class VOT(object):
                 raise Exception('Sequence {} not found.'.format(index))
             index = self.seq_names.index(index)
 
-        img_files = sorted(glob.glob(os.path.join(self.seq_dirs[index], 'color', '*.jpg')))
+        img_files = sorted(
+            glob.glob(os.path.join(self.seq_dirs[index], 'color', '*.jpg')))
         anno = np.loadtxt(self.anno_files[index], delimiter=',')
         assert len(img_files) == len(anno), (len(img_files), len(anno))
         assert anno.shape[1] in [4, 8]
@@ -162,7 +166,8 @@ class VOT(object):
                 seq_url = seq['channels'][cn]['url']
                 if not seq_url.startswith(('http', 'https')):
                     seq_url = url + seq_url[seq_url.find('sequence'):]
-                seq_file = os.path.join(root_dir, '{}_{}.zip'.format(seq_name, cn))
+                seq_file = os.path.join(root_dir,
+                                        '{}_{}.zip'.format(seq_name, cn))
                 if not os.path.isfile(seq_file) or \
                     md5(seq_file) != seq['channels'][cn]['checksum']:
                     print('\nDownloading %s...' % seq_name)

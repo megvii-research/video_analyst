@@ -4,13 +4,18 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
-from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS, VOS_TASKMODELS)
+from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
+                                                          VOS_TASKMODELS)
 from videoanalyst.model.module_base import ModuleBase
 
 logger = logging.getLogger(__file__)
 
 
-def build(task: str, cfg: CfgNode, backbone: ModuleBase, head: ModuleBase, loss: ModuleBase = None):
+def build(task: str,
+          cfg: CfgNode,
+          backbone: ModuleBase,
+          head: ModuleBase,
+          loss: ModuleBase = None):
     if task == "track":
         task_modules = TRACK_TASKMODELS
     elif task == "vos":
@@ -36,7 +41,8 @@ def build(task: str, cfg: CfgNode, backbone: ModuleBase, head: ModuleBase, loss:
 
 def get_config() -> Dict[str, CfgNode]:
     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
-    for cfg_name, task_module in zip(["track", "vos"], [TRACK_TASKMODELS, VOS_TASKMODELS]):
+    for cfg_name, task_module in zip(["track", "vos"],
+                                     [TRACK_TASKMODELS, VOS_TASKMODELS]):
         cfg = cfg_dict[cfg_name]
         cfg["name"] = "unknown"
         for name in task_module:

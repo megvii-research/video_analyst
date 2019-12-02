@@ -26,10 +26,12 @@ class NfS(object):
         self.root_dir = root_dir
         self._check_integrity(root_dir)
 
-        self.anno_files = sorted(glob.glob(os.path.join(root_dir, '*/%d/*.txt' % fps)))
+        self.anno_files = sorted(
+            glob.glob(os.path.join(root_dir, '*/%d/*.txt' % fps)))
         self.seq_names = [os.path.basename(f)[:-4] for f in self.anno_files]
         self.seq_dirs = [
-            os.path.join(os.path.dirname(f), n) for f, n in zip(self.anno_files, self.seq_names)
+            os.path.join(os.path.dirname(f), n)
+            for f, n in zip(self.anno_files, self.seq_names)
         ]
 
     def __getitem__(self, index):

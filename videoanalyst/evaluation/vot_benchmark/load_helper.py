@@ -13,8 +13,10 @@ def check_keys(model, pretrained_state_dict):
         logger.info('[Warning] missing keys: {}'.format(missing_keys))
         logger.info('missing keys:{}'.format(len(missing_keys)))
     if len(unused_pretrained_keys) > 0:
-        logger.info('[Warning] unused_pretrained_keys: {}'.format(unused_pretrained_keys))
-        logger.info('unused checkpoint keys:{}'.format(len(unused_pretrained_keys)))
+        logger.info(
+            '[Warning] unused_pretrained_keys: {}'.format(unused_pretrained_keys))
+        logger.info('unused checkpoint keys:{}'.format(
+            len(unused_pretrained_keys)))
     logger.info('used keys:{}'.format(len(used_pretrained_keys)))
     assert len(used_pretrained_keys) > 0, 'load NONE from pretrained checkpoint'
     return True

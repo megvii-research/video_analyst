@@ -34,7 +34,8 @@ class UAV123(object):
             self.seq_metas = json.load(f)
 
         # sequence and annotation paths
-        self.anno_files = sorted(glob.glob(os.path.join(root_dir, 'anno/%s/*.txt' % version)))
+        self.anno_files = sorted(
+            glob.glob(os.path.join(root_dir, 'anno/%s/*.txt' % version)))
         self.seq_names = [os.path.basename(f)[:-4] for f in self.anno_files]
         self.seq_dirs = [os.path.join(
             root_dir, 'data_seq/UAV123/%s' % \
@@ -56,8 +57,10 @@ class UAV123(object):
             index = self.seq_names.index(index)
 
         # valid frame range
-        start_frame = self.seq_metas[self.version][self.seq_names[index]]['start_frame']
-        end_frame = self.seq_metas[self.version][self.seq_names[index]]['end_frame']
+        start_frame = self.seq_metas[self.version][
+            self.seq_names[index]]['start_frame']
+        end_frame = self.seq_metas[self.version][
+            self.seq_names[index]]['end_frame']
         img_files = [
             os.path.join(self.seq_dirs[index], '%06d.jpg' % f)
             for f in range(start_frame, end_frame + 1)

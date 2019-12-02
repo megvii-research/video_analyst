@@ -16,7 +16,11 @@ class ExperimentNfS(ExperimentOTB):
         report_dir (string, optional): Directory for storing performance
             evaluation results. Default is ``./reports``.
     """
-    def __init__(self, root_dir, fps=240, result_dir='results', report_dir='reports'):
+    def __init__(self,
+                 root_dir,
+                 fps=240,
+                 result_dir='results',
+                 report_dir='reports'):
         self.dataset = NfS(root_dir, fps)
         self.result_dir = os.path.join(result_dir, 'NfS/%d' % fps)
         self.report_dir = os.path.join(report_dir, 'NfS/%d' % fps)

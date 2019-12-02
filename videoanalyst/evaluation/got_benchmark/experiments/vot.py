@@ -50,7 +50,9 @@ class ExperimentVOT(object):
         super(ExperimentVOT, self).__init__()
         if isinstance(experiments, str):
             experiments = (experiments, )
-        assert all([e in ['supervised', 'unsupervised', 'realtime'] for e in experiments])
+        assert all([
+            e in ['supervised', 'unsupervised', 'realtime'] for e in experiments
+        ])
         self.dataset = VOT(root_dir,
                            version,
                            anno_type='default',
@@ -69,11 +71,13 @@ class ExperimentVOT(object):
         self.sensitive = 100
         self.nbins_eao = 1500
         self.tags = [
-            'camera_motion', 'illum_change', 'occlusion', 'size_change', 'motion_change', 'empty'
+            'camera_motion', 'illum_change', 'occlusion', 'size_change',
+            'motion_change', 'empty'
         ]
 
     def run(self, tracker, visualize=False):
-        print('Running tracker %s on %s...' % (tracker.name, type(self.dataset).__name__))
+        print('Running tracker %s on %s...' %
+              (tracker.name, type(self.dataset).__name__))
 
         # run all specified experiments
         if 'supervised' in self.experiments:
@@ -101,13 +105,16 @@ class ExperimentVOT(object):
                 # check if the tracker is deterministic
                 if r > 0 and tracker.is_deterministic:
                     break
-                elif r == 3 and self._check_deterministic('baseline', tracker.name, seq_name):
-                    print('  Detected a deterministic tracker, ' + 'skipping remaining trials.')
+                elif r == 3 and self._check_deterministic(
+                        'baseline', tracker.name, seq_name):
+                    print('  Detected a deterministic tracker, ' +
+                          'skipping remaining trials.')
                     break
                 print(' Repetition: %d' % (r + 1))
 
                 # skip if results exist
-                record_file = os.path.join(self.result_dir, tracker.name, 'baseline', seq_name,
+                record_file = os.path.join(self.result_dir, tracker.name,
+                                           'baseline', seq_name,
                                            '%s_%03d.txt' % (seq_name, r + 1))
                 if os.path.exists(record_file):
                     print('  Found results, skipping', seq_name)
@@ -176,7 +183,8 @@ class ExperimentVOT(object):
             print('--Sequence %d/%d: %s' % (s + 1, len(self.dataset), seq_name))
 
             # skip if results exist
-            record_file = os.path.join(self.result_dir, tracker.name, 'unsupervised', seq_name,
+            record_file = os.path.join(self.result_dir, tracker.name,
+                                       'unsupervised', seq_name,
                                        '%s_001.txt' % seq_name)
             if os.path.exists(record_file):
                 print('  Found results, skipping', seq_name)
@@ -188,7 +196,9 @@ class ExperimentVOT(object):
                 anno_rects = self.dataset._corner2rect(anno_rects)
 
             # tracking loop
-            boxes, times = tracker.track(img_files, anno_rects[0], visualize=visualize)
+            boxes, times = tracker.track(img_files,
+                                         anno_rects[0],
+                                         visualize=visualize)
             assert len(boxes) == len(anno)
 
             # re-formatting
@@ -207,8 +217,8 @@ class ExperimentVOT(object):
             print('--Sequence %d/%d: %s' % (s + 1, len(self.dataset), seq_name))
 
             # skip if results exist
-            record_file = os.path.join(self.result_dir, tracker.name, 'realtime', seq_name,
-                                       '%s_001.txt' % seq_name)
+            record_file = os.path.join(self.result_dir, tracker.name, 'realtime',
+                                       seq_name, '%s_001.txt' % seq_name)
             if os.path.exists(record_file):
                 print('  Found results, skipping', seq_name)
                 continue
@@ -256,7 +266,8 @@ class ExperimentVOT(object):
                         grace -= 1
                     else:
                         total_time += max(1000.0 / 25, last_time * 1000.0)
-                    current = offset + int(np.round(np.floor(total_time * 25) / 1000.0))
+                    current = offset + int(
+                        np.round(np.floor(total_time * 25) / 1000.0))
 
                     # delayed/tracked bounding box
                     if f < current:
@@ -341,10 +352,18 @@ class ExperimentVOT(object):
 
                 # initialize frames scores
                 frame_num = len(img_files)
-                ious[seq_name] = np.full((self.repetitions, frame_num), np.nan, dtype=float)
-                ious_full[seq_name] = np.full((self.repetitions, frame_num), np.nan, dtype=float)
-                failures[seq_name] = np.full((self.repetitions, frame_num), np.nan, dtype=float)
-                times[seq_name] = np.full((self.repetitions, frame_num), np.nan, dtype=float)
+                ious[seq_name] = np.full((self.repetitions, frame_num),
+                                         np.nan,
+                                         dtype=float)
+                ious_full[seq_name] = np.full((self.repetitions, frame_num),
+                                              np.nan,
+                                              dtype=float)
+                failures[seq_name] = np.full((self.repetitions, frame_num),
+                                             np.nan,
+                                             dtype=float)
+                times[seq_name] = np.full((self.repetitions, frame_num),
+                                          np.nan,
+                                          dtype=float)
 
                 # read results of all repetitions
                 record_files = sorted(
@@ -356,7 +375,9 @@ class ExperimentVOT(object):
 
                 # calculate frame ious with burnin
                 bound = Image.open(img_files[0]).size
-                seq_ious = [self._calc_iou(b, anno, bound, burnin=True) for b in boxes]
+                seq_ious = [
+                    self._calc_iou(b, anno, bound, burnin=True) for b in boxes
+                ]
                 ious[seq_name][:len(seq_ious), :] = seq_ious
 
                 # calculate frame ious without burnin
@@ -364,13 +385,14 @@ class ExperimentVOT(object):
                 ious_full[seq_name][:len(seq_ious_full), :] = seq_ious_full
 
                 # calculate frame failures
-                seq_failures = [[len(b) == 1 and b[0] == 2 for b in boxes_per_rep]
-                                for boxes_per_rep in boxes]
+                seq_failures = [[
+                    len(b) == 1 and b[0] == 2 for b in boxes_per_rep
+                ] for boxes_per_rep in boxes]
                 failures[seq_name][:len(seq_failures), :] = seq_failures
 
                 # collect frame runtimes
-                time_file = os.path.join(self.result_dir, name, 'baseline', seq_name,
-                                         '%s_time.txt' % seq_name)
+                time_file = os.path.join(self.result_dir, name, 'baseline',
+                                         seq_name, '%s_time.txt' % seq_name)
                 if os.path.exists(time_file):
                     seq_times = np.loadtxt(time_file, delimiter=',').T
                     times[seq_name][:len(seq_times), :] = seq_times
@@ -383,8 +405,9 @@ class ExperimentVOT(object):
                         masks[seq_name][i, :] = meta[tag]
                 # frames with no tags
                 if 'empty' in self.tags:
-                    tag_frames = np.array([v for k, v in meta.items() if not 'practical' in k],
-                                          dtype=bool)
+                    tag_frames = np.array(
+                        [v for k, v in meta.items() if not 'practical' in k],
+                        dtype=bool)
                     ind = self.tags.index('empty')
                     masks[seq_name][ind, :] = \
                         ~np.logical_or.reduce(tag_frames, axis=0)
@@ -424,12 +447,13 @@ class ExperimentVOT(object):
             else:
                 speed = -1
 
-            performance.update(
-                {name: {
+            performance.update({
+                name: {
                     'accuracy': accuracy,
                     'robustness': robustness,
                     'speed_fps': speed
-                }})
+                }
+            })
 
         # save performance
         with open(report_file, 'w') as f:
@@ -438,7 +462,11 @@ class ExperimentVOT(object):
 
         return performance
 
-    def show(self, tracker_names, seq_names=None, play_speed=1, experiment='supervised'):
+    def show(self,
+             tracker_names,
+             seq_names=None,
+             play_speed=1,
+             experiment='supervised'):
         if seq_names is None:
             seq_names = self.dataset.seq_names
         elif isinstance(seq_names, str):
@@ -471,13 +499,14 @@ class ExperimentVOT(object):
             return record
 
         for s, seq_name in enumerate(seq_names):
-            print('[%d/%d] Showing results on %s...' % (s + 1, len(seq_names), seq_name))
+            print('[%d/%d] Showing results on %s...' %
+                  (s + 1, len(seq_names), seq_name))
 
             # load all tracking results
             records = {}
             for name in tracker_names:
-                record_file = os.path.join(self.result_dir, name, experiment, seq_name,
-                                           '%s_001.txt' % seq_name)
+                record_file = os.path.join(self.result_dir, name, experiment,
+                                           seq_name, '%s_001.txt' % seq_name)
                 records[name] = read_record(record_file)
 
             # loop over the sequence and display results
@@ -489,11 +518,13 @@ class ExperimentVOT(object):
                     continue
                 image = Image.open(img_file)
                 boxes = [anno[f]] + [records[name][f] for name in tracker_names]
-                show_frame(
-                    image,
-                    boxes,
-                    legends=['GroundTruth'] + tracker_names,
-                    colors=['w', 'r', 'g', 'b', 'c', 'm', 'y', 'orange', 'purple', 'brown', 'pink'])
+                show_frame(image,
+                           boxes,
+                           legends=['GroundTruth'] + tracker_names,
+                           colors=[
+                               'w', 'r', 'g', 'b', 'c', 'm', 'y', 'orange',
+                               'purple', 'brown', 'pink'
+                           ])
 
     def _record(self, record_file, boxes, times):
         # convert boxes to string
@@ -527,7 +558,8 @@ class ExperimentVOT(object):
 
     def _check_deterministic(self, exp, tracker_name, seq_name):
         record_dir = os.path.join(self.result_dir, tracker_name, exp, seq_name)
-        record_files = sorted(glob.glob(os.path.join(record_dir, '%s_[0-9]*.txt' % seq_name)))
+        record_files = sorted(
+            glob.glob(os.path.join(record_dir, '%s_[0-9]*.txt' % seq_name)))
 
         if len(record_files) < 3:
             return False
@@ -548,6 +580,7 @@ class ExperimentVOT(object):
                 boxes[ind:ind + self.burnin] = [[0]] * self.burnin
         # calculate polygon ious
         ious = np.array([
-            poly_iou(np.array(a), b, bound) if len(a) > 1 else np.NaN for a, b in zip(boxes, anno)
+            poly_iou(np.array(a), b, bound) if len(a) > 1 else np.NaN
+            for a, b in zip(boxes, anno)
         ])
         return ious

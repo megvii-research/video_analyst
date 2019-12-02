@@ -32,7 +32,8 @@ def normalized_center_error(rects1, rects2):
     centers1 = rects1[..., :2] + (rects1[..., 2:] - 1) / 2
     centers2 = rects2[..., :2] + (rects2[..., 2:] - 1) / 2
     errors = np.sqrt(
-        np.sum(np.power((centers1 - centers2) / np.maximum(np.array([[1., 1.]]), rects2[:, 2:]), 2),
+        np.sum(np.power((centers1 - centers2) /
+                        np.maximum(np.array([[1., 1.]]), rects2[:, 2:]), 2),
                axis=-1))
 
     return errors
@@ -88,8 +89,10 @@ def _intersection(rects1, rects2):
     assert rects1.shape == rects2.shape
     x1 = np.maximum(rects1[..., 0], rects2[..., 0])
     y1 = np.maximum(rects1[..., 1], rects2[..., 1])
-    x2 = np.minimum(rects1[..., 0] + rects1[..., 2], rects2[..., 0] + rects2[..., 2])
-    y2 = np.minimum(rects1[..., 1] + rects1[..., 3], rects2[..., 1] + rects2[..., 3])
+    x2 = np.minimum(rects1[..., 0] + rects1[..., 2],
+                    rects2[..., 0] + rects2[..., 2])
+    y2 = np.minimum(rects1[..., 1] + rects1[..., 3],
+                    rects2[..., 1] + rects2[..., 3])
 
     w = np.maximum(x2 - x1, 0)
     h = np.maximum(y2 - y1, 0)

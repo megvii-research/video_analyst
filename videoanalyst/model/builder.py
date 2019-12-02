@@ -12,14 +12,15 @@ from .task_head import builder as head_builder
 
 
 def build_model(
-        task: str,
-        cfg: CfgNode,
+    task: str,
+    cfg: CfgNode,
 ):
     if task == "track":
         backbone = backbone_builder.build(task, cfg.backbone)
         losses = loss_builder.build(task, cfg.losses)
         head = head_builder.build(task, cfg.task_head)
-        task_model = task_builder.build(task, cfg.task_model, backbone, head, losses)
+        task_model = task_builder.build(task, cfg.task_model, backbone, head,
+                                        losses)
         return task_model
     else:
         print("model for task {} is not complted".format(task))

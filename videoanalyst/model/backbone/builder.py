@@ -19,7 +19,8 @@ def build(task: str, cfg: CfgNode):
         exit(-1)
 
     name = cfg.name
-    assert name in modules, "backbone {} not registered for {}!".format(name, task)
+    assert name in modules, "backbone {} not registered for {}!".format(
+        name, task)
     module = modules[name]()
     hps = module.get_hps()
 
@@ -34,7 +35,8 @@ def build(task: str, cfg: CfgNode):
 
 def get_config() -> Dict[str, CfgNode]:
     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
-    for cfg_name, module in zip(["track", "vos"], [TRACK_BACKBONES, VOS_BACKBONES]):
+    for cfg_name, module in zip(["track", "vos"],
+                                [TRACK_BACKBONES, VOS_BACKBONES]):
         cfg = cfg_dict[cfg_name]
         cfg["name"] = "unknown"
         for name in module:
