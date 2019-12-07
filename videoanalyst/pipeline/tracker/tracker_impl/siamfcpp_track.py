@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*
 
 import numpy as np
-import torch
+
 # import lib_repo
 import torch
 import torch.nn as nn
 
 from videoanalyst.pipeline.pipeline_base import PipelineBase
 from videoanalyst.pipeline.tracker.tracker_base import TRACK_PIPELINES
-from videoanalyst.pipeline.utils import get_crop, get_subwindow_tracking, \
-    xywh2cxywh, cxywh2xywh, xyxy2cxywh, \
-    tensor_to_numpy, imarray_to_tensor
+from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
+                                         get_subwindow_tracking,
+                                         imarray_to_tensor, tensor_to_numpy,
+                                         xywh2cxywh, xyxy2cxywh)
 
 eps = 1e-7
 

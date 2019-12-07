@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*
 
-from functools import partial
-from typing import Dict, List
+from typing import Dict
 
 from yacs.config import CfgNode
 

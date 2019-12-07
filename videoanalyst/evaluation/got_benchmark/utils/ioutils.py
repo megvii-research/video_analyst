@@ -4,7 +4,6 @@ import wget
 import os
 import shutil
 import zipfile
-import sys
 
 
 def download(url, filename):

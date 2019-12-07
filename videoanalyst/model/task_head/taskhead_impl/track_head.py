@@ -4,7 +4,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 torch.set_printoptions(precision=8)
-from collections import OrderedDict
 import numpy as np
 
 from videoanalyst.model.common_opr.common_block import conv_bn_relu
@@ -123,7 +122,7 @@ class DenseboxHead(ModuleBase):
         for ith in range(len(conv_list)):
             # fetch conv from list
             conv = conv_list[ith]
-            # torch.nn.init.normal_(conv.weight, std=0.01) # from megdl impl.
+            # torch.nn.init.normal_(conv.weight, std=0.01)
             torch.nn.init.normal_(conv.weight, std=0.001)  #0.0001)
             # nn.init.kaiming_uniform_(conv.weight, a=np.sqrt(5))  # from PyTorch default implementation
             # nn.init.kaiming_uniform_(conv.weight, a=0)  # from PyTorch default implementation

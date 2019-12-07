@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*
-from abc import ABCMeta, abstractmethod
 from copy import deepcopy
+
 from torch import nn
 
 # from videoanalyst.utils import Registry
@@ -38,7 +38,6 @@ class PipelineBase:
         r"""
         an interface for update params
         """
-        pass
 
     def init(self, im, state):
         r"""

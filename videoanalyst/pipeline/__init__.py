@@ -1,1 +1,1 @@
-from .tracker import *from .segmenter import *
+from .segmenter import *from .tracker import *

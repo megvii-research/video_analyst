@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*
 
-from functools import partial
-from typing import Dict, List
+# from functools import partial
+# from typing import Dict, List
 
 from yacs.config import CfgNode
 
 from .tracker import builder as tracker_builder
+
 # from .segmenter import builder as segmenter_builder
 
 

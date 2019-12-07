@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 from copy import deepcopy
 from torch import nn
 

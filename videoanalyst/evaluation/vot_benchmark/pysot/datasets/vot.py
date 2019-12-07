@@ -7,7 +7,6 @@
 # Revised for SiamMask by foolwood
 # --------------------------------------------------------
 import os
-import json
 import numpy as np
 
 from glob import glob

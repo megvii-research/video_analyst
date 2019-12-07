@@ -12,9 +12,10 @@
   * Run ```python3 bbox_transform.py``` to launch unit test
 """
 
-import numpy as np
-import unittest
 import itertools
+import unittest
+
+import numpy as np
 
 
 # ============================== Formal conversion ============================== #

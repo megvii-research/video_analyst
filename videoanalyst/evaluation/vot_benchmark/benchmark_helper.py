@@ -5,8 +5,6 @@
 # --------------------------------------------------------
 from os.path import join, realpath, dirname, exists, isdir
 from os import listdir
-import logging
-import glob
 import numpy as np
 import json
 import cv2

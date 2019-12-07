@@ -33,7 +33,6 @@ localib
 model.dump.py
 mAP.txt
 .nfs*
-meg_kernels
 *.refine
 
 # TensorRT output
