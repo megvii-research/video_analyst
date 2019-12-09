@@ -74,8 +74,9 @@ class SiamFCppTracker(PipelineBase):
         hps = self._hyper_params
         hps['score_size'] = (hps['x_size'] - hps['z_size']
                              ) // hps['total_stride'] + 1 - hps['head_shrink']
-        hps['score_offset'] = (hps['x_size'] - 1 -
-                               (hps['score_size'] - 1) * hps['total_stride']) // 2
+        hps['score_offset'] = (
+            hps['x_size'] - 1 -
+            (hps['score_size'] - 1) * hps['total_stride']) // 2
         self._hyper_params = hps
 
     def feature(self, im, target_pos, target_sz, avg_chans=None):
@@ -180,8 +181,8 @@ class SiamFCppTracker(PipelineBase):
             score, box_wh, target_sz, scale_x)
         # box post-processing
         new_target_pos, new_target_sz = self._postprocess_box(
-            best_pscore_id, score, box_wh, target_pos, target_sz, scale_x, x_size,
-            penalty)
+            best_pscore_id, score, box_wh, target_pos, target_sz, scale_x,
+            x_size, penalty)
 
         if self.debug:
             box = self._cvt_box_crop2frame(box_wh, target_pos, x_size, scale_x)
@@ -223,7 +224,8 @@ class SiamFCppTracker(PipelineBase):
         self._state['state'] = target_pos, target_sz
 
         # return rect format
-        track_rect = cxywh2xywh(np.concatenate([target_pos, target_sz], axis=-1))
+        track_rect = cxywh2xywh(np.concatenate([target_pos, target_sz],
+                                               axis=-1))
         return track_rect
 
     # ======== tracking processes ======== #
@@ -256,8 +258,9 @@ class SiamFCppTracker(PipelineBase):
         # size penalty
         penalty_k = self._hyper_params['penalty_k']
         target_sz_in_crop = target_sz * scale_x
-        s_c = change(sz(box_wh[:, 2], box_wh[:, 3]) /
-                     (sz_wh(target_sz_in_crop)))  # scale penalty
+        s_c = change(
+            sz(box_wh[:, 2], box_wh[:, 3]) /
+            (sz_wh(target_sz_in_crop)))  # scale penalty
         r_c = change((target_sz_in_crop[0] / target_sz_in_crop[1]) /
                      (box_wh[:, 2] / box_wh[:, 3]))  # ratio penalty
         penalty = np.exp(-(r_c * s_c - 1) * penalty_k)

@@ -1,8 +1,8 @@
 from yacs.config import CfgNode as CN
 
-from videoanalyst.utils.misc import load_cfg
 from videoanalyst.model import builder as model_builder
 from videoanalyst.pipeline import builder as pipeline_builder
+from videoanalyst.utils.misc import load_cfg
 
 
 def build_tracker_wt_model(cfg, device):
@@ -14,9 +14,11 @@ def build_tracker_wt_model(cfg, device):
     """
     if not isinstance(cfg, CN):
         cfg = load_cfg(cfg)
-    model = model_builder.build_model('track', cfg.track.model)
+    if hasattr(cfg, 'track'):
+        cfg = cfg.track
+    model = model_builder.build_model('track', cfg.model)
     tracker = pipeline_builder.build_pipeline('track',
-                                              cfg.track.pipeline,
+                                              cfg.pipeline,
                                               model=model,
                                               device=device)
 

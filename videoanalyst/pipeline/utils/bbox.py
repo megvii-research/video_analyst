@@ -45,10 +45,10 @@ def calc_IoU(bbox1, bbox2):
     :param bbox2: format=(x1, y1, x2, y2)
     :return:
     """
-    area1 = np.abs(bbox1[..., 2] - bbox1[..., 0] + 1) * np.abs(bbox1[..., 3] -
-                                                               bbox1[..., 1] + 1)
-    area2 = np.abs(bbox2[..., 2] - bbox2[..., 0] + 1) * np.abs(bbox2[..., 3] -
-                                                               bbox2[..., 1] + 1)
+    area1 = np.abs(bbox1[..., 2] - bbox1[..., 0] +
+                   1) * np.abs(bbox1[..., 3] - bbox1[..., 1] + 1)
+    area2 = np.abs(bbox2[..., 2] - bbox2[..., 0] +
+                   1) * np.abs(bbox2[..., 3] - bbox2[..., 1] + 1)
 
     iw = np.minimum(bbox1[..., 2], bbox2[..., 2]) - np.maximum(
         bbox1[..., 0], bbox2[..., 0]) + 1

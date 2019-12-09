@@ -4,9 +4,9 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
+from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
                                                           VOS_TASKMODELS)
-from videoanalyst.model.module_base import ModuleBase
 
 logger = logging.getLogger(__file__)
 

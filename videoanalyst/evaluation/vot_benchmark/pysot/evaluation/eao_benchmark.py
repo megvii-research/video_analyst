@@ -8,7 +8,8 @@
 # --------------------------------------------------------
 import numpy as np
 
-from ..utils import calculate_failures, calculate_accuracy, calculate_expected_overlap
+from ..utils import (calculate_accuracy, calculate_expected_overlap,
+                     calculate_failures)
 
 
 class EAOBenchmark:
@@ -59,7 +60,8 @@ class EAOBenchmark:
             result: returned dict from function eval
         """
         if len(self.tags) == 1:
-            tracker_name_len = max((max([len(x) for x in result.keys()]) + 2), 12)
+            tracker_name_len = max((max([len(x) for x in result.keys()]) + 2),
+                                   12)
             header = ("|{:^" + str(tracker_name_len) + "}|{:^10}|").format(
                 'Tracker Name', 'EAO')
             bar = '-' * len(header)
@@ -98,7 +100,8 @@ class EAOBenchmark:
             result: returned dict from function eval
         """
         if len(self.tags) == 1:
-            tracker_name_len = max((max([len(x) for x in result.keys()]) + 2), 12)
+            tracker_name_len = max((max([len(x) for x in result.keys()]) + 2),
+                                   12)
             header = ("|{:^" + str(tracker_name_len) + "}|{:^10}|").format(
                 'Tracker Name', 'EAO')
             bar = '-' * len(header)
@@ -136,7 +139,8 @@ class EAOBenchmark:
             result: returned dict from function eval
         """
         if len(self.tags) == 1:
-            tracker_name_len = max((max([len(x) for x in result.keys()]) + 2), 12)
+            tracker_name_len = max((max([len(x) for x in result.keys()]) + 2),
+                                   12)
             header = ("|{:^" + str(tracker_name_len) + "}|{:^10}|").format(
                 'Tracker Name', 'EAO')
             bar = '-' * len(header)
@@ -211,8 +215,8 @@ class EAOBenchmark:
                     points.insert(0, 0)
                     for i in range(len(points)):
                         if i != len(points) - 1:
-                            fragment = np.array(overlaps[points[i]:points[i + 1] +
-                                                         1])
+                            fragment = np.array(
+                                overlaps[points[i]:points[i + 1] + 1])
                             fragments[seg_counter, :] = 0
                         else:
                             fragment = np.array(overlaps[points[i]:])

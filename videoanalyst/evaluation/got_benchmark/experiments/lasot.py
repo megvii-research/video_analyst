@@ -1,14 +1,15 @@
 from __future__ import absolute_import
 
-import os
 import json
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
+import os
 
-from .otb import ExperimentOTB
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+
 from ..datasets import LaSOT
-from ..utils.metrics import rect_iou, center_error, normalized_center_error
+from ..utils.metrics import center_error, normalized_center_error, rect_iou
+from .otb import ExperimentOTB
 
 
 class ExperimentLaSOT(ExperimentOTB):
@@ -96,10 +97,12 @@ class ExperimentLaSOT(ExperimentOTB):
                     seq_name: {
                         'success_curve': succ_curve[s].tolist(),
                         'precision_curve': prec_curve[s].tolist(),
-                        'normalized_precision_curve': norm_prec_curve[s].tolist(),
+                        'normalized_precision_curve':
+                        norm_prec_curve[s].tolist(),
                         'success_score': np.mean(succ_curve[s]),
                         'precision_score': prec_curve[s][20],
-                        'normalized_precision_score': np.mean(norm_prec_curve[s]),
+                        'normalized_precision_score':
+                        np.mean(norm_prec_curve[s]),
                         'success_rate': succ_curve[s][self.nbins_iou // 2],
                         'speed_fps': speeds[s] if speeds[s] > 0 else -1
                     }
@@ -153,14 +156,15 @@ class ExperimentLaSOT(ExperimentOTB):
         else:
             ious = rect_iou(boxes[valid, :], anno[valid, :])
             center_errors = center_error(boxes[valid, :], anno[valid, :])
-            norm_center_errors = normalized_center_error(boxes[valid, :],
-                                                         anno[valid, :])
+            norm_center_errors = normalized_center_error(
+                boxes[valid, :], anno[valid, :])
             return ious, center_errors, norm_center_errors
 
     def _calc_curves(self, ious, center_errors, norm_center_errors):
         ious = np.asarray(ious, float)[:, np.newaxis]
         center_errors = np.asarray(center_errors, float)[:, np.newaxis]
-        norm_center_errors = np.asarray(norm_center_errors, float)[:, np.newaxis]
+        norm_center_errors = np.asarray(norm_center_errors, float)[:,
+                                                                   np.newaxis]
 
         thr_iou = np.linspace(0, 1, self.nbins_iou)[np.newaxis, :]
         thr_ce = np.arange(0, self.nbins_ce)[np.newaxis, :]
@@ -202,7 +206,10 @@ class ExperimentLaSOT(ExperimentOTB):
         markers = [c + m for m in markers for c in [''] * 10]
 
         # filter performance by tracker_names
-        performance = {k: v for k, v in performance.items() if k in tracker_names}
+        performance = {
+            k: v
+            for k, v in performance.items() if k in tracker_names
+        }
 
         # sort trackers by success score
         tracker_names = list(performance.keys())
@@ -300,9 +307,9 @@ class ExperimentLaSOT(ExperimentOTB):
         lines = []
         legends = []
         for i, name in enumerate(tracker_names):
-            line, = ax.plot(thr_nce,
-                            performance[name][key]['normalized_precision_curve'],
-                            markers[i % len(markers)])
+            line, = ax.plot(
+                thr_nce, performance[name][key]['normalized_precision_curve'],
+                markers[i % len(markers)])
             lines.append(line)
             legends.append(
                 '%s: [%.3f]' %

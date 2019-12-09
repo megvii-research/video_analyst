@@ -4,8 +4,8 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
-from videoanalyst.model.task_head.taskhead_base import (TRACK_HEADS, VOS_HEADS)
 from videoanalyst.model.module_base import ModuleBase
+from videoanalyst.model.task_head.taskhead_base import TRACK_HEADS, VOS_HEADS
 
 logger = logging.getLogger(__file__)
 

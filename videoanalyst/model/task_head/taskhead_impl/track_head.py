@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*
 
+import numpy as np
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-torch.set_printoptions(precision=8)
-import numpy as np
 
 from videoanalyst.model.common_opr.common_block import conv_bn_relu
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.model.task_head.taskhead_base import TRACK_HEADS
+
+torch.set_printoptions(precision=8)
+
 
 
 def get_xy_ctr(score_size, score_offset, total_stride):

@@ -1,6 +1,4 @@
 track:
-  exp_name: "alexnet_siamfc++"
-  exp_save: "/data/video_analyst/siamfc++/"
   model:
     backbone:
       name: "AlexNet"
@@ -21,8 +19,10 @@ track:
       window_influence: 0.21
       penalty_k: 0.04
 test:
+  exp_name: "alexnet_siamfc++"
+  exp_save: "/data/video_analyst/siamfc++/"
   dataset: "VOT2018"
-
+  num_gpu: 1
 
 
 

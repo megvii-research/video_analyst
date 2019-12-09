@@ -1,14 +1,15 @@
 from __future__ import absolute_import, division, print_function
 
-import os
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
 import json
+import os
+
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 from PIL import Image
 
 from ..datasets import OTB
-from ..utils.metrics import rect_iou, center_error
+from ..utils.metrics import center_error, rect_iou
 from ..utils.viz import show_frame
 
 

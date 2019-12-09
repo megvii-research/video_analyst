@@ -1,20 +1,21 @@
 from __future__ import absolute_import, division, print_function
 
-import os
-import numpy as np
-import glob
 import ast
+import glob
 import json
+import os
 import time
-import matplotlib.pyplot as plt
-import matplotlib
-from PIL import Image
+
 import cv2
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+from PIL import Image
 
 from ..datasets import GOT10k
+from ..utils.ioutils import compress
 from ..utils.metrics import rect_iou
 from ..utils.viz import show_frame
-from ..utils.ioutils import compress
 
 
 class ExperimentGOT10k(object):
@@ -71,7 +72,8 @@ class ExperimentGOT10k(object):
                 # check if the tracker is deterministic
                 if r > 0 and tracker.is_deterministic:
                     break
-                elif r == 3 and self._check_deterministic(tracker.name, seq_name):
+                elif r == 3 and self._check_deterministic(
+                        tracker.name, seq_name):
                     print('  Detected a deterministic tracker, ' +
                           'skipping remaining trials.')
                     break
@@ -349,7 +351,10 @@ class ExperimentGOT10k(object):
         key = 'overall'
 
         # filter performance by tracker_names
-        performance = {k: v for k, v in performance.items() if k in tracker_names}
+        performance = {
+            k: v
+            for k, v in performance.items() if k in tracker_names
+        }
 
         # sort trackers by AO
         tracker_names = list(performance.keys())

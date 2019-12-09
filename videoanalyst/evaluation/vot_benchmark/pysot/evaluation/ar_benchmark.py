@@ -7,12 +7,13 @@
 # Revised for SiamMask by foolwood
 # --------------------------------------------------------
 
-import warnings
 import itertools
-import numpy as np
+import warnings
 
-from colorama import Style, Fore
-from ..utils import calculate_failures, calculate_accuracy
+import numpy as np
+from colorama import Fore, Style
+
+from ..utils import calculate_accuracy, calculate_failures
 
 
 class AccuracyRobustnessBenchmark:
@@ -40,7 +41,8 @@ class AccuracyRobustnessBenchmark:
 
         result = {}
         for tracker_name in eval_trackers:
-            accuracy, failures = self._calculate_accuracy_robustness(tracker_name)
+            accuracy, failures = self._calculate_accuracy_robustness(
+                tracker_name)
             result[tracker_name] = {'overlaps': accuracy, 'failures': failures}
         return result
 
@@ -185,8 +187,8 @@ class AccuracyRobustnessBenchmark:
             else:
                 result_file.write(
                     formatter.format(tracker_name, accuracy, robustness,
-                                     lost_number, eao_result[tracker_name]['all'])
-                    + '\n')
+                                     lost_number, eao_result[tracker_name]
+                                     ['all']) + '\n')
         result_file.write(bar + '\n')
 
         if show_video_level and len(result) < 10:
@@ -250,6 +252,7 @@ class AccuracyRobustnessBenchmark:
                 num_failures_group.append(num_failures)
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", category=RuntimeWarning)
-                overlaps[video.name] = np.nanmean(overlaps_group, axis=0).tolist()
+                overlaps[video.name] = np.nanmean(overlaps_group,
+                                                  axis=0).tolist()
                 failures[video.name] = num_failures_group
         return overlaps, failures

@@ -3,13 +3,16 @@
 # Licensed under The MIT License
 # Written by Qiang Wang (wangqiang2015 at ia.ac.cn)
 # --------------------------------------------------------
-from os.path import join, realpath, dirname, exists, isdir
-from os import listdir
-import numpy as np
 import json
-import cv2
 from collections import OrderedDict
-import json
+from os import listdir
+from os.path import dirname, exists, isdir, join, realpath
+from pathlib import Path
+
+import cv2
+import numpy as np
+from neupeak.utils import imgproc
+
 try:
     from neupeak.utils.brainpp.oss import OSSPath
     has_OSS = True
@@ -17,9 +20,7 @@ except:
     from pathlib import Path
     has_OSS = False
 
-from pathlib import Path
 
-from neupeak.utils import imgproc
 
 _oss_prefix = "s3://"
 

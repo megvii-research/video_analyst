@@ -1,7 +1,8 @@
 from __future__ import absolute_import, print_function
 
-import os
 import glob
+import os
+
 import numpy as np
 import six
 
@@ -26,7 +27,8 @@ class TColor128(object):
             self._download(root_dir)
         self._check_integrity(root_dir)
 
-        self.anno_files = sorted(glob.glob(os.path.join(root_dir, '*/*_gt.txt')))
+        self.anno_files = sorted(glob.glob(os.path.join(root_dir,
+                                                        '*/*_gt.txt')))
         self.seq_dirs = [os.path.dirname(f) for f in self.anno_files]
         self.seq_names = [os.path.basename(d) for d in self.seq_dirs]
         # valid frame range for each sequence

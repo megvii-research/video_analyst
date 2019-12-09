@@ -7,14 +7,14 @@
 # Revised for SiamMask by foolwood
 # --------------------------------------------------------
 import os
-import numpy as np
-
 from glob import glob
+
+import numpy as np
 from tqdm import tqdm
 
+from ...benchmark_helper import get_json
 from .dataset import Dataset
 from .video import Video
-from ...benchmark_helper import get_json
 
 
 class VOTVideo(Video):

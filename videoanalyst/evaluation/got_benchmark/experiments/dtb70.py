@@ -2,8 +2,8 @@ from __future__ import absolute_import
 
 import os
 
-from .otb import ExperimentOTB
 from ..datasets import DTB70
+from .otb import ExperimentOTB
 
 
 class ExperimentDTB70(ExperimentOTB):

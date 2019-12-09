@@ -1,7 +1,8 @@
-from __future__ import absolute_import, print_function, division
+from __future__ import absolute_import, division, print_function
 
-import os
 import glob
+import os
+
 import numpy as np
 import six
 
@@ -48,7 +49,8 @@ class NfS(object):
                 raise Exception('Sequence {} not found.'.format(index))
             index = self.seq_names.index(index)
 
-        img_files = sorted(glob.glob(os.path.join(self.seq_dirs[index], '*.jpg')))
+        img_files = sorted(
+            glob.glob(os.path.join(self.seq_dirs[index], '*.jpg')))
         anno = np.loadtxt(self.anno_files[index], dtype=str)
         anno = anno[:, 1:5].astype(float)  # [left, top, right, bottom]
         anno[:, 2:] -= anno[:, :2]  # [left, top, width, height]

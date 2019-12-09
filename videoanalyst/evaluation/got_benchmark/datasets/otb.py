@@ -1,11 +1,12 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
-import os
 import glob
-import numpy as np
 import io
-import six
+import os
 from itertools import chain
+
+import numpy as np
+import six
 
 from ..utils.ioutils import download, extract
 
@@ -27,13 +28,13 @@ class OTB(object):
     """
     __otb13_seqs = [
         'Basketball', 'Bolt', 'Boy', 'Car4', 'CarDark', 'CarScale', 'Coke',
-        'Couple', 'Crossing', 'David', 'David2', 'David3', 'Deer', 'Dog1', 'Doll',
-        'Dudek', 'FaceOcc1', 'FaceOcc2', 'Fish', 'FleetFace', 'Football',
-        'Football1', 'Freeman1', 'Freeman3', 'Freeman4', 'Girl', 'Ironman',
-        'Jogging', 'Jumping', 'Lemming', 'Liquor', 'Matrix', 'Mhyang',
-        'MotorRolling', 'MountainBike', 'Shaking', 'Singer1', 'Singer2',
-        'Skating1', 'Skiing', 'Soccer', 'Subway', 'Suv', 'Sylvester', 'Tiger1',
-        'Tiger2', 'Trellis', 'Walking', 'Walking2', 'Woman'
+        'Couple', 'Crossing', 'David', 'David2', 'David3', 'Deer', 'Dog1',
+        'Doll', 'Dudek', 'FaceOcc1', 'FaceOcc2', 'Fish', 'FleetFace',
+        'Football', 'Football1', 'Freeman1', 'Freeman3', 'Freeman4', 'Girl',
+        'Ironman', 'Jogging', 'Jumping', 'Lemming', 'Liquor', 'Matrix',
+        'Mhyang', 'MotorRolling', 'MountainBike', 'Shaking', 'Singer1',
+        'Singer2', 'Skating1', 'Skiing', 'Soccer', 'Subway', 'Suv', 'Sylvester',
+        'Tiger1', 'Tiger2', 'Trellis', 'Walking', 'Walking2', 'Woman'
     ]
 
     __tb50_seqs = [
@@ -50,11 +51,12 @@ class OTB(object):
     __tb100_seqs = [
         'Bird2', 'BlurCar1', 'BlurCar3', 'BlurCar4', 'Board', 'Bolt2', 'Boy',
         'Car2', 'Car24', 'Coke', 'Coupon', 'Crossing', 'Dancer', 'Dancer2',
-        'David2', 'David3', 'Dog', 'Dog1', 'Doll', 'FaceOcc1', 'FaceOcc2', 'Fish',
-        'FleetFace', 'Football1', 'Freeman1', 'Freeman3', 'Girl2', 'Gym',
-        'Human2', 'Human5', 'Human7', 'Human8', 'Jogging', 'KiteSurf', 'Lemming',
-        'Man', 'Mhyang', 'MountainBike', 'Rubik', 'Singer1', 'Skater', 'Skater2',
-        'Subway', 'Suv', 'Tiger1', 'Toy', 'Trans', 'Twinnings', 'Vase'
+        'David2', 'David3', 'Dog', 'Dog1', 'Doll', 'FaceOcc1', 'FaceOcc2',
+        'Fish', 'FleetFace', 'Football1', 'Freeman1', 'Freeman3', 'Girl2',
+        'Gym', 'Human2', 'Human5', 'Human7', 'Human8', 'Jogging', 'KiteSurf',
+        'Lemming', 'Man', 'Mhyang', 'MountainBike', 'Rubik', 'Singer1',
+        'Skater', 'Skater2', 'Subway', 'Suv', 'Tiger1', 'Toy', 'Trans',
+        'Twinnings', 'Vase'
     ] + __tb50_seqs
 
     __otb15_seqs = __tb100_seqs

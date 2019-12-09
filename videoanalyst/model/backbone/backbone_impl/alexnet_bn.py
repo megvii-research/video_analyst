@@ -2,7 +2,8 @@
 import torch
 import torch.nn as nn
 
-from videoanalyst.model.backbone.backbone_base import TRACK_BACKBONES, VOS_BACKBONES
+from videoanalyst.model.backbone.backbone_base import (TRACK_BACKBONES,
+                                                       VOS_BACKBONES)
 from videoanalyst.model.common_opr.common_block import conv_bn_relu
 from videoanalyst.model.module_base import ModuleBase
 
@@ -35,9 +36,11 @@ class AlexNet(ModuleBase):
     def update_params(self):
         if self._hyper_params["pretrain_model_path"] != "":
             try:
-                state_dict = torch.load(self._hyper_params["pretrain_model_path"],
-                                        map_location=torch.device("gpu"))
+                state_dict = torch.load(
+                    self._hyper_params["pretrain_model_path"],
+                    map_location=torch.device("gpu"))
             except:
-                state_dict = torch.load(self._hyper_params["pretrain_model_path"],
-                                        map_location=torch.device("cpu"))
+                state_dict = torch.load(
+                    self._hyper_params["pretrain_model_path"],
+                    map_location=torch.device("cpu"))
             self.load_state_dict(state_dict, strict=False)

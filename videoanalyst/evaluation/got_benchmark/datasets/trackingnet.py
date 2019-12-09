@@ -1,9 +1,10 @@
 from __future__ import absolute_import, print_function
 
-import os
 import glob
-import six
+import os
+
 import numpy as np
+import six
 
 
 class TrackingNet(object):
@@ -57,7 +58,8 @@ class TrackingNet(object):
             index = self.seq_names.index(index)
 
         img_files = glob.glob(os.path.join(self.seq_dirs[index], '*.jpg'))
-        img_files = sorted(img_files, key=lambda x: int(os.path.basename(x)[:-4]))
+        img_files = sorted(img_files,
+                           key=lambda x: int(os.path.basename(x)[:-4]))
         anno = np.loadtxt(self.anno_files[index], delimiter=',')
         # from IPython import embed;embed()
         if self.subset == 'train':

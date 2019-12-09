@@ -5,8 +5,8 @@
 # --------------------------------------------------------
 from __future__ import division
 
-import os
 import logging
+import os
 import sys
 
 if hasattr(sys, 'frozen'):  # support for py2exe

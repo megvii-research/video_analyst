@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*
-import torch
-from torch import nn
-import torch.nn.functional as F
 import numpy as np
 
-eps = np.finfo(np.float32).tiny
+import torch
+import torch.nn.functional as F
+from torch import nn
 
 from videoanalyst.model.loss.loss_base import TRACK_LOSSES
 from videoanalyst.model.module_base import ModuleBase
+
+eps = np.finfo(np.float32).tiny
+
 
 
 class SafeLog(nn.Module):

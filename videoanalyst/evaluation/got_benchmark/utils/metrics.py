@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division
 
 import numpy as np
-from shapely.geometry import box, Polygon
+from shapely.geometry import Polygon, box
 
 
 def center_error(rects1, rects2):

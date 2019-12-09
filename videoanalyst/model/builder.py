@@ -4,10 +4,10 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
-from .task_model import builder as task_builder
 from .backbone import builder as backbone_builder
 from .loss import builder as loss_builder
 from .task_head import builder as head_builder
+from .task_model import builder as task_builder
 
 
 def build_model(

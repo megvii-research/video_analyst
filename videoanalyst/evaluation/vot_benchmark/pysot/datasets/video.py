@@ -7,9 +7,9 @@
 # Revised for SiamMask by foolwood
 # --------------------------------------------------------
 import os
-import cv2
-
 from glob import glob
+
+import cv2
 
 
 class Video(object):

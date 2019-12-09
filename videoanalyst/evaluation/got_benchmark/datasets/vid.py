@@ -1,12 +1,13 @@
 from __future__ import absolute_import, print_function
 
-import os
 import glob
-import six
-import numpy as np
-import xml.etree.ElementTree as ET
 import json
+import os
+import xml.etree.ElementTree as ET
 from collections import OrderedDict
+
+import numpy as np
+import six
 
 
 class ImageNetVID(object):
@@ -92,7 +93,8 @@ class ImageNetVID(object):
         if 'val' in self.subset:
             seq_dirs_ = sorted(
                 glob.glob(
-                    os.path.join(self.root_dir, 'Data/VID/val/ILSVRC2015_val_*')))
+                    os.path.join(self.root_dir,
+                                 'Data/VID/val/ILSVRC2015_val_*')))
             anno_dirs_ = [
                 os.path.join(self.root_dir, 'Annotations/VID/val',
                              s.split('/')[-1]) for s in seq_dirs_
@@ -119,9 +121,10 @@ class ImageNetVID(object):
             ]
 
             # find all track ids
-            track_ids, counts = np.unique(
-                [obj.find('trackid').text for group in objects for obj in group],
-                return_counts=True)
+            track_ids, counts = np.unique([
+                obj.find('trackid').text for group in objects for obj in group
+            ],
+                                          return_counts=True)
 
             # fetch paths and annotations for each track id
             for t, track_id in enumerate(track_ids):

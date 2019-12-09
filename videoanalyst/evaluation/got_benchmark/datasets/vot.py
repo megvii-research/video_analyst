@@ -1,11 +1,12 @@
-from __future__ import absolute_import, print_function, division
+from __future__ import absolute_import, division, print_function
 
-import os
 import glob
+import hashlib
+import json
+import os
+
 import numpy as np
 import six
-import json
-import hashlib
 
 from ..utils.ioutils import download, extract
 
@@ -34,8 +35,8 @@ class VOT(object):
             specified by the file.
     """
     __valid_versions = [
-        2013, 2014, 2015, 2016, 2017, 2018, 'LT2018', 2019, 'LT2019', 'RGBD2019',
-        'RGBT2019'
+        2013, 2014, 2015, 2016, 2017, 2018, 'LT2018', 2019, 'LT2019',
+        'RGBD2019', 'RGBT2019'
     ]
 
     def __init__(self,
@@ -108,7 +109,8 @@ class VOT(object):
         elif os.path.isfile(os.path.join(root_dir, 'list.txt')):
             with open(os.path.join(root_dir, 'list.txt')) as f:
                 seq_names = f.read().strip().split('\n')
-            if all([os.path.isdir(os.path.join(root_dir, s)) for s in seq_names]):
+            if all(
+                [os.path.isdir(os.path.join(root_dir, s)) for s in seq_names]):
                 print('Files already downloaded.')
                 return
 

@@ -1,15 +1,21 @@
 # -*- coding: utf-8 -*
 
+import logging
+
+import numpy as np
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-torch.set_printoptions(precision=8)
-import numpy as np
-import logging
 
-from videoanalyst.model.task_model.taskmodel_base import VOS_TASKMODELS, TRACK_TASKMODELS
-from videoanalyst.model.common_opr.common_block import conv_bn_relu, xcorr_depthwise
+from videoanalyst.model.common_opr.common_block import (conv_bn_relu,
+                                                        xcorr_depthwise)
 from videoanalyst.model.module_base import ModuleBase
+from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
+                                                          VOS_TASKMODELS)
+
+torch.set_printoptions(precision=8)
+
 
 logger = logging.getLogger(__file__)
 

@@ -1,4 +1,4 @@
-data:
+dataset:
   VOT2018:
     path: "/data/Datasets/VOT/vot2018"
   VOT2019:

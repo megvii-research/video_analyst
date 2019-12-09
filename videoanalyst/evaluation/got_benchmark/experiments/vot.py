@@ -1,11 +1,12 @@
 from __future__ import absolute_import, division, print_function
 
-import time
-import numpy as np
-import os
 import glob
-import warnings
 import json
+import os
+import time
+import warnings
+
+import numpy as np
 from PIL import Image
 
 from ..datasets import VOT
@@ -217,8 +218,9 @@ class ExperimentVOT(object):
             print('--Sequence %d/%d: %s' % (s + 1, len(self.dataset), seq_name))
 
             # skip if results exist
-            record_file = os.path.join(self.result_dir, tracker.name, 'realtime',
-                                       seq_name, '%s_001.txt' % seq_name)
+            record_file = os.path.join(self.result_dir, tracker.name,
+                                       'realtime', seq_name,
+                                       '%s_001.txt' % seq_name)
             if os.path.exists(record_file):
                 print('  Found results, skipping', seq_name)
                 continue
@@ -368,8 +370,8 @@ class ExperimentVOT(object):
                 # read results of all repetitions
                 record_files = sorted(
                     glob.glob(
-                        os.path.join(self.result_dir, name, 'baseline', seq_name,
-                                     '%s_[0-9]*.txt' % seq_name)))
+                        os.path.join(self.result_dir, name, 'baseline',
+                                     seq_name, '%s_[0-9]*.txt' % seq_name)))
                 boxes = [read_record(f) for f in record_files]
                 assert all([len(b) == len(anno) for b in boxes])
 

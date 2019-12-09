@@ -3,8 +3,9 @@
 # Licensed under The MIT License
 # Written by Qiang Wang (wangqiang2015 at ia.ac.cn)
 # --------------------------------------------------------
-import numpy as np
 from collections import namedtuple
+
+import numpy as np
 
 Corner = namedtuple('Corner', 'x1 y1 x2 y2')
 BBox = Corner

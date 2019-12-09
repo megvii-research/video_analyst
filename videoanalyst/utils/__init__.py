@@ -1,1 +1,1 @@
-from .misc import ensure, Registry, load_cfg
+from .misc import Registry, ensure, load_cfg

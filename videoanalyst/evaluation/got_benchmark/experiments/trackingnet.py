@@ -2,9 +2,9 @@ from __future__ import absolute_import
 
 import numpy as np
 
-from .otb import ExperimentOTB
 from ..datasets import TrackingNet
-from ..utils.metrics import rect_iou, center_error
+from ..utils.metrics import center_error, rect_iou
+from .otb import ExperimentOTB
 
 
 class ExperimentTrackingNet(ExperimentOTB):

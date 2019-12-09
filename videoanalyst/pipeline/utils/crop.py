@@ -100,6 +100,7 @@ def get_crop(im,
 
     # x_size_aug = z_size + 2 * x_pad
     # extract scaled crops for search region x at previous target position
-    im_crop = func_get_subwindow(im, target_pos, x_size, round(s_crop), avg_chans)
+    im_crop = func_get_subwindow(im, target_pos, x_size, round(s_crop),
+                                 avg_chans)
 
     return im_crop, scale

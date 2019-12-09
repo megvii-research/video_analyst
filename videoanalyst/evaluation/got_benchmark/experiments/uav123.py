@@ -1,11 +1,12 @@
 from __future__ import absolute_import
 
 import os
+
 import numpy as np
 
-from .otb import ExperimentOTB
 from ..datasets import UAV123
-from ..utils.metrics import rect_iou, center_error
+from ..utils.metrics import center_error, rect_iou
+from .otb import ExperimentOTB
 
 
 class ExperimentUAV123(ExperimentOTB):

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIFF=`yapf -p -r -d --style='{COLUMN_LIMIT:82}' ./`
+DIFF=`yapf -p -r -d --style='{COLUMN_LIMIT:80}' ./`
 if [ ! -z "$DIFF" ]
 then
     echo "yapf format check failed"
