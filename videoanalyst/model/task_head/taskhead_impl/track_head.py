@@ -13,7 +13,6 @@ from videoanalyst.model.task_head.taskhead_base import TRACK_HEADS
 torch.set_printoptions(precision=8)
 
 
-
 def get_xy_ctr(score_size, score_offset, total_stride):
     batch, fm_height, fm_width = 1, score_size, score_size
 

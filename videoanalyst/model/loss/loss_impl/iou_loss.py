@@ -11,7 +11,6 @@ from videoanalyst.model.module_base import ModuleBase
 eps = np.finfo(np.float32).tiny
 
 
-
 class SafeLog(nn.Module):
     def __init__(self):
         super().__init__()

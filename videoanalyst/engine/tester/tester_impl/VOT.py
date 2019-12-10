@@ -25,18 +25,16 @@ from tqdm import tqdm
 
 import torch
 
-from main.tester.tester_base import TESTERS
+from videoanalyst.engine.tester.tester_base import TESTERS
 from videoanalyst.evaluation import vot_benchmark
 from videoanalyst.evaluation.utils import build_tracker_wt_model
 from videoanalyst.utils import ensure
 
 logger = logging.getLogger('global')
 
-
 root_path = osp.dirname(osp.dirname(osp.realpath(__file__)))
 if root_path not in sys.path:
     sys.path.insert(0, root_path)
-
 
 
 def track_vot(tracker, exp_cfg, video, v_id=0):

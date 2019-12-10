@@ -7,7 +7,7 @@ import logging
 import os.path as osp
 
 from main.paths import ROOT_CFG
-from main.tester.tester_base import TESTERS
+from videoanalyst.engine import test
 from videoanalyst.utils import load_cfg
 
 logger = logging.getLogger('global')
@@ -52,6 +52,7 @@ if __name__ == '__main__':
     logger.info("Load common config. at: %s" % exp_cfg_path)
 
     # retrieve tester by name & run tester
-    tester_name = parsed_args.dataset
-    logger.info("Start %s" % tester_name)
-    TESTERS[tester_name](parsed_args, common_cfg, exp_cfg)
+
+    # Start engine
+    # TESTERS[tester_name](parsed_args, common_cfg, exp_cfg)
+    test(parsed_args, common_cfg, exp_cfg)
