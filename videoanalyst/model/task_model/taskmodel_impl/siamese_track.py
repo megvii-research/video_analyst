@@ -16,11 +16,18 @@ from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
 
 torch.set_printoptions(precision=8)
 
+
 logger = logging.getLogger(__file__)
 
 
 @TRACK_TASKMODELS.register
 class SiamTrack(ModuleBase):
+    r"""
+    SiamTrack model for tracking
+    ---
+    Hyper-Parameters
+    pretrain_model_path: path to parameter to be loaded into module
+    """
 
     default_hyper_params = {"pretrain_model_path": ""}
 
@@ -123,5 +130,8 @@ class SiamTrack(ModuleBase):
                                         map_location=torch.device("cpu"))
             if "model_state_dict" in state_dict:
                 state_dict = state_dict["model_state_dict"]
-            self.load_state_dict(state_dict, strict=True)
+            try:
+                self.load_state_dict(state_dict, strict=True)
+            except:
+                self.load_state_dict(state_dict, strict=False)
             logger.info("loaded pretrain weights from {}".format(model_path))

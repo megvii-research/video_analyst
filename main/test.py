@@ -7,7 +7,7 @@ import logging
 import os.path as osp
 
 from main.paths import ROOT_CFG
-from videoanalyst.engine import test
+from videoanalyst.engine.test import test
 from videoanalyst.utils import load_cfg
 
 logger = logging.getLogger('global')

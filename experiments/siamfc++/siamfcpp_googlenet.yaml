@@ -1,16 +1,35 @@
 track:
-  exp_name: "alexnet_siamfc++"
-  exp_save: "/data/video_analyst/siamfc++/"
   model:
     backbone:
-      name: "GoogLeNet"
+      name: "Inception3"
+      Inception3:
+        crop_pad: 4
+        amputed: True
     losses: 
-      names: ["IOULoss"]
+      names: [] # "IOULoss"
+    task_head:
+      name: "DenseboxHead"
+      DenseboxHead:
+        total_stride: 8
+        score_size: 19
+        x_size: 303
+        num_conv3x3: 2
+        head_conv_bn: [False, False]
     task_model:
       name: "SiamTrack"
       SiamTrack:
-        pretrain_model_path: "/data/model_zoo/sot/ao_373_lr_52_pen_21_win_04_epoch-19.pkl"
-    task_head:
-      name: "DenseboxHead"
+        pretrain_model_path: "/data/Models/SiamFCpp/googlenet/eao_419_lr_52_pen_21_win_04/epoch-15.pkl"
+  pipeline:
+    name: "SiamFCppTracker"
+    SiamFCppTracker:
+      test_lr: 0.52
+      window_influence: 0.21
+      penalty_k: 0.04
+      head_shrink: 4
+test:
+  exp_name: "googlenet_siamfc++"
+  exp_save: "/data/video_analyst/siamfc++/"
+  dataset: "VOT2018"
+  num_gpu: 1
 
     

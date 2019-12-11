@@ -11,94 +11,29 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-from neupeak.utils import imgproc
-
-try:
-    from neupeak.utils.brainpp.oss import OSSPath
-    has_OSS = True
-except:
-    from pathlib import Path
-    has_OSS = False
-
-_oss_prefix = "s3://"
 
 
-def get_json(path, oss_file=True):
-    # if oss_file:
-    if oss_file and path.startswith(_oss_prefix):
-        if not has_OSS:
-            print('OSS not exists!')
-            exit()
-        if isinstance(path, str):
-            p = OSSPath(path)
-        else:
-            p = path
-        f = p.download()
-        f = f.read()
-        f = f.decode()
-        f = json.loads(f)
-        return f
-    else:
-        with open(path) as f:
-            return json.load(f)
+def get_json(path):
+    with open(path) as f:
+        return json.load(f)
 
 
-def get_txt(path, oss_file=True):
-    # if oss_file:
-    if oss_file and path.startswith(_oss_prefix):
-        if not has_OSS:
-            print('OSS not exists!')
-            exit()
-        if isinstance(path, str):
-            p = OSSPath(path)
-        else:
-            p = path
-        f = p.download()
-        f = f.read()
-        f = f.decode()
-        return f
-
-    else:
-        with open(path) as f:
-            return f.read()
+def get_txt(path):
+    with open(path) as f:
+        return f.read()
 
 
-def get_img(path, oss_file=True):
-    # if oss_file:
-    if oss_file and path.startswith(_oss_prefix):
-        if not has_OSS:
-            print('OSS not exists!')
-            exit()
-        if isinstance(path, str):
-            p = OSSPath(path)
-        else:
-            p = path
-
-        p = OSSPath(path)
-        f = p.download().read()
-        img = imgproc.imdecode(f)[:, :, :3]
-    else:
-        img = cv2.imread(path)
+def get_img(path):
+    img = cv2.imread(path)
     return img
 
 
-def get_files(path, suffix, oss_file):
-    # if oss_file:
-    if oss_file and path.startswith(_oss_prefix):
-        if not has_OSS:
-            print('OSS not exists!')
-            exit()
-        if isinstance(path, str):
-            p = OSSPath(path)
-        else:
-            p = path
-        list_dir = list(p.list_all())
+def get_files(path, suffix):
+    if isinstance(path, str):
+        p = Path(path)
     else:
-        if isinstance(path, str):
-            p = Path(path)
-        else:
-            p = path
-        list_dir = list(p.glob('*'))
+        p = path
+    list_dir = list(p.glob('*'))
     result = [x.name for x in list_dir if x.suffix == suffix]
     return result
 
@@ -119,11 +54,7 @@ def get_dataset_zoo():
     return zoos
 
 
-#
-# dataset_zoo = get_dataset_zoo()
-
-
-def load_dataset(vot_path, dataset, oss_file=True):
+def load_dataset(vot_path, dataset):
     info = OrderedDict()
     if 'VOT' in dataset:
         base_path = join(vot_path, dataset)
@@ -131,16 +62,16 @@ def load_dataset(vot_path, dataset, oss_file=True):
         #     logging.error("Please download test dataset!!!")
         #     exit()
         list_path = join(base_path, 'list.txt')
-        f = get_txt(list_path, oss_file)
+        f = get_txt(list_path)
         videos = [v.strip() for v in f.strip().split('\n')]
         #print(videos)
         for video in videos:
             video_path = join(base_path, video)
             image_path = join(video_path, 'color')
-            image_files = sorted(get_files(image_path, '.jpg', oss_file))
+            image_files = sorted(get_files(image_path, '.jpg'))
             image_files = [join(image_path, x) for x in image_files]
             gt_path = join(video_path, 'groundtruth.txt')
-            gt = get_txt(gt_path, oss_file)
+            gt = get_txt(gt_path)
             gt = gt.strip().split('\n')
 
             gt = np.asarray([line.split(',') for line in gt], np.float32)

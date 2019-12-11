@@ -79,6 +79,7 @@ class SiamFCppTracker(PipelineBase):
             (hps['score_size'] - 1) * hps['total_stride']) // 2
         self._hyper_params = hps
 
+
     def feature(self, im, target_pos, target_sz, avg_chans=None):
         if avg_chans is None:
             avg_chans = np.mean(im, axis=(0, 1))
