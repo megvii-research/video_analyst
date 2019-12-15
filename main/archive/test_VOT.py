@@ -5,24 +5,30 @@
 # --------------------------------------------------------
 
 from __future__ import division
+
+import argparse
+import glob
+import itertools
+import logging
 # from config import config
 # from tracker import tracker_config
 import math
-from multiprocessing import Queue, Process
-import argparse
-import logging
-import glob
-import numpy as np
-import cv2
 import os
 import os.path as osp
-from os import makedirs
-from os.path import join, isdir
 import sys
-import itertools
 from collections import OrderedDict
+from multiprocessing import Process, Queue
+from os.path import join
+
+import cv2
+import numpy as np
+from tqdm import tqdm
 
 import torch
+
+from videoanalyst.evaluation import vot_benchmark
+from videoanalyst.evaluation.utils import build_tracker_wt_model
+from videoanalyst.utils import ensure, load_cfg
 
 logger = logging.getLogger('global')
 
@@ -33,7 +39,6 @@ logger = logging.getLogger('global')
 # from evaluation.tracking.vot_benchmark.pysot.datasets import VOTDataset
 # from evaluation.tracking.vot_benchmark.pysot.evaluation import AccuracyRobustnessBenchmark, EAOBenchmark
 
-from tqdm import tqdm
 
 root_path = osp.dirname(osp.dirname(osp.realpath(__file__)))
 if root_path not in sys.path:
@@ -41,10 +46,6 @@ if root_path not in sys.path:
 
 # from IPython import embed;embed()
 
-from videoanalyst.evaluation import vot_benchmark
-from videoanalyst.evaluation.utils import build_tracker_wt_model
-from videoanalyst.utils import load_cfg
-from videoanalyst.utils import ensure
 
 # get video common config
 basic_cfg_path = osp.join(root_path, 'config.yaml')
@@ -52,12 +53,15 @@ config = load_cfg(basic_cfg_path)
 tracker_cfg_path = osp.join(root_path,
                             'experiments/siamfc++/siamfcpp_alexnet.yaml')
 tracker_cfg = load_cfg(tracker_cfg_path)
+
 # from IPython import embed;embed()
+
 
 # def track_vot(tracker, tracker_name, tracker_config, video, v_id=0):
 def track_vot(tracker, tracker_name, video, v_id=0):
 
-    result_path = join(config.logs.vot_dir, tracker_name, 'baseline', video['name'])
+    result_path = join(config.logs.vot_dir, tracker_name, 'baseline',
+                       video['name'])
     # lib_repo.ensure_dir(result_path)
     ensure(result_path)
 
@@ -89,16 +93,22 @@ def track_vot(tracker, tracker_name, video, v_id=0):
             # cv2.imshow('debug', im_show)
             # cv2.waitKey(0)
 
-            gt_polygon = (gt[f][0], gt[f][1], gt[f][2], gt[f][3],
-                          gt[f][4], gt[f][5], gt[f][6], gt[f][7])
-            pred_polygon = (location[0], location[1], location[0] + location[2], location[1],
-                            location[0] + location[2], location[1] + location[3], location[0],
+            gt_polygon = (gt[f][0], gt[f][1], gt[f][2], gt[f][3], gt[f][4],
+                          gt[f][5], gt[f][6], gt[f][7])
+            pred_polygon = (location[0], location[1], location[0] + location[2],
+                            location[1], location[0] + location[2],
+                            location[1] + location[3], location[0],
                             location[1] + location[3])
             # from IPython import embed;embed()
-            b_overlap = vot_benchmark.vot_overlap(gt_polygon, pred_polygon, (im.shape[1], im.shape[0]))
-            gt_polygon = ((gt[f][0], gt[f][1]), (gt[f][2], gt[f][3]), (gt[f][4], gt[f][5]), (gt[f][6], gt[f][7]))
-            pred_polygon = ((location[0], location[1]), (location[0] + location[2], location[1]),
-                            (location[0] + location[2], location[1] + location[3]), (location[0], location[1] + location[3]))
+            b_overlap = vot_benchmark.vot_overlap(gt_polygon, pred_polygon,
+                                                  (im.shape[1], im.shape[0]))
+            gt_polygon = ((gt[f][0], gt[f][1]), (gt[f][2], gt[f][3]),
+                          (gt[f][4], gt[f][5]), (gt[f][6], gt[f][7]))
+            pred_polygon = ((location[0], location[1]),
+                            (location[0] + location[2],
+                             location[1]), (location[0] + location[2],
+                                            location[1] + location[3]),
+                            (location[0], location[1] + location[3]))
 
             if b_overlap:
                 regions.append(location)
@@ -110,10 +120,7 @@ def track_vot(tracker, tracker_name, video, v_id=0):
             regions.append(0)
         toc += cv2.getTickCount() - tic
 
-
-
     toc /= cv2.getTickFrequency()
-
 
     # save result
     # lib_repo.ensure_dir(result_path)
@@ -124,8 +131,9 @@ def track_vot(tracker, tracker_name, video, v_id=0):
             fin.write("{:d}\n".format(x)) if isinstance(x, int) else \
                 fin.write(','.join([vot_benchmark.vot_float2str("%.4f", i) for i in x]) + '\n')
 
-    logger.info('({:d}) Video: {:12s} Time: {:02.1f}s Speed: {:3.1f}fps Lost: {:d} '.format(
-        v_id, video['name'], toc, f / toc, lost_times))
+    logger.info(
+        '({:d}) Video: {:12s} Time: {:02.1f}s Speed: {:3.1f}fps Lost: {:d} '.
+        format(v_id, video['name'], toc, f / toc, lost_times))
 
     return lost_times, f / toc
 
@@ -145,22 +153,38 @@ def track_vot(tracker, tracker_name, video, v_id=0):
 #     model.eval()
 #     return model
 
+
 # def worker(model_file, tracker_name, tracker_config, dev, records, dataset, result_queue=None, speed_queue=None):
-def worker(tracker_name, tracker_cfg, dev, records, dataset, result_queue=None, speed_queue=None):
+def worker(tracker_name,
+           tracker_cfg,
+           dev,
+           records,
+           dataset,
+           result_queue=None,
+           speed_queue=None):
     # model = load_model(model_file, dev, tracker_config)
     # tracker = SiamRPNTracker(model, device=dev)
     tracker = build_tracker_wt_model(tracker_cfg, dev)
     for v_id, video in enumerate(records):
         # lost, speed = track_vot(tracker, tracker_name, tracker_config, dataset[video], v_id=v_id)
-        lost, speed = track_vot(tracker, tracker_name, dataset[video], v_id=v_id)
+        lost, speed = track_vot(tracker,
+                                tracker_name,
+                                dataset[video],
+                                v_id=v_id)
         if result_queue is not None:
             result_queue.put_nowait(lost)
         if speed_queue is not None:
             speed_queue.put_nowait(speed)
 
 
-def write_result_to_csv(tracker_names, dataset, ar_result, eao_result, speed=-1, param=None, result_csv=None):
-    write_header = (os.path.getsize(result_csv.name)==0)
+def write_result_to_csv(tracker_names,
+                        dataset,
+                        ar_result,
+                        eao_result,
+                        speed=-1,
+                        param=None,
+                        result_csv=None):
+    write_header = (os.path.getsize(result_csv.name) == 0)
 
     for tracker_name in tracker_names:
         row_dict = OrderedDict()
@@ -186,11 +210,10 @@ def write_result_to_csv(tracker_names, dataset, ar_result, eao_result, speed=-1,
 
         if write_header:
             header = ','.join([str(k) for k in row_dict.keys()])
-            result_csv.write('%s\n'%header)
+            result_csv.write('%s\n' % header)
 
         row_data = ','.join([str(v) for v in row_dict.values()])
         result_csv.write('%s\n' % row_data)
-
 
 
 def evaluation(tracker_dir, tracker_name, param_dict, mean_speed=-1):
@@ -198,8 +221,10 @@ def evaluation(tracker_dir, tracker_name, param_dict, mean_speed=-1):
     global args
     # if nr_param_settings>1:
     if args.mode.lower() == 'param':
-        file_to_write = open(join(tracker_dir, tracker_name, args.result_file), 'a+')
-        csv_to_write = open(join(tracker_dir, tracker_name, args.result_csv), 'a+')
+        file_to_write = open(join(tracker_dir, tracker_name, args.result_file),
+                             'a+')
+        csv_to_write = open(join(tracker_dir, tracker_name, args.result_csv),
+                            'a+')
     else:
         file_to_write = open(join(tracker_dir, args.result_file), 'a+')
         csv_to_write = open(join(tracker_dir, args.result_csv), 'a+')
@@ -212,21 +237,38 @@ def evaluation(tracker_dir, tracker_name, param_dict, mean_speed=-1):
     ar_result = {}
     from multiprocessing import Pool
     with Pool(processes=min(5, len(trackers))) as pool:
-        for ret in tqdm(pool.imap_unordered(ar_benchmark.eval, trackers), desc='eval ar', total=len(trackers), ncols=100):
+        for ret in tqdm(pool.imap_unordered(ar_benchmark.eval, trackers),
+                        desc='eval ar',
+                        total=len(trackers),
+                        ncols=100):
             ar_result.update(ret)
     benchmark = vot_benchmark.EAOBenchmark(dataset)
     eao_result = {}
     with Pool(processes=min(5, len(trackers))) as pool:
-        for ret in tqdm(pool.imap_unordered(benchmark.eval, trackers), desc='eval eao', total=len(trackers), ncols=100):
+        for ret in tqdm(pool.imap_unordered(benchmark.eval, trackers),
+                        desc='eval eao',
+                        total=len(trackers),
+                        ncols=100):
             eao_result.update(ret)
-    ar_benchmark.show_result(ar_result, eao_result, show_video_level=args.show_video_level)
+    ar_benchmark.show_result(ar_result,
+                             eao_result,
+                             show_video_level=args.show_video_level)
     print_decimals = 4
     for k, v in param_dict.items():
         param_dict[k] = np.round(v, decimals=print_decimals)
     file_to_write.write('FPS={:.2f}, {}\n'.format(mean_speed, param_dict))
-    ar_benchmark.write_result(ar_result, eao_result, show_video_level=args.show_video_level, result_file=file_to_write)
+    ar_benchmark.write_result(ar_result,
+                              eao_result,
+                              show_video_level=args.show_video_level,
+                              result_file=file_to_write)
 
-    write_result_to_csv(trackers, args.dataset, ar_result, eao_result, speed=mean_speed, param=param_dict, result_csv=csv_to_write)
+    write_result_to_csv(trackers,
+                        args.dataset,
+                        ar_result,
+                        eao_result,
+                        speed=mean_speed,
+                        param=param_dict,
+                        result_csv=csv_to_write)
 
 
 def main():
@@ -237,7 +279,7 @@ def main():
     print('all_devs', all_devs)
 
     #dataset
-    print('Using dataset: %s'%args.dataset)
+    print('Using dataset: %s' % args.dataset)
     # vot2018_root = config.vot2018_root
     vot2018_root = config.data.VOT2018.path
     # vot2019_root = config.vot2019_root
@@ -262,14 +304,14 @@ def main():
     #     # tracker_config.update(param_dict)
     #     print('*'*10 + 'search for settings:', param_dict, '*'*10)
     #     for epoch in range(args.start_epoch, args.end_epoch+1):
-            # if args.model:
-            #     model_file = args.model
-            # else:
-            #     model_file = join(config.snapshot_dir, 'epoch-' + str(epoch) + '.pkl')
-            # if not model_file.startswith("s3://"):
-            #     model_file = osp.realpath(model_file)
-            # print("model_file:", model_file)
-            # tracker_name = lib_repo.extract_fname(model_file)
+    # if args.model:
+    #     model_file = args.model
+    # else:
+    #     model_file = join(config.snapshot_dir, 'epoch-' + str(epoch) + '.pkl')
+    # if not model_file.startswith("s3://"):
+    #     model_file = osp.realpath(model_file)
+    # print("model_file:", model_file)
+    # tracker_name = lib_repo.extract_fname(model_file)
     tracker_name = tracker_cfg.track.exp_name
     mean_speed = -1
     # if args.inference:
@@ -279,7 +321,8 @@ def main():
         log_dir = join(config.logs.vot_dir, 'test')
         # lib_repo.ensure_dir(log_dir)
         ensure(log_dir)
-        vot_benchmark.add_file_handler('global', join(log_dir, args.log), logging.INFO)
+        vot_benchmark.add_file_handler('global', join(log_dir, args.log),
+                                       logging.INFO)
     print(log_dir)
     logger = logging.getLogger('global')
     logger.info(args)
@@ -292,7 +335,8 @@ def main():
     # from IPython import embed;embed()
     if nr_devs == 1:
         # worker(model_file, tracker_name, tracker_config, all_devs[0], keys, dataset, result_queue, speed_queue)
-        worker(tracker_name, tracker_cfg, all_devs[0], keys, dataset, result_queue, speed_queue)
+        worker(tracker_name, tracker_cfg, all_devs[0], keys, dataset,
+               result_queue, speed_queue)
 
         for i in range(nr_records):
             t = result_queue.get()
@@ -310,7 +354,9 @@ def main():
             # proc = Process(target=worker,
             #                args=(model_file, tracker_name, tracker_config, all_devs[i], split_records, dataset, result_queue, speed_queue))
             proc = Process(target=worker,
-                           args=(tracker_name, tracker_cfg, all_devs[i], split_records, dataset, result_queue, speed_queue))
+                           args=(tracker_name, tracker_cfg, all_devs[i],
+                                 split_records, dataset, result_queue,
+                                 speed_queue))
             print('process:%d, start:%d, end:%d' % (i, start, end))
             proc.start()
             procs.append(proc)
@@ -325,32 +371,62 @@ def main():
     mean_speed = float(np.mean(speed_list))
     logger.info('Total Lost: {:d}'.format(total_lost))
     logger.info('Mean Speed: {:.2f} FPS'.format(mean_speed))
-    evaluation(config.logs.vot_dir, tracker_name, param_dict, mean_speed=mean_speed)
+    evaluation(config.logs.vot_dir,
+               tracker_name,
+               param_dict,
+               mean_speed=mean_speed)
+
 
 def make_parser():
     parser = argparse.ArgumentParser(description='Test SiamRPN')
-    parser.add_argument('-l', '--log', default="log_test.txt", type=str, help='log file')
+    parser.add_argument('-l',
+                        '--log',
+                        default="log_test.txt",
+                        type=str,
+                        help='log file')
     # parser.add_argument('-d', '--devices', default='cpu0')
     parser.add_argument('--mode', default='epoch')
     parser.add_argument('--model', '-m', default='')
     parser.add_argument('--start_epoch', '-se', default=0, type=int)
     parser.add_argument('--end_epoch', '-ee', default=-1, type=int)
-    parser.add_argument('--dataset', dest='dataset', default='VOT2018', help='datasets')
-    parser.add_argument('--data_root', default=config.data.VOT2018.path, type=str, metavar='PATH', help='path to VOT2018.json')
+    parser.add_argument('--dataset',
+                        dest='dataset',
+                        default='VOT2018',
+                        help='datasets')
+    parser.add_argument('--data_root',
+                        default=config.data.VOT2018.path,
+                        type=str,
+                        metavar='PATH',
+                        help='path to VOT2018.json')
     # parser.add_argument('--tracker_prefix', default='epoch-', type=str, metavar='PATH', help='path to VOT2018.json')
-    parser.add_argument('--result_file', default='search_epoch.txt', type=str, help='save epoch-level result')
-    parser.add_argument('--result_csv', default='search_epoch.csv', type=str, help='save epoch-level result into csv')
+    parser.add_argument('--result_file',
+                        default='search_epoch.txt',
+                        type=str,
+                        help='save epoch-level result')
+    parser.add_argument('--result_csv',
+                        default='search_epoch.csv',
+                        type=str,
+                        help='save epoch-level result into csv')
     parser.add_argument('--show_video_level', action='store_true')
 
-    parser.add_argument('--config', default='', type=str, help='experiment configuration')
+    parser.add_argument('--config',
+                        default='',
+                        type=str,
+                        help='experiment configuration')
 
     return parser
+
 
 param_arg_prefix = '--param_'
 linspace_suffix = '_linspace'
 arange_suffix = '_arange'
+
+
 def parse_unknowns_args(unknowns):
-    param_name_idxs = [i for i, name in enumerate(unknowns) if name.startswith(param_arg_prefix)]
+    param_name_idxs = [
+        i for i, name in enumerate(unknowns)
+        if name.startswith(param_arg_prefix)
+    ]
     param_name_idxs.append(len(unknowns))
     slice_idxs = list(zip(*[param_name_idxs[:-1], param_name_idxs[1:]]))
     paramlist_dict = OrderedDict()
@@ -358,12 +434,17 @@ def parse_unknowns_args(unknowns):
     for (idx1, idx2) in slice_idxs:
         slice = unknowns[idx1:idx2]
         param_name = slice[0][len(param_arg_prefix):]
-        values = [int(float(s)) if float(s).is_integer() else float(s) for s in slice[1:]]
+        values = [
+            int(float(s)) if float(s).is_integer() else float(s)
+            for s in slice[1:]
+        ]
 
         if param_name.endswith(linspace_suffix):
-            paramlist_dict[param_name[:-len(linspace_suffix)]] = np.linspace(*values[:3]).tolist()
+            paramlist_dict[param_name[:-len(linspace_suffix)]] = np.linspace(
+                *values[:3]).tolist()
         elif param_name.endswith(arange_suffix):
-            paramlist_dict[param_name[:-len(arange_suffix)]] = np.arange(*values[:3]).tolist()
+            paramlist_dict[param_name[:-len(arange_suffix)]] = np.arange(
+                *values[:3]).tolist()
         else:
             paramlist_dict[param_name] = values
     return paramlist_dict
@@ -374,11 +455,15 @@ if __name__ == '__main__':
     args, unknowns = parser.parse_known_args()
     paramlist_dict = parse_unknowns_args(unknowns)
     for param_settings in itertools.product(*(paramlist_dict.values())):
-        param_dict = {param_name: param_var for param_name, param_var in zip(paramlist_dict.keys(), param_settings)}
+        param_dict = {
+            param_name: param_var
+            for param_name, param_var in zip(paramlist_dict.keys(),
+                                             param_settings)
+        }
     # from IPython import embed;embed()
 
 # preprocess the command
-    # test model file
+# test model file
     if args.model:
         args.end_epoch = args.start_epoch = -1
         print('Model: %s' % args.model)
@@ -386,18 +471,17 @@ if __name__ == '__main__':
     else:
         if args.end_epoch == -1:
             args.end_epoch = args.start_epoch
-        print('Start epoch: %d'%args.start_epoch)
-        print('End epoch: %d'%args.end_epoch)
+        print('Start epoch: %d' % args.start_epoch)
+        print('End epoch: %d' % args.end_epoch)
     # show param search range
     if args.mode.lower() == 'epoch':
-        print('*'*20, 'Search epoch', '*'*20)
+        print('*' * 20, 'Search epoch', '*' * 20)
     elif args.mode.lower() == 'param':
-        print('*'*20, 'Grid search range', '*'*20)
+        print('*' * 20, 'Grid search range', '*' * 20)
         for k, v in paramlist_dict.items():
             print(k, v)
-        print('*'*20, 'Grid search range', '*'*20)
+        print('*' * 20, 'Grid search range', '*' * 20)
     else:
         raise ValueError('Invalid mode name %s', args.mode)
 
     main()
-

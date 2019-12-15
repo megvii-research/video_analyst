@@ -2,7 +2,6 @@
 
 import numpy as np
 
-# import lib_repo
 import torch
 import torch.nn as nn
 
@@ -14,21 +13,6 @@ from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
                                          xywh2cxywh, xyxy2cxywh)
 
 eps = 1e-7
-
-# ============================== Tracker config for evaluation ============================== #
-# tracker_config = lib_repo.Config()
-# C = tracker_config
-# C.total_stride = 8
-# C.context_amount = 0.5
-# C.penalty_k = 0.04
-# C.window_influence = 0.21
-# C.test_lr = 0.52
-# C.windowing = 'cosine'
-# C.z_size = 127
-# C.x_size = 303
-# C.head_shrink = 4
-# C.score_size = (C.x_size - C.z_size) // C.total_stride + 1 - C.head_shrink
-# C.score_offset = int((C.x_size - 1 - (C.score_size - 1) * C.total_stride) / 2)  # e.g. 43 for alexnet backbone
 
 
 # ============================== Tracker definition ============================== #
@@ -78,7 +62,6 @@ class SiamFCppTracker(PipelineBase):
             hps['x_size'] - 1 -
             (hps['score_size'] - 1) * hps['total_stride']) // 2
         self._hyper_params = hps
-
 
     def feature(self, im, target_pos, target_sz, avg_chans=None):
         if avg_chans is None:
@@ -150,7 +133,6 @@ class SiamFCppTracker(PipelineBase):
         else:
             avg_chans = self._state['avg_chans']
 
-        # x_pad = (self.config.x_size-self.config.z_size)//2
         z_size = self._hyper_params['z_size']
         x_size = self._hyper_params['x_size']
         context_amount = self._hyper_params['context_amount']

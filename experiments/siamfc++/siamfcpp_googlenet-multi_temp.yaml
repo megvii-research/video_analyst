@@ -20,14 +20,17 @@ track:
       SiamTrack:
         pretrain_model_path: "/data/Models/SiamFCpp/googlenet/eao_419_lr_52_pen_21_win_04/epoch-15.pkl"
   pipeline:
-    name: "SiamFCppTracker"
-    SiamFCppTracker:
+    name: "SiamFCppMultiTempTracker"
+    SiamFCppMultiTempTracker:
       test_lr: 0.52
       window_influence: 0.21
       penalty_k: 0.04
       head_shrink: 4
+      mem_step: 5
+      mem_len: 4
+      st_mem_coef: 0.6
 test:
-  exp_name: "siamfc++_googlenet"
+  exp_name: "siamfc++_googlenet_multi_temp"
   exp_save: "/data/video_analyst/siamfc++/"
   dataset: "VOT2018"
   num_gpu: 1

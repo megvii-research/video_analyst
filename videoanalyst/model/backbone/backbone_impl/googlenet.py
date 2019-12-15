@@ -6,38 +6,40 @@ Pretrained weights downloaded from:
 cached at:
     /home/xuyinda/.cache/torch/checkpoints/inception_v3_google-1a9a5a14.pth
 """
+from collections import namedtuple
+
 # -*- coding: utf-8 -*
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.hub import load_state_dict_from_url
 
 from videoanalyst.model.backbone.backbone_base import (TRACK_BACKBONES,
                                                        VOS_BACKBONES)
-# from videoanalyst.model.common_opr.common_block import conv_bn_relu
-
 from videoanalyst.model.module_base import ModuleBase
 
-from collections import namedtuple
-from torch.hub import load_state_dict_from_url
+# from videoanalyst.model.common_opr.common_block import conv_bn_relu
 
 
 
 __all__ = ['Inception3', 'inception_v3', 'get_basemodel']
 
-
 model_urls = {
     # Inception v3 ported from TensorFlow
-    'inception_v3_google': 'https://download.pytorch.org/models/inception_v3_google-1a9a5a14.pth',
+    'inception_v3_google':
+    'https://download.pytorch.org/models/inception_v3_google-1a9a5a14.pth',
 }
 
 _InceptionOutputs = namedtuple('InceptionOutputs', ['logits', 'aux_logits'])
 
+
 def get_basemodel():
-    model = Inception3(aux_logits=False, transform_input=True,
-                      amputated=True)
-    state_dict = load_state_dict_from_url(model_urls['inception_v3_google'], progress=True)
+    model = Inception3(aux_logits=False, transform_input=True, amputated=True)
+    state_dict = load_state_dict_from_url(model_urls['inception_v3_google'],
+                                          progress=True)
     model.load_state_dict(state_dict, strict=False)
     return model
+
 
 def inception_v3(pretrained=False, progress=True, **kwargs):
     r"""Inception v3 model architecture from
@@ -105,14 +107,15 @@ class Inception3(ModuleBase):
         #     self.Mixed_7a = InceptionD(768)
         #     self.Mixed_7b = InceptionE(1280)
         #     self.Mixed_7c = InceptionE(2048)
-            # self.fc = nn.Linear(2048, num_classes)
+        # self.fc = nn.Linear(2048, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
                 import scipy.stats as stats
                 stddev = m.stddev if hasattr(m, 'stddev') else 0.1
                 X = stats.truncnorm(-2, 2, scale=stddev)
-                values = torch.as_tensor(X.rvs(m.weight.numel()), dtype=m.weight.dtype)
+                values = torch.as_tensor(X.rvs(m.weight.numel()),
+                                         dtype=m.weight.dtype)
                 values = values.view(m.weight.size())
                 with torch.no_grad():
                     m.weight.copy_(values)
@@ -125,17 +128,16 @@ class Inception3(ModuleBase):
             nn.BatchNorm2d(256, eps=0.001),
         )
 
-
     def forward(self, x):
         # if self.transform_input:
-            # original part
-            # x_ch0 = torch.unsqueeze(x[:, 0], 1) * (0.229 / 0.5) + (0.485 - 0.5) / 0.5
-            # x_ch1 = torch.unsqueeze(x[:, 1], 1) * (0.224 / 0.5) + (0.456 - 0.5) / 0.5
-            # x_ch2 = torch.unsqueeze(x[:, 2], 1) * (0.225 / 0.5) + (0.406 - 0.5) / 0.5
+        # original part
+        # x_ch0 = torch.unsqueeze(x[:, 0], 1) * (0.229 / 0.5) + (0.485 - 0.5) / 0.5
+        # x_ch1 = torch.unsqueeze(x[:, 1], 1) * (0.224 / 0.5) + (0.456 - 0.5) / 0.5
+        # x_ch2 = torch.unsqueeze(x[:, 2], 1) * (0.225 / 0.5) + (0.406 - 0.5) / 0.5
 
         # new part
         # RGB -> BGR, [0, 255] -> [-1, 1]
-        bias = 255/2
+        bias = 255 / 2
         x_ch0 = (torch.unsqueeze(x[:, 2], 1) - bias) / bias
         x_ch1 = (torch.unsqueeze(x[:, 1], 1) - bias) / bias
         x_ch2 = (torch.unsqueeze(x[:, 0], 1) - bias) / bias
@@ -217,7 +219,6 @@ class Inception3(ModuleBase):
 
 
 class InceptionA(nn.Module):
-
     def __init__(self, in_channels, pool_features):
         super(InceptionA, self).__init__()
         self.branch1x1 = BasicConv2d(in_channels, 64, kernel_size=1)
@@ -229,7 +230,9 @@ class InceptionA(nn.Module):
         self.branch3x3dbl_2 = BasicConv2d(64, 96, kernel_size=3, padding=1)
         self.branch3x3dbl_3 = BasicConv2d(96, 96, kernel_size=3, padding=1)
 
-        self.branch_pool = BasicConv2d(in_channels, pool_features, kernel_size=1)
+        self.branch_pool = BasicConv2d(in_channels,
+                                       pool_features,
+                                       kernel_size=1)
 
     def forward(self, x):
         branch1x1 = self.branch1x1(x)
@@ -249,7 +252,6 @@ class InceptionA(nn.Module):
 
 
 class InceptionB(nn.Module):
-
     def __init__(self, in_channels):
         super(InceptionB, self).__init__()
         self.branch3x3 = BasicConv2d(in_channels, 384, kernel_size=3, stride=2)
@@ -272,21 +274,38 @@ class InceptionB(nn.Module):
 
 
 class InceptionC(nn.Module):
-
     def __init__(self, in_channels, channels_7x7):
         super(InceptionC, self).__init__()
         self.branch1x1 = BasicConv2d(in_channels, 192, kernel_size=1)
 
         c7 = channels_7x7
         self.branch7x7_1 = BasicConv2d(in_channels, c7, kernel_size=1)
-        self.branch7x7_2 = BasicConv2d(c7, c7, kernel_size=(1, 7), padding=(0, 3))
-        self.branch7x7_3 = BasicConv2d(c7, 192, kernel_size=(7, 1), padding=(3, 0))
+        self.branch7x7_2 = BasicConv2d(c7,
+                                       c7,
+                                       kernel_size=(1, 7),
+                                       padding=(0, 3))
+        self.branch7x7_3 = BasicConv2d(c7,
+                                       192,
+                                       kernel_size=(7, 1),
+                                       padding=(3, 0))
 
         self.branch7x7dbl_1 = BasicConv2d(in_channels, c7, kernel_size=1)
-        self.branch7x7dbl_2 = BasicConv2d(c7, c7, kernel_size=(7, 1), padding=(3, 0))
-        self.branch7x7dbl_3 = BasicConv2d(c7, c7, kernel_size=(1, 7), padding=(0, 3))
-        self.branch7x7dbl_4 = BasicConv2d(c7, c7, kernel_size=(7, 1), padding=(3, 0))
-        self.branch7x7dbl_5 = BasicConv2d(c7, 192, kernel_size=(1, 7), padding=(0, 3))
+        self.branch7x7dbl_2 = BasicConv2d(c7,
+                                          c7,
+                                          kernel_size=(7, 1),
+                                          padding=(3, 0))
+        self.branch7x7dbl_3 = BasicConv2d(c7,
+                                          c7,
+                                          kernel_size=(1, 7),
+                                          padding=(0, 3))
+        self.branch7x7dbl_4 = BasicConv2d(c7,
+                                          c7,
+                                          kernel_size=(7, 1),
+                                          padding=(3, 0))
+        self.branch7x7dbl_5 = BasicConv2d(c7,
+                                          192,
+                                          kernel_size=(1, 7),
+                                          padding=(0, 3))
 
         self.branch_pool = BasicConv2d(in_channels, 192, kernel_size=1)
 
@@ -311,15 +330,20 @@ class InceptionC(nn.Module):
 
 
 class InceptionD(nn.Module):
-
     def __init__(self, in_channels):
         super(InceptionD, self).__init__()
         self.branch3x3_1 = BasicConv2d(in_channels, 192, kernel_size=1)
         self.branch3x3_2 = BasicConv2d(192, 320, kernel_size=3, stride=2)
 
         self.branch7x7x3_1 = BasicConv2d(in_channels, 192, kernel_size=1)
-        self.branch7x7x3_2 = BasicConv2d(192, 192, kernel_size=(1, 7), padding=(0, 3))
-        self.branch7x7x3_3 = BasicConv2d(192, 192, kernel_size=(7, 1), padding=(3, 0))
+        self.branch7x7x3_2 = BasicConv2d(192,
+                                         192,
+                                         kernel_size=(1, 7),
+                                         padding=(0, 3))
+        self.branch7x7x3_3 = BasicConv2d(192,
+                                         192,
+                                         kernel_size=(7, 1),
+                                         padding=(3, 0))
         self.branch7x7x3_4 = BasicConv2d(192, 192, kernel_size=3, stride=2)
 
     def forward(self, x):
@@ -337,19 +361,30 @@ class InceptionD(nn.Module):
 
 
 class InceptionE(nn.Module):
-
     def __init__(self, in_channels):
         super(InceptionE, self).__init__()
         self.branch1x1 = BasicConv2d(in_channels, 320, kernel_size=1)
 
         self.branch3x3_1 = BasicConv2d(in_channels, 384, kernel_size=1)
-        self.branch3x3_2a = BasicConv2d(384, 384, kernel_size=(1, 3), padding=(0, 1))
-        self.branch3x3_2b = BasicConv2d(384, 384, kernel_size=(3, 1), padding=(1, 0))
+        self.branch3x3_2a = BasicConv2d(384,
+                                        384,
+                                        kernel_size=(1, 3),
+                                        padding=(0, 1))
+        self.branch3x3_2b = BasicConv2d(384,
+                                        384,
+                                        kernel_size=(3, 1),
+                                        padding=(1, 0))
 
         self.branch3x3dbl_1 = BasicConv2d(in_channels, 448, kernel_size=1)
         self.branch3x3dbl_2 = BasicConv2d(448, 384, kernel_size=3, padding=1)
-        self.branch3x3dbl_3a = BasicConv2d(384, 384, kernel_size=(1, 3), padding=(0, 1))
-        self.branch3x3dbl_3b = BasicConv2d(384, 384, kernel_size=(3, 1), padding=(1, 0))
+        self.branch3x3dbl_3a = BasicConv2d(384,
+                                           384,
+                                           kernel_size=(1, 3),
+                                           padding=(0, 1))
+        self.branch3x3dbl_3b = BasicConv2d(384,
+                                           384,
+                                           kernel_size=(3, 1),
+                                           padding=(1, 0))
 
         self.branch_pool = BasicConv2d(in_channels, 192, kernel_size=1)
 
@@ -379,7 +414,6 @@ class InceptionE(nn.Module):
 
 
 class InceptionAux(nn.Module):
-
     def __init__(self, in_channels, num_classes):
         super(InceptionAux, self).__init__()
         self.conv0 = BasicConv2d(in_channels, 128, kernel_size=1)
@@ -407,7 +441,6 @@ class InceptionAux(nn.Module):
 
 
 class BasicConv2d(nn.Module):
-
     def __init__(self, in_channels, out_channels, **kwargs):
         super(BasicConv2d, self).__init__()
         self.conv = nn.Conv2d(in_channels, out_channels, bias=False, **kwargs)

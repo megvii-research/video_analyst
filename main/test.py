@@ -49,7 +49,7 @@ if __name__ == '__main__':
     # experiment config
     exp_cfg_path = osp.realpath(parsed_args.config)
     exp_cfg = load_cfg(exp_cfg_path)
-    logger.info("Load common config. at: %s" % exp_cfg_path)
+    logger.info("Load experiment config. at: %s" % exp_cfg_path)
 
     # retrieve tester by name & run tester
 

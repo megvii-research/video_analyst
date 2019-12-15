@@ -16,7 +16,6 @@ from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
 
 torch.set_printoptions(precision=8)
 
-
 logger = logging.getLogger(__file__)
 
 
@@ -95,12 +94,19 @@ class SiamTrack(ModuleBase):
 
         # phase: track
         elif phase == 'track':
-            search_img, c_z_k, r_z_k = args
-            # backbone feature
-            f_x = self.basemodel(search_img)
-            # feature adjustment
-            c_x = self.c_x(f_x)
-            r_x = self.r_x(f_x)
+            if len(args) == 3:
+                search_img, c_z_k, r_z_k = args
+                # backbone feature
+                f_x = self.basemodel(search_img)
+                # feature adjustment
+                c_x = self.c_x(f_x)
+                r_x = self.r_x(f_x)
+            elif len(args) == 4:
+                # c_x, r_x already computed
+                c_z_k, r_z_k, c_x, r_x = args
+            else:
+                raise ValueError("Illegal args length: %d" % len(args))
+
             # feature matching
             r_out = xcorr_depthwise(r_x, r_z_k)
             c_out = xcorr_depthwise(c_x, c_z_k)
@@ -112,8 +118,10 @@ class SiamTrack(ModuleBase):
             fcos_ctr_prob_final = torch.sigmoid(fcos_ctr_score_final)
             # apply centerness correction
             fcos_score_final = fcos_cls_prob_final * fcos_ctr_prob_final
+            # register extra output
+            extra = dict(c_x=c_x, r_x=r_x)
             # output
-            out_list = fcos_score_final, fcos_bbox_final, fcos_cls_prob_final, fcos_ctr_prob_final
+            out_list = fcos_score_final, fcos_bbox_final, fcos_cls_prob_final, fcos_ctr_prob_final, extra
         else:
             raise ValueError("Phase non-implemented.")
 

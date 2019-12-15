@@ -1,3 +1,4 @@
+import logging
 import os
 
 from yacs.config import CfgNode as CN
@@ -20,6 +21,8 @@ class Registry(dict):
     A helper class for managing registering modules, it extends a dictionary
     and provides a register functions.
 
+    usually declared in XXX_base.py, e.g. videoanalyst/model/backbone/backbone_base.py
+
     used as decorator when declaring the module:
 
     @some_registry.register
@@ -29,11 +32,20 @@ class Registry(dict):
     Access of module is just like using a dictionary, eg:
         f = some_registry["foo_module"]
     """
+    TAG = 'global'
+    logger = logging.getLogger(TAG)
+
     def __init__(self, *args, **kwargs):
+        self.name = 'Registry'
+        if len(args) > 0 and isinstance(args[0], str):
+            name, *args = args
+            self.name = name
         super(Registry, self).__init__(*args, **kwargs)
 
     def register(self, module):
-        _register_generic(self, module.__name__, module)
+        name = module.__name__
+        _register_generic(self, name, module)
+        self.logger.info('%s: %s registered' % (self.name, name))
         return module
 
 

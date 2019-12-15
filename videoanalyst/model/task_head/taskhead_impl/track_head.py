@@ -13,7 +13,6 @@ from videoanalyst.model.task_head.taskhead_base import TRACK_HEADS
 torch.set_printoptions(precision=8)
 
 
-
 def get_xy_ctr(score_size, score_offset, total_stride):
     batch, fm_height, fm_width = 1, score_size, score_size
 
@@ -56,14 +55,13 @@ class DenseboxHead(ModuleBase):
     num_conv3x3: number of conv3x3 tiled in head
     head_conv_bn: has_bn flag of conv3x3 in head, list with length of num_conv3x3
     """
-    default_hyper_params = dict(
-        total_stride=8,
-        score_size=17,
-        x_size=303,
-        num_conv3x3=3,
-        head_conv_bn=[False, False, True]
-        # "score_offset": 87,
-    )
+    default_hyper_params = dict(total_stride=8,
+                                score_size=17,
+                                x_size=303,
+                                num_conv3x3=3,
+                                head_conv_bn=[False, False, True]
+                                # "score_offset": 87,
+                                )
 
     def __init__(self):
         super(DenseboxHead, self).__init__()
@@ -194,7 +192,7 @@ class DenseboxHead(ModuleBase):
                                         kszie=3,
                                         pad=0,
                                         has_bn=head_conv_bn[i])
-            setattr(self, 'cls_p5_conv%d'%(i+1), cls_conv3x3)
-            setattr(self, 'bbox_p5_conv%d'%(i+1), bbox_conv3x3)
+            setattr(self, 'cls_p5_conv%d' % (i + 1), cls_conv3x3)
+            setattr(self, 'bbox_p5_conv%d' % (i + 1), bbox_conv3x3)
             self.cls_conv3x3_list.append(cls_conv3x3)
             self.bbox_conv3x3_list.append(bbox_conv3x3)
