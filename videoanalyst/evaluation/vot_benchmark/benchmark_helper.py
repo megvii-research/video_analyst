@@ -68,6 +68,8 @@ def load_dataset(vot_path, dataset):
         for video in videos:
             video_path = join(base_path, video)
             image_path = join(video_path, 'color')
+            if not exists(image_path):
+                image_path = video_path
             image_files = sorted(get_files(image_path, '.jpg'))
             image_files = [join(image_path, x) for x in image_files]
             gt_path = join(video_path, 'groundtruth.txt')
