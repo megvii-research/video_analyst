@@ -14,6 +14,12 @@ def build_model(
     task: str,
     cfg: CfgNode,
 ):
+    """
+    Builder function.
+    :param task: builder task name (track|vos)
+    :param cfg: buidler configuration
+    :return: module built by builder
+    """
     if task == "track":
         backbone = backbone_builder.build(task, cfg.backbone)
         losses = loss_builder.build(task, cfg.losses)

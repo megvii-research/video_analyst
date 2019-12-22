@@ -12,7 +12,8 @@ def ensure(dir_path: str):
 
 
 def _register_generic(module_dict, module_name, module):
-    assert module_name not in module_dict, print(module_name, module_dict)
+    assert module_name not in module_dict, print(
+        module_name, module_dict, 'defined in several script files')
     module_dict[module_name] = module
 
 

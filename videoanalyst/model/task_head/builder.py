@@ -11,6 +11,12 @@ logger = logging.getLogger(__file__)
 
 
 def build(task: str, cfg: CfgNode):
+    """
+    Builder function for head network.
+    :param task: builder task name
+    :param cfg: buidler configuration
+    :return: head network module built by builder
+    """
     if task == "track":
         head_modules = TRACK_HEADS
     elif task == "vos":

@@ -8,7 +8,7 @@ from videoanalyst.utils.misc import load_cfg
 def build_tracker_wt_model(cfg, device):
     """
     Load model and build tracker given configuration
-    :param cfg_path: config file path
+    :param cfg: config file path or loaded CfgNode
     :param device: device on which model will reside
     :return:
     """

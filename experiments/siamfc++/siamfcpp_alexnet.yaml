@@ -4,7 +4,7 @@ track:
       name: "AlexNet"
       AlexNet: []
     losses:
-      names: [] # "IOULoss"
+      names: []
     task_head:
       name: "DenseboxHead"
       DenseboxHead:
@@ -25,7 +25,7 @@ track:
       penalty_k: 0.04
 test:
   exp_name: "siamfc++_alexnet"
-  exp_save: "/data/video_analyst/siamfc++/"
+  exp_save: "logs/siamfc++/" # "/data/video_analyst/siamfc++/"
   dataset: "VOT2018"
   num_gpu: 1
 

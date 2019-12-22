@@ -16,6 +16,16 @@ def build(task: str,
           backbone: ModuleBase,
           head: ModuleBase,
           loss: ModuleBase = None):
+    """
+    Builder function for task module.
+
+    :param task: builder task name
+    :param cfg: buidler configuration
+    :param backbone: backbone used by task module.
+    :param head: head network used by task module.
+    :param loss: criterion module used by task module (for training). None in case other than training.
+    :return: task module built by builder
+    """
     if task == "track":
         task_modules = TRACK_TASKMODELS
     elif task == "vos":

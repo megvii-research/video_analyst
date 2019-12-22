@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*
 import logging
+from typing import Dict
 
 from yacs.config import CfgNode
 
@@ -26,15 +27,15 @@ def build(cfg: CfgNode, **kwargs):
     return track_pipeline
 
 
-# def get_config() -> Dict[str, CfgNode]:
-#     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
-#     for cfg_name, task_module in zip(["track", "vos"], [TRACK_TASKMODELS, VOS_TASKMODELS]):
-#         cfg = cfg_dict[cfg_name]
-#         cfg["name"] = "unknown"
-#         for name in task_module:
-#             cfg[name] = CfgNode()
-#             task_model = task_module[name]
-#             hps = task_model.default_hyper_params
-#             for hp_name in hps:
-#                 cfg[name][hp_name] = hps[hp_name]
-#     return cfg_dict
+def get_config() -> Dict[str, CfgNode]:
+    cfg_dict = {"track": CfgNode()}
+    for cfg_name, task_module in zip(["track"], [TRACK_PIPELINES]):
+        cfg = cfg_dict[cfg_name]
+        cfg["name"] = "unknown"
+        for name in task_module:
+            cfg[name] = CfgNode()
+            task_model = task_module[name]
+            hps = task_model.default_hyper_params
+            for hp_name in hps:
+                cfg[name][hp_name] = hps[hp_name]
+    return cfg_dict

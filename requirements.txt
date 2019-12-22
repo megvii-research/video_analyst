@@ -5,3 +5,6 @@ pillow
 Cython
 yapf==0.28.0
 opencv-python
+numpy>=1.16.0
+torch>=1.1.0
+torchvision>=0.3.0

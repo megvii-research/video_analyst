@@ -15,6 +15,17 @@ class conv_bn_relu(nn.Module):
                  has_bn=True,
                  has_relu=True,
                  bias=True):
+        """
+        Basic block with one conv, one bn, one relu in series.
+        :param in_channel: number of input channels
+        :param out_channel: number of output channels
+        :param stride: stride number
+        :param kszie: kernel size
+        :param pad: padding on each edge
+        :param has_bn: use bn or not
+        :param has_relu: use relu or not
+        :param bias: conv has bias or not
+        """
         super(conv_bn_relu, self).__init__()
         self.conv = nn.Conv2d(in_channel,
                               out_channel,
@@ -43,7 +54,11 @@ class conv_bn_relu(nn.Module):
 
 
 def xcorr_depthwise(x, kernel):
-    """depthwise cross correlation
+    """
+    Depthwise cross correlation. e.g. used for template matching in Siamese tracking network
+    :param x:
+    :param kernel: smaller than x
+    :return:
     """
     batch = kernel.size(0)
     channel = kernel.size(1)

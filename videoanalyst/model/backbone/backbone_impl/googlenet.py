@@ -1,14 +1,12 @@
+# -*- coding: utf-8 -*
 """
 Adapted from the implementation @ PyTorch model zoo
 URL: https://github.com/pytorch/vision/blob/master/torchvision/models/inception.py
 Pretrained weights downloaded from:
     https://download.pytorch.org/models/inception_v3_google-1a9a5a14.pth
-cached at:
-    /home/xuyinda/.cache/torch/checkpoints/inception_v3_google-1a9a5a14.pth
 """
 from collections import namedtuple
 
-# -*- coding: utf-8 -*
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -19,8 +17,6 @@ from videoanalyst.model.backbone.backbone_base import (TRACK_BACKBONES,
 from videoanalyst.model.module_base import ModuleBase
 
 # from videoanalyst.model.common_opr.common_block import conv_bn_relu
-
-
 
 __all__ = ['Inception3', 'inception_v3', 'get_basemodel']
 
@@ -86,8 +82,6 @@ class Inception3(ModuleBase):
 
     def __init__(self, transform_input=False):
         super(Inception3, self).__init__()
-        # self.aux_logits = aux_logits
-        # self.transform_input = transform_input
         self.Conv2d_1a_3x3 = BasicConv2d(3, 32, kernel_size=3, stride=2)
         self.Conv2d_2a_3x3 = BasicConv2d(32, 32, kernel_size=3)
         self.Conv2d_2b_3x3 = BasicConv2d(32, 64, kernel_size=3, padding=1)
@@ -101,27 +95,27 @@ class Inception3(ModuleBase):
         self.Mixed_6c = InceptionC(768, channels_7x7=160)
         self.Mixed_6d = InceptionC(768, channels_7x7=160)
         self.Mixed_6e = InceptionC(768, channels_7x7=192)
-        # if aux_logits:
-        #     self.AuxLogits = InceptionAux(768, num_classes)
-        # if not amputated:
-        #     self.Mixed_7a = InceptionD(768)
-        #     self.Mixed_7b = InceptionE(1280)
-        #     self.Mixed_7c = InceptionE(2048)
+
+        # The last stage is not used in our experiment, resulting in faster inference speed.
+        # self.Mixed_7a = InceptionD(768)
+        # self.Mixed_7b = InceptionE(1280)
+        # self.Mixed_7c = InceptionE(2048)
         # self.fc = nn.Linear(2048, num_classes)
 
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
-                import scipy.stats as stats
-                stddev = m.stddev if hasattr(m, 'stddev') else 0.1
-                X = stats.truncnorm(-2, 2, scale=stddev)
-                values = torch.as_tensor(X.rvs(m.weight.numel()),
-                                         dtype=m.weight.dtype)
-                values = values.view(m.weight.size())
-                with torch.no_grad():
-                    m.weight.copy_(values)
-            elif isinstance(m, nn.BatchNorm2d):
-                nn.init.constant_(m.weight, 1)
-                nn.init.constant_(m.bias, 0)
+        # Parameters are loaded, no need to initialized
+        # for m in self.modules():
+        #     if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
+        #         import scipy.stats as stats
+        #         stddev = m.stddev if hasattr(m, 'stddev') else 0.1
+        #         X = stats.truncnorm(-2, 2, scale=stddev)
+        #         values = torch.as_tensor(X.rvs(m.weight.numel()),
+        #                                  dtype=m.weight.dtype)
+        #         values = values.view(m.weight.size())
+        #         with torch.no_grad():
+        #             m.weight.copy_(values)
+        #     elif isinstance(m, nn.BatchNorm2d):
+        #         nn.init.constant_(m.weight, 1)
+        #         nn.init.constant_(m.bias, 0)
 
         self.channel_reduce = nn.Sequential(
             nn.Conv2d(768, 256, 1),
@@ -129,13 +123,6 @@ class Inception3(ModuleBase):
         )
 
     def forward(self, x):
-        # if self.transform_input:
-        # original part
-        # x_ch0 = torch.unsqueeze(x[:, 0], 1) * (0.229 / 0.5) + (0.485 - 0.5) / 0.5
-        # x_ch1 = torch.unsqueeze(x[:, 1], 1) * (0.224 / 0.5) + (0.456 - 0.5) / 0.5
-        # x_ch2 = torch.unsqueeze(x[:, 2], 1) * (0.225 / 0.5) + (0.406 - 0.5) / 0.5
-
-        # new part
         # RGB -> BGR, [0, 255] -> [-1, 1]
         bias = 255 / 2
         x_ch0 = (torch.unsqueeze(x[:, 2], 1) - bias) / bias
@@ -155,8 +142,8 @@ class Inception3(ModuleBase):
         # N x 80 x 73 x 73
         x = self.Conv2d_4a_3x3(x)
         # N x 192 x 71 x 71
-        if not self.amputated:
-            x = F.max_pool2d(x, kernel_size=3, stride=2)
+        # max_pool2d amputated for SOT adapdation
+        # x = F.max_pool2d(x, kernel_size=3, stride=2)
         # N x 192 x 35 x 35
         x = self.Mixed_5b(x)
         # N x 256 x 35 x 35
@@ -175,33 +162,32 @@ class Inception3(ModuleBase):
         x = self.Mixed_6e(x)
         # N x 768 x 17 x 17
 
-        if self.amputated:
-            crop_pad = self.crop_pad
-            x = x[:, :, crop_pad:-crop_pad, crop_pad:-crop_pad]
-            x = self.channel_reduce(x)
-            return x
-        else:
-            # if self.training and self.aux_logits:
-            #     aux = self.AuxLogits(x)
-            # N x 768 x 17 x 17
-            x = self.Mixed_7a(x)
-            # N x 1280 x 8 x 8
-            x = self.Mixed_7b(x)
-            # N x 2048 x 8 x 8
-            x = self.Mixed_7c(x)
-            # N x 2048 x 8 x 8
-            # Adaptive average pooling
-            x = F.adaptive_avg_pool2d(x, (1, 1))
-            # N x 2048 x 1 x 1
-            x = F.dropout(x, training=self.training)
-            # N x 2048 x 1 x 1
-            x = torch.flatten(x, 1)
-            # N x 2048
-            # x = self.fc(x)
-            # N x 1000 (num_classes)
-            # if self.training and self.aux_logits:
-            #     return _InceptionOutputs(x, aux)
-            return x
+        # cropping to alleviate
+        crop_pad = self.crop_pad
+        x = x[:, :, crop_pad:-crop_pad, crop_pad:-crop_pad]
+        x = self.channel_reduce(x)
+        return x
+
+        # The last stage is not used in our experiment, resulting in faster inference speed.
+        # # N x 768 x 17 x 17
+        # x = self.Mixed_7a(x)
+        # # N x 1280 x 8 x 8
+        # x = self.Mixed_7b(x)
+        # # N x 2048 x 8 x 8
+        # x = self.Mixed_7c(x)
+        # # N x 2048 x 8 x 8
+        # # Adaptive average pooling
+        # x = F.adaptive_avg_pool2d(x, (1, 1))
+        # # N x 2048 x 1 x 1
+        # x = F.dropout(x, training=self.training)
+        # # N x 2048 x 1 x 1
+        # x = torch.flatten(x, 1)
+        # # N x 2048
+        # # x = self.fc(x)
+        # # N x 1000 (num_classes)
+        # # if self.training and self.aux_logits:
+        # #     return _InceptionOutputs(x, aux)
+        # return x
 
     def update_params(self):
         if self._hyper_params["pretrain_model_path"] != "":

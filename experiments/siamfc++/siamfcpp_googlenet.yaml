@@ -6,7 +6,7 @@ track:
         crop_pad: 4
         amputed: True
     losses: 
-      names: [] # "IOULoss"
+      names: []
     task_head:
       name: "DenseboxHead"
       DenseboxHead:
@@ -23,12 +23,12 @@ track:
     name: "SiamFCppTracker"
     SiamFCppTracker:
       test_lr: 0.52
-      window_influence: 0.21
-      penalty_k: 0.04
+      window_influence: 0.24
+      penalty_k: 0.08
       head_shrink: 4
 test:
   exp_name: "siamfc++_googlenet"
-  exp_save: "/data/video_analyst/siamfc++/"
+  exp_save: "logs/siamfc++/" # "/data/video_analyst/siamfc++/"
   dataset: "VOT2018"
   num_gpu: 1
 

@@ -10,6 +10,12 @@ logger = logging.getLogger(__file__)
 
 
 def build(task: str, cfg: CfgNode):
+    """
+    Builder function for backbone.
+    :param task: builder task name
+    :param cfg: buidler configuration
+    :return: backbone module built by builder
+    """
     if task == "track":
         modules = TRACK_BACKBONES
     elif task == "vos":

@@ -22,11 +22,9 @@ import numpy as np
 def clip_bbox(bbox, im_size):
     """
     Clip boxes to image boundaries, support batch-wise operation
-    Args:
-        bbox: shape=(..., 4), format=(x1, y1, x2, y2)
-        im_size: shape=(..., 2), format=(w, h)
-    Returns:
-        bbox_clipped: shape=(..., 4), format=(x1, y1, x2, y2)
+    :param bbox: shape=(..., 4), format=(x1, y1, x2, y2)
+    :param im_size: shape=(..., 2), format=(w, h)
+    :return: bbox_clipped: shape=(..., 4), format=(x1, y1, x2, y2)
     """
     bbox = np.array(bbox)
     im_size = np.array(im_size)
