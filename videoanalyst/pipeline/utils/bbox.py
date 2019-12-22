@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*
 """
 * All coordinates are 0-indexed.
 * Terminology for different formats:

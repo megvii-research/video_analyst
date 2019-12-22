@@ -1,7 +1,7 @@
 dataset:
   VOT2018:
-    path: "datasets/VOT/vot2018"  # "/data/Datasets/VOT/vot2018"
+    path: "datasets/VOT/vot2018"
   VOT2019:
-    path: "datasets/VOT/vot2019"  # "/data/Datasets/VOT/vot2019"
+    path: "datasets/VOT/vot2019"
 logs:
   vot_dir: "logs/vot_dump"

@@ -3,7 +3,53 @@ This is the implementation of a series of basic algorithms which is useful for v
 , Video Object Segmentation (VOS), etc.
 
 Currnetly implemenation list:
-* SiamFC++
+* SiamFC++ (SOT)
+
+
+## Setup
+### Compile evaluation toolkit
+```
+cd videoanalyst/evaluation/vot_benchmark
+bash make.sh  # compile to get test_utils/pyvotkit/region_XXX.so
+cd -
+```
+
+### Set datasets
+Set soft link to dataset directory
+```
+ln -s path_to_datasets datasets
+```
+At _path_to_datasets_:
+```
+path_to_datasets
+└── VOT  # experiment configurations, in yaml format
+    ├── vot2018
+    │    ├── VOT2018
+    │    │    ├── ...
+    │    │    └── list.txt
+    │    └── VOT2018.json
+    └── vot2019
+         ├── VOT2019
+         │    ├── ...
+         │    └── list.txt
+         └── VOT2019.json
+```
+Auxilary files (list.txt / VOTXXXX.json) located at _videoanalyst/evaluation/vot_benchmark/vot_list_
+
+### Set models
+Set soft link to model directory
+```
+ln -s path_to_models models
+```
+At _path_to_models_
+```
+path_to_datasets
+└── siamfc
+    ├── alexnet
+    │    └── epoch-19.pkl
+    └── googlenet
+         └── epoch-15.pkl
+```
 
 ## Quick start
 ### Test
@@ -15,8 +61,8 @@ python3 ./main/test.py --config 'experiments/siamfc++/siamfcpp_googlenet.yaml' -
 ```
 ├── experiments  # experiment configurations, in yaml format
 ├── main
-│   ├── train.py # trainng entry point
-│   └── test.py # test entry point
+│   ├── train.py  # trainng entry point
+│   └── test.py  # test entry point
 ├── video_analyst
 │   ├── data  # modules related to data
 │   │   ├── dataset  # data fetcher of each individual dataset
@@ -43,3 +89,6 @@ python3 ./main/test.py --config 'experiments/siamfc++/siamfcpp_googlenet.yaml' -
 └── README.md
 ```
 
+## Acknowledgement
+* video_analyst/evaluation/vot_benchmark and other related code have been borrowed from [PySOT](https://github.com/STVIR/pysot)
+* video_analyst/evaluation/vot_benchmark and other related code have been borrowed from [got-toolkit](https://github.com/got-10k/toolkit.git)

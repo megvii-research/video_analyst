@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*
+
 from yacs.config import CfgNode as CN
 
 from videoanalyst.model import builder as model_builder
@@ -10,7 +12,7 @@ def build_tracker_wt_model(cfg, device):
     Load model and build tracker given configuration
     :param cfg: config file path or loaded CfgNode
     :param device: device on which model will reside
-    :return:
+    :return: tracker pipeline
     """
     if not isinstance(cfg, CN):
         cfg = load_cfg(cfg)
