@@ -16,7 +16,7 @@ track:
     task_model:
       name: "SiamTrack"
       SiamTrack:
-        pretrain_model_path: "/data/Models/videoanalyst_debug/siamfcpp/alexnet/eao_373_lr_52_pen_21_win_04/epoch-19.pkl"
+        pretrain_model_path: "models/siamfcpp/alexnet/eao_373_lr_52_pen_21_win_04/epoch-19.pkl"  # "/data/Models/videoanalyst_debug/siamfcpp/alexnet/eao_373_lr_52_pen_21_win_04/epoch-19.pkl"
   pipeline:
     name: "SiamFCppTracker"
     SiamFCppTracker:

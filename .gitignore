@@ -66,4 +66,5 @@ tmp/
 /logs
 /debug
 /bash_scripts
-
+/datasets
+/models
