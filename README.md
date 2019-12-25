@@ -6,56 +6,15 @@ Currnetly implemenation list:
 * SiamFC++ (SOT)
 
 
-## Setup
-### Compile evaluation toolkit
-```
-cd videoanalyst/evaluation/vot_benchmark
-bash make.sh  # compile to get test_utils/pyvotkit/region_XXX.so
-cd -
-```
-
-### Set datasets
-Set soft link to dataset directory
-```
-ln -s path_to_datasets datasets
-```
-At _path_to_datasets_:
-```
-path_to_datasets
-└── VOT  # experiment configurations, in yaml format
-    ├── vot2018
-    │    ├── VOT2018
-    │    │    ├── ...
-    │    │    └── list.txt
-    │    └── VOT2018.json
-    └── vot2019
-         ├── VOT2019
-         │    ├── ...
-         │    └── list.txt
-         └── VOT2019.json
-```
-Auxilary files (list.txt / VOTXXXX.json) located at _videoanalyst/evaluation/vot_benchmark/vot_list_
-
-### Set models
-Set soft link to model directory
-```
-ln -s path_to_models models
-```
-At _path_to_models_
-```
-path_to_datasets
-└── siamfc
-    ├── alexnet
-    │    └── epoch-19.pkl
-    └── googlenet
-         └── epoch-15.pkl
-```
-
 ## Quick start
+### Setup
+Please refer to _docs/SETUP.md_
+
 ### Test
 ```
 python3 ./main/test.py --config 'experiments/siamfc++/siamfcpp_googlenet.yaml' --dataset 'VOT2018'
 ```
+Check out the corresponding _exp_save_ path in _.yaml_ for result and raw result data, both named by _exp_name_ in _.yaml_.
 
 ## Repository structure
 ```
@@ -88,6 +47,16 @@ python3 ./main/test.py --config 'experiments/siamfc++/siamfcpp_googlenet.yaml' -
 │   └── utils  # useful tools
 └── README.md
 ```
+
+## Models
+Please refer to _docs/MODEL_ZOO.md_
+
+## TODO
+[] Test code for OTB
+[] Training code
+[] Test code for GOT-10k
+[] Test code for LaSOT
+[] Test code for TrackingNet
 
 ## Acknowledgement
 * video_analyst/evaluation/vot_benchmark and other related code have been borrowed from [PySOT](https://github.com/STVIR/pysot)

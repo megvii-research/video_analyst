@@ -18,7 +18,7 @@ track:
     task_model:
       name: "SiamTrack"
       SiamTrack:
-        pretrain_model_path: "models/siamfcpp/googlenet/epoch-15.pkl"
+        pretrain_model_path: "models/siamfcpp/siamfcpp-googlenet-vot-md5_f2680ba074213ee39d82fcb84533a1a6.pkl"
   pipeline:
     name: "SiamFCppTracker"
     SiamFCppTracker:

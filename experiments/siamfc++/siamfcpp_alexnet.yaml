@@ -16,7 +16,7 @@ track:
     task_model:
       name: "SiamTrack"
       SiamTrack:
-        pretrain_model_path: "models/siamfcpp/alexnet/epoch-19.pkl"
+        pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl"
   pipeline:
     name: "SiamFCppTracker"
     SiamFCppTracker:
