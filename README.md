@@ -8,7 +8,7 @@ Currnetly implemenation list:
 
 ## Quick start
 ### Setup
-Please refer to _docs/SETUP.md_
+Please refer to _video_analyst/docs/SETUP.md_
 
 ### Test
 ```
@@ -49,15 +49,15 @@ Check out the corresponding _exp_save_ path in _.yaml_ for result and raw result
 ```
 
 ## Models
-Please refer to _docs/MODEL_ZOO.md_
+Please refer to _video_analyst/docs/MODEL_ZOO.md_
 
 ## TODO
-[] Test code for OTB
-[] Training code
-[] Test code for GOT-10k
-[] Test code for LaSOT
-[] Test code for TrackingNet
+* [] Test code for OTB
+* [] Training code
+* [] Test code for GOT-10k
+* [] Test code for LaSOT
+* [] Test code for TrackingNet
 
 ## Acknowledgement
 * video_analyst/evaluation/vot_benchmark and other related code have been borrowed from [PySOT](https://github.com/STVIR/pysot)
-* video_analyst/evaluation/vot_benchmark and other related code have been borrowed from [got-toolkit](https://github.com/got-10k/toolkit.git)
+* video_analyst/evaluation/got_benchmark and other related code have been borrowed from [got-toolkit](https://github.com/got-10k/toolkit.git)
