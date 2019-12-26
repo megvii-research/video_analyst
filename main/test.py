@@ -7,8 +7,11 @@ import logging
 import os.path as osp
 
 from main.paths import ROOT_CFG
-from videoanalyst.engine.test import test
-from videoanalyst.utils import load_cfg
+from videoanalyst.config.config import cfg as whole_config
+from videoanalyst.config.config import specify_task
+from videoanalyst.engine.builder import build as tester_builder
+from videoanalyst.model import builder as model_builder
+from videoanalyst.pipeline import builder as pipeline_builder
 
 logger = logging.getLogger('global')
 
@@ -41,18 +44,20 @@ if __name__ == '__main__':
     parser = make_parser()
     parsed_args = parser.parse_args()
 
-    # common config
-    common_cfg_path = ROOT_CFG
-    common_cfg = load_cfg(common_cfg_path)
-    logger.info("Load common config. at: %s" % common_cfg_path)
-
     # experiment config
     exp_cfg_path = osp.realpath(parsed_args.config)
-    exp_cfg = load_cfg(exp_cfg_path)
+    whole_config.merge_from_file(exp_cfg_path)
     logger.info("Load experiment config. at: %s" % exp_cfg_path)
-
-    # retrieve tester by name & run tester
-
-    # Start engine
-    # TESTERS[tester_name](parsed_args, common_cfg, exp_cfg)
-    test(parsed_args, common_cfg, exp_cfg)
+    task, config = specify_task(whole_config)
+    config.freeze()
+    # build model
+    model = model_builder.build_model(task, config.model)
+    # build pipeline
+    pipeline = pipeline_builder.build_pipeline('track',
+                                              config.pipeline,
+                                              model=model)
+    # build tester
+    testers = tester_builder(task, config, "tester")
+    # start engine
+    for tester in testers:
+        tester.test()

@@ -20,11 +20,9 @@ def build_pipeline(task: str, cfg: CfgNode, **kwargs):
 
 def get_config() -> Dict[str, CfgNode]:
 
-    cfg_dict = {"pipeline"}
+    cfg_dict = {"track": CfgNode()}
 
     for task in cfg_dict:
         cfg = cfg_dict[task]
         cfg["tracker"] = tracker_builder.get_config()['track']
-        # cfg["segmenter"] = tracker_builder.get_config()
-
     return cfg_dict

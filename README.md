@@ -3,20 +3,21 @@ This is the implementation of a series of basic algorithms which is useful for v
 , Video Object Segmentation (VOS), etc.
 
 Currnetly implemenation list:
-* SiamFC++ (SOT)
+* SOT
+    * [SiamFC++: Towards Robust and Accurate Visual Tracking with Target Estimation Guidelines](https://arxiv.org/abs/1911.06188) 
 
 
 ## Quick start
 ### Setup
-Please refer to _video_analyst/docs/SETUP.md_
+Please refer to [SETUP.md](docs/SETUP.md)
 
-### Test
+### Test on VOT
 ```
 python3 ./main/test.py --config 'experiments/siamfc++/siamfcpp_googlenet.yaml' --dataset 'VOT2018'
 ```
 Check out the corresponding _exp_save_ path in _.yaml_ for result and raw result data, both named by _exp_name_ in _.yaml_.
 
-## Repository structure
+## Repository structure (in processing)
 ```
 ├── experiments  # experiment configurations, in yaml format
 ├── main
@@ -48,15 +49,12 @@ Check out the corresponding _exp_save_ path in _.yaml_ for result and raw result
 └── README.md
 ```
 
-## Models
-Please refer to _video_analyst/docs/MODEL_ZOO.md_
+## Model ZOO
+Please refer to [MODEL_ZOO.md](docs/MODEL_ZOO.md)
 
 ## TODO
-* [] Test code for OTB
 * [] Training code
-* [] Test code for GOT-10k
-* [] Test code for LaSOT
-* [] Test code for TrackingNet
+* [] Test code for OTB, GOT-10k, LaSOT, TrackingNet
 
 ## Acknowledgement
 * video_analyst/evaluation/vot_benchmark and other related code have been borrowed from [PySOT](https://github.com/STVIR/pysot)

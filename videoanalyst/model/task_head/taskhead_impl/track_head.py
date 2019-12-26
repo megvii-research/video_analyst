@@ -44,16 +44,14 @@ def get_box(xy_ctr, offsets):
 @TRACK_HEADS.register
 class DenseboxHead(ModuleBase):
     r"""
-    Densebox Head.
+    Densebox Head for siamfcpp
 
-
-    ---
-    Hyper-Parameters
-    total_stride: stride in backbone
-    score_size: final feature map
-    x_size: search image size
-    num_conv3x3: number of conv3x3 tiled in head
-    head_conv_bn: has_bn flag of conv3x3 in head, list with length of num_conv3x3
+    Args:
+    total_stride (int): stride in backbone
+    score_size (int): final feature map
+    x_size (int): search image size
+    num_conv3x3 (int): number of conv3x3 tiled in head
+    head_conv_bn (list): has_bn flag of conv3x3 in head, list with length of num_conv3x3
     """
     default_hyper_params = dict(total_stride=8,
                                 score_size=17,
@@ -90,33 +88,6 @@ class DenseboxHead(ModuleBase):
         self.cls_convs = []
         self.bbox_convs = []
 
-        # initialze head
-        # conv_list = [
-        #     self.cls_p5_conv1.conv, self.cls_p5_conv2.conv,
-        #     self.cls_score_p5.conv, self.ctr_score_p5.conv,
-        #     self.bbox_p5_conv1.conv, self.bbox_p5_conv2.conv,
-        #     self.bbox_offsets_p5.conv
-        # ]
-        # conv_classifier = [self.cls_score_p5.conv]
-        # assert all(elem in conv_list for elem in conv_classifier)
-        #
-        # pi = 0.01
-        # bv = -np.log((1 - pi) / pi)
-        # for ith in range(len(conv_list)):
-        #     # fetch conv from list
-        #     conv = conv_list[ith]
-        #     # torch.nn.init.normal_(conv.weight, std=0.01)
-        #     torch.nn.init.normal_(conv.weight, std=0.001)  #0.0001)
-        #     # nn.init.kaiming_uniform_(conv.weight, a=np.sqrt(5))  # from PyTorch default implementation
-        #     # nn.init.kaiming_uniform_(conv.weight, a=0)  # from PyTorch default implementation
-        #     if conv in conv_classifier:
-        #         torch.nn.init.constant_(conv.bias, torch.tensor(bv))
-        #     else:
-        #         # torch.nn.init.constant_(conv.bias, 0)
-        #         # from PyTorch default implementation
-        #         fan_in, _ = nn.init._calculate_fan_in_and_fan_out(conv.weight)
-        #         bound = 1 / np.sqrt(fan_in)
-        #         nn.init.uniform_(conv.bias, -bound, bound)
 
     def forward(self, c_out, r_out):
         # classification head
@@ -125,20 +96,8 @@ class DenseboxHead(ModuleBase):
         bbox = r_out
 
         for i in range(0, num_conv3x3):
-            # cls = self.cls_p5_conv_x(cls)
-            # cls = getattr(self, 'cls_p5_conv%d'%i)(cls)
             cls = self.cls_conv3x3_list[i](cls)
-            # bbox = self.bbox_p5_conv_x(bbox)
-            # bbox = getattr(self, 'bbox_p5_conv%d'%i)(bbox)
             bbox = self.bbox_conv3x3_list[i](bbox)
-
-        # cls = self.cls_p5_conv1(cls)
-        # cls = self.cls_p5_conv2(cls)
-        # cls = self.cls_p5_conv3(cls)
-        # bbox = self.bbox_p5_conv1(bbox)
-        # bbox = self.bbox_p5_conv2(bbox)
-        # bbox = self.bbox_p5_conv3(bbox)
-
         # classification score
         cls_score = self.cls_score_p5(cls)  #todo
         cls_score = cls_score.permute(0, 2, 3, 1)

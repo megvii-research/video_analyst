@@ -9,8 +9,12 @@ from videoanalyst.utils import ensure_dir
 def setup(cfg: CfgNode):
     r"""
     automatically setup some attributes
-    :param cfg: task specific config
-    :return: config
+
+    Args:
+    cfg: task specific config
+    
+    Returns:
+    config
     """
     ensure_dir(cfg["exp_save"])
     cfg.auto = CfgNode()

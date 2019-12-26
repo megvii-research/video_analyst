@@ -1,19 +1,25 @@
 ## Setup
+### 
 ### Install requirements
-You can choose either using native python (with pip/pip3) or using virtual environment (with conda). The command using pip3 and THU TUNA source is presented bellow:
+- Linux or MacOS
+- Python >= 3.5
+- GCC >= 4.9
 ```
-pip3 install -U -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+git clone https://github.com/MegviiDetection/video_analyst.git
+cd video_analyst
+```
+You can choose either using native python (with pip/pip3) or using virtual environment (with conda).
+```
+pip3 install -U -r requirements.txt 
 ```
 
 ### Compile evaluation toolkit
 ```
-cd video_analyst/evaluation/vot_benchmark
-bash make.sh  # compile to get test_utils/pyvotkit/region_XXX.so
-cd -
+bash compile.sh
 ```
 
-### Set datasets
-Set soft link to dataset directory (see _video_analyst/config.yaml_)
+### Set VOT datasets
+Set soft link to dataset directory (see [config example](../experiments/siamfc++/siamfcpp_alexnet.yaml))
 ```
 ln -s path_to_datasets datasets
 ```
@@ -33,7 +39,7 @@ path_to_datasets
          │    └── list.txt
          └── VOT2019.json
 ```
-Auxilary files (list.txt / VOTXXXX.json) located at _video_analyst/evaluation/vot_benchmark/vot_list_
+Auxilary files (list.txt / VOTXXXX.json) located at _videoanalyst/evaluation/vot_benchmark/vot_list_
 
 ### Set models
 Set soft link to model directory
@@ -44,7 +50,7 @@ ln -s path_to_models models
 At _path_to_models_:
 ```
 path_to_datasets
-└── siamfc
+└── siamfcpp
     ├── alexnet
     │    └── epoch-19.pkl
     └── googlenet

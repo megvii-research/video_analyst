@@ -4,7 +4,7 @@ import os
 from yacs.config import CfgNode as CN
 
 
-def ensure(dir_path: str):
+def ensure_dir(dir_path: str):
     if os.path.exists(dir_path):
         return
     else:

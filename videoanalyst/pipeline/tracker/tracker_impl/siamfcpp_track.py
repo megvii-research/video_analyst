@@ -12,8 +12,6 @@ from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
                                          imarray_to_tensor, tensor_to_numpy,
                                          xywh2cxywh, xyxy2cxywh)
 
-eps = 1e-7
-
 
 # ============================== Tracker definition ============================== #
 @TRACK_PIPELINES.register
@@ -53,6 +51,10 @@ class SiamFCppTracker(PipelineBase):
         self.model = model.to(device)
         self.model.eval()
         self.debug = debug
+    
+    def to_device(self, device):
+        self.device = device
+        self.model = self.model.to(device)
 
     def update_params(self):
         hps = self._hyper_params
