@@ -1,11 +1,14 @@
+task_name: "track"
 track:
+  exp_name: "siamfc++_googlenet_multi_temp"
+  exp_save: "logs"
   model:
     backbone:
       name: "Inception3"
       Inception3:
         crop_pad: 4
-        amputed: True
-    losses: 
+        amputated: True
+    losses:
       names: []
     task_head:
       name: "DenseboxHead"
@@ -20,16 +23,17 @@ track:
       SiamTrack:
         pretrain_model_path: "models/siamfcpp/siamfcpp-googlenet-vot-md5_f2680ba074213ee39d82fcb84533a1a6.pkl"
   pipeline:
-    name: "SiamFCppTracker"
-    SiamFCppTracker:
+    name: "SiamFCppMultiTempTracker"
+    SiamFCppMultiTempTracker:
       test_lr: 0.52
-      window_influence: 0.24
-      penalty_k: 0.08
+      window_influence: 0.21
+      penalty_k: 0.04
       head_shrink: 4
-test:
-  exp_name: "siamfc++_googlenet"
-  exp_save: "logs/siamfc++/"
-  dataset: "VOT2018"
-  num_gpu: 1
-
-    
+      mem_step: 5
+      mem_len: 4
+      st_mem_coef: 0.6
+  tester:
+    names: ["VOTTester",]
+    VOTTester:
+      device_num: 1
+      dataset_names: ["VOT2018"]

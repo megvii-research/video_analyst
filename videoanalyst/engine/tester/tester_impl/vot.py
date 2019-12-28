@@ -21,7 +21,9 @@ from videoanalyst.engine.tester.tester_base import TRACK_TESTERS, TesterBase
 from videoanalyst.evaluation import vot_benchmark
 from videoanalyst.utils import ensure_dir
 
-logger = logging.getLogger(__file__)
+# logger = logging.getLogger(__file__)
+logger = logging.getLogger("global")
+
 
 @TRACK_TESTERS.register
 class VOTTester(TesterBase):
@@ -41,31 +43,36 @@ class VOTTester(TesterBase):
         },
         dataset_names = ["VOT2018",], 
     )
-    def __init__(self, pipeline, cfg):
-        super(VOTTester, self).__init__(pipeline, cfg)
+
+    def __init__(self, cfg, pipeline):
+        super(VOTTester, self).__init__(cfg, pipeline)
+        self._state['speed'] = -1
 
     def test(self):
         # set dir
         self.tracker_name = self._cfg.exp_name
         for dataset_name in self._hyper_params["dataset_names"]:
             self.dataset_name = dataset_name
-            self.tracker_dir = os.path.join(self._cfg.auto.log_dir, self._hyper_params["dataset_name"])
+            # self.tracker_dir = os.path.join(self._cfg.auto.log_dir, self._hyper_params["dataset_name"])
+            self.tracker_dir = os.path.join(self._cfg.exp_save, self.dataset_name)
             self.save_root_dir = os.path.join(self.tracker_dir, self.tracker_name, "baseline")
             ensure_dir(self.save_root_dir)
             # track videos
             self.run_tracker()
-            # evaluation 
+            # evaluation
             self.evaluation()
 
     def run_tracker(self):
         num_gpu = self._hyper_params["device_num"]
         all_devs = [torch.device("cuda:%d" % i) for i in range(num_gpu)]
         logging.info('runing test on devices {}'.format(all_devs))
-        vot_root = self._hyper_params["vot_data_root"]
+        vot_root = self._hyper_params["vot_data_root"][self.dataset_name]
         logger.info('Using dataset %s at: %s' % (self.dataset_name, vot_root))
         # setup dataset
         dataset = vot_benchmark.load_dataset(vot_root, self.dataset_name)
-        keys = list(dataset.keys()).sort()
+        self.dataset = dataset
+        keys = list(dataset.keys())
+        keys.sort()
         nr_records = len(keys)
         pbar = tqdm(total=nr_records)
         mean_speed = -1
@@ -107,9 +114,11 @@ class VOTTester(TesterBase):
         mean_speed = float(np.mean(speed_list))
         logger.info('Total Lost: {:d}'.format(total_lost))
         logger.info('Mean Speed: {:.2f} FPS'.format(mean_speed))
+        self._state['speed'] = mean_speed
 
     def worker(self, records, dev, result_queue=None, speed_queue=None):
-        tracker = copy.deepcopy(self._pipeline.to_divice(dev))
+        tracker = copy.deepcopy(self._pipeline)
+        tracker.to_device(dev)
         for v_id, video in enumerate(records):
             lost, speed = self.track_single_video(tracker, video, v_id=v_id)
             if result_queue is not None:
@@ -121,17 +130,19 @@ class VOTTester(TesterBase):
         tracker_name = self._cfg.exp_name
         result_csv = "%s.csv" % tracker_name
 
-        csv_to_write = open(join(self.save_root_dir, result_csv), 'a+')
+        csv_to_write = open(join(self.tracker_dir, result_csv), 'a+')
         dataset = vot_benchmark.VOTDataset(self.dataset_name,
-                                        self._hyper_params["vot_data_dir"])
+                                        self._hyper_params["vot_data_root"][self.dataset_name])
         dataset.set_tracker(self.tracker_dir, self.tracker_name)
         ar_benchmark = vot_benchmark.AccuracyRobustnessBenchmark(dataset)
         ar_result = {}
         ret = ar_benchmark.eval(self.tracker_name)
+        ar_result.update(ret)
         ar_benchmark.show_result(ar_result)
         benchmark = vot_benchmark.EAOBenchmark(dataset)
         eao_result = {}
-        eao_result = benchmark.eval(self.tracker_name)
+        ret = benchmark.eval(self.tracker_name)
+        eao_result.update(ret)
         ar_benchmark.show_result(ar_result, eao_result=eao_result, show_video_level=False)
         #我觉得没必要跑多进程的测试吧，都是只跑一个
         '''
@@ -158,9 +169,9 @@ class VOTTester(TesterBase):
         self.write_result_to_csv(
                             ar_result,
                             eao_result,
-                            result_csv=csv_to_write)
+                            speed=self._state['speed'],
+                            result_csv=csv_to_write,)
         csv_to_write.close()
-
 
     def track_single_video(self, tracker, video, v_id=0):
         r"""
@@ -179,6 +190,7 @@ class VOTTester(TesterBase):
         '''
 
         regions = []
+        video = self.dataset[video]
         image_files, gt = video['image_files'], video['gt']
         start_frame, end_frame, lost_times, toc = 0, len(image_files), 0, 0
         for f, image_file in enumerate(tqdm(image_files)):
@@ -226,6 +238,7 @@ class VOTTester(TesterBase):
 
         # save result
         result_dir = join(self.save_root_dir, video['name'])
+        ensure_dir(result_dir)
         result_path = join(result_dir, '{:s}_001.txt'.format(video['name']))
         with open(result_path, "w") as fin:
             for x in regions:

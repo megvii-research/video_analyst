@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*
-from videoanalyst.utils import Registry
-
-
 from copy import deepcopy
 
 from torch import nn
+
+from videoanalyst.utils import Registry
 
 TRACK_TESTERS = Registry('TRACK_TESTERS')
 VOS_TESTERS = Registry('VOS_TESTERS')
@@ -12,7 +11,7 @@ VOS_TESTERS = Registry('VOS_TESTERS')
 
 class TesterBase:
     r"""
-    Tester base class (e.g. procedure defined for tracker / segmentor / etc.)
+    Tester base class (e.g. procedure defined for tracker / segmenter / etc.)
     Interface descriptions:
         init(im, state):
         update(im):
@@ -20,7 +19,7 @@ class TesterBase:
     # Define your default hyper-parameters here in your sub-class.
     default_hyper_params = dict()
 
-    def __init__(self, pipeline, cfg):
+    def __init__(self, cfg, pipeline):
         self._hyper_params = deepcopy(
             self.default_hyper_params)  # mapping-like object
         self._state = dict()  # pipeline state

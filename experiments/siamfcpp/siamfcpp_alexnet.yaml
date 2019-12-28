@@ -1,10 +1,14 @@
+task_name: "track"
 track:
+  exp_name: "siamfcpp_alexnet"
+  exp_save: "logs"
   model:
     backbone:
       name: "AlexNet"
-      AlexNet: []
+      AlexNet:
+        pretrain_model_path: ""
     losses:
-      names: [] # "IOULoss"
+      names: []
     task_head:
       name: "DenseboxHead"
       DenseboxHead:
@@ -18,18 +22,13 @@ track:
       SiamTrack:
         pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl"
   pipeline:
-    name: "SiamFCppMultiTempTracker"
-    SiamFCppMultiTempTracker:
+    name: "SiamFCppTracker"
+    SiamFCppTracker:
       test_lr: 0.52
       window_influence: 0.21
       penalty_k: 0.04
-      mem_step: 5
-      mem_len: 5
-      st_mem_coef: 0.5
-test:
-  exp_name: "siamfc++_alexnet_multi_temp"
-  exp_save: "logs/siamfc++/"
-  dataset: "VOT2018"
-  num_gpu: 1
-
-    
+  tester:
+    names: ["VOTTester",]
+    VOTTester:
+      device_num: 1
+      dataset_names: ["VOT2018"]

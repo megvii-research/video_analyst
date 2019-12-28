@@ -4,10 +4,12 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
-from .tester_base import TRACK_TESTERS, VOS_TESTERS
 from videoanalyst.pipeline.pipeline_base import PipelineBase
 
+from .tester_base import TRACK_TESTERS, VOS_TESTERS
+
 logger = logging.getLogger(__file__)
+
 
 def build(task: str, cfg: CfgNode, pipeline:PipelineBase):
     if task == "track":
@@ -21,17 +23,19 @@ def build(task: str, cfg: CfgNode, pipeline:PipelineBase):
     testers = []
     # 此处可以返回多个实验的tester
     for name in names:
-        tester = modules[name]()
+        tester = modules[name](cfg, pipeline)
         hps = tester.get_hps()
 
+        # from IPython import embed;embed()
         for hp_name in hps:
-            if hp_name in cfg[name]:
-                new_value = cfg[name][hp_name]
+            if hp_name in cfg.tester[name]:
+                new_value = cfg.tester[name][hp_name]
                 hps[hp_name] = new_value
         tester.set_hps(hps)
         tester.update_params()
         testers.append(tester)
     return testers
+
 
 def get_config() -> Dict[str, CfgNode]:
     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
@@ -40,11 +44,10 @@ def get_config() -> Dict[str, CfgNode]:
         cfg = cfg_dict[cfg_name]
         cfg["names"] = []
         for name in module:
+            cfg["names"].append(name)
             cfg[name] = CfgNode()
             tester = module[name]
             hps = tester.default_hyper_params
             for hp_name in hps:
                 cfg[name][hp_name] = hps[hp_name]
     return cfg_dict
-
-

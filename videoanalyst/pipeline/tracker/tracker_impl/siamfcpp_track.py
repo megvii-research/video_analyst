@@ -32,14 +32,6 @@ class SiamFCppTracker(PipelineBase):
         phase_track="track",
     )
 
-    #  calculated part
-    # default_hyper_params['score_size'] = \
-    #     (default_hyper_params['x_size']-['z_size']) // default_hyper_params['total_stride']\
-    #     + 1 - default_hyper_params['head_shrink']
-    # default_hyper_params['score_offset'] = \
-    #     (default_hyper_params['x_size'] - 1 -
-    #      (default_hyper_params['score_size'] - 1) * default_hyper_params['total_stride']) // 2
-
     def __init__(self, model=None, device=None, debug=False):
         super().__init__()
         self.update_params()

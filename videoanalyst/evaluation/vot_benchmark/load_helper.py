@@ -30,4 +30,3 @@ def remove_prefix(state_dict, prefix):
     logger.info('remove prefix \'{}\''.format(prefix))
     f = lambda x: x.split(prefix, 1)[-1] if x.startswith(prefix) else x
     return {f(key): value for key, value in state_dict.items()}
-

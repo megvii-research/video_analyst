@@ -19,7 +19,7 @@ bash compile.sh
 ```
 
 ### Set VOT datasets
-Set soft link to dataset directory (see [config example](../experiments/siamfc++/siamfcpp_alexnet.yaml))
+Set soft link to dataset directory (see [config example](../experiments/siamfcpp/siamfcpp_alexnet.yaml))
 ```
 ln -s path_to_datasets datasets
 ```
