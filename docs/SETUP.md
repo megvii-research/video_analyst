@@ -18,7 +18,7 @@ pip3 install -U -r requirements.txt
 bash compile.sh
 ```
 
-### Set VOT datasets
+### Set datasets
 Set soft link to dataset directory (see [config example](../experiments/siamfcpp/siamfcpp_alexnet.yaml))
 ```
 ln -s path_to_datasets datasets
@@ -40,6 +40,15 @@ path_to_datasets
          └── VOT2019.json
 ```
 Auxilary files (list.txt / VOTXXXX.json) located at _videoanalyst/evaluation/vot_benchmark/vot_list_
+
+#### Download
+We provide download links for VOT2018 / VOT2019:
+* [Google Drive](https://drive.google.com/open?id=18vaGhvrr_rt70sZr_TisrWl7meO9NE0J)
+* [Baidu Disk](https://pan.baidu.com/s/1HZkbWen4mEkxaJL3Rj9pig), code: xg4q
+
+__Acknowledgement:__: Following datasets have been downloaded with [TrackDat](https://github.com/jvlmdr/trackdat) 
+* VOT2018
+* VOT2019
 
 ### Set models
 Set soft link to model directory
