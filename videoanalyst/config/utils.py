@@ -25,5 +25,8 @@ def setup(cfg: CfgNode):
     cfg.auto.log_dir = os.path.join(cfg.auto.exp_dir, "logs")
     ensure_dir(cfg.auto.log_dir)
 
+    cfg.auto.model_dir = os.path.join(cfg.auto.exp_dir, "datasets")
+    ensure_dir(cfg.auto.model_dir)
+
     cfg.auto.model_dir = os.path.join(cfg.auto.exp_dir, "models")
     ensure_dir(cfg.auto.model_dir)

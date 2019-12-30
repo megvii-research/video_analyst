@@ -10,8 +10,8 @@ from .task_model import builder as task_builder
 
 
 def build_model(
-    task: str,
-    cfg: CfgNode,
+        task: str,
+        cfg: CfgNode,
 ):
     """
     Builder function.
@@ -32,6 +32,10 @@ def build_model(
 
 
 def get_config() -> Dict[str, CfgNode]:
+    """
+    Get model list config
+    :return:
+    """
     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
 
     for task in cfg_dict:

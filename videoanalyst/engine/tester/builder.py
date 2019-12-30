@@ -11,7 +11,7 @@ from .tester_base import TRACK_TESTERS, VOS_TESTERS
 logger = logging.getLogger(__file__)
 
 
-def build(task: str, cfg: CfgNode, pipeline:PipelineBase):
+def build(task: str, cfg: CfgNode, pipeline: PipelineBase):
     if task == "track":
         modules = TRACK_TESTERS
     elif task == "vos":

@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*
 import copy
-import glob
 import itertools
 import logging
 import math
 import os
-import os.path as osp
-import sys
 from collections import OrderedDict
 from multiprocessing import Process, Queue
 from os.path import join
@@ -21,7 +18,7 @@ from videoanalyst.engine.tester.tester_base import TRACK_TESTERS, TesterBase
 from videoanalyst.evaluation import vot_benchmark
 from videoanalyst.utils import ensure_dir
 
-# logger = logging.getLogger(__file__)
+vot_benchmark.init_log('global', logging.INFO)
 logger = logging.getLogger("global")
 
 
@@ -34,28 +31,41 @@ class VOTTester(TesterBase):
                                     |-eval_result.csv evaluation result file
 
     """
-    
+
     default_hyper_params = dict(
         device_num=1,
         vot_data_root={
             "VOT2018": "datasets/VOT/vot2018",
             "VOT2019": "datasets/VOT/vot2019"
         },
-        dataset_names = ["VOT2018",], 
+        dataset_names=[
+            "VOT2018",
+        ],
     )
 
     def __init__(self, cfg, pipeline):
+        """
+        Crete tester with config and pipeline
+        :param cfg: parent config, (e.g. model / pipeline / tester)
+        :param pipeline: pipeline to test
+        """
         super(VOTTester, self).__init__(cfg, pipeline)
         self._state['speed'] = -1
 
     def test(self):
+        """
+        Run test
+        :return:
+        """
         # set dir
         self.tracker_name = self._cfg.exp_name
         for dataset_name in self._hyper_params["dataset_names"]:
             self.dataset_name = dataset_name
             # self.tracker_dir = os.path.join(self._cfg.auto.log_dir, self._hyper_params["dataset_name"])
-            self.tracker_dir = os.path.join(self._cfg.exp_save, self.dataset_name)
-            self.save_root_dir = os.path.join(self.tracker_dir, self.tracker_name, "baseline")
+            self.tracker_dir = os.path.join(self._cfg.exp_save,
+                                            self.dataset_name)
+            self.save_root_dir = os.path.join(self.tracker_dir,
+                                              self.tracker_name, "baseline")
             ensure_dir(self.save_root_dir)
             # track videos
             self.run_tracker()
@@ -63,6 +73,10 @@ class VOTTester(TesterBase):
             self.evaluation()
 
     def run_tracker(self):
+        """
+        Run self.pipeline on VOT
+        :return:
+        """
         num_gpu = self._hyper_params["device_num"]
         all_devs = [torch.device("cuda:%d" % i) for i in range(num_gpu)]
         logging.info('runing test on devices {}'.format(all_devs))
@@ -76,7 +90,6 @@ class VOTTester(TesterBase):
         nr_records = len(keys)
         pbar = tqdm(total=nr_records)
         mean_speed = -1
-        vot_benchmark.init_log('global', logging.INFO)
         total_lost = 0
         speed_list = []
         result_queue = Queue(500)
@@ -98,7 +111,8 @@ class VOTTester(TesterBase):
                 end = min(start + nr_video, nr_records)
                 split_records = keys[start:end]
                 proc = Process(target=self.worker,
-                            args=(split_records, all_devs[i], result_queue, speed_queue))
+                               args=(split_records, all_devs[i], result_queue,
+                                     speed_queue))
                 print('process:%d, start:%d, end:%d' % (i, start, end))
                 proc.start()
                 procs.append(proc)
@@ -117,6 +131,14 @@ class VOTTester(TesterBase):
         self._state['speed'] = mean_speed
 
     def worker(self, records, dev, result_queue=None, speed_queue=None):
+        """
+        Worker to run tracker on records
+        :param records: specific records, can be a subset of whole sequence
+        :param dev: torch.device object
+        :param result_queue: queue for result collecting
+        :param speed_queue: queue for fps measurement collecting
+        :return:
+        """
         tracker = copy.deepcopy(self._pipeline)
         tracker.to_device(dev)
         for v_id, video in enumerate(records):
@@ -127,12 +149,16 @@ class VOTTester(TesterBase):
                 speed_queue.put_nowait(speed)
 
     def evaluation(self):
+        """
+        Run evaluation & write result to csv file under self.tracker_dir
+        """
         tracker_name = self._cfg.exp_name
         result_csv = "%s.csv" % tracker_name
 
         csv_to_write = open(join(self.tracker_dir, result_csv), 'a+')
-        dataset = vot_benchmark.VOTDataset(self.dataset_name,
-                                        self._hyper_params["vot_data_root"][self.dataset_name])
+        dataset = vot_benchmark.VOTDataset(
+            self.dataset_name,
+            self._hyper_params["vot_data_root"][self.dataset_name])
         dataset.set_tracker(self.tracker_dir, self.tracker_name)
         ar_benchmark = vot_benchmark.AccuracyRobustnessBenchmark(dataset)
         ar_result = {}
@@ -143,34 +169,15 @@ class VOTTester(TesterBase):
         eao_result = {}
         ret = benchmark.eval(self.tracker_name)
         eao_result.update(ret)
-        ar_benchmark.show_result(ar_result, eao_result=eao_result, show_video_level=False)
-        #我觉得没必要跑多进程的测试吧，都是只跑一个
-        '''
-        from multiprocessing import Pool
-        with Pool(processes=min(5, len(trackers))) as pool:
-            for ret in tqdm(pool.imap_unordered(ar_benchmark.eval, trackers),
-                            desc='eval ar',
-                            total=len(trackers),
-                            ncols=100):
-                ar_result.update(ret)
-        benchmark = vot_benchmark.EAOBenchmark(dataset)
-        eao_result = {}
-        with Pool(processes=min(5, len(trackers))) as pool:
-            for ret in tqdm(pool.imap_unordered(benchmark.eval, trackers),
-                            desc='eval eao',
-                            total=len(trackers),
-                            ncols=100):
-                eao_result.update(ret)
-        show_video_level = False
         ar_benchmark.show_result(ar_result,
-                                eao_result,
-                                show_video_level=show_video_level)
-        '''
+                                 eao_result=eao_result,
+                                 show_video_level=False)
         self.write_result_to_csv(
-                            ar_result,
-                            eao_result,
-                            speed=self._state['speed'],
-                            result_csv=csv_to_write,)
+            ar_result,
+            eao_result,
+            speed=self._state['speed'],
+            result_csv=csv_to_write,
+        )
         csv_to_write.close()
 
     def track_single_video(self, tracker, video, v_id=0):
@@ -179,16 +186,9 @@ class VOTTester(TesterBase):
 
         Args:
             tracker: pipeline
-            video:
-            v_id:
+            video: video name
+            v_id: video id
         """
-        '''
-        tracker_name = exp_cfg.test.exp_name
-        result_path = join(exp_cfg.test.exp_save, tracker_name, 'baseline',
-                        video['name'])
-        ensure(result_path)
-        '''
-
         regions = []
         video = self.dataset[video]
         image_files, gt = video['image_files'], video['gt']
@@ -209,18 +209,19 @@ class VOTTester(TesterBase):
                 location = tracker.update(im)
 
                 gt_polygon = (gt[f][0], gt[f][1], gt[f][2], gt[f][3], gt[f][4],
-                            gt[f][5], gt[f][6], gt[f][7])
-                pred_polygon = (location[0], location[1], location[0] + location[2],
-                                location[1], location[0] + location[2],
+                              gt[f][5], gt[f][6], gt[f][7])
+                pred_polygon = (location[0], location[1],
+                                location[0] + location[2], location[1],
+                                location[0] + location[2],
                                 location[1] + location[3], location[0],
                                 location[1] + location[3])
-                b_overlap = vot_benchmark.vot_overlap(gt_polygon, pred_polygon,
-                                                    (im.shape[1], im.shape[0]))
+                b_overlap = vot_benchmark.vot_overlap(
+                    gt_polygon, pred_polygon, (im.shape[1], im.shape[0]))
                 gt_polygon = ((gt[f][0], gt[f][1]), (gt[f][2], gt[f][3]),
-                            (gt[f][4], gt[f][5]), (gt[f][6], gt[f][7]))
+                              (gt[f][4], gt[f][5]), (gt[f][6], gt[f][7]))
                 pred_polygon = ((location[0], location[1]),
                                 (location[0] + location[2],
-                                location[1]), (location[0] + location[2],
+                                 location[1]), (location[0] + location[2],
                                                 location[1] + location[3]),
                                 (location[0], location[1] + location[3]))
 
@@ -246,13 +247,10 @@ class VOTTester(TesterBase):
                     fin.write(','.join([vot_benchmark.vot_float2str("%.4f", i) for i in x]) + '\n')
 
         logger.info(
-            '({:d}) Video: {:12s} Time: {:02.1f}s Speed: {:3.1f}fps Lost: {:d} '.
-            format(v_id, video['name'], toc, f / toc, lost_times))
+            '({:d}) Video: {:12s} Time: {:02.1f}s Speed: {:3.1f}fps Lost: {:d} '
+            .format(v_id, video['name'], toc, f / toc, lost_times))
 
         return lost_times, f / toc
-
-
-
 
     def write_result_to_csv(self,
                             ar_result,
@@ -283,4 +281,3 @@ class VOTTester(TesterBase):
         result_csv.write('%s\n' % header)
         row_data = ','.join([str(v) for v in row_dict.values()])
         result_csv.write('%s\n' % row_data)
-

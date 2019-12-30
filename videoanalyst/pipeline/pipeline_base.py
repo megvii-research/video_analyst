@@ -35,7 +35,6 @@ class PipelineBase:
         r"""
         an interface for update params
         """
-
     def init(self, im, state):
         r"""
         an interface for pipeline initialization (e.g. template feature extraction)

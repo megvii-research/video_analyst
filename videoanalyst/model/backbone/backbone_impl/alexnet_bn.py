@@ -11,6 +11,14 @@ from videoanalyst.model.module_base import ModuleBase
 @VOS_BACKBONES.register
 @TRACK_BACKBONES.register
 class AlexNet(ModuleBase):
+    r"""
+    AlexNet
+    ---
+    Hyper-parameters:
+        pretrain_model_path: string
+            Path to pretrained backbone parameter file,
+            Parameter to be loaded in _update_params_
+    """
     default_hyper_params = {"pretrain_model_path": ""}
 
     def __init__(self):

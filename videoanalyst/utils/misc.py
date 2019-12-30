@@ -5,6 +5,11 @@ from yacs.config import CfgNode as CN
 
 
 def ensure_dir(dir_path: str):
+    """
+    Ensure the existence of path (i.e. mkdir -p)
+    :param dir_path: path to be ensured
+    :return:
+    """
     if os.path.exists(dir_path):
         return
     else:

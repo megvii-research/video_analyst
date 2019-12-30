@@ -54,11 +54,11 @@ class conv_bn_relu(nn.Module):
 
 
 def xcorr_depthwise(x, kernel):
-    """
+    r"""
     Depthwise cross correlation. e.g. used for template matching in Siamese tracking network
     :param x:
     :param kernel: smaller than x
-    :return:
+    :return: cross-correlation result
     """
     batch = kernel.size(0)
     channel = kernel.size(1)

@@ -16,16 +16,37 @@ from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
 # ============================== Tracker definition ============================== #
 @TRACK_PIPELINES.register
 class SiamFCppTracker(PipelineBase):
+    r"""
+    Basic SiamFC++ tracker
+    ---
+    Hyper-parameters
+        total_stride (int): stride in backbone
+        context_amount (float): factor controlling the image patch cropping range. Set to 0.5 by convention.
+        test_lr (float): factor controlling target size updating speed
+        penalty_k (float): factor controlling the penalization on target size (scale/ratio) change
+        window_influence (float): factor controlling spatial windowing on scores
+        windowing: windowing type. Currently support: "cosine"
+        z_size (int): template image size
+        x_size (int): search image size
+        num_conv3x3 (int): number of conv3x3 tiled in head
+        min_w (float): minimum width
+        min_h (float): minimum height
+        phase_init (str): phase name for template feature extraction
+        phase_track (str): phase name for target search
+    Hyper-parameters (to be calculated at runtime)
+        score_size (int): final feature map
+        score_offset (int): final feature map
+    """
     default_hyper_params = dict(
         total_stride=8,
         context_amount=0.5,
+        test_lr=0.52,
         penalty_k=0.04,
         window_influence=0.21,
-        test_lr=0.52,
         windowing="cosine",
         z_size=127,
         x_size=303,
-        head_shrink=6,
+        num_conv3x3=3,
         min_w=10,
         min_h=10,
         phase_init="feature",
@@ -43,21 +64,30 @@ class SiamFCppTracker(PipelineBase):
         self.model = model.to(device)
         self.model.eval()
         self.debug = debug
-    
+
     def to_device(self, device):
         self.device = device
         self.model = self.model.to(device)
 
     def update_params(self):
         hps = self._hyper_params
-        hps['score_size'] = (hps['x_size'] - hps['z_size']
-                             ) // hps['total_stride'] + 1 - hps['head_shrink']
+        hps['score_size'] = (
+            hps['x_size'] -
+            hps['z_size']) // hps['total_stride'] + 1 - hps['num_conv3x3'] * 2
         hps['score_offset'] = (
             hps['x_size'] - 1 -
             (hps['score_size'] - 1) * hps['total_stride']) // 2
         self._hyper_params = hps
 
     def feature(self, im, target_pos, target_sz, avg_chans=None):
+        r"""
+        Extract feature
+        :param im: initial frame
+        :param target_pos: target position (x, y)
+        :param target_sz: target size (w, h)
+        :param avg_chans: channel mean values
+        :return:
+        """
         if avg_chans is None:
             avg_chans = np.mean(im, axis=(0, 1))
 
@@ -81,7 +111,7 @@ class SiamFCppTracker(PipelineBase):
         return features, im_z_crop, avg_chans
 
     def init(self, im, state):
-        """
+        r"""
         Initialize tracker
             Internal target state representation: self._state['state'] = (target_pos, target_sz)
         :param im: initial frame image
@@ -208,7 +238,7 @@ class SiamFCppTracker(PipelineBase):
     # ======== tracking processes ======== #
 
     def _postprocess_score(self, score, box_wh, target_sz, scale_x):
-        """
+        r"""
         Perform SiameseRPN-based tracker's post-processing of score
         :param score: (HW, ), score prediction
         :param box_wh: (HW, 4), cxywh, bbox prediction (format changed)
@@ -254,7 +284,7 @@ class SiamFCppTracker(PipelineBase):
 
     def _postprocess_box(self, best_pscore_id, score, box_wh, target_pos,
                          target_sz, scale_x, x_size, penalty):
-        """
+        r"""
         Perform SiameseRPN-based tracker's post-processing of box
         :param score: (HW, ), score prediction
         :param box_wh: (HW, 4), cxywh, bbox prediction (format changed)
@@ -286,7 +316,7 @@ class SiamFCppTracker(PipelineBase):
         return new_target_pos, new_target_sz
 
     def _restrict_box(self, target_pos, target_sz):
-        """
+        r"""
         Restrict target position & size
         :param target_pos: (2, ), target position
         :param target_sz: (2, ), target size
@@ -303,7 +333,7 @@ class SiamFCppTracker(PipelineBase):
         return target_pos, target_sz
 
     def _cvt_box_crop2frame(self, box_in_crop, target_pos, scale_x, x_size):
-        """
+        r"""
         Convert box from cropped patch to original frame
         :param box_in_crop: (4, ), cxywh, box in cropped patch
         :param target_pos: target position
@@ -312,10 +342,10 @@ class SiamFCppTracker(PipelineBase):
         :return:
             box_in_frame: (4, ), cxywh, box in original frame
         """
-        x = (box_in_crop[...,
-                         0]) / scale_x + target_pos[0] - (x_size // 2) / scale_x
-        y = (box_in_crop[...,
-                         1]) / scale_x + target_pos[1] - (x_size // 2) / scale_x
+        x = (box_in_crop[..., 0]) / scale_x + target_pos[0] - (x_size //
+                                                               2) / scale_x
+        y = (box_in_crop[..., 1]) / scale_x + target_pos[1] - (x_size //
+                                                               2) / scale_x
         w = box_in_crop[..., 2] / scale_x
         h = box_in_crop[..., 3] / scale_x
         box_in_frame = np.stack([x, y, w, h], axis=-1)

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys  # isort:skip
 from paths import ROOT_PATH  # isort:skip
 sys.path.insert(0, ROOT_PATH)  # isort:skip
@@ -18,10 +19,6 @@ logger = logging.getLogger('global')
 
 def make_parser():
     parser = argparse.ArgumentParser(description='Test')
-    parser.add_argument('--dataset',
-                        dest='dataset',
-                        default='VOT2018',
-                        help='datasets')
     parser.add_argument('--config',
                         default='',
                         type=str,

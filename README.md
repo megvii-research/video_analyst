@@ -13,7 +13,7 @@ Please refer to [SETUP.md](docs/SETUP.md)
 
 ### Test on VOT
 ```
-python3 ./main/test.py --config 'experiments/siamfc++/siamfcpp_googlenet.yaml' --dataset 'VOT2018'
+python3 ./main/test.py --config 'experiments/siamfc++/siamfcpp_googlenet.yaml'
 ```
 Check out the corresponding _exp_save_ path in _.yaml_ for result and raw result data, both named by _exp_name_ in _.yaml_.
 

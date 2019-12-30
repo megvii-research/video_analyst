@@ -27,6 +27,7 @@ track:
       test_lr: 0.52
       window_influence: 0.21
       penalty_k: 0.04
+      num_conv3x3: 3
   tester:
     names: ["VOTTester",]
     VOTTester:

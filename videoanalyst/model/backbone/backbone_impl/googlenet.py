@@ -5,12 +5,9 @@ URL: https://github.com/pytorch/vision/blob/master/torchvision/models/inception.
 Pretrained weights downloaded from:
     https://download.pytorch.org/models/inception_v3_google-1a9a5a14.pth
 """
-from collections import namedtuple
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.hub import load_state_dict_from_url
 
 from videoanalyst.model.backbone.backbone_base import (TRACK_BACKBONES,
                                                        VOS_BACKBONES)
@@ -18,66 +15,24 @@ from videoanalyst.model.module_base import ModuleBase
 
 # from videoanalyst.model.common_opr.common_block import conv_bn_relu
 
-__all__ = ['Inception3', 'inception_v3', 'get_basemodel']
-
-model_urls = {
-    # Inception v3 ported from TensorFlow
-    'inception_v3_google':
-    'https://download.pytorch.org/models/inception_v3_google-1a9a5a14.pth',
-}
-
-_InceptionOutputs = namedtuple('InceptionOutputs', ['logits', 'aux_logits'])
-
-
-def get_basemodel():
-    model = Inception3(aux_logits=False, transform_input=True, amputated=True)
-    state_dict = load_state_dict_from_url(model_urls['inception_v3_google'],
-                                          progress=True)
-    model.load_state_dict(state_dict, strict=False)
-    return model
-
-
-def inception_v3(pretrained=False, progress=True, **kwargs):
-    r"""Inception v3 model architecture from
-    `"Rethinking the Inception Architecture for Computer Vision" <http://arxiv.org/abs/1512.00567>`_.
-    .. note::
-        **Important**: In contrast to the other models the inception_v3 expects tensors with a size of
-        N x 3 x 299 x 299, so ensure your images are sized accordingly.
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-        progress (bool): If True, displays a progress bar of the download to stderr
-        aux_logits (bool): If True, add an auxiliary branch that can improve training.
-            Default: *True*
-        transform_input (bool): If True, preprocesses the input according to the method with which it
-            was trained on ImageNet. Default: *False*
-    """
-    if pretrained:
-        if 'transform_input' not in kwargs:
-            kwargs['transform_input'] = True
-        if 'aux_logits' in kwargs:
-            original_aux_logits = kwargs['aux_logits']
-            kwargs['aux_logits'] = True
-        else:
-            original_aux_logits = True
-        model = Inception3(**kwargs)
-        state_dict = load_state_dict_from_url(model_urls['inception_v3_google'],
-                                              progress=progress)
-        model.load_state_dict(state_dict)
-        if not original_aux_logits:
-            model.aux_logits = False
-            del model.AuxLogits
-        return model
-
-    return Inception3(**kwargs)
-
 
 @VOS_BACKBONES.register
 @TRACK_BACKBONES.register
 class Inception3(ModuleBase):
+    r"""
+    GoogLeNet
+    ---
+    Hyper-parameters:
+        pretrain_model_path: string
+            Path to pretrained backbone parameter file,
+            Parameter to be loaded in _update_params_
+        crop_pad: width of pixels to be cropped at each edge
+        pruned: if using pruned backbone for SOT
+    """
     default_hyper_params = dict(
         pretrain_model_path="",
         crop_pad=4,
-        amputated=True,
+        pruned=True,
     )
 
     def __init__(self, transform_input=False):
@@ -142,7 +97,7 @@ class Inception3(ModuleBase):
         # N x 80 x 73 x 73
         x = self.Conv2d_4a_3x3(x)
         # N x 192 x 71 x 71
-        # max_pool2d amputated for SOT adapdation
+        # max_pool2d pruned for SOT adapdation
         # x = F.max_pool2d(x, kernel_size=3, stride=2)
         # N x 192 x 35 x 35
         x = self.Mixed_5b(x)
@@ -201,7 +156,7 @@ class Inception3(ModuleBase):
                     map_location=torch.device("cpu"))
             self.load_state_dict(state_dict, strict=False)
         self.crop_pad = self._hyper_params['crop_pad']
-        self.amputated = self._hyper_params['amputated']
+        self.pruned = self._hyper_params['pruned']
 
 
 class InceptionA(nn.Module):

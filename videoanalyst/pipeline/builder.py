@@ -11,6 +11,13 @@ from .tracker.tracker_base import TRACK_PIPELINES
 
 
 def build_pipeline(task: str, cfg: CfgNode, **kwargs):
+    """
+    Build pipeline with specified task name & config
+    :param task: specified task name
+    :param cfg: CfgNode
+    :param kwargs:
+    :return:
+    """
     if task == "track":
         track_pipeline = tracker_builder.build(cfg, **kwargs)
         return track_pipeline
@@ -20,9 +27,17 @@ def build_pipeline(task: str, cfg: CfgNode, **kwargs):
 
 
 def get_config() -> Dict[str, CfgNode]:
+    """
+    Get pipeline list config
+    :return:
+    """
     cfg_dict = {"track": CfgNode()}
 
-    for cfg_name, module in zip(["track", ], [TRACK_PIPELINES, ]):
+    for cfg_name, module in zip([
+            "track",
+    ], [
+            TRACK_PIPELINES,
+    ]):
         cfg = cfg_dict[cfg_name]
         cfg["name"] = "unknown"
         for name in module:
