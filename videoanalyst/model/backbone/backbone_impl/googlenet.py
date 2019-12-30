@@ -21,13 +21,16 @@ from videoanalyst.model.module_base import ModuleBase
 class Inception3(ModuleBase):
     r"""
     GoogLeNet
-    ---
-    Hyper-parameters:
-        pretrain_model_path: string
-            Path to pretrained backbone parameter file,
-            Parameter to be loaded in _update_params_
-        crop_pad: width of pixels to be cropped at each edge
-        pruned: if using pruned backbone for SOT
+
+    Hyper-parameters
+    ----------------
+    pretrain_model_path: string
+        Path to pretrained backbone parameter file,
+        Parameter to be loaded in _update_params_
+    crop_pad: int
+        width of pixels to be cropped at each edge
+    pruned: bool
+        if using pruned backbone for SOT
     """
     default_hyper_params = dict(
         pretrain_model_path="",

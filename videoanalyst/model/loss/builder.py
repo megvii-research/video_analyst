@@ -2,9 +2,8 @@
 import logging
 from typing import Dict
 
-from yacs.config import CfgNode
-
 from videoanalyst.model.loss.loss_base import TRACK_LOSSES, VOS_LOSSES
+from yacs.config import CfgNode
 
 logger = logging.getLogger(__file__)
 

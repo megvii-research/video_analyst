@@ -56,9 +56,18 @@ class conv_bn_relu(nn.Module):
 def xcorr_depthwise(x, kernel):
     r"""
     Depthwise cross correlation. e.g. used for template matching in Siamese tracking network
-    :param x:
-    :param kernel: smaller than x
-    :return: cross-correlation result
+
+    Arguments
+    ---------
+    x: torch.Tensor
+        feature_x (e.g. search region feature in SOT)
+    kernel: torch.Tensor
+        feature_z (e.g. template feature in SOT)
+
+    Returns
+    -------
+    torch.Tensor
+        cross-correlation result
     """
     batch = kernel.size(0)
     channel = kernel.size(1)

@@ -23,10 +23,11 @@ logger = logging.getLogger(__file__)
 class SiamTrack(ModuleBase):
     r"""
     SiamTrack model for tracking
-    ---
+
     Hyper-Parameters
-        pretrain_model_path: string
-            path to parameter to be loaded into module
+    ----------------
+    pretrain_model_path: string
+        path to parameter to be loaded into module
     """
 
     default_hyper_params = {"pretrain_model_path": ""}

@@ -7,8 +7,10 @@ from yacs.config import CfgNode as CN
 def ensure_dir(dir_path: str):
     """
     Ensure the existence of path (i.e. mkdir -p)
-    :param dir_path: path to be ensured
-    :return:
+    Arguments
+    ---------
+    dir_path: str
+        path to be ensured
     """
     if os.path.exists(dir_path):
         return
@@ -58,8 +60,11 @@ class Registry(dict):
 def load_cfg(path: str):
     """
     Load yaml with yacs
-    :param path: yaml path
-    :return:
+
+    Arguments
+    ---------
+    path: str
+        yaml path
     """
     with open(path, 'r') as f:
         config_node = CN.load_cfg(f)

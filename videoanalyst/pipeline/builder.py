@@ -10,16 +10,24 @@ from .tracker.tracker_base import TRACK_PIPELINES
 # from .segmenter import builder as segmenter_builder
 
 
-def build_pipeline(task: str, cfg: CfgNode, **kwargs):
+def build_pipeline(task: str, cfg: CfgNode):
     """
-    Build pipeline with specified task name & config
-    :param task: specified task name
-    :param cfg: CfgNode
-    :param kwargs:
-    :return:
+    Builder function.
+
+    Arguments
+    ---------
+    task: str
+        builder task name (track|vos)
+    cfg: CfgNode
+        buidler configuration
+
+    Returns
+    -------
+    torch.nn.Module
+        module built by builder
     """
     if task == "track":
-        track_pipeline = tracker_builder.build(cfg, **kwargs)
+        track_pipeline = tracker_builder.build(cfg)
         return track_pipeline
     else:
         print("model for task {} is not complted".format(task))
@@ -28,8 +36,12 @@ def build_pipeline(task: str, cfg: CfgNode, **kwargs):
 
 def get_config() -> Dict[str, CfgNode]:
     """
-    Get pipeline list config
-    :return:
+    Get available component list config
+
+    Returns
+    -------
+    CfgNode
+        config with list of available components
     """
     cfg_dict = {"track": CfgNode()}
 

@@ -2,11 +2,10 @@
 import logging
 from typing import Dict
 
-from yacs.config import CfgNode
-
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
                                                           VOS_TASKMODELS)
+from yacs.config import CfgNode
 
 logger = logging.getLogger(__file__)
 
@@ -17,14 +16,25 @@ def build(task: str,
           head: ModuleBase,
           loss: ModuleBase = None):
     """
-    Builder function for task module.
+    Builder function.
 
-    :param task: builder task name
-    :param cfg: buidler configuration
-    :param backbone: backbone used by task module.
-    :param head: head network used by task module.
-    :param loss: criterion module used by task module (for training). None in case other than training.
-    :return: task module built by builder
+    Arguments
+    ---------
+    task: str
+        builder task name
+    cfg: CfgNode
+        buidler configuration
+    backbone: torch.nn.Module
+        backbone used by task module.
+    head: torch.nn.Module
+        head network used by task module.
+    loss: torch.nn.Module
+        criterion module used by task module (for training). None in case other than training.
+
+    Returns
+    -------
+    torch.nn.Module
+        task module built by builder
     """
     if task == "track":
         task_modules = TRACK_TASKMODELS
@@ -50,6 +60,14 @@ def build(task: str,
 
 
 def get_config() -> Dict[str, CfgNode]:
+    """
+    Get available component list config
+
+    Returns
+    -------
+    Dict[str, CfgNode]
+        config with list of available components
+    """
     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
     for cfg_name, task_module in zip(["track", "vos"],
                                      [TRACK_TASKMODELS, VOS_TASKMODELS]):

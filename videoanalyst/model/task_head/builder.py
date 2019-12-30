@@ -2,20 +2,28 @@
 import logging
 from typing import Dict
 
-from yacs.config import CfgNode
-
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.model.task_head.taskhead_base import TRACK_HEADS, VOS_HEADS
+from yacs.config import CfgNode
 
 logger = logging.getLogger(__file__)
 
 
 def build(task: str, cfg: CfgNode):
     """
-    Builder function for head network.
-    :param task: builder task name
-    :param cfg: buidler configuration
-    :return: head network module built by builder
+    Builder function.
+
+    Arguments
+    ---------
+    task: str
+        builder task name (track|vos)
+    cfg: CfgNode
+        buidler configuration
+
+    Returns
+    -------
+    torch.nn.Module
+        module built by builder
     """
     if task == "track":
         head_modules = TRACK_HEADS
@@ -45,6 +53,14 @@ def build(task: str, cfg: CfgNode):
 
 
 def get_config() -> Dict[str, CfgNode]:
+    """
+    Get available component list config
+
+    Returns
+    -------
+    Dict[str, CfgNode]
+        config with list of available components
+    """
     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
     for cfg_name, module in zip(["track", "vos"], [TRACK_HEADS, VOS_HEADS]):
         cfg = cfg_dict[cfg_name]

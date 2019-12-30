@@ -2,9 +2,8 @@
 import logging
 from typing import Dict
 
-from yacs.config import CfgNode
-
 from videoanalyst.pipeline.pipeline_base import PipelineBase
+from yacs.config import CfgNode
 
 from .tester_base import TRACK_TESTERS, VOS_TESTERS
 
@@ -12,6 +11,23 @@ logger = logging.getLogger(__file__)
 
 
 def build(task: str, cfg: CfgNode, pipeline: PipelineBase):
+    """
+    Builder function.
+
+    Arguments
+    ---------
+    task: str
+        builder task name (track|vos)
+    cfg: CfgNode
+        buidler configuration
+    pipeline: PipelineBase
+        underlying pipeline
+
+    Returns
+    -------
+    TesterBse
+        tester built by builder
+    """
     if task == "track":
         modules = TRACK_TESTERS
     elif task == "vos":
@@ -38,6 +54,14 @@ def build(task: str, cfg: CfgNode, pipeline: PipelineBase):
 
 
 def get_config() -> Dict[str, CfgNode]:
+    """
+    Get available component list config
+
+    Returns
+    -------
+    Dict[str, CfgNode]
+        config with list of available components
+    """
     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
 
     for cfg_name, module in zip(["track", "vos"], [TRACK_TESTERS, VOS_TESTERS]):

@@ -18,24 +18,42 @@ from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
 class SiamFCppTracker(PipelineBase):
     r"""
     Basic SiamFC++ tracker
-    ---
+
     Hyper-parameters
-        total_stride (int): stride in backbone
-        context_amount (float): factor controlling the image patch cropping range. Set to 0.5 by convention.
-        test_lr (float): factor controlling target size updating speed
-        penalty_k (float): factor controlling the penalization on target size (scale/ratio) change
-        window_influence (float): factor controlling spatial windowing on scores
-        windowing: windowing type. Currently support: "cosine"
-        z_size (int): template image size
-        x_size (int): search image size
-        num_conv3x3 (int): number of conv3x3 tiled in head
-        min_w (float): minimum width
-        min_h (float): minimum height
-        phase_init (str): phase name for template feature extraction
-        phase_track (str): phase name for target search
+    ----------------
+        total_stride: int
+            stride in backbone
+        context_amount: float
+            factor controlling the image patch cropping range. Set to 0.5 by convention.
+        test_lr: float
+            factor controlling target size updating speed
+        penalty_k: float
+            factor controlling the penalization on target size (scale/ratio) change
+        window_influence: float
+            factor controlling spatial windowing on scores
+        windowing: str
+            windowing type. Currently support: "cosine"
+        z_size: int
+            template image size
+        x_size: int
+            search image size
+        num_conv3x3: int
+            number of conv3x3 tiled in head
+        min_w: float
+            minimum width
+        min_h: float
+            minimum height
+        phase_init: str
+            phase name for template feature extraction
+        phase_track: str
+            phase name for target search
+
     Hyper-parameters (to be calculated at runtime)
-        score_size (int): final feature map
-        score_offset (int): final feature map
+    ----------------------------------------------
+    score_size: int
+        final feature map
+    score_offset: int
+        final feature map
     """
     default_hyper_params = dict(
         total_stride=8,
@@ -53,17 +71,18 @@ class SiamFCppTracker(PipelineBase):
         phase_track="track",
     )
 
-    def __init__(self, model=None, device=None, debug=False):
+    def __init__(self, debug=False):
         super().__init__()
         self.update_params()
 
         # set underlying model to device
-        if device is None:
-            device = next(model.parameters()).device
-        self.device = device
-        self.model = model.to(device)
-        self.model.eval()
+        self.model = None
+        self.device = torch.device("cpu")
         self.debug = debug
+
+    def set_model(self, model):
+        self.model = model.to(self.device)
+        self.model.eval()
 
     def to_device(self, device):
         self.device = device

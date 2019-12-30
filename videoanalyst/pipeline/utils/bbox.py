@@ -23,9 +23,18 @@ import numpy as np
 def clip_bbox(bbox, im_size):
     """
     Clip boxes to image boundaries, support batch-wise operation
-    :param bbox: shape=(..., 4), format=(x1, y1, x2, y2)
-    :param im_size: shape=(..., 2), format=(w, h)
-    :return: bbox_clipped: shape=(..., 4), format=(x1, y1, x2, y2)
+
+    Arguments
+    ---------
+    bbox: numpy.array or list-like
+        shape=(..., 4), format=(x1, y1, x2, y2)
+    im_size: numpy.array or list-like
+        shape=(..., 2), format=(w, h)
+
+    Returns
+    -------
+    bbox_clipped: numpy.array
+        shape=(..., 4), format=(x1, y1, x2, y2)
     """
     bbox = np.array(bbox)
     im_size = np.array(im_size)
@@ -40,10 +49,21 @@ def clip_bbox(bbox, im_size):
 def calc_IoU(bbox1, bbox2):
     """
     Calculate IoU, batch-wise
-    :param bbox1: format=(x1, y1, x2, y2)
-    :param bbox2: format=(x1, y1, x2, y2)
-    :return:
+
+    Arguments
+    ---------
+    bbox1: numpy.array or list-like
+        format=(x1, y1, x2, y2)
+    bbox2: numpy.array or list-like
+        format=(x1, y1, x2, y2)
+
+    Returns
+    -------
+    float
+        Intersection over Union
     """
+    bbox1 = np.array(bbox1)
+    bbox2 = np.array(bbox2)
     area1 = np.abs(bbox1[..., 2] - bbox1[..., 0] +
                    1) * np.abs(bbox1[..., 3] - bbox1[..., 1] + 1)
     area2 = np.abs(bbox2[..., 2] - bbox2[..., 0] +

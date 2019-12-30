@@ -23,13 +23,18 @@ class SiamFCppMultiTempTracker(SiamFCppTracker):
     r"""
     Multi-template SiamFC++ tracker.
     Currently using naive short-time template averaging strategy
-    ---
+
     Hyper-parameters
-        mem_step (int): short-time template sampling frequency (e.g. one sampling every mem_step frames )
-        mem_len (int): template memory length
-        st_mem_coef (str): short-time memory coefficient
-            final_score = st_mem_coef * init_score + (1-st_mem_coef) * mean(st_mem_score[])
-        mem_sink_idx (str): template index to dequeue
+    ----------------
+    mem_step: int
+        short-time template sampling frequency (e.g. one sampling every mem_step frames )
+    mem_len: int
+        template memory length
+    st_mem_coef: str
+        short-time memory coefficient
+        e.g. final_score = st_mem_coef * init_score + (1-st_mem_coef) * mean(st_mem_score[])
+    mem_sink_idx: str
+        template index to dequeue
     """
     additional_hyper_params = dict(
         mem_step=5,

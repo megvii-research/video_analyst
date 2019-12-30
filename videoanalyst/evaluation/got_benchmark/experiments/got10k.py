@@ -6,11 +6,12 @@ import json
 import os
 import time
 
-import cv2
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+
+import cv2
 
 from ..datasets import GOT10k
 from ..utils.ioutils import compress

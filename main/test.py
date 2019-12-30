@@ -24,15 +24,6 @@ def make_parser():
                         type=str,
                         help='experiment configuration')
 
-    parser.add_argument('--result_file',
-                        default='search_epoch.txt',
-                        type=str,
-                        help='save epoch-level result')
-    parser.add_argument('--result_csv',
-                        default='search_epoch.csv',
-                        type=str,
-                        help='save epoch-level result into csv')
-
     return parser
 
 
@@ -53,9 +44,9 @@ if __name__ == '__main__':
     # build model
     model = model_builder.build_model(task, task_cfg.model)
     # build pipeline
-    pipeline = pipeline_builder.build_pipeline('track',
-                                              task_cfg.pipeline,
-                                              model=model)
+    pipeline = pipeline_builder.build_pipeline('track', task_cfg.pipeline)
+    pipeline.set_model(model)
+
     # build tester
     testers = tester_builder(task, task_cfg, "tester", pipeline=pipeline)
     # start engine

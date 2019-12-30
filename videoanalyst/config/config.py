@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from yacs.config import CfgNode
-
 from videoanalyst.engine.tester.builder import get_config as get_tester_cfg
 from videoanalyst.model.builder import get_config as get_model_cfg
 from videoanalyst.pipeline.builder import get_config as get_pipeline_cfg
+from yacs.config import CfgNode
 
 cfg = CfgNode()
 

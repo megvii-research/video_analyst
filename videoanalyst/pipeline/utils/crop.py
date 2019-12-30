@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*
 
-import cv2
 import numpy as np
+
+import cv2
 
 from .bbox import cxywh2xyxy
 
@@ -9,8 +10,16 @@ from .bbox import cxywh2xyxy
 def get_axis_aligned_bbox(region):
     """
     Get axis-aligned bbox (used to transform annotation in VOT benchmark)
-    :param region: (1, 4, 2), 4 points of the rotated bbox
-    :return: axis-aligned bbox in format (cx, cy, w, h)
+
+    Arguments
+    ---------
+    region: list (nested)
+        (1, 4, 2), 4 points of the rotated bbox
+
+    Returns
+    -------
+    tuple
+        axis-aligned bbox in format (cx, cy, w, h)
     """
     try:
         region = np.array([
@@ -37,12 +46,24 @@ def get_axis_aligned_bbox(region):
 def get_subwindow_tracking(im, pos, model_sz, original_sz, avg_chans=(0, 0, 0)):
     """
     Get subwindow via cv2.warpAffine
-    :param im: original image
-    :param pos: subwindow position
-    :param model_sz: output size
-    :param original_sz: subwindow range on the original image
-    :param avg_chans: average values per channel
-    :return: image patch within _original_sz_ in _im_ and  resized to _model_sz_, padded by _avg_chans_
+
+    Arguments
+    ---------
+    im: numpy.array
+        original image, (H, W, C)
+    pos: numpy.array
+        subwindow position
+    model_sz: int
+        output size
+    original_sz: int
+        subwindow range on the original image
+    avg_chans: tuple
+        average values per channel
+
+    Returns
+    -------
+    numpy.array
+        image patch within _original_sz_ in _im_ and  resized to _model_sz_, padded by _avg_chans_
         (model_sz, model_sz, 3)
     """
     crop_cxywh = np.concatenate(
@@ -79,15 +100,29 @@ def get_crop(im,
              func_get_subwindow=get_subwindow_tracking):
     """
     Get cropped patch for tracking
-    :param im: input image
-    :param target_pos: position, (x, y)
-    :param target_sz: size, (w, h)
-    :param z_size: template patch size
-    :param x_size: search patch size, None in case of template (z_size == x_size)
-    :param avg_chans: channel average values, (B, G, R)
-    :param context_amount: context to be includede in template, set to 0.5 by convention
-    :param func_get_subwindow: function used to perform cropping & resizing
-    :return: cropped & resized image, (x_size, x_size, 3) if x_size provided, (z_size, z_size, 3) otherwise
+
+    Arguments
+    ---------
+    im: numpy.array
+        input image
+    target_pos: list-like or numpy.array
+        position, (x, y)
+    target_sz: list-like or numpy.array
+        size, (w, h)
+    z_size: int
+        template patch size
+    x_size: int
+        search patch size, None in case of template (z_size == x_size)
+    avg_chans: tuple
+        channel average values, (B, G, R)
+    context_amount: float
+        context to be includede in template, set to 0.5 by convention
+    func_get_subwindow: function object
+        function used to perform cropping & resizing
+
+    Returns
+    -------
+        cropped & resized image, (x_size, x_size, 3) if x_size provided, (z_size, z_size, 3) otherwise
     """
     wc = target_sz[0] + context_amount * sum(target_sz)
     hc = target_sz[1] + context_amount * sum(target_sz)

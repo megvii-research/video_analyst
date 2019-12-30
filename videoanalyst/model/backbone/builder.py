@@ -11,10 +11,19 @@ logger = logging.getLogger(__file__)
 
 def build(task: str, cfg: CfgNode):
     """
-    Builder function for backbone.
-    :param task: builder task name
-    :param cfg: buidler configuration
-    :return: backbone module built by builder
+    Builder function.
+
+    Arguments
+    ---------
+    task: str
+        builder task name (track|vos)
+    cfg: CfgNode
+        buidler configuration
+
+    Returns
+    -------
+    torch.nn.Module
+        module built by builder
     """
     if task == "track":
         modules = TRACK_BACKBONES
@@ -40,6 +49,14 @@ def build(task: str, cfg: CfgNode):
 
 
 def get_config() -> Dict[str, CfgNode]:
+    """
+    Get available component list config
+
+    Returns
+    -------
+    Dict[str, CfgNode]
+        config with list of available components
+    """
     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
     for cfg_name, module in zip(["track", "vos"],
                                 [TRACK_BACKBONES, VOS_BACKBONES]):

@@ -8,12 +8,12 @@ from collections import OrderedDict
 from multiprocessing import Process, Queue
 from os.path import join
 
-import cv2
 import numpy as np
 from tqdm import tqdm
 
 import torch
 
+import cv2
 from videoanalyst.engine.tester.tester_base import TRACK_TESTERS, TesterBase
 from videoanalyst.evaluation import vot_benchmark
 from videoanalyst.utils import ensure_dir
@@ -46,8 +46,13 @@ class VOTTester(TesterBase):
     def __init__(self, cfg, pipeline):
         """
         Crete tester with config and pipeline
-        :param cfg: parent config, (e.g. model / pipeline / tester)
-        :param pipeline: pipeline to test
+
+        Arguments
+        ---------
+        cfg: CfgNode
+            parent config, (e.g. model / pipeline / tester)
+        pipeline: PipelineBase
+            pipeline to test
         """
         super(VOTTester, self).__init__(cfg, pipeline)
         self._state['speed'] = -1
@@ -55,7 +60,6 @@ class VOTTester(TesterBase):
     def test(self):
         """
         Run test
-        :return:
         """
         # set dir
         self.tracker_name = self._cfg.exp_name
@@ -75,7 +79,6 @@ class VOTTester(TesterBase):
     def run_tracker(self):
         """
         Run self.pipeline on VOT
-        :return:
         """
         num_gpu = self._hyper_params["device_num"]
         all_devs = [torch.device("cuda:%d" % i) for i in range(num_gpu)]
@@ -133,11 +136,17 @@ class VOTTester(TesterBase):
     def worker(self, records, dev, result_queue=None, speed_queue=None):
         """
         Worker to run tracker on records
-        :param records: specific records, can be a subset of whole sequence
-        :param dev: torch.device object
-        :param result_queue: queue for result collecting
-        :param speed_queue: queue for fps measurement collecting
-        :return:
+
+        Arguments
+        ---------
+        records:
+            specific records, can be a subset of whole sequence
+        dev: torch.device object
+            target device
+        result_queue:
+            queue for result collecting
+        speed_queue:
+            queue for fps measurement collecting
         """
         tracker = copy.deepcopy(self._pipeline)
         tracker.to_device(dev)
@@ -184,10 +193,14 @@ class VOTTester(TesterBase):
         r"""
         track frames in single video with VOT rules
 
-        Args:
-            tracker: pipeline
-            video: video name
-            v_id: video id
+        Arguments
+        ---------
+        tracker: PipelineBase
+            pipeline
+        video: str
+            video name
+        v_id: int
+            video id
         """
         regions = []
         video = self.dataset[video]

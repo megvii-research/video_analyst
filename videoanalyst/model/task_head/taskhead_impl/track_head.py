@@ -45,13 +45,19 @@ def get_box(xy_ctr, offsets):
 class DenseboxHead(ModuleBase):
     r"""
     Densebox Head for siamfcpp
-    ---
-    Hyper-parameters
-        total_stride (int): stride in backbone
-        score_size (int): final feature map
-        x_size (int): search image size
-        num_conv3x3 (int): number of conv3x3 tiled in head
-        head_conv_bn (list): has_bn flag of conv3x3 in head, list with length of num_conv3x3
+
+    Hyper-parameter
+    ---------------
+    total_stride: int
+        stride in backbone
+    score_size: int
+        final feature map
+    x_size: int
+        search image size
+    num_conv3x3: int
+        number of conv3x3 tiled in head
+    head_conv_bn: list
+        has_bn flag of conv3x3 in head, list with length of num_conv3x3
     """
     default_hyper_params = dict(total_stride=8,
                                 score_size=17,

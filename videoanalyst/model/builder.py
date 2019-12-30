@@ -15,9 +15,18 @@ def build_model(
 ):
     """
     Builder function.
-    :param task: builder task name (track|vos)
-    :param cfg: buidler configuration
-    :return: module built by builder
+
+    Arguments
+    ---------
+    task: str
+        builder task name (track|vos)
+    cfg: CfgNode
+        buidler configuration
+
+    Returns
+    -------
+    torch.nn.Module
+        module built by builder
     """
     if task == "track":
         backbone = backbone_builder.build(task, cfg.backbone)
@@ -33,8 +42,12 @@ def build_model(
 
 def get_config() -> Dict[str, CfgNode]:
     """
-    Get model list config
-    :return:
+    Get available component list config
+
+    Returns
+    -------
+    Dict[str, CfgNode]
+        config with list of available components
     """
     cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
 
