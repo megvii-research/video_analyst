@@ -1,8 +1,7 @@
 # Video Analyst
-This is the implementation of a series of basic algorithms which is useful for video understanding, including Single Object Tracking (SOT)
-, Video Object Segmentation (VOS), etc.
+This is the implementation of a series of basic algorithms which is useful for video understanding, including Single Object Tracking (SOT), Video Object Segmentation (VOS), etc.
 
-Currnetly implemenation list:
+Current implementation list:
 * SOT
     * [SiamFC++: Towards Robust and Accurate Visual Tracking with Target Estimation Guidelines](https://arxiv.org/abs/1911.06188) 
 
