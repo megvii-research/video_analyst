@@ -9,9 +9,8 @@ from os import listdir
 from os.path import dirname, exists, isdir, join, realpath
 from pathlib import Path
 
-import numpy as np
-
 import cv2
+import numpy as np
 
 
 def get_json(path):

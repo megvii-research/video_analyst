@@ -8,12 +8,12 @@ from collections import OrderedDict
 from multiprocessing import Process, Queue
 from os.path import join
 
+import cv2
 import numpy as np
 from tqdm import tqdm
 
 import torch
 
-import cv2
 from videoanalyst.engine.tester.tester_base import TRACK_TESTERS, TesterBase
 from videoanalyst.evaluation import vot_benchmark
 from videoanalyst.utils import ensure_dir

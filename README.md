@@ -17,7 +17,12 @@ python3 ./main/test.py --config 'experiments/siamfc++/siamfcpp_googlenet.yaml'
 ```
 Check out the corresponding _exp_save_ path in _.yaml_ for result and raw result data, both named by _exp_name_ in _.yaml_.
 
-## Repository structure (in processing)
+#### Test all experiments
+```
+bash ./tools/test_VOT.sh
+```
+
+## Repository structure (in progress)
 ```
 ├── experiments  # experiment configurations, in yaml format
 ├── main
@@ -35,10 +40,14 @@ Check out the corresponding _exp_save_ path in _.yaml_ for result and raw result
 │   │   ├── tester.py  # test a model on a benchmark
 │   ├── model # model builder
 │   │   ├── backbone  # backbone network builder
+│   │   ├── common_opr  # shared operator (e.g. cross-correlation)
 │   │   ├── task_model  # holistic model builder
 │   │   ├── task_head  # head network builder
 │   │   └── loss  # loss builder
 │   ├── pipeline  # pipeline builder (tracking / vos)
+│   │   ├── segmenter  # segmenter builder for vos
+│   │   ├── tracker  # tracker builder for tracking
+│   │   └── utils  # pipeline utils
 │   ├── config  # configuration manager
 │   ├── evaluation  # benchmark
 │   ├── optimize # optimization-related module (learning rate, gradient clipping, etc.)

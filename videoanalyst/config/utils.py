@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
 
-from videoanalyst.utils import ensure_dir
 from yacs.config import CfgNode
+
+from videoanalyst.utils import ensure_dir
 
 
 def setup(cfg: CfgNode):

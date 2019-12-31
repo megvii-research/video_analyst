@@ -1,6 +1,6 @@
 task_name: "track"
 track:
-  exp_name: "siamfc++_googlenet_multi_temp"
+  exp_name: "siamfcpp_googlenet_multi_temp"
   exp_save: "logs"
   model:
     backbone:

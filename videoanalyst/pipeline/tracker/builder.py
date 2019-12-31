@@ -2,8 +2,9 @@
 import logging
 from typing import Dict
 
-from videoanalyst.pipeline.tracker.tracker_base import TRACK_PIPELINES
 from yacs.config import CfgNode
+
+from videoanalyst.pipeline.tracker.tracker_base import TRACK_PIPELINES
 
 # from videoanalyst.model.module_base import TrackerBase
 

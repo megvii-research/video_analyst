@@ -2,8 +2,9 @@
 import logging
 from typing import Dict
 
-from videoanalyst.pipeline.pipeline_base import PipelineBase
 from yacs.config import CfgNode
+
+from videoanalyst.pipeline.pipeline_base import PipelineBase
 
 from .tester_base import TRACK_TESTERS, VOS_TESTERS
 
