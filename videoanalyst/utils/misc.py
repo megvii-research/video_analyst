@@ -5,7 +5,7 @@ from yacs.config import CfgNode as CN
 
 
 def ensure_dir(dir_path: str):
-    """
+    r"""
     Ensure the existence of path (i.e. mkdir -p)
     Arguments
     ---------
@@ -25,7 +25,7 @@ def _register_generic(module_dict, module_name, module):
 
 
 class Registry(dict):
-    """
+    r"""
     A helper class for managing registering modules, it extends a dictionary
     and provides a register functions.
 
@@ -58,7 +58,7 @@ class Registry(dict):
 
 
 def load_cfg(path: str):
-    """
+    r"""
     Load yaml with yacs
 
     Arguments

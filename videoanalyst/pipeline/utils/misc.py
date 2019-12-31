@@ -6,7 +6,7 @@ import torch
 
 
 def imarray_to_tensor(arr):
-    """
+    r"""
     Transpose & convert from numpy.array to torch.Tensor
     :param arr: numpy.array, (H, W, C)
     :return: torch.Tensor, (1, C, H, W)
@@ -17,7 +17,7 @@ def imarray_to_tensor(arr):
 
 
 def tensor_to_imarray(t):
-    """
+    r"""
     Perform naive detach / cpu / numpy process and then transpose
     :param t: torch.Tensor, (1, C, H, W)
     :return: numpy.array, (H, W, C)
@@ -27,7 +27,7 @@ def tensor_to_imarray(t):
 
 
 def tensor_to_numpy(t):
-    """
+    r"""
     Perform naive detach / cpu / numpy process.
     :param t: torch.Tensor, (N, C, H, W)
     :return: numpy.array, (N, C, H, W)

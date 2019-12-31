@@ -8,7 +8,7 @@ from videoanalyst.utils.misc import load_cfg
 
 
 def build_tracker_wt_model(cfg, device):
-    """
+    r"""
     Load model and build tracker given configuration
 
     Arguments

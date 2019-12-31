@@ -13,7 +13,7 @@ def build_model(
         task: str,
         cfg: CfgNode,
 ):
-    """
+    r"""
     Builder function.
 
     Arguments
@@ -41,7 +41,7 @@ def build_model(
 
 
 def get_config() -> Dict[str, CfgNode]:
-    """
+    r"""
     Get available component list config
 
     Returns

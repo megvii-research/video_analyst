@@ -30,6 +30,14 @@ class VOTTester(TesterBase):
                                     |-$video_name$/ floder of result files        
                                     |-eval_result.csv evaluation result file
 
+    Hyper-parameters
+    ----------------
+    device_num: int
+        number of gpu for test
+    vot_data_root: dict
+        vot dataset root directory. dict(dataset_name: path_to_root)
+    dataset_names: str
+        daataset name (VOT2018|VOT2019)
     """
 
     default_hyper_params = dict(
@@ -44,7 +52,7 @@ class VOTTester(TesterBase):
     )
 
     def __init__(self, cfg, pipeline):
-        """
+        r"""
         Crete tester with config and pipeline
 
         Arguments
@@ -58,7 +66,7 @@ class VOTTester(TesterBase):
         self._state['speed'] = -1
 
     def test(self):
-        """
+        r"""
         Run test
         """
         # set dir
@@ -134,7 +142,7 @@ class VOTTester(TesterBase):
         self._state['speed'] = mean_speed
 
     def worker(self, records, dev, result_queue=None, speed_queue=None):
-        """
+        r"""
         Worker to run tracker on records
 
         Arguments
@@ -158,7 +166,7 @@ class VOTTester(TesterBase):
                 speed_queue.put_nowait(speed)
 
     def evaluation(self):
-        """
+        r"""
         Run evaluation & write result to csv file under self.tracker_dir
         """
         tracker_name = self._cfg.exp_name

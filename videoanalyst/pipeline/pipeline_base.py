@@ -20,11 +20,24 @@ class PipelineBase:
         self._state = dict()  # pipeline state
 
     def get_hps(self) -> dict():
+        r"""
+        Getter function for hyper-parameters
+
+        Returns
+        -------
+        dict
+            hyper-parameters
+        """
         return self._hyper_params
 
     def set_hps(self, hps: dict()) -> None:
         r"""
-        :param hps: dict of hyper-parameters, the keys must in self.__hyper_params
+        Set hyper-parameters
+
+        Arguments
+        ---------
+        hps: dict
+            dict of hyper-parameters, the keys must in self.__hyper_params__
         """
         for key in hps:
             if key not in self._hyper_params:
@@ -39,8 +52,13 @@ class PipelineBase:
         r"""
         an interface for pipeline initialization (e.g. template feature extraction)
         default implementation: record initial state & do nothing
-        :param im: initial frame image
-        :param state: initial state (usually given by task)
+
+        Arguments
+        ---------
+        im: numpy.array
+            initial frame image
+        state:
+            initial state (usually depending on task) (e.g. bbox for track / mask for vos)
         """
         self._state['state'] = state
 
@@ -49,7 +67,16 @@ class PipelineBase:
         an interface for pipeline update
             (e.g. output target bbox for current frame given the frame and previous target bbox)
         default implementation: return previous target state (initial state)
-        :param im: current frame
+
+        Arguments
+        ---------
+        im: numpy.array
+            current frame
+
+        Returns
+        -------
+        state
+            predicted sstate (usually depending on task) (e.g. bbox for track / mask for vos)
         """
         state = self._state['state']
         return state

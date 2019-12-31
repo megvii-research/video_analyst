@@ -53,14 +53,26 @@ class SiamTrack(ModuleBase):
             torch.nn.init.normal_(conv.weight, std=0.01)
 
     def forward(self, *args, phase="train"):
-        """
-        :param target_img:
-        :param search_img:
-        :return:
-            fcos_score_final: shape=(B, HW, 1), predicted score for bboxes
-            fcos_bbox_final: shape=(B, HW, 4), predicted bbox in the crop
-            fcos_cls_prob_final: shape=(B, HW, 1): classification score
-            fcos_ctr_prob_final: shape=(B, HW, 1): center-ness score
+        r"""
+        Perform tracking process for different phases (e.g. train / init / track)
+
+        Arguments
+        ---------
+        target_img: torch.Tensor
+            target template image patch
+        search_img: torch.Tensor
+            search region image patch
+
+        Returns
+        -------
+        fcos_score_final: torch.Tensor
+            predicted score for bboxes, shape=(B, HW, 1)
+        fcos_bbox_final: torch.Tensor
+            predicted bbox in the crop, shape=(B, HW, 4)
+        fcos_cls_prob_final: torch.Tensor
+            classification score, shape=(B, HW, 1)
+        fcos_ctr_prob_final: torch.Tensor
+            center-ness score, shape=(B, HW, 1)
         """
         # phase: train
         if phase == 'train':
@@ -130,6 +142,9 @@ class SiamTrack(ModuleBase):
         return out_list
 
     def update_params(self):
+        r"""
+        Load model parameters
+        """
         if self._hyper_params["pretrain_model_path"] != "":
             model_path = self._hyper_params["pretrain_model_path"]
             try:

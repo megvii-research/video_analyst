@@ -17,11 +17,24 @@ class ModuleBase(nn.Module):
         self._hyper_params = deepcopy(self.default_hyper_params)
 
     def get_hps(self) -> dict():
+        r"""
+        Getter function for hyper-parameters
+
+        Returns
+        -------
+        dict
+            hyper-parameters
+        """
         return self._hyper_params
 
     def set_hps(self, hps: dict()) -> None:
         r"""
-        :param hps: dict of hyper-parameters, the keys must in self.__hyper_params
+        Set hyper-parameters
+
+        Arguments
+        ---------
+        hps: dict
+            dict of hyper-parameters, the keys must in self.__hyper_params__
         """
         for key in hps:
             if key not in self._hyper_params:

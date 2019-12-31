@@ -16,7 +16,7 @@ def build(task: str,
           backbone: ModuleBase,
           head: ModuleBase,
           loss: ModuleBase = None):
-    """
+    r"""
     Builder function.
 
     Arguments

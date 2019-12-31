@@ -7,7 +7,7 @@ from .bbox import cxywh2xyxy
 
 
 def get_axis_aligned_bbox(region):
-    """
+    r"""
     Get axis-aligned bbox (used to transform annotation in VOT benchmark)
 
     Arguments
@@ -43,7 +43,7 @@ def get_axis_aligned_bbox(region):
 
 
 def get_subwindow_tracking(im, pos, model_sz, original_sz, avg_chans=(0, 0, 0)):
-    """
+    r"""
     Get subwindow via cv2.warpAffine
 
     Arguments
@@ -97,7 +97,7 @@ def get_crop(im,
              avg_chans=(0, 0, 0),
              context_amount=0.5,
              func_get_subwindow=get_subwindow_tracking):
-    """
+    r"""
     Get cropped patch for tracking
 
     Arguments

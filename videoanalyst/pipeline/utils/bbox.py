@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-"""
+r"""
 * All coordinates are 0-indexed.
 * Terminology for different formats:
   * bbox: (x1, y1, x2, y2)
@@ -21,7 +21,7 @@ import numpy as np
 
 # ============================== Formal conversion ============================== #
 def clip_bbox(bbox, im_size):
-    """
+    r"""
     Clip boxes to image boundaries, support batch-wise operation
 
     Arguments
@@ -47,7 +47,7 @@ def clip_bbox(bbox, im_size):
 
 
 def calc_IoU(bbox1, bbox2):
-    """
+    r"""
     Calculate IoU, batch-wise
 
     Arguments

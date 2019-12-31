@@ -12,7 +12,7 @@ logger = logging.getLogger(__file__)
 
 
 def build(task: str, cfg: CfgNode, pipeline: PipelineBase):
-    """
+    r"""
     Builder function.
 
     Arguments
@@ -55,7 +55,7 @@ def build(task: str, cfg: CfgNode, pipeline: PipelineBase):
 
 
 def get_config() -> Dict[str, CfgNode]:
-    """
+    r"""
     Get available component list config
 
     Returns

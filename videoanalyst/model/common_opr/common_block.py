@@ -15,16 +15,27 @@ class conv_bn_relu(nn.Module):
                  has_bn=True,
                  has_relu=True,
                  bias=True):
-        """
+        r"""
         Basic block with one conv, one bn, one relu in series.
-        :param in_channel: number of input channels
-        :param out_channel: number of output channels
-        :param stride: stride number
-        :param kszie: kernel size
-        :param pad: padding on each edge
-        :param has_bn: use bn or not
-        :param has_relu: use relu or not
-        :param bias: conv has bias or not
+
+        Arguments
+        ---------
+        in_channel: int
+            number of input channels
+        out_channel: int
+            number of output channels
+        stride: int
+            stride number
+        kszie: int
+            kernel size
+        pad: int
+            padding on each edge
+        has_bn: bool
+            use bn or not
+        has_relu: bool
+            use relu or not
+        bias: bool
+            conv has bias or not
         """
         super(conv_bn_relu, self).__init__()
         self.conv = nn.Conv2d(in_channel,

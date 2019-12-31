@@ -12,7 +12,7 @@ logger = logging.getLogger(__file__)
 
 
 def build(cfg: CfgNode, **kwargs):
-    """
+    r"""
     Builder function.
 
     Arguments
@@ -41,7 +41,7 @@ def build(cfg: CfgNode, **kwargs):
 
 
 def get_config() -> Dict[str, CfgNode]:
-    """
+    r"""
     Get available component list config
 
     Returns
