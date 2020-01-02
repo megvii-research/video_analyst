@@ -58,35 +58,20 @@ class DenseboxHead(ModuleBase):
         number of conv3x3 tiled in head
     head_conv_bn: list
         has_bn flag of conv3x3 in head, list with length of num_conv3x3
+    head_width: int
+        feature width in head structure
     """
-    default_hyper_params = dict(total_stride=8,
-                                score_size=17,
-                                x_size=303,
-                                num_conv3x3=3,
-                                head_conv_bn=[False, False, True]
-                                # "score_offset": 87,
-                                )
+    default_hyper_params = dict(
+        total_stride=8,
+        score_size=17,
+        x_size=303,
+        num_conv3x3=3,
+        head_conv_bn=[False, False, True],
+        head_width=256,
+    )
 
     def __init__(self):
         super(DenseboxHead, self).__init__()
-        self.cls_score_p5 = conv_bn_relu(256,
-                                         1,
-                                         stride=1,
-                                         kszie=1,
-                                         pad=0,
-                                         has_relu=False)
-        self.ctr_score_p5 = conv_bn_relu(256,
-                                         1,
-                                         stride=1,
-                                         kszie=1,
-                                         pad=0,
-                                         has_relu=False)
-        self.bbox_offsets_p5 = conv_bn_relu(256,
-                                            4,
-                                            stride=1,
-                                            kszie=1,
-                                            pad=0,
-                                            has_relu=False)
 
         self.bi = torch.nn.Parameter(torch.tensor(0.).type(torch.Tensor))
         self.si = torch.nn.Parameter(torch.tensor(1.).type(torch.Tensor))
@@ -135,23 +120,25 @@ class DenseboxHead(ModuleBase):
         self.fm_ctr.require_grad = False
 
         self._make_conv3x3()
+        self._make_conv_output()
 
     def _make_conv3x3(self):
         num_conv3x3 = self._hyper_params['num_conv3x3']
         head_conv_bn = self._hyper_params['head_conv_bn']
+        head_width = self._hyper_params['head_width']
         self.cls_conv3x3_list = []
         self.bbox_conv3x3_list = []
         for i in range(num_conv3x3):
             # is_last_conv = (i >= num_conv3x3)
-            cls_conv3x3 = conv_bn_relu(256,
-                                       256,
+            cls_conv3x3 = conv_bn_relu(head_width,
+                                       head_width,
                                        stride=1,
                                        kszie=3,
                                        pad=0,
                                        has_bn=head_conv_bn[i])
 
-            bbox_conv3x3 = conv_bn_relu(256,
-                                        256,
+            bbox_conv3x3 = conv_bn_relu(head_width,
+                                        head_width,
                                         stride=1,
                                         kszie=3,
                                         pad=0,
@@ -160,3 +147,24 @@ class DenseboxHead(ModuleBase):
             setattr(self, 'bbox_p5_conv%d' % (i + 1), bbox_conv3x3)
             self.cls_conv3x3_list.append(cls_conv3x3)
             self.bbox_conv3x3_list.append(bbox_conv3x3)
+
+    def _make_conv_output(self):
+        head_width = self._hyper_params['head_width']
+        self.cls_score_p5 = conv_bn_relu(head_width,
+                                         1,
+                                         stride=1,
+                                         kszie=1,
+                                         pad=0,
+                                         has_relu=False)
+        self.ctr_score_p5 = conv_bn_relu(head_width,
+                                         1,
+                                         stride=1,
+                                         kszie=1,
+                                         pad=0,
+                                         has_relu=False)
+        self.bbox_offsets_p5 = conv_bn_relu(head_width,
+                                            4,
+                                            stride=1,
+                                            kszie=1,
+                                            pad=0,
+                                            has_relu=False)

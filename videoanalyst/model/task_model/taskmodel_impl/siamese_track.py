@@ -28,29 +28,22 @@ class SiamTrack(ModuleBase):
     ----------------
     pretrain_model_path: string
         path to parameter to be loaded into module
+    head_width: int
+        feature width in head structure
     """
 
-    default_hyper_params = {"pretrain_model_path": ""}
+    default_hyper_params = dict(
+        pretrain_model_path="",
+        head_width=256,
+    )
 
     def __init__(self, backbone, head, loss):
         super(SiamTrack, self).__init__()
         self.basemodel = backbone
-        # feature adjustment
-        self.r_z_k = conv_bn_relu(256, 256, 1, 3, 0, has_relu=False)
-        self.c_z_k = conv_bn_relu(256, 256, 1, 3, 0, has_relu=False)
-        self.r_x = conv_bn_relu(256, 256, 1, 3, 0, has_relu=False)
-        self.c_x = conv_bn_relu(256, 256, 1, 3, 0, has_relu=False)
         # head
         self.head = head
         # loss
         self.loss = loss
-        # initialze head
-        conv_list = [
-            self.r_z_k.conv, self.c_z_k.conv, self.r_x.conv, self.c_x.conv
-        ]
-        for ith in range(len(conv_list)):
-            conv = conv_list[ith]
-            torch.nn.init.normal_(conv.weight, std=0.01)
 
     def forward(self, *args, phase="train"):
         r"""
@@ -145,6 +138,8 @@ class SiamTrack(ModuleBase):
         r"""
         Load model parameters
         """
+        self._make_convs()
+
         if self._hyper_params["pretrain_model_path"] != "":
             model_path = self._hyper_params["pretrain_model_path"]
             try:
@@ -160,3 +155,30 @@ class SiamTrack(ModuleBase):
             except:
                 self.load_state_dict(state_dict, strict=False)
             logger.info("loaded pretrain weights from {}".format(model_path))
+
+    def _make_convs(self):
+        head_width = self._hyper_params['head_width']
+
+        # feature adjustment
+        self.r_z_k = conv_bn_relu(head_width,
+                                  head_width,
+                                  1,
+                                  3,
+                                  0,
+                                  has_relu=False)
+        self.c_z_k = conv_bn_relu(head_width,
+                                  head_width,
+                                  1,
+                                  3,
+                                  0,
+                                  has_relu=False)
+        self.r_x = conv_bn_relu(head_width, head_width, 1, 3, 0, has_relu=False)
+        self.c_x = conv_bn_relu(head_width, head_width, 1, 3, 0, has_relu=False)
+
+        # initialze head
+        conv_list = [
+            self.r_z_k.conv, self.c_z_k.conv, self.r_x.conv, self.c_x.conv
+        ]
+        for ith in range(len(conv_list)):
+            conv = conv_list[ith]
+            torch.nn.init.normal_(conv.weight, std=0.01)
