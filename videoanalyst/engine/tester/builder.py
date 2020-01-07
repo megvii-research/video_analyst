@@ -38,12 +38,11 @@ def build(task: str, cfg: CfgNode, pipeline: PipelineBase):
         exit(-1)
     names = cfg.tester.names
     testers = []
-    # 此处可以返回多个实验的tester
+    # tester for multiple experiments
     for name in names:
         tester = modules[name](cfg, pipeline)
         hps = tester.get_hps()
 
-        # from IPython import embed;embed()
         for hp_name in hps:
             if hp_name in cfg.tester[name]:
                 new_value = cfg.tester[name][hp_name]

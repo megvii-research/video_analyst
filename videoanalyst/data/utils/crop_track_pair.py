@@ -1,0 +1,135 @@
+"""
+Procedure
+* get basic scale: scale_temp_ / scale_curr_
+
+* loop to get augmented cropping box
+    * perform scale augmentation: scale_rand / scale_rand_temp
+        * get augmented scale: scale_temp / scale_curr
+        * get augmented size: s_temp / s_curr
+    * perform random shift: dx / dy / dx_temp / dy_temp
+
+
+    * get augmented object box on the original patch: box_crop_temp / box_crop_curr
+    * get object boxes on the cropped patch: box_z / box_x
+    * check validity of box
+
+* perform cropping with _get_subwindow_tracking_: im_z, im_x
+
+"""
+
+import numpy as np
+import cv2
+
+from videoanalyst.pipeline.utils.bbox import xyxy2cxywh, cxywh2xyxy
+from videoanalyst.pipeline.utils.crop import get_subwindow_tracking
+
+_MAX_RETRY = 50
+
+def crop_track_pair(im_temp, bbox_temp, im_curr, bbox_curr, config, avg_chans=None, DEBUG=False):
+    if avg_chans is None:
+        avg_chans = np.mean(im_temp, axis=(0, 1))
+    box_temp = xyxy2cxywh(bbox_temp)
+    box_curr = xyxy2cxywh(bbox_curr)
+
+    # crop size, st for tamplate & sc for current
+    wt, ht = box_temp[2:]
+    wt_ = wt + config.context_amount * (wt+ht)/2
+    ht_ = ht + config.context_amount * (wt+ht)/2
+    st_ = np.sqrt(wt_ * ht_)
+
+    wc, hc = box_curr[2:]
+    wc_ = wc + config.context_amount * (wc+hc)/2
+    hc_ = hc + config.context_amount * (wc+hc)/2
+    sc_ = np.sqrt(wc_ * hc_)
+
+    assert (st_ > 0) and (sc_ > 0), "Invalid box: box_temp %s and box_curr %s"%(str(bbox_temp), str(bbox_curr))
+
+    scale_temp_ = config.z_size / st_
+    scale_curr_ = config.z_size / sc_
+
+    # loop to generate valid augmentation
+    for i in range(_MAX_RETRY+1):
+        # random scale
+        if i < _MAX_RETRY:
+            s_max = 1 + config.max_scale
+            s_min = 1/s_max  # 1 + config.min_scale
+            scale_rand = np.random.uniform(s_min, s_max)
+            if hasattr(config, "max_scale_temp"):
+                s_max = 1 + config.max_scale_temp
+                s_min = 1/s_max
+                scale_rand_temp = np.exp(np.random.uniform(np.log(s_min), np.log(s_max)))
+            else:
+                scale_rand_temp = 1
+        else:
+            scale_rand = scale_rand_temp = 1
+            if DEBUG:print('not augmented')
+        scale_curr = scale_curr_ / scale_rand
+        scale_temp = scale_temp_ / scale_rand_temp
+        s_curr = config.x_size / scale_curr
+        s_temp = config.z_size / scale_temp
+
+        # random shift
+        if i < _MAX_RETRY:
+            dx = np.random.uniform(-config.max_shift, config.max_shift) * s_curr/2
+            dy = np.random.uniform(-config.max_shift, config.max_shift) * s_curr/2
+            if hasattr(config, "max_shift_temp"):
+                dx_temp = np.random.uniform(-config.max_shift_temp, config.max_shift_temp) * s_temp/2
+                dy_temp = np.random.uniform(-config.max_shift_temp, config.max_shift_temp) * s_temp/2
+            else:
+                dx_temp = 0
+                dy_temp = 0
+        else:
+            dx = dy = dx_temp = dy_temp = 0
+            if DEBUG:print('not augmented')
+
+        # calculate bbox for cropping
+        box_crop_temp = np.concatenate([
+            box_temp[:2] - np.array([dx_temp, dy_temp]),
+            np.array([s_temp, s_temp])
+        ])
+        box_crop_curr = np.concatenate([
+            box_curr[:2] - np.array([dx, dy]),
+            np.array([s_curr, s_curr])
+        ])
+
+        # calculate new bbox
+        box_z = np.array([(config.z_size-1)/2]*2 + [0]*2) + np.concatenate([
+            np.array([dx_temp, dy_temp]),
+            np.array([wt, ht])
+        ]) * scale_temp
+        box_x = np.array([(config.x_size-1)/2]*2 + [0]*2) + np.concatenate([
+            np.array([dx, dy]),
+            np.array([wc, hc])
+        ]) * scale_curr
+        bbox_z = cxywh2xyxy(box_z)
+        bbox_x = cxywh2xyxy(box_x)
+
+        # check validity of bbox
+        if not (all([0<=c<=config.z_size-1 for c in bbox_z]) and
+                all([0<=c<=config.x_size-1 for c in bbox_x])):
+            continue
+        else:
+            break
+
+    # crop & resize via warpAffine
+    im_z = get_subwindow_tracking(im_temp, box_crop_temp[:2], config.z_size, s_temp, avg_chans=avg_chans)
+    im_x = get_subwindow_tracking(im_curr, box_crop_curr[:2], config.x_size, s_curr, avg_chans=avg_chans)
+
+    # DEBUG
+    if DEBUG:
+        # print('scale_rand', scale_rand)
+        color_bbox = (0, 255, 255)
+        # for suffix in ['temp', 'curr', 'z', 'x']:
+        for suffix in ['z', 'x']:
+            im = locals()['im_'+ suffix]
+            bbox = locals()['bbox_'+ suffix]
+            bbox = tuple(map(int, bbox))
+            cv2.imshow('im_'+suffix, cv2.rectangle(im.copy(), bbox[:2], bbox[2:], color_bbox))
+            print('bbox_'+ suffix, bbox)
+        # cv2.waitKey()
+        # from IPython import embed;embed()
+
+    return im_z, bbox_z, im_x, bbox_x
+
+
+
