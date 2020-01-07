@@ -28,7 +28,7 @@ class TransformerBase:
     """
     default_hyper_params = Dict()
 
-    def __init__(self, cfg: CfgNode, seed: int=0) -> None:
+    def __init__(self, seed: int=0) -> None:
         r"""
         Transformer, reponsible for data augmentation
 
@@ -42,7 +42,6 @@ class TransformerBase:
         """
         self._hyper_params = self.default_hyper_params
         self._state = Dict()
-        self._cfg = cfg
         self._state["rng"] = np.random.RandomState(seed)
 
     def get_hps(self) -> Dict:
@@ -69,6 +68,10 @@ class TransformerBase:
             if key not in self._hyper_params:
                 raise KeyError
             self._hyper_params[key] = hps[key]
+    def update_params(self) -> None:
+        r"""
+        an interface for update params
+        """
 
     def __call__(self, Dict) -> Dict:
         r"""

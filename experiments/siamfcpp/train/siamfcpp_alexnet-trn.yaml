@@ -73,6 +73,6 @@ train:
     transformer:
       names: ["RandomCropTransformer", ]
       RandomCropTransformer:
-        max_scale: 0.3,
-        max_shift: 0.4,
-        x_size: 303,
+        max_scale: 0.3
+        max_shift: 0.4
+        x_size: 303

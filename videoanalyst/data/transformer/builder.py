@@ -9,20 +9,23 @@ from .transformer_base import TASK_TRANSFORMERS, DataSetBase
 
 def build(task: str, cfg: CfgNode) -> DataSetBase:
     assert task in TASK_TRANSFORMERS, "invalid task name"
-    modules = TASK_TRANSFORMERS[task]
+    MODULES = TASK_TRANSFORMERS[task]
 
     names = cfg.names
+    modules = []
 
-    module = modules[name](cfg, transformer)
-    hps = module.get_hps()
+    for name in names:
+        module = MODULES[name](cfg, transformer)
+        hps = module.get_hps()
 
-    for hp_name in hps:
-        new_value = cfg[name][hp_name]
-        hps[hp_name] = new_value
-    module.set_hps(hps)
-    module.update_params()
+        for hp_name in hps:
+            new_value = cfg[name][hp_name]
+            hps[hp_name] = new_value
+        module.set_hps(hps)
+        module.update_params()
+        modules.append(module)
 
-    return module
+    return modules
 
 
 def get_config() -> Dict[str, CfgNode]:

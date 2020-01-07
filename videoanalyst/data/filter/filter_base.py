@@ -35,7 +35,7 @@ class SamplerBase:
     """
     default_hyper_params = dict()
 
-    def __init__(self, cfg: CfgNode) -> None:
+    def __init__(self) -> None:
         r"""
         Dataset Sampler, reponsible for sampling from different dataset
 
@@ -50,28 +50,27 @@ class SamplerBase:
             important while using multi-worker data loader
         """
         self._hyper_params = self.default_hyper_params
-        self._state = dict()
-        self._cfg = cfg
+        self._state = Dict()
 
-    def get_hps(self) -> dict:
+    def get_hps(self) -> Dict:
         r"""
         Getter function for hyper-parameters
 
         Returns
         -------
-        dict
+        Dict
             hyper-parameters
         """
         return self._hyper_params
 
-    def set_hps(self, hps: dict) -> None:
+    def set_hps(self, hps: Dict) -> None:
         r"""
         Set hyper-parameters
 
         Arguments
         ---------
-        hps: dict
-            dict of hyper-parameters, the keys must in self.__hyper_params__
+        hps: Dict
+            Dict of hyper-parameters, the keys must in self.__hyper_params__
         """
         for key in hps:
             if key not in self._hyper_params:

@@ -29,8 +29,9 @@ class DatasetBase:
 
     r"""
     base class for DataSet.
+    Nota. for tracking dataset, we use format (x0, y0, x1, y1)
 
-    Define your hyper-parameters here in your sub-class.
+    Define your hyper-parameters here in your sub-class.    
     """
     default_hyper_params = dict()
 

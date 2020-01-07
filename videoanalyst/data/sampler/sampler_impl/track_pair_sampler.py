@@ -19,7 +19,7 @@ class TrackPairSampler(SamplerBse):
         negative_pair_ratio=0,
     )
 
-    def __init__(self, datsets: List[DatasetBase]=[], seed: int=0, filter=None) -> None:
+    def __init__(self, datasets: List[DatasetBase]=[], seed: int=0, filter=None) -> None:
         super().__init__(cfg, datasets, seed=seed)
         if filter is None:
             self.filter = lambda x: False

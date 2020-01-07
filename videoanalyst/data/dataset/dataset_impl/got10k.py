@@ -1,3 +1,5 @@
+from typing import Dict
+
 import numpy as np
 import cv2
 
@@ -5,6 +7,7 @@ from yacs.config import CfgNode
 
 from videoanalyst.evaluation.got_benchmark.datasets import got10k
 from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, DatasetBase
+from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
 @TRACK_DATASETS.register
 class GOT10kDataset(DatasetBase):
@@ -26,7 +29,7 @@ class GOT10kDataset(DatasetBase):
     )
     def __init__(self, cfg: CfgNode) -> None:
         r"""
-        Crete datset with config
+        Create dataset with config
 
         Arguments
         ---------
@@ -34,22 +37,23 @@ class GOT10kDataset(DatasetBase):
             dataset config
         """
         super().__init__(cfg)
-        self._state["datset"] = None
+        self._state["dataset"] = None
 
     def update_params(self):
         r"""
         an interface for update params
         """
-        datset_root = self._hyper_params["datset_root"]
+        dataset_root = self._hyper_params["dataset_root"]
         subset = self._hyper_params["subset"]
-        self._state["datset"] = got10k(datset_root, subset=subset)
+        self._state["dataset"] = got10k(dataset_root, subset=subset)
 
-    def __getitem__(self, item: int) -> dict:
-        img_files, anno = self._state["datset"][item]
-        sequence_data = dict(image=img_files, anno=anno)
+    def __getitem__(self, item: int) -> Dict:
+        img_files, anno = self._state["dataset"][item]
+        anno = xywh2xyxy(anno)
+        sequence_data = Dict(image=img_files, anno=anno)
 
         return sequence_data
 
     def __len__(self):
-        return len(self._state["datset"])
+        return len(self._state["dataset"])
 

@@ -34,7 +34,7 @@ class SamplerBase:
     """
     default_hyper_params = dict()
 
-    def __init__(self, datsets: List[DatasetBase]=[], seed: int=0) -> None:
+    def __init__(self, datasets: List[DatasetBase]=[], seed: int=0) -> None:
         r"""
         Dataset Sampler, reponsible for sampling from different dataset
 
