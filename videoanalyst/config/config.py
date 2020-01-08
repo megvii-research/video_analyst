@@ -5,6 +5,9 @@ from videoanalyst.engine.tester.builder import get_config as get_tester_cfg
 from videoanalyst.model.builder import get_config as get_model_cfg
 from videoanalyst.pipeline.builder import get_config as get_pipeline_cfg
 
+from videoanalyst.data.dataset.builder import get_config as get_dataset_cfg
+
+
 cfg = CfgNode()
 
 task_list = ["track"]
@@ -20,6 +23,7 @@ for task in task_list:
     cfg[task]["model"] = get_model_cfg()[task]
     cfg[task]["pipeline"] = get_pipeline_cfg()[task]
     cfg[task]["tester"] = get_tester_cfg()[task]
+    cfg[task]["dataset"] = get_dataset_cfg()[task]
 
 
 def specify_task(cfg: CfgNode) -> (str, CfgNode):

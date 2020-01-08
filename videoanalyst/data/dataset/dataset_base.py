@@ -8,7 +8,6 @@ from abc import ABCMeta, abstractmethod
 from typing import List, Dict
 
 import cv2 as cv
-import nori2 as nori
 import numpy as np
 
 from yacs.config import CfgNode
@@ -18,7 +17,7 @@ from videoanalyst.utils import Registry
 TRACK_DATASETS = Registry()
 VOS_DATASETS = Registry()
 
-TASK_DATASETS = Dict(
+TASK_DATASETS = dict(
     track=TRACK_DATASETS,
     vos=VOS_DATASETS,
 )
