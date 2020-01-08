@@ -101,11 +101,11 @@ def crop_track_pair(im_temp, bbox_temp, im_curr, bbox_curr, config, avg_chans=No
         ])
 
         # calculate new bbox
-        box_z = np.array([(config.z_size-1)/2]*2 + [0]*2) + np.concatenate([
+        box_z = np.array([(z_size-1)/2]*2 + [0]*2) + np.concatenate([
             np.array([dx_temp, dy_temp]),
             np.array([wt, ht])
         ]) * scale_temp
-        box_x = np.array([(config.x_size-1)/2]*2 + [0]*2) + np.concatenate([
+        box_x = np.array([(x_size-1)/2]*2 + [0]*2) + np.concatenate([
             np.array([dx, dy]),
             np.array([wc, hc])
         ]) * scale_curr

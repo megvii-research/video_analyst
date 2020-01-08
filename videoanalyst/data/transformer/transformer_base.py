@@ -30,7 +30,7 @@ class TransformerBase:
 
     Define your hyper-parameters here in your sub-class.
     """
-    default_hyper_params = Dict()
+    default_hyper_params = dict()
 
     def __init__(self, seed: int=0) -> None:
         r"""
@@ -45,7 +45,7 @@ class TransformerBase:
             important while using multi-worker data loader
         """
         self._hyper_params = self.default_hyper_params
-        self._state = Dict()
+        self._state = dict()
         self._state["rng"] = np.random.RandomState(seed)
 
     def get_hps(self) -> Dict:

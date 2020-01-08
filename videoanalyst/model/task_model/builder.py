@@ -7,9 +7,14 @@ from yacs.config import CfgNode
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
                                                           VOS_TASKMODELS)
+from videoanalyst.utils import merge_cfg_into_hps
 
 logger = logging.getLogger(__file__)
 
+TASK_TASKMODELS = dict(
+    track=TRACK_TASKMODELS,
+    vos=VOS_TASKMODELS,
+)
 
 def build(task: str,
           cfg: CfgNode,
@@ -46,12 +51,10 @@ def build(task: str,
         exit(-1)
 
     if task == "track":
-        taskmodel_name = cfg.name
-        task_module = task_modules[taskmodel_name](backbone, head, loss)
+        name = cfg.name
+        task_module = task_modules[name](backbone, head, loss)
         hps = task_module.get_hps()
-        for hp_name in hps:
-            new_value = cfg[taskmodel_name][hp_name]
-            hps[hp_name] = new_value
+        hps = merge_cfg_into_hps(cfg[name], hps)
         task_module.set_hps(hps)
         task_module.update_params()
         return task_module

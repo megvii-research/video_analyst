@@ -24,11 +24,11 @@ TASK_FILTERS = dict(
 )
 
 
-class SamplerBase:
+class FilterBase:
     __metaclass__ = ABCMeta
 
     r"""
-    base class for Sampler. Reponsible for sampling from multiple datasets and forming training pair / sequence.
+    base class for Filter. Reponsible for filtering invalid sampled data (e.g. samples with extreme size / ratio)
 
     Define your hyper-parameters here in your sub-class.
     """
@@ -49,7 +49,7 @@ class SamplerBase:
             important while using multi-worker data loader
         """
         self._hyper_params = self.default_hyper_params
-        self._state = Dict()
+        self._state = dict()
 
     def get_hps(self) -> Dict:
         r"""
@@ -75,6 +75,11 @@ class SamplerBase:
             if key not in self._hyper_params:
                 raise KeyError
             self._hyper_params[key] = hps[key]
+
+    def update_params(self):
+        r"""
+        an interface for update params
+        """
 
     def __call__(self, data:Dict) -> bool:
         r"""

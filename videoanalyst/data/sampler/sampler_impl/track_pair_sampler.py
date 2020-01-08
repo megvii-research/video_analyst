@@ -5,24 +5,25 @@ import cv2
 from yacs.config import CfgNode
 
 from videoanalyst.evaluation.got_benchmark.datasets import got10k
-from videoanalyst.data.sampler.sampler_base import TRACK_SAMPLERS, SamplerBase
+from videoanalyst.data.dataset.dataset_base import DatasetBase
+from ..sampler_base import TRACK_SAMPLERS, SamplerBase
 
-@TRACK_SAMPLERS.register()
-class TrackPairSampler(SamplerBse):
+@TRACK_SAMPLERS.register
+class TrackPairSampler(SamplerBase):
     r"""
     Tracking data sampler
 
     Hyper-parameters
     ----------------
     """
-    default_hyper_params = Dict(
+    default_hyper_params = dict(
         negative_pair_ratio=0,
     )
 
     def __init__(self, datasets: List[DatasetBase]=[], seed: int=0, filter=None) -> None:
-        super().__init__(cfg, datasets, seed=seed)
+        super().__init__(datasets, seed=seed)
         if filter is None:
-            self.filter = lambda x: False
+            self.filter = [lambda x: False]
         else:
             self.filter = filter
 
@@ -31,16 +32,18 @@ class TrackPairSampler(SamplerBse):
 
     def __next__(self) -> Dict:
         is_negative_pair = (self._state["rng"].rand() < self._hyper_params["negative_pair_ratio"]) 
-
         data1 = data2 = None
-        while self.filter(data1) or self.filter(data1):
+        
+        while self.filter(data1) or self.filter(data2):
             if is_negative_pair:
                 data1 = self._sample_track_frame()
                 data2 = self._sample_track_frame()
             else:
                 data1, data2 = self._sample_track_pair()
+            data1["image"] = cv2.imread(data1["image"])
+            data2["image"] = cv2.imread(data2["image"])
         
-        sampled_data = Dict(
+        sampled_data = dict(
             data1=data1,
             data2=data2,
             is_negative_pair=is_negative_pair,
@@ -48,10 +51,10 @@ class TrackPairSampler(SamplerBse):
 
         return sampled_data
 
-    def _sample_track_pair(self) -> Tuple(Dict, Dict):
+    def _sample_track_pair(self) -> Tuple[Dict, Dict]:
         dataset_idx, dataset = self._sample_dataset()
         sequence_data = self._sample_sequence_from_dataset(dataset)
-        data1, data2 = self._sample_track_pair_from_sequence_data(
+        data1, data2 = self._sample_track_pair_from_sequence(
             sequence_data, self._state["max_diffs"][dataset_idx])
 
         return data1, data2
@@ -61,7 +64,7 @@ class TrackPairSampler(SamplerBse):
         sequence_data = self._sample_sequence_from_dataset(dataset)
         data_frame = self._sample_track_frame_from_sequence(sequence_data)
 
-        return datas_frame
+        return data_frame
 
     def _sample_dataset(self):
         r"""
@@ -72,34 +75,37 @@ class TrackPairSampler(SamplerBse):
         DatasetBase
             sampled dataset
         """
-        dataset_ratios = self._cfg.ratios
-        dataset_idx = rng.choice(len(dataset_list), p=dataset_ratios)
-        dataset = dataset_list[dataset_idx]
+        dataset_ratios = self._state["ratios"]
+        rng = self._state["rng"]
+        dataset_idx = rng.choice(len(self.datasets), p=dataset_ratios)
+        dataset = self.datasets[dataset_idx]
 
         return dataset_idx, dataset
     
     def _sample_sequence_from_dataset(self, dataset: DatasetBase) -> Dict:
         r"""
         """
+        rng = self._state["rng"]
         len_dataset = len(dataset)
         idx = rng.choice(len(dataset))
 
-        sequence_data = dataset[len_dataset]
+        sequence_data = dataset[idx]
 
         return sequence_data
 
     def _sample_track_frame_from_sequence(self, sequence_data) -> Dict:
-        len_seq = len(List(sequence_data.values)[0])
+        rng = self._state["rng"]
+        len_seq = len(list(sequence_data.values())[0])
         idx = rng.choice(len_seq)
-        data_frame = {k, v[idx] for k, v in sequence_data.items()}
+        data_frame = {k: v[idx] for k, v in sequence_data.items()}
 
         return data_frame
 
-    def _sample_track_pair_from_sequence(self, sequence_data, max_diff) -> Tuple(Dict, Dict):
-        len_seq = len(List(sequence_data.values)[0])
+    def _sample_track_pair_from_sequence(self, sequence_data, max_diff) -> Tuple[Dict, Dict]:
+        len_seq = len(list(sequence_data.values())[0])
         idx1, idx2 = self._sample_pair_idx_pair_within_max_diff(len_seq, max_diff)
-        data1 = {k, v[idx1] for k, v in sequence_data.items()}
-        data2 = {k, v[idx2] for k, v in sequence_data.items()}
+        data1 = {k: v[idx1] for k, v in sequence_data.items()}
+        data2 = {k: v[idx2] for k, v in sequence_data.items()}
 
         return data1, data2
 
@@ -116,9 +122,9 @@ class TrackPairSampler(SamplerBse):
         """
         rng = self._state["rng"]
         idx1 = rng.choice(L)
-        idx2_choices = List(range(idx1-max_diff, L)) + \
-                    List(range(L+1, idx1+max_diff+1))
-        idx2_choices = List(
+        idx2_choices = list(range(idx1-max_diff, L)) + \
+                    list(range(L+1, idx1+max_diff+1))
+        idx2_choices = list(
             set(idx2_choices).intersection(set(range(L)))
         )
         idx2 = rng.choice(idx2_choices)

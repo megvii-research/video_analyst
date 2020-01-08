@@ -7,7 +7,7 @@ from yacs.config import CfgNode
 # from product_net.data.transformer.transfomer_base import TransformerBase
 
 from .dataset_base import TASK_DATASETS, DatasetBase
-
+from videoanalyst.utils import merge_cfg_into_hps
 
 def build(task: str, cfg: CfgNode) -> DatasetBase:
     r"""
@@ -19,16 +19,14 @@ def build(task: str, cfg: CfgNode) -> DatasetBase:
         node name: dataset
     """
     assert task in TASK_DATASETS, "invalid task name"
-    MODULES = TASK_DATASETS[task]
+    dataset_modules = TASK_DATASETS[task]
 
     names = cfg.names
     modules = []
     for name in names:
-        module = MODULES[name]()
+        module = dataset_modules[name]()
         hps = module.get_hps()
-        for hp_name in hps:
-            new_value = cfg[name][hp_name]
-            hps[hp_name] = new_value
+        hps = merge_cfg_into_hps(cfg[name], hps)
         module.set_hps(hps)
         module.update_params()
         modules.append(module)

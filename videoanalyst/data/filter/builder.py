@@ -4,26 +4,22 @@ from typing import Dict, List
 
 from yacs.config import CfgNode
 
-from .sampler_base import TASK_FILTERS, DataSetBase
+from .filter_base import TASK_FILTERS, DatasetBase
+from videoanalyst.utils import merge_cfg_into_hps
 
 
-
-def build(task: str, cfg: CfgNode) -> DataSetBase:
+def build(task: str, cfg: CfgNode) -> DatasetBase:
     assert task in TASK_FILTERS, "invalid task name"
-    modules = TASK_FILTERS[task]
+    MODULES = TASK_FILTERS[task]
 
-    names = cfg.names
-
-    module = modules[name](cfg, transformer)
+    name = cfg.name
+    module = MODULES[name]()
     hps = module.get_hps()
-
-    for hp_name in hps:
-        new_value = cfg[name][hp_name]
-        hps[hp_name] = new_value
+    hps = merge_cfg_into_hps(cfg[name], hps)
     module.set_hps(hps)
+    module.update_params()
 
     return module
-
 
 def get_config() -> Dict[str, CfgNode]:
     cfg_dict = {name: CfgNode() for name in task_datasets.keys()}

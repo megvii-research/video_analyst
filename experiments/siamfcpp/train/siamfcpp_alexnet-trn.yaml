@@ -61,15 +61,16 @@ train:
       GOT10kDataset: 
         ratio: 1
         max_diff: 100
+        dataset_root: "datasets/GOT-10k"
         subset: "train"
     sampler:
       name: "TrackPairSampler"
       TrackPairSampler:
         negative_pair_ratio: 0.1
-      filter:
-        name: "TrackPairFilter"
-        TrackPairFilter:
-          []
+    filter:
+      name: "TrackPairFilter"
+      TrackPairFilter:
+        []
     transformer:
       names: ["RandomCropTransformer", ]
       RandomCropTransformer:

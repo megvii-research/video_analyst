@@ -1,3 +1,4 @@
+from typing import Dict
 import logging
 import os
 
@@ -70,3 +71,10 @@ def load_cfg(path: str):
         config_node = CN.load_cfg(f)
 
     return config_node
+
+def merge_cfg_into_hps(cfg: CN, hps: Dict):
+    for hp_name in hps:
+        if hp_name in cfg:
+            new_value = cfg[hp_name]
+            hps[hp_name] = new_value
+    return hps

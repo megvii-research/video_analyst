@@ -4,10 +4,19 @@ from typing import Dict, List
 
 from yacs.config import CfgNode
 
-from .transformer_base import TASK_TRANSFORMERS, DataSetBase
+from .transformer_base import TASK_TRANSFORMERS, TransformerBase
+from videoanalyst.utils import merge_cfg_into_hps
 
 
-def build(task: str, cfg: CfgNode) -> DataSetBase:
+def build(task: str, cfg: CfgNode) -> TransformerBase:
+    r"""
+    Arguments
+    ---------
+    task: str
+        task
+    cfg: CfgNode
+        node name: transformer
+    """
     assert task in TASK_TRANSFORMERS, "invalid task name"
     MODULES = TASK_TRANSFORMERS[task]
 
@@ -15,14 +24,12 @@ def build(task: str, cfg: CfgNode) -> DataSetBase:
     modules = []
 
     for name in names:
-        module = MODULES[name](cfg, transformer)
+        module = MODULES[name]()
         hps = module.get_hps()
-
-        for hp_name in hps:
-            new_value = cfg[name][hp_name]
-            hps[hp_name] = new_value
+        hps = merge_cfg_into_hps(cfg[name], hps)
         module.set_hps(hps)
         module.update_params()
+
         modules.append(module)
 
     return modules

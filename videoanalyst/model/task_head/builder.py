@@ -6,9 +6,14 @@ from yacs.config import CfgNode
 
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.model.task_head.taskhead_base import TRACK_HEADS, VOS_HEADS
+from videoanalyst.utils import merge_cfg_into_hps
 
 logger = logging.getLogger(__file__)
 
+TASK_HEADS = dict(
+    track=TRACK_HEADS,
+    vos=VOS_HEADS,
+)
 
 def build(task: str, cfg: CfgNode):
     r"""
@@ -26,24 +31,18 @@ def build(task: str, cfg: CfgNode):
     torch.nn.Module
         module built by builder
     """
-    if task == "track":
-        head_modules = TRACK_HEADS
-    elif task == "vos":
-        head_modules = VOS_HEADS
+    if task in TASK_HEADS:
+        head_modules = TASK_HEADS[task]
     else:
         logger.error("no task model for task {}".format(task))
         exit(-1)
 
-    head_name = cfg.name
+    name = cfg.name
     if task == "track":
         # head settings
-        head_module = head_modules[head_name]()
+        head_module = head_modules[name]()
         hps = head_module.get_hps()
-
-        for hp_name in hps:
-            if hp_name in cfg[head_name]:
-                new_value = cfg[head_name][hp_name]
-                hps[hp_name] = new_value
+        hps = merge_cfg_into_hps(cfg[name], hps)
         head_module.set_hps(hps)
         head_module.update_params()
 
