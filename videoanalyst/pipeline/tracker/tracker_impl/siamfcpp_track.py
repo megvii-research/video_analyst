@@ -57,6 +57,8 @@ class SiamFCppTracker(PipelineBase):
     """
     default_hyper_params = dict(
         total_stride=8,
+        score_size=17,
+        score_offset=87,
         context_amount=0.5,
         test_lr=0.52,
         penalty_k=0.04,
