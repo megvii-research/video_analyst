@@ -18,7 +18,7 @@ class RandomCropTransformer(TransformerBase):
 
     """
     default_hyper_params = dict(
-        context_amount=0.5,
+        context_amount=1,
         max_scale=0.3,
         max_shift=0.4,
         max_scale_temp=0,

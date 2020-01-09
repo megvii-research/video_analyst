@@ -58,7 +58,7 @@ train:
   data:
     num_epochs: 10000
     minibatch: 32
-    num_workers: 8
+    num_workers: 4
     nr_image_per_epoch: 600000
     datapipeline:
       name: "RegularDatapipeline"

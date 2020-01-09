@@ -48,8 +48,8 @@ class DenseboxTarget(TargetBase):
         is_negative_pair = sampled_data["is_negative_pair"]
         
         # input tensor
-        im_z = im_z.transpose(2, 0, 1)[np.newaxis, ...]
-        im_x = im_x.transpose(2, 0, 1)[np.newaxis, ...]
+        im_z = im_z.transpose(2, 0, 1)
+        im_x = im_x.transpose(2, 0, 1)
         
         # training target
         cls_label, ctr_label, box_label = make_densebox_target(bbox_x.reshape(1, 4), self._hyper_params)

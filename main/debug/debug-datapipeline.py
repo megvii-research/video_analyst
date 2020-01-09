@@ -31,13 +31,21 @@ sampled_data = next(sampler)
 transformed_data = transformer(sampled_data)
 training_data = target(transformed_data)
 im_z = transformed_data["data1"]["image"]
+bbox_z = transformed_data["data1"]["anno"]
 im_x = transformed_data["data2"]["image"]
+bbox_x = transformed_data["data2"]["anno"]
 
 t_elapsed = (cv2.getTickCount() - t_start)/cv2.getTickFrequency()
 print("Elapsed:", t_elapsed)
 
-# cv2.imshow("im_z", im_z)
-# cv2.imshow("im_x", im_x)
-# cv2.waitKey(0)
+bbox_z = tuple(map(int, bbox_z))
+bbox_x = tuple(map(int, bbox_x))
 
-from IPython import embed;embed()
+cv2.rectangle(im_z, bbox_z[:2], bbox_z[2:], (0, 0, 225))
+cv2.rectangle(im_x, bbox_x[:2], bbox_x[2:], (255, 255, 0))
+
+cv2.imshow("im_z", im_z)
+cv2.imshow("im_x", im_x)
+cv2.waitKey(0)
+
+# from IPython import embed;embed()
