@@ -16,21 +16,21 @@ def build(task: str, cfg: CfgNode, seed: int=0) -> DatasetBase:
     task: str
         task name (track|vos)
     cfg: CfgNode
-        node name: data
+        node name: sampler
     seed: int
         seed for rng initialization
     """
     assert task in TASK_SAMPLERS, "invalid task name"
     MODULES = TASK_SAMPLERS[task]
 
-    dataset_cfg = cfg.dataset
+    submodules_cfg = cfg.submodules
+
+    dataset_cfg = submodules_cfg.dataset
     datasets = build_dataset(task, dataset_cfg)
 
-    filter_cfg = getattr(cfg, "filter", None)
-    # from IPython import embed;embed()
+    filter_cfg = getattr(submodules_cfg, "filter", None)
     filter = build_filter(task, filter_cfg) if filter_cfg is not None else None
 
-    cfg = cfg.sampler
     name = cfg.name
     module = MODULES[name](datasets, seed=seed, filter=filter)
 

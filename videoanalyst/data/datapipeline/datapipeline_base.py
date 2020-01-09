@@ -12,18 +12,23 @@ import numpy as np
 
 from yacs.config import CfgNode
 
-from ..dataset.dataset_base import DatasetBase
+from ..sampler.sampler_base import SamplerBase
+from ..transformer.transformer_base import TransformerBase
+from ..target.target_base import TargetBase
+
+from ..dataset.builder import build as build_dataset
+from ..filter.builder import build as build_filter
+
 from videoanalyst.utils import Registry
+TRACK_DATAPIPELINES = Registry()
+VOS_DATAPIPELINES = Registry()
 
-TRACK_SAMPLERS = Registry()
-VOS_SAMPLERS = Registry()
-
-TASK_SAMPLERS = dict(
-    track=TRACK_SAMPLERS,
-    vos=VOS_SAMPLERS,
+TASK_DATAPIPELINES = dict(
+    track=TRACK_DATAPIPELINES,
+    vos=VOS_DATAPIPELINES,
 )
 
-class SamplerBase:
+class DatapipelineBase:
     __metaclass__ = ABCMeta
 
     r"""
@@ -33,24 +38,12 @@ class SamplerBase:
     """
     default_hyper_params = dict()
 
-    def __init__(self, datasets: List[DatasetBase]=[], seed: int=0) -> None:
+    def __init__(self) -> None:
         r"""
-        Dataset Sampler, reponsible for sampling from different dataset
-
-        Arguments
-        ---------
-        cfg: CfgNode
-            data config, including cfg for datasset / sampler
-        datasets: List[DatasetBase]
-            collections of datasets
-        seed: int
-            seed to initialize random number generator
-            important while using multi-worker data loader
+        Data pipeline
         """
         self._hyper_params = self.default_hyper_params
         self._state = dict()
-        self.datasets = datasets
-        self._state["rng"] = np.random.RandomState(seed)
 
     def get_hps(self) -> dict:
         r"""
@@ -82,7 +75,7 @@ class SamplerBase:
         an interface for update params
         """
 
-    def __next__(self) -> dict:
+    def __next__(self) -> Dict:
         r"""
-        An interface to sample data
+        An interface to load batch data
         """

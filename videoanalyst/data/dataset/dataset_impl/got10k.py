@@ -58,4 +58,3 @@ class GOT10kDataset(DatasetBase):
 
     def __len__(self):
         return len(self._state["dataset"])
-

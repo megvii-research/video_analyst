@@ -72,10 +72,11 @@ class TransformerBase:
             if key not in self._hyper_params:
                 raise KeyError
             self._hyper_params[key] = hps[key]
-    def update_params(self) -> None:
+    def update_params(self, seed: int = 0) -> None:
         r"""
         an interface for update params
         """
+        self._state["rng"] = np.random.RandomState(seed)
 
     def __call__(self, Dict) -> Dict:
         r"""

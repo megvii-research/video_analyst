@@ -47,6 +47,11 @@ class DenseboxTarget(TargetBase):
         
         is_negative_pair = sampled_data["is_negative_pair"]
         
+        # input tensor
+        im_z = im_z.transpose(2, 0, 1)[np.newaxis, ...]
+        im_x = im_x.transpose(2, 0, 1)[np.newaxis, ...]
+        
+        # training target
         cls_label, ctr_label, box_label = make_densebox_target(bbox_x.reshape(1, 4), self._hyper_params)
         if is_negative_pair:
             cls_label[cls_label == 0] = -1
@@ -55,13 +60,14 @@ class DenseboxTarget(TargetBase):
         training_data = dict(
             im_z=im_z,
             im_x=im_x,
-            # bbox_z=bbox_z,
-            # bbox_x=bbox_x,
+            bbox_z=bbox_z,
+            bbox_x=bbox_x,
             cls_gt=cls_label,
             ctr_gt=ctr_label,
             box_gt=box_label,
             is_negative_pair=int(is_negative_pair),
         )
+        training_data = super().__call__(training_data)
 
         return training_data
 

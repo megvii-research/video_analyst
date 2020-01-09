@@ -1,6 +1,7 @@
 from typing import Dict
 import logging
 import os
+import time
 
 from yacs.config import CfgNode as CN
 
@@ -78,3 +79,26 @@ def merge_cfg_into_hps(cfg: CN, hps: Dict):
             new_value = cfg[hp_name]
             hps[hp_name] = new_value
     return hps
+
+class Timer():
+    r"""
+    Mesure & print elapsed time witin environment
+    """
+    def __init__(self, info='', enable=True):
+        r"""
+        Arguments
+        ---------
+        :param info: prompt to print(will be appended with "elapsed time: %f")
+        :param enable: enable timer or not
+        """
+        self.info = info
+        self.enable = enable
+
+    def __enter__(self, ):
+        if self.enable:
+            self.tic = time.time()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.enable:
+            self.toc = time.time()
+            print('%s elapsed time: %f'%(self.info, self.toc-self.tic))

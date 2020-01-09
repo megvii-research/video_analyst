@@ -56,21 +56,28 @@ train:
       SiamTrack:
         pretrain_model_path: ""
   data:
-    dataset:
-      names: ["GOT10kDataset",]
-      GOT10kDataset: 
-        ratio: 1
-        max_diff: 100
-        dataset_root: "datasets/GOT-10k"
-        subset: "train"
+    num_epochs: 10000
+    minibatch: 32
+    num_workers: 8
+    nr_image_per_epoch: 600000
+    datapipeline:
+      name: "RegularDatapipeline"
     sampler:
       name: "TrackPairSampler"
       TrackPairSampler:
         negative_pair_ratio: 0.1
-    filter:
-      name: "TrackPairFilter"
-      TrackPairFilter:
-        []
+      submodules:
+        filter:
+          name: "TrackPairFilter"
+          TrackPairFilter:
+            []
+        dataset:
+          names: ["GOT10kDataset",]
+          GOT10kDataset: 
+            ratio: 1
+            max_diff: 100
+            dataset_root: "datasets/GOT-10k"
+            subset: "train"
     transformer:
       names: ["RandomCropTransformer", ]
       RandomCropTransformer:

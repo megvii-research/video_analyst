@@ -9,6 +9,7 @@ from typing import List, Dict
 
 import cv2 as cv
 import numpy as np
+import torch
 
 from yacs.config import CfgNode
 
@@ -26,7 +27,8 @@ class TargetBase:
     __metaclass__ = ABCMeta
 
     r"""
-    base class for Sampler. Reponsible for sampling from multiple datasets and forming training pair / sequence.
+    Target maker. 
+    Responsible for transform image (e.g. HWC -> 1CHW), generating training target, etc.
 
     Define your hyper-parameters here in your sub-class.
     """
@@ -73,12 +75,16 @@ class TargetBase:
         an interface for update params
         """
 
-    def __call__(self, Dict) -> Dict:
+    def __call__(self, sampled_data: Dict) -> Dict:
         r"""
         An interface to mkae target
 
         Arguments
         ---------
-        Dict
+        training_data: Dict
             data whose training target will be made
         """
+        for k in sampled_data:
+            sampled_data[k] = torch.tensor(sampled_data[k])
+
+        return sampled_data
