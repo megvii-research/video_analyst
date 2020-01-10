@@ -42,7 +42,17 @@ train:
       AlexNet:
         pretrain_model_path: ""
     losses:
-      names: []
+      names: ["SigmoidCrossEntropyRetina",
+              "SigmoidCrossEntropyCenterness", 
+              "IOULoss",]
+      SigmoidCrossEntropyRetina: 
+        weight: 1
+        alpha: 0.25
+        gamma: 2.0
+      SigmoidCrossEntropyCenterness: 
+        weight: 1
+      IOULoss: 
+        weight: 3
     task_head:
       name: "DenseboxHead"
       DenseboxHead:

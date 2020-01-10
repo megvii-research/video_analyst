@@ -5,6 +5,7 @@ from typing import Dict
 from yacs.config import CfgNode
 
 from videoanalyst.model.loss.loss_base import TRACK_LOSSES, VOS_LOSSES
+from videoanalyst.utils.misc import merge_cfg_into_hps
 
 logger = logging.getLogger(__file__)
 
@@ -25,10 +26,7 @@ def build(task: str, cfg: CfgNode):
             name, task)
         module = modules[name]()
         hps = module.get_hps()
-
-        for hp_name in hps:
-            new_value = cfg[name][hp_name]
-            hps[hp_name] = new_value
+        hps = merge_cfg_into_hps(cfg[name], hps)
         module.set_hps(hps)
         module.update_params()
         ret.append(module)

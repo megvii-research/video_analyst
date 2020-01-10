@@ -69,7 +69,10 @@ class SiamTrack(ModuleBase):
         """
         # phase: train
         if phase == 'train':
-            target_img, search_img = args
+            # resolve training data
+            training_data = args
+            target_img = training_data["im_z"]
+            search_img = training_data["im_x"]
             # backbone feature
             f_z = self.basemodel(target_img)
             f_x = self.basemodel(search_img)
@@ -87,7 +90,10 @@ class SiamTrack(ModuleBase):
             # fcos_cls_prob_final = torch.sigmoid(fcos_cls_score_final)
             # fcos_ctr_prob_final = torch.sigmoid(fcos_ctr_score_final)
             # output
-            out_list = fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final
+            # out_list = fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final
+            out_list = dict(cls_pred=fcos_cls_score_final,
+                            ctr_pred=fcos_ctr_score_final,
+                            box_pred=fcos_bbox_final,)
         # phase: feature
         elif phase == 'feature':
             target_img, = args

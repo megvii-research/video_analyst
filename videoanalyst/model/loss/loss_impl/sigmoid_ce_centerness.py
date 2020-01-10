@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*
 import numpy as np
 import torch
-import torch.nn.functional as F
 from torch import nn
+import torch.nn.functional as F
 
 from ...module_base import ModuleBase
 from ..loss_base import TRACK_LOSSES
@@ -11,9 +11,8 @@ from .utils import SafeLog
 
 eps = np.finfo(np.float32).tiny
 
-
 @TRACK_LOSSES.register
-class IOULoss(ModuleBase):
+class SigmoidCrossEntropyCenterness(ModuleBase):
 
     default_hyper_params = dict(
         background=0,
@@ -22,49 +21,49 @@ class IOULoss(ModuleBase):
     )
 
     def __init__(self, background=0, ignore_label=-1):
-        super().__init__()
+        super(SigmoidCrossEntropyCenterness, self).__init__()
         self.safelog = SafeLog()
         self.register_buffer("t_one", torch.tensor(1., requires_grad=False))
-        self.register_buffer("t_zero", torch.tensor(0., requires_grad=False))
-
-    def update_params(self):
+    
+    def update_params(self,):
         self.background = self._hyper_params["background"]
         self.ignore_label = self._hyper_params["ignore_label"]
         self.weight = self._hyper_params["weight"]
 
-    # def forward(self, pred, gt, cls_gt):
+    # def forward(self, pred, label):
     def forward(self, pred_data, target_data):
+        r"""
+        Center-ness loss
+        Arguments
+        ---------
+        pred: torch.Tensor
+            center-ness logits (BEFORE Sigmoid)
+            format: (B, HW)
+        label: torch.Tensor
+            training label
+            format: (B, HW)
+
+        Returns
+        -------
+        torch.Tensor
+            scalar loss
+            format: (,)
+        """
         # resolve prediction & target
-        pred = pred_data["box_pred"]
-        gt = target_data["box_gt"]
-        cls_gt = target_data["cls_gt"]
+        pred = pred_data["ctr_pred"]
+        label = target_data["ctr_gt"]
         # mask
-        mask = ((1 - (cls_gt == self.background)) *
-                (1 - (cls_gt == self.ignore_label))).detach()
-        mask = mask.type(torch.Tensor).squeeze(2).to(pred.device)
+        mask = (1 - (label==self.background)).type(torch.Tensor).to(pred.device)
+        not_neg_mask = (pred >= 0).type(torch.Tensor).to(pred.device)
+        loss = (pred * not_neg_mask -
+                pred * label +
+                self.safelog(1. + torch.exp(-torch.abs(pred)))) * mask
+        loss_residual = (-label*self.safelog(label)-(1-label)*self.safelog(1-label)) * mask # suppress loss residual (original vers.)
+        loss = loss - loss_residual.detach()
 
-        aog = torch.abs(gt[:, :, 2] - gt[:, :, 0] +
-                        1) * torch.abs(gt[:, :, 3] - gt[:, :, 1] + 1)
-        aop = torch.abs(pred[:, :, 2] - pred[:, :, 0] +
-                        1) * torch.abs(pred[:, :, 3] - pred[:, :, 1] + 1)
+        return loss.sum() / torch.max(mask.sum(), self.t_one)
 
-        iw = torch.min(pred[:, :, 2], gt[:, :, 2]) - torch.max(
-            pred[:, :, 0], gt[:, :, 0]) + 1
-        ih = torch.min(pred[:, :, 3], gt[:, :, 3]) - torch.max(
-            pred[:, :, 1], gt[:, :, 1]) + 1
-        inter = torch.max(iw, self.t_zero) * torch.max(ih, self.t_zero)
 
-        union = aog + aop - inter
-        iou = torch.max(inter / union, self.t_zero)
-        loss = -self.safelog(iou)
-
-        # from IPython import embed;embed()
-        loss = (loss * mask).sum() / torch.max(mask.sum(),
-                                               self.t_one) * self.weight
-        iou = iou.detach()
-        iou = (iou * mask).sum() / torch.max(mask.sum(), self.t_one)
-
-        return loss, iou
 
 if __name__=='__main__':
     B = 16

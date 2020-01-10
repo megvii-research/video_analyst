@@ -41,7 +41,7 @@ class ModuleBase(nn.Module):
                 raise KeyError
             self._hyper_params[key] = hps[key]
 
-    @abstractmethod
+    # @abstractmethod
     def update_params(self):
         r"""
         an interface for update params

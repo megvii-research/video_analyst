@@ -23,7 +23,8 @@ for task in task_list:
     cfg[task]["model"] = get_model_cfg()[task]
     cfg[task]["pipeline"] = get_pipeline_cfg()[task]
     cfg[task]["tester"] = get_tester_cfg()[task]
-    cfg[task]["dataset"] = get_dataset_cfg()[task]
+    # cfg[task]["engine"] = get_engine_cfg()[task]
+    cfg[task]["data"] = get_dataset_cfg()[task]
 
 
 def specify_task(cfg: CfgNode) -> (str, CfgNode):
