@@ -14,8 +14,8 @@ from yacs.config import CfgNode
 
 from videoanalyst.utils import Registry
 
-TRACK_TRANSFORMERS = Registry()
-VOS_TRANSFORMERS = Registry()
+TRACK_TRANSFORMERS = Registry('TRACK_TRANSFORMERS')
+VOS_TRANSFORMERS = Registry('VOS_TRANSFORMERS')
 
 TASK_TRANSFORMERS = dict(
     track=TRACK_TRANSFORMERS,

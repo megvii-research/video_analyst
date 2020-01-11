@@ -15,8 +15,8 @@ from yacs.config import CfgNode
 
 from videoanalyst.utils import Registry
 
-TRACK_TARGETS = Registry()
-VOS_TARGETS = Registry()
+TRACK_TARGETS = Registry('TRACK_TARGETS')
+VOS_TARGETS = Registry('VOS_TARGETS')
 
 TASK_TARGETS = dict(
     track=TRACK_TARGETS,

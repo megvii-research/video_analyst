@@ -15,8 +15,8 @@ from yacs.config import CfgNode
 from ..dataset.dataset_base import DatasetBase
 from videoanalyst.utils import Registry
 
-TRACK_SAMPLERS = Registry()
-VOS_SAMPLERS = Registry()
+TRACK_SAMPLERS = Registry('TRACK_SAMPLERS')
+VOS_SAMPLERS = Registry('VOS_SAMPLERS')
 
 TASK_SAMPLERS = dict(
     track=TRACK_SAMPLERS,

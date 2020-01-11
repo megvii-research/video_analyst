@@ -14,8 +14,8 @@ from yacs.config import CfgNode
 
 from videoanalyst.utils import Registry
 
-TRACK_DATASETS = Registry()
-VOS_DATASETS = Registry()
+TRACK_DATASETS = Registry('TRACK_DATASETS')
+VOS_DATASETS = Registry('VOS_DATASETS')
 
 TASK_DATASETS = dict(
     track=TRACK_DATASETS,

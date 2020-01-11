@@ -15,8 +15,8 @@ from yacs.config import CfgNode
 from videoanalyst.data.dataset.dataset_base import DatasetBase
 from videoanalyst.utils import Registry
 
-TRACK_FILTERS = Registry()
-VOS_FILTERS = Registry()
+TRACK_FILTERS = Registry('TRACK_FILTERS')
+VOS_FILTERS = Registry('VOS_FILTERS')
 
 TASK_FILTERS = dict(
     track=TRACK_FILTERS,

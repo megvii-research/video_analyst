@@ -20,8 +20,8 @@ from ..dataset.builder import build as build_dataset
 from ..filter.builder import build as build_filter
 
 from videoanalyst.utils import Registry
-TRACK_DATAPIPELINES = Registry()
-VOS_DATAPIPELINES = Registry()
+TRACK_DATAPIPELINES = Registry('TRACK_DATAPIPELINES')
+VOS_DATAPIPELINES = Registry('VOS_DATAPIPELINES')
 
 TASK_DATAPIPELINES = dict(
     track=TRACK_DATAPIPELINES,

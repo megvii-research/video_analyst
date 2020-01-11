@@ -26,8 +26,8 @@ logger = logging.getLogger("global")
 class VOTTester(TesterBase):
     r"""
     Tester to test the vot dataset, the result is saved as follows
-    exp_dir/logs/$dataset_name$/$tracker_name$/baseline
-                                    |-$video_name$/ floder of result files        
+    exp_dir/logs/$dataset_name$/$tracker_name/
+                                    |-baseline/$video_name$/ folder of result files
                                     |-eval_result.csv evaluation result file
 
     Hyper-parameters
