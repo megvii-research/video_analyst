@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from typing import Dict, List, Tuple
 import numpy as np
 import cv2

@@ -10,7 +10,7 @@ from torch.utils.data import Dataset, DataLoader
 # from .sampler import builder as sampler_builder
 # from .transformer import builder as transformer_builder
 # from .target import builder as target_builder
-from .dataloader import PytorchDataset
+from .dataloader import AdaptorDataset
 
 def build(task: str, cfg: CfgNode) -> DataLoader:
     r"""
@@ -24,7 +24,7 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
     # assert task in TASK_SAMPLERS, "invalid task name"
 
     if task == "track":
-        py_dataset = PytorchDataset(dict(task=task, cfg=cfg), 
+        py_dataset = AdaptorDataset(dict(task=task, cfg=cfg), 
                                     num_epochs=cfg.num_epochs, 
                                     nr_image_per_epoch=cfg.nr_image_per_epoch)
 

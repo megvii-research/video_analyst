@@ -51,7 +51,7 @@ class VOTTester(TesterBase):
         ],
     )
 
-    def __init__(self, cfg, pipeline):
+    def __init__(self, cfg):
         r"""
         Crete tester with config and pipeline
 
@@ -62,7 +62,7 @@ class VOTTester(TesterBase):
         pipeline: PipelineBase
             pipeline to test
         """
-        super(VOTTester, self).__init__(cfg, pipeline)
+        super(VOTTester, self).__init__(cfg)
         self._state['speed'] = -1
 
     def test(self):

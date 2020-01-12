@@ -1,38 +1,40 @@
 # -*- coding: utf-8 -*
+from typing import Dict, List, Tuple
 from copy import deepcopy
 
 from torch import nn
-
-from yacs.config import CfgNode
+from torch.utils.data import DataLoader
 
 from videoanalyst.utils import Registry
-from videoanalyst.pipeline.pipeline_base import PipelineBase
+from videoanalyst.model.module_base import ModuleBase
 
-TRACK_TESTERS = Registry('TRACK_TESTERS')
-VOS_TESTERS = Registry('VOS_TESTERS')
+TRACK_PROCESSES = Registry('TRACK_PROCESSES')
+VOS_PROCESSES = Registry('VOS_PROCESSES')
 
+TASK_PROCESSES = dict(
+    track=TRACK_PROCESSES,
+    vos=VOS_PROCESSES,
+)
 
-class TesterBase:
+class ProcessBase:
     r"""
-    Tester base class (e.g. procedure defined for tracker / segmenter / etc.)
+    Trainer base class (e.g. procedure defined for tracker / segmenter / etc.)
     Interface descriptions:
-        init(im, state):
-        update(im):
     """
     # Define your default hyper-parameters here in your sub-class.
     default_hyper_params = dict()
 
-    def __init__(self, cfg: CfgNode):
+    def __init__(self, 
+                 models: ModuleBase,
+                 data:  
+                 processes, ):
         self._hyper_params = deepcopy(
             self.default_hyper_params)  # mapping-like object
         self._state = dict()  # pipeline state
-        self._cfg = cfg
-        self._pipeline = None
-    
-    def set_pipeline(self, pipeline: PipelineBase):
-        self._pipeline = pipeline
 
-    def get_hps(self) -> dict():
+        self.processes = []
+
+    def get_hps(self) -> Dict:
         r"""
         Getter function for hyper-parameters
 
@@ -43,7 +45,7 @@ class TesterBase:
         """
         return self._hyper_params
 
-    def set_hps(self, hps: dict()) -> None:
+    def set_hps(self, hps: Dict) -> None:
         r"""
         Set hyper-parameters
 
@@ -61,7 +63,8 @@ class TesterBase:
         r"""
         an interface for update params
         """
-    def test(self):
+
+    def execute(self):
         r"""
-        an interface to start testing
+        an interface to execute a process
         """

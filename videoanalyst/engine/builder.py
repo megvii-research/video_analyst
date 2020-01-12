@@ -12,6 +12,5 @@ def build(task: str, cfg: CfgNode, engine_type: str, **kwargs):
     """
     if engine_type == "tester":
         if task == "track":
-            pipeline = kwargs.get("pipeline")
-            testers = build_tester(task, cfg, pipeline)
+            testers = build_tester(task, cfg)
             return testers

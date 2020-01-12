@@ -101,3 +101,38 @@ train:
         score_size: 17
         x_size: 303
         num_conv3x3: 3
+  trainer:
+    name: "RegularTrainer"
+    RegularTrainer:
+      devices: ["cuda:0"]
+      max_epoch: 20
+      num_iterations: 12500
+  optimizer:
+    name: "SGD_Schd_Mult"
+    SGD_Schd_Mult: 
+      lr: 0.1
+      momentum: 0.9
+      weight_decay: 0.00005
+    lr_scheduler:
+      phase-0:
+        name: "LinearLR"
+        LinearLR: 
+          start_lr: 0.000001 # lr_min 
+          end_lr: 0.04 # lr_base,
+          max_epoch: 5 # warmup_epoch, 
+          max_iter: 12500 # max_iter
+      phase-1:
+        name: "CosineLR"
+        CosineLR:
+          start_lr: 0.04 # lr_min 
+          end_lr: 0.000001 # lr_base,
+          max_epoch: 15 # warmup_epoch, 
+          max_iter: 12500 # max_iter
+    lr_multiplier:
+      backbone:
+        filter: ""
+        ratio: 0.1
+      other: 
+        filter: ""
+        ratio: 1
+

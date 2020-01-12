@@ -11,7 +11,7 @@ from .datapipeline.builder import build as build_datapipeline
 
 from videoanalyst.utils.misc import Timer
 
-class PytorchDataset(Dataset):
+class AdaptorDataset(Dataset):
 
     def __init__(self, kwargs: Dict = dict(), num_epochs=1, nr_image_per_epoch=1):
         self.datapipeline = None

@@ -4,14 +4,15 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
-from .tester_base import TRACK_TESTERS, VOS_TESTERS
+from videoanalyst.pipeline.pipeline_base import PipelineBase
 
-from videoanalyst.utils import merge_cfg_into_hps
+from .trainer_base import TASK_TRAINERS, TrainerBase
+from videoanalyst.utils.misc import merge_cfg_into_hps
 
 logger = logging.getLogger(__file__)
 
 
-def build(task: str, cfg: CfgNode):
+def build(task: str, cfg: CfgNode, pipeline: PipelineBase) -> TrainerBase:
     r"""
     Builder function.
 
@@ -21,26 +22,24 @@ def build(task: str, cfg: CfgNode):
         builder task name (track|vos)
     cfg: CfgNode
         buidler configuration
+    pipeline: PipelineBase
+        underlying pipeline
 
     Returns
     -------
-    TesterBase
+    TrainerBase
         tester built by builder
     """
-    if task == "track":
-        modules = TRACK_TESTERS
-    elif task == "vos":
-        modules = VOS_TESTERS
-    else:
-        logger.error("no tester for task {}".format(task))
-        exit(-1)
+    assert task in TASK_TRAINERS, "no tester for task {}".format(task)
+    modules = TASK_TRAINERS[task]
     names = cfg.tester.names
     testers = []
     # tester for multiple experiments
     for name in names:
-        tester = modules[name](cfg)
+        tester = modules[name](cfg, pipeline)
         hps = tester.get_hps()
-        hps = merge_cfg_into_hps(cfg.tester[name], hps)
+
+        hps = merge_cfg_into_hps(cfg[name], hps)
         tester.set_hps(hps)
         tester.update_params()
         testers.append(tester)
