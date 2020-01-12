@@ -108,11 +108,28 @@ train:
       max_epoch: 20
       num_iterations: 12500
   optimizer:
-    name: "SGD_Schd_Mult"
-    SGD_Schd_Mult: 
+    name: "SGD"
+    SGD:
       lr: 0.1
       momentum: 0.9
       weight_decay: 0.00005
+    freeze_scheduler:
+      isConv: "conv.\.conv.*"
+        regex:
+        epoch: 0
+        freezed: True
+      isConv5:
+        regex: "conv5\.conv.*"
+        epoch: 5
+        freezed: False
+      isConv4:
+        regex: "conv4\.conv.*"
+        epoch: 10
+        freezed: False
+      isConv3:
+        regex: "conv3\.conv.*"
+        epoch: 15
+        freezed: False
     lr_scheduler:
       phase-0:
         name: "LinearLR"

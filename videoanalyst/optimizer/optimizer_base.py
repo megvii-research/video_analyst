@@ -18,6 +18,8 @@ from torch import nn
 from ..dataset.dataset_base import DatasetBase
 from videoanalyst.utils import Registry
 
+from .optimizer_impl.utils import build_lr_scheduler, schedule_lr, multiply_lr
+
 TRACK_OPTIMIZERS = Registry('TRACK_OPTIMIZERS')
 VOS_OPTIMIZERS = Registry('VOS_OPTIMIZERS')
 
@@ -66,6 +68,17 @@ class OptimizerBase:
         an interface to build optimzier
         """
 
+    def build_lr_scheduler(self, cfg: CfgNode):
+        r"""
+        Arguments
+        ---------
+        cfg: CfgNode
+            node name: lr_scheduler
+        """
+        self._state["lr_scheduler"] = build_lr_scheduler(cfg)
+
+
+
     def get_hps(self) -> dict:
         r"""
         Getter function for hyper-parameters
@@ -95,8 +108,16 @@ class OptimizerBase:
         r"""
         an interface for update params
         """
+    def schedule_freeze(self, epoch: int, iteration: int) -> None:
+        pass
 
-    def schedule(self, epoch: int, iteration: int) -> None:
+
+    def schedule_lr(self, epoch: int, iteration: int) -> None:
         r"""
         an interface for optimzier scheduling (e.g. adjust learning rate)
         """
+        if "lr_scheduler" in self._state:
+            lr = self._state["lr_scheduler"].get_lr(epoch=epoch, iter=iteration)
+            schedule_lr(self.optimizer, lr)
+            if "lr_multiplier" in self._state:
+                multiply_lr(self.optimizer, lr_ratios)

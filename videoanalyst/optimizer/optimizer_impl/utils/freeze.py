@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*
 
+from torch import nn
+
+from collections import OrderedDict
 import torch
 
 class FreezeStateMonitor:

@@ -12,7 +12,7 @@ from videoanalyst.data.dataset.dataset_base import DatasetBase
 from ..optimizer_base import TRACK_OPTIMIZERS, OptimizerBase
 
 @TRACK_OPTIMIZERS.register
-class SGD_Schd_Mult(OptimizerBase):
+class SGD(OptimizerBase):
     r"""
     Tracking data sampler
 
@@ -21,16 +21,16 @@ class SGD_Schd_Mult(OptimizerBase):
     """
     default_hyper_params = dict(
         lr=0.1,
-        momentum=0.9
-        weight_decay=0.00005
+        momentum=0.9,
+        weight_decay=0.00005,
     )
 
     def __init__(self, cfg: CfgNode) -> None:
-        super(SGD_Schd_Mult, self).__init__(datasets, seed=seed)
+        super(SGD, self).__init__(cfg)
 
     def build_optimzier(self, model):
         kwargs = self._hyper_params
         optim.SGD(**kwargs)
     
     def schedule(self, epoch: int, iteration: int) -> None:
-        
+        pass

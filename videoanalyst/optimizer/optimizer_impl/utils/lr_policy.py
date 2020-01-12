@@ -46,7 +46,7 @@ __all__ = ["ListLR", "LinearLR", "ExponentialLR", "CosineLR"]
 
 LR_SCHEDULERS = Registry("LR_SCHEDULERS")
 
-def build(cfg: CfgNode) -> ListLR:
+def build(cfg: CfgNode):
     r"""
     Build lr scheduler with configuration
 
