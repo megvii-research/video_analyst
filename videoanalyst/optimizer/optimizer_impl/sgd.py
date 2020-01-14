@@ -28,9 +28,7 @@ class SGD(OptimizerBase):
     def __init__(self, cfg: CfgNode) -> None:
         super(SGD, self).__init__(cfg)
 
-    def build_optimzier(self, model):
+    def build_optimzier(self,):
         kwargs = self._hyper_params
-        optim.SGD(**kwargs)
+        optim.SGD(self.model.parameters(), **kwargs)
     
-    def schedule(self, epoch: int, iteration: int) -> None:
-        pass

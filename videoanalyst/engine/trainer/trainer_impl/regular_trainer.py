@@ -21,6 +21,8 @@ from torch.optim import Base
 from ..trainer_base import TRACK_TRAINERS, TrainerBase
 from videoanalyst.utils import ensure_dir, move_data_to_device
 
+from videoanalyst.model.module_base import ModuleBase
+from videoanalyst.optimizer.optimizer_base import OptimizerBase
 
 logger = logging.getLogger("global")
 
@@ -51,9 +53,9 @@ class RegularTrainer(TrainerBase):
     def __init__(self, 
                  model: ModuleBase, 
                  dataloader: DataLoader, 
-                 losses, 
-                 optimizer, 
-                 process):
+                 losses: ModuleBase, 
+                 optimizer: OptimizerBase, 
+                 process=[]):
         r"""
         Crete tester with config and pipeline
 
@@ -70,7 +72,7 @@ class RegularTrainer(TrainerBase):
         self.model = model
         self.dataloder = dataloder
         self.losses = losses
-        self.optimizer
+        self.optimizer = optimizer
         # update state
         self._state["epoch"] = 0
         self.update_params()
@@ -93,15 +95,15 @@ class RegularTrainer(TrainerBase):
         epoch = self._state["epoch"]
         max_epoch = self._hyper_params["max_epoch"]
 
+        self.optimzier.schedule_freeze(epoch)
+
         for iteration, _ in enumerate(pbar):
 
             training_data = next(dataloader)
             training_data = move_data_to_device(training_data, self._state["devices"][0])
 
+            self.optimzier.schedule_lr(epoch, iteration)
             self.optimizer.zero_grad()
-            lr = config.lr_scheduler.get_lr(epoch, iteration)
-            # lib_repo.schedule_lr(optimizer, lr)
-            # lib_repo.multiply_lr(optimizer, config.lr_ratios)
 
             pred_data = self.model(training_data)
 

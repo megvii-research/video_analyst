@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*
 
+from typing import List, Dict
+import re
+
+from yacs.config import CfgNode
+
 from torch import nn
 
 from collections import OrderedDict
@@ -37,9 +42,56 @@ def dynamic_freeze(module, param_filter=(lambda x: True), requires_grad=False, v
                 v.requires_grad = requires_grad
 
 
-def apply_freeze_schedule(module, epoch, schedule_list, verbose=True):
+# def apply_freeze_schedule(module, epoch, schedule_list, verbose=True):
+#     with FreezeStateMonitor(module, verbose=verbose):
+#         for param_filter, requires_grad_cond in schedule_list:
+#             dynamic_freeze(module,
+#                            param_filter=param_filter,
+#                            requires_grad=requires_grad_cond(epoch))
+
+def apply_freeze_schedule(module, epoch, schedules: List[Dict], verbose=True):
+    r"""
+    Apply dynamic freezing schedule with verbose
+    
+    Arguments:
+    module: nn.Module
+        model to be scheduled
+    epoch: int
+        current epoch
+    schedules: List[Dict]
+        lsit of schedule
+        schedule: Dict
+            "regex": regex to filter parameters
+            "epoch": epoch where the schedule starts from
+            "freezed": freeze or not
+
+    """
     with FreezeStateMonitor(module, verbose=verbose):
-        for param_filter, requires_grad_cond in schedule_list:
+        for schedule in schedule_list:
+            # param_filter, requires_grad_cond
+            param_filter = schedule["filter"]
+            requires_grad = ( (epoch >= schedule["epoch"]) !=
+                              schedule["freezed"] )  
             dynamic_freeze(module,
-                           param_filter=param_filter,
-                           requires_grad=requires_grad_cond(epoch))
+                           param_filter=schedule["filter"],
+                           requires_grad=requires_grad)
+
+def resolve_freeze_schedule_cfg(cfg: CfgNode) -> Dict:
+    r"""
+    Resolve yacs configuration object to get schedule dict
+    Arguments
+    ---------
+    cfg: CfgNode
+        node name: freeze_scheduler
+
+    Returns
+    -------
+    Dict
+        returned schedule
+    """
+    schedule = dict()
+    schedule["filter"] = lambda s: re.compile(cfg.regex).search(s) is not None
+    schedule["epoch"] = cfg.epoch
+    schedule["freezed"] = cfg.freezed
+    return schedule
+    

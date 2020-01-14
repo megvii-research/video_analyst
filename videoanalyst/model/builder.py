@@ -21,7 +21,7 @@ def build_model(
     task: str
         builder task name (track|vos)
     cfg: CfgNode
-        buidler configuration
+        node name: model
 
     Returns
     -------

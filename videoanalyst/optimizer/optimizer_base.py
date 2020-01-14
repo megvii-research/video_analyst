@@ -18,7 +18,9 @@ from torch import nn
 from ..dataset.dataset_base import DatasetBase
 from videoanalyst.utils import Registry
 
-from .optimizer_impl.utils import build_lr_scheduler, schedule_lr, multiply_lr
+from .optimizer_impl.utils.lr_policy import build_lr_scheduler, schedule_lr
+from .optimizer_impl.utils.lr_multiply import multiply_lr, resolve_lr_multiplier_cfg
+from .optimizer_impl.utils.freeze import apply_freeze_schedule, resolve_freeze_schedule_cfg
 
 TRACK_OPTIMIZERS = Registry('TRACK_OPTIMIZERS')
 VOS_OPTIMIZERS = Registry('VOS_OPTIMIZERS')
@@ -44,8 +46,8 @@ class OptimizerBase:
 
         Arguments
         ---------
-        model: nn.Module
-            model to registered in optimizer
+        cfg: CfgNode
+            node name: optimizer
         """
         self._hyper_params = self.default_hyper_params
         self._state = dict()
@@ -63,10 +65,19 @@ class OptimizerBase:
         self.model = model
         self.optimizer = self.build_optimizer(model)
     
-    def build_optimzier(self, model: nn.Module):
+    def build_optimzier(self):
         r"""
         an interface to build optimzier
         """
+
+    def build_freeze_scheduler(self, cfg: CfgNode):
+        r"""
+        Arguments
+        ---------
+        cfg: Cfgnode
+        """
+        schedules = [resolve_freeze_schedule_cfg(cfg[k]) for k in cfg]
+        self._state["freeze_schedules"] = schedules
 
     def build_lr_scheduler(self, cfg: CfgNode):
         r"""
@@ -77,7 +88,12 @@ class OptimizerBase:
         """
         self._state["lr_scheduler"] = build_lr_scheduler(cfg)
 
+    # def build_lr_multiplier(self, cfg: CfgNode):
+    #     lr_multipliers = [resolve_lr_schedule_cfg(cfg[k]) for k in cfg]
+    #     self._state["lr_multipliers"] = lr_multipliers
 
+    # def get_param_group(self):
+    #     pass
 
     def get_hps(self) -> dict:
         r"""
@@ -108,9 +124,10 @@ class OptimizerBase:
         r"""
         an interface for update params
         """
-    def schedule_freeze(self, epoch: int, iteration: int) -> None:
-        pass
 
+    def schedule_freeze(self, epoch: int) -> None:
+        schedules = self._state.get("freeze_schedules", [])
+        apply_freeze_schedule(self.model, epoch， schedules)
 
     def schedule_lr(self, epoch: int, iteration: int) -> None:
         r"""
@@ -121,3 +138,7 @@ class OptimizerBase:
             schedule_lr(self.optimizer, lr)
             if "lr_multiplier" in self._state:
                 multiply_lr(self.optimizer, lr_ratios)
+    
+    # def multiply_lr(self, epoch: int) -> None:
+    #     if "lr_multiplier" in self._state:
+    #         multiply_lr(self.optimizer, self._state["lr_multiplier"])

@@ -23,7 +23,13 @@ class TrainerBase:
     # Define your default hyper-parameters here in your sub-class.
     default_hyper_params = dict()
 
-    def __init__(self, ):
+    # def __init__(self, ):
+    def __init__(self, 
+                 model: ModuleBase, 
+                 dataloader: DataLoader, 
+                 losses: ModuleBase, 
+                 optimizer: OptimizerBase, 
+                 process=[]):
         self._hyper_params = deepcopy(
             self.default_hyper_params)  # mapping-like object
         self._state = dict()  # pipeline state

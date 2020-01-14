@@ -4,15 +4,18 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
-from videoanalyst.pipeline.pipeline_base import PipelineBase
-
 from .trainer_base import TASK_TRAINERS, TrainerBase
 from videoanalyst.utils.misc import merge_cfg_into_hps
+
+from videoanalyst.data import builder as dataloder_builder
+from videoanalyst.optimizer import builder as optimizer_builder
+from videoanalyst.model import builder as model_builder
+from videoanalyst.model.loss import builder as loss_builder
 
 logger = logging.getLogger(__file__)
 
 
-def build(task: str, cfg: CfgNode, pipeline: PipelineBase) -> TrainerBase:
+def build(task: str, cfg: CfgNode) -> TrainerBase:
     r"""
     Builder function.
 
@@ -21,9 +24,7 @@ def build(task: str, cfg: CfgNode, pipeline: PipelineBase) -> TrainerBase:
     task: str
         builder task name (track|vos)
     cfg: CfgNode
-        buidler configuration
-    pipeline: PipelineBase
-        underlying pipeline
+        node name: train
 
     Returns
     -------
@@ -31,19 +32,22 @@ def build(task: str, cfg: CfgNode, pipeline: PipelineBase) -> TrainerBase:
         tester built by builder
     """
     assert task in TASK_TRAINERS, "no tester for task {}".format(task)
-    modules = TASK_TRAINERS[task]
-    names = cfg.tester.names
-    testers = []
-    # tester for multiple experiments
-    for name in names:
-        tester = modules[name](cfg, pipeline)
-        hps = tester.get_hps()
+    MODULES = TASK_TRAINERS[task]
 
-        hps = merge_cfg_into_hps(cfg[name], hps)
-        tester.set_hps(hps)
-        tester.update_params()
-        testers.append(tester)
-    return testers
+    model = model_builder(task, cfg.model)
+    dataloader = dataloder_builder(task, cfg.data)
+    losses = loss_builder(task, cfg.model.losses)
+    optimizer = optimizer_builder(task, cfg.model, model)
+
+    cfg = cfg.trainer
+    name = cfg.name
+    trainer = MODULES[name](model, dataloader, losses, optimizer)
+    hps = trainer.get_hps()
+    hps = merge_cfg_into_hps(cfg[name], hps)
+    trainer.set_hps(hps)
+    trainer.update_params()
+
+    return trainer
 
 
 def get_config() -> Dict[str, CfgNode]:

@@ -18,26 +18,25 @@ def build(task: str, cfg: CfgNode, model: nn.Module) -> OptimizerBase:
     task: str
         task name (track|vos)
     cfg: CfgNode
-        node name: sampler
-    seed: int
-        seed for rng initialization
+        node name: optimizer
     """
-    assert task in TASK_SAMPLERS, "invalid task name"
-    MODULES = TASK_SAMPLERS[task]
-
-    submodules_cfg = cfg.submodules
-
-
-    filter_cfg = getattr(submodules_cfg, "filter", None)
-    filter = build_filter(task, filter_cfg) if filter_cfg is not None else None
-
+    assert task in TASK_OPTIMIZERS, "invalid task name"
+    MODULES = TASK_OPTIMIZERS[task]
     name = cfg.name
     module = MODULES[name](cfg)
+
 
     hps = module.get_hps()
     hps = merge_cfg_into_hps(cfg[name], hps)
     module.set_hps(hps)
     module.update_params()
+
+    if "freeze_scheduler" in cfg: 
+        module.build_freeze_scheduler(cfg.freeze_scheduler)
+    if "lr_scheduler" in cfg:
+        module.build_lr_scheduler(cfg.lr_scheduler)
+    module.set_model(model)
+    module.build_optimizer()
 
     return module
 

@@ -228,20 +228,6 @@ def schedule_lr(optimizer, lr):
     return optimizer
 
 
-def multiply_lr(optimizer, lr_ratios, verbose=False):
-    """ apply learning rate ratio for per-layer adjustment """
-    assert len(optimizer.param_groups) == len(lr_ratios)
-    for ith, (param_group, lr_ratio) in enumerate(zip(optimizer.param_groups, lr_ratios)):
-        param_group['lr'] *= lr_ratio
-        if verbose:
-            print("%d params in param_group %d multiplied by ratio %.2g"%(len(param_group['params']), ith, lr_ratio))
-
-
-def divide_into_param_groups(module, group_filters):
-    param_groups = [{'params': group_filter(module)} for group_filter in group_filters]
-    return param_groups
-
-
 if __name__ == '__main__':
 
     lr_scheduler = ListLR(LinearLR(start_lr=1e-6, end_lr=1e-1, max_epoch=5, max_iter=5000),

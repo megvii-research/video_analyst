@@ -65,6 +65,9 @@ class VOTTester(TesterBase):
         super(VOTTester, self).__init__(cfg)
         self._state['speed'] = -1
 
+    def update_params(self):
+        pass
+
     def test(self):
         r"""
         Run test
