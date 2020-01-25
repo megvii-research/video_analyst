@@ -8,6 +8,7 @@ from .target_base import TASK_TARGETS, TargetBase
 from videoanalyst.utils import merge_cfg_into_hps
 
 
+
 def build(task: str, cfg: CfgNode) -> TargetBase:
     r"""
     Arguments
@@ -32,11 +33,11 @@ def build(task: str, cfg: CfgNode) -> TargetBase:
 
 
 def get_config() -> Dict[str, CfgNode]:
-    cfg_dict = {name: CfgNode() for name in task_datasets.keys()}
+    cfg_dict = {name: CfgNode() for name in TASK_TARGETS.keys()}
 
-    for cfg_name, modules in task_datasets.items():
+    for cfg_name, modules in TASK_TARGETS.items():
         cfg = cfg_dict[cfg_name]
-        cfg["names"] = []
+        cfg["name"] = ""
 
         for name in modules:
             cfg[name] = CfgNode()

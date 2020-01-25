@@ -36,9 +36,9 @@ def build(task: str, cfg: CfgNode, seed: int=0) -> TransformerBase:
 
 
 def get_config() -> Dict[str, CfgNode]:
-    cfg_dict = {name: CfgNode() for name in task_datasets.keys()}
+    cfg_dict = {name: CfgNode() for name in TASK_TRANSFORMERS.keys()}
 
-    for cfg_name, modules in task_datasets.items():
+    for cfg_name, modules in TASK_TRANSFORMERS.items():
         cfg = cfg_dict[cfg_name]
         cfg["names"] = []
 

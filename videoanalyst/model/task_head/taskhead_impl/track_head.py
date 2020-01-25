@@ -86,8 +86,11 @@ class DenseboxHead(ModuleBase):
         bbox = r_out
 
         for i in range(0, num_conv3x3):
-            cls = self.cls_conv3x3_list[i](cls)
-            bbox = self.bbox_conv3x3_list[i](bbox)
+            # cls = self.cls_conv3x3_list[i](cls)
+            # bbox = self.bbox_conv3x3_list[i](bbox)
+            cls = getattr(self, 'cls_p5_conv%d' % (i + 1))(cls)
+            bbox = getattr(self, 'bbox_p5_conv%d' % (i + 1))(bbox)
+
         # classification score
         cls_score = self.cls_score_p5(cls)  #todo
         cls_score = cls_score.permute(0, 2, 3, 1)

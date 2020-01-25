@@ -5,8 +5,8 @@ from typing import Dict, List
 from yacs.config import CfgNode
 
 from .sampler_base import TASK_SAMPLERS, DatasetBase
-from ..dataset.builder import build as build_dataset
-from ..filter.builder import build as build_filter
+from ..dataset import builder as dataset_builder
+from ..filter import builder as filter_builder
 from videoanalyst.utils import merge_cfg_into_hps
 
 def build(task: str, cfg: CfgNode, seed: int=0) -> DatasetBase:
@@ -26,10 +26,10 @@ def build(task: str, cfg: CfgNode, seed: int=0) -> DatasetBase:
     submodules_cfg = cfg.submodules
 
     dataset_cfg = submodules_cfg.dataset
-    datasets = build_dataset(task, dataset_cfg)
+    datasets = dataset_builder.build(task, dataset_cfg)
 
     filter_cfg = getattr(submodules_cfg, "filter", None)
-    filter = build_filter(task, filter_cfg) if filter_cfg is not None else None
+    filter = filter_builder.build(task, filter_cfg) if filter_cfg is not None else None
 
     name = cfg.name
     module = MODULES[name](datasets, seed=seed, filter=filter)
@@ -47,7 +47,7 @@ def get_config() -> Dict[str, CfgNode]:
 
     for cfg_name, modules in TASK_SAMPLERS.items():
         cfg = cfg_dict[cfg_name]
-        cfg["names"] = []
+        cfg["name"] = ""
 
         for name in modules:
             cfg[name] = CfgNode()
@@ -55,5 +55,9 @@ def get_config() -> Dict[str, CfgNode]:
             hps = module.default_hyper_params
             for hp_name in hps:
                 cfg[name][hp_name] = hps[hp_name]
+
+        cfg["submodules"] = CfgNode()
+        cfg["submodules"]["dataset"] = dataset_builder.get_config()[cfg_name]
+        cfg["submodules"]["filter"] = filter_builder.get_config()[cfg_name]
 
     return cfg_dict

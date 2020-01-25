@@ -21,9 +21,9 @@ with open(exp_cfg_path) as f:
 task = "track"
 
 
-dataloader = build_dataloader(task, cfg.train.data)
+dataloader = build_dataloader(task, cfg.train[task].data)
 
-# datasets = build_dataset(task, cfg.train.data.dataset)
+# datasets = build_dataset(task, cfg.train[task].data.dataset)
 
 
 num_minimatches = 1
@@ -33,7 +33,7 @@ with Timer(info="Dataloader:"):
         print("Batch", ith)
         for idx in range(training_data[list(training_data.keys())[0]].shape[0]):
             show_data = index_data(training_data, idx)
-            cfg_viz = cfg.train.data.target[cfg.train.data.target.name]
+            cfg_viz = cfg.train[task].data.target[cfg.train[task].data.target.name]
             show_img_FCOS(cfg_viz, show_data)
 
 # cv2.imshow("im_z", im_z)

@@ -28,7 +28,6 @@ class SGD(OptimizerBase):
     def __init__(self, cfg: CfgNode) -> None:
         super(SGD, self).__init__(cfg)
 
-    def build_optimzier(self,):
+    def build_optimizer(self):
         kwargs = self._hyper_params
-        optim.SGD(self.model.parameters(), **kwargs)
-    
+        self._optimizer = optim.SGD(self._model.parameters(), **kwargs)

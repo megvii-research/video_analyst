@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*
+from typing import Dict
+
+from yacs.config import CfgNode
 
 def multiply_lr(optimizer, lr_ratios, verbose=False):
     """ apply learning rate ratio for per-layer adjustment """

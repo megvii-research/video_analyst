@@ -9,7 +9,7 @@ from .task_head import builder as head_builder
 from .task_model import builder as task_builder
 
 
-def build_model(
+def build(
         task: str,
         cfg: CfgNode,
 ):

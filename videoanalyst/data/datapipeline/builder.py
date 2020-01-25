@@ -10,6 +10,10 @@ from ..sampler.builder import build as build_sampler
 from ..transformer.builder import build as build_transformer
 from ..target.builder import build as build_target
 
+from ..filter.builder import get_config as get_filter_cfg
+from ..dataset.builder import get_config as get_dataset_cfg
+
+
 from videoanalyst.utils import merge_cfg_into_hps
 
 def build(task: str, cfg: CfgNode, seed: int=0) -> DatapipelineBase:
@@ -47,11 +51,11 @@ def build(task: str, cfg: CfgNode, seed: int=0) -> DatapipelineBase:
 
 
 def get_config() -> Dict[str, CfgNode]:
-    cfg_dict = {name: CfgNode() for name in TASK_DATALOADERS.keys()}
+    cfg_dict = {name: CfgNode() for name in TASK_DATAPIPELINES.keys()}
 
-    for cfg_name, modules in TASK_DATALOADERS.items():
+    for cfg_name, modules in TASK_DATAPIPELINES.items():
         cfg = cfg_dict[cfg_name]
-        cfg["names"] = []
+        cfg["name"] = ""
 
         for name in modules:
             cfg[name] = CfgNode()
@@ -59,5 +63,10 @@ def get_config() -> Dict[str, CfgNode]:
             hps = module.default_hyper_params
             for hp_name in hps:
                 cfg[name][hp_name] = hps[hp_name]
+
+        cfg["submodules"] = CfgNode()
+        cfg["submodules"] = get_filter_cfg()
+        cfg["submodules"] = get_dataset_cfg()
+
 
     return cfg_dict

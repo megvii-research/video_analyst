@@ -18,7 +18,7 @@ class TrackPairSampler(SamplerBase):
     ----------------
     """
     default_hyper_params = dict(
-        negative_pair_ratio=0,
+        negative_pair_ratio=0.0,
     )
 
     def __init__(self, datasets: List[DatasetBase]=[], seed: int=0, filter=None) -> None:

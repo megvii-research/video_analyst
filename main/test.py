@@ -5,7 +5,6 @@ import argparse
 import logging
 import os.path as osp
 
-from main.paths import ROOT_CFG
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.config.config import specify_task
 from videoanalyst.engine.builder import build as tester_builder
@@ -33,7 +32,7 @@ if __name__ == '__main__':
     # experiment config
     exp_cfg_path = osp.realpath(parsed_args.config)
     root_cfg.merge_from_file(exp_cfg_path)
-    logger.info("Load experiment config. at: %s" % exp_cfg_path)
+    logger.info("Load experiment configuration at: %s" % exp_cfg_path)
 
     # resolve config
     task, task_cfg = specify_task(root_cfg)

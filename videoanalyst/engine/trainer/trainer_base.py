@@ -3,9 +3,12 @@ from typing import Dict, List, Tuple
 from copy import deepcopy
 
 from torch import nn
+from torch.utils.data import DataLoader
 
 from videoanalyst.utils import Registry
 from videoanalyst.model.module_base import ModuleBase
+from videoanalyst.optimizer.optimizer_base import OptimizerBase
+
 
 TRACK_TRAINERS = Registry('TRACK_TRAINERS')
 VOS_TRAINERS= Registry('VOS_TRAINERS')
@@ -23,16 +26,15 @@ class TrainerBase:
     # Define your default hyper-parameters here in your sub-class.
     default_hyper_params = dict()
 
-    # def __init__(self, ):
-    def __init__(self, 
-                 model: ModuleBase, 
-                 dataloader: DataLoader, 
-                 losses: ModuleBase, 
-                 optimizer: OptimizerBase, 
-                 process=[]):
+    def __init__(self, ):
         self._hyper_params = deepcopy(
             self.default_hyper_params)  # mapping-like object
         self._state = dict()  # pipeline state
+        self._model = None
+        self._dataloader = None
+        self._losses = None
+        self._optimizer = None
+        self._processes = []
 
     def get_hps(self) -> Dict:
         r"""
@@ -63,8 +65,34 @@ class TrainerBase:
         r"""
         an interface for update params
         """
-        
+    def init_train(self):
+        r"""
+        an interface to process pre-train overhead before training
+        """
+
     def train(self):
         r"""
         an interface to train for one epoch
         """
+
+    def is_completed(self):
+        r""""""
+
+    def set_model(self, model: ModuleBase):
+        r""""""
+        self._model = model
+
+    def set_dataloader(self, dataloader: DataLoader):
+        r""""""
+        self._dataloader = dataloader
+
+    def set_losses(self, losses: ModuleBase):
+        r""""""
+        self._losses = losses
+
+    def set_optimizer(self, optimizer: OptimizerBase):
+        r""""""
+        self._optimizer = optimizer
+
+    def set_processes(self, processes: List):
+        self._processes = processes

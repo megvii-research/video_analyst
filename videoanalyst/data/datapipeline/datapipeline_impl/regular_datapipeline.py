@@ -7,6 +7,8 @@ from yacs.config import CfgNode
 from ..datapipeline_base import TRACK_DATAPIPELINES, DatapipelineBase
 from ...sampler.sampler_base import SamplerBase
 
+from videoanalyst.utils import convert_data_to_dtype
+
 from videoanalyst.evaluation.got_benchmark.datasets import got10k
 from videoanalyst.data.dataset.dataset_base import DatasetBase
 
@@ -35,5 +37,7 @@ class RegularDatapipeline(DatapipelineBase):
 
         for proc in self.pipeline:
             sampled_data = proc(sampled_data)
+
+        sampled_data = convert_data_to_dtype(sampled_data)
 
         return sampled_data

@@ -21,10 +21,10 @@ with open(exp_cfg_path) as f:
 task = "track"
 
 # datasets = build_dataset(task, cfg.train.data.dataset)
-sampler =  build_sampler(task, cfg.train.data.sampler)
-transformers = build_transformer(task, cfg.train.data.transformer)
+sampler =  build_sampler(task, cfg.train[task].data.sampler)
+transformers = build_transformer(task, cfg.train[task].data.transformer)
 transformer = transformers[0]
-target = build_target(task, cfg.train.data.target)
+target = build_target(task, cfg.train[task].data.target)
 
 t_start = cv2.getTickCount()
 sampled_data = next(sampler)

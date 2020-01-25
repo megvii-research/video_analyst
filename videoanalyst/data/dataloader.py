@@ -12,6 +12,12 @@ from .datapipeline.builder import build as build_datapipeline
 from videoanalyst.utils.misc import Timer
 
 class AdaptorDataset(Dataset):
+    default_hyper_params = dict(
+        num_epochs=10000,
+        minibatch=32,
+        num_workers=4,
+        nr_image_per_epoch=600000,
+    )
 
     def __init__(self, kwargs: Dict = dict(), num_epochs=1, nr_image_per_epoch=1):
         self.datapipeline = None

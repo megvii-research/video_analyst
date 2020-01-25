@@ -7,9 +7,10 @@ from yacs.config import CfgNode
 import torch
 from torch.utils.data import Dataset, DataLoader
 
-# from .sampler import builder as sampler_builder
-# from .transformer import builder as transformer_builder
-# from .target import builder as target_builder
+from .datapipeline import builder as datapipeline_builder
+from .sampler import builder as sampler_builder
+from .transformer import builder as transformer_builder
+from .target import builder as target_builder
 from .dataloader import AdaptorDataset
 
 def build(task: str, cfg: CfgNode) -> DataLoader:
@@ -48,6 +49,13 @@ def get_config() -> Dict[str, CfgNode]:
 
     for task in cfg_dict:
         cfg = cfg_dict[task]
+
+        module = AdaptorDataset
+        hps = module.default_hyper_params
+        for hp_name in hps:
+            cfg[hp_name] = hps[hp_name]
+
+        cfg["datapipeline"] = datapipeline_builder.get_config()[task]
         cfg["sampler"] = sampler_builder.get_config()[task]
         cfg["transformer"] = transformer_builder.get_config()[task]
         cfg["target"] = target_builder.get_config()[task]

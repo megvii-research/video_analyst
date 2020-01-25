@@ -32,16 +32,11 @@ def build(task: str, cfg: CfgNode) -> TrainerBase:
         tester built by builder
     """
     assert task in TASK_TRAINERS, "no tester for task {}".format(task)
-    MODULES = TASK_TRAINERS[task]
-
-    model = model_builder(task, cfg.model)
-    dataloader = dataloder_builder(task, cfg.data)
-    losses = loss_builder(task, cfg.model.losses)
-    optimizer = optimizer_builder(task, cfg.model, model)
+    MODULE = TASK_TRAINERS[task]
 
     cfg = cfg.trainer
     name = cfg.name
-    trainer = MODULES[name](model, dataloader, losses, optimizer)
+    trainer = MODULE[name]()
     hps = trainer.get_hps()
     hps = merge_cfg_into_hps(cfg[name], hps)
     trainer.set_hps(hps)
@@ -59,16 +54,17 @@ def get_config() -> Dict[str, CfgNode]:
     Dict[str, CfgNode]
         config with list of available components
     """
-    cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
+    cfg_dict = {name: CfgNode() for name in TASK_TRAINERS.keys()}
 
-    for cfg_name, module in zip(["track", "vos"], [TRACK_TESTERS, VOS_TESTERS]):
+    for cfg_name, modules in TASK_TRAINERS.items():
         cfg = cfg_dict[cfg_name]
-        cfg["names"] = []
-        for name in module:
-            cfg["names"].append(name)
+        cfg["name"] = ""
+
+        for name in modules:
+            # cfg["name"].append(name)
             cfg[name] = CfgNode()
-            tester = module[name]
-            hps = tester.default_hyper_params
+            module = modules[name]
+            hps = module.default_hyper_params
             for hp_name in hps:
                 cfg[name][hp_name] = hps[hp_name]
     return cfg_dict

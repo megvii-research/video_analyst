@@ -15,11 +15,12 @@ import numpy as np
 from tqdm import tqdm
 
 import torch
+from torch import nn
 from torch.utils.data import DataLoader
-from torch.optim import Base
+torch.backends.cudnn.enabled = False
 
 from ..trainer_base import TRACK_TRAINERS, TrainerBase
-from videoanalyst.utils import ensure_dir, move_data_to_device
+from videoanalyst.utils import ensure_dir, move_data_to_device, unwrap_model
 
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.optimizer.optimizer_base import OptimizerBase
@@ -50,100 +51,116 @@ class RegularTrainer(TrainerBase):
         max_epoch=1,
     )
 
-    def __init__(self, 
-                 model: ModuleBase, 
-                 dataloader: DataLoader, 
-                 losses: ModuleBase, 
-                 optimizer: OptimizerBase, 
-                 process=[]):
+    def __init__(self, ):
         r"""
         Crete tester with config and pipeline
 
-        Arguments
-        ---------
-            model: ModuleBase,
-            dataloder: DataLoader, 
-            losses: ModuleBase,
-            processes: ProcessBase
+        # Arguments
+        # ---------
+        # model: ModuleBase
+        # dataloder: DataLoader
+        # losses: ModuleBase
+        # processes: ProcessBase
 
         """
         super(RegularTrainer, self).__init__()
         # famous four elements in Deep Laerning (c.f. <Deep Learning>, Goodfellow et al.)
-        self.model = model
-        self.dataloder = dataloder
-        self.losses = losses
-        self.optimizer = optimizer
         # update state
         self._state["epoch"] = 0
         self.update_params()
 
     def update_params(self, ):
         self._state["devices"] = [torch.device(dev) for dev in self._hyper_params["devices"]]
-        self._state["snapshot_dir"] = osp.join(self._hyper_params["exp_save", 
+        self._state["snapshot_dir"] = osp.join(self._hyper_params["exp_save"],
                                                self._hyper_params["exp_name"])
 
-    def init_train():
-        self.model.train()
-        self.model.cuda()
-        torch.cuda.empty_cache()
+    def init_train(self, ):
+        devs = self._state["devices"]
+
+        self._optimizer.set_model(self._model)
+
+        self._model.train()
+        self._model.to(devs[0])
+        # torch.cuda.empty_cache()
+
         if len(self._state["devices"]) > 1:
-            model = nn.DataParallel(model)
+            self._model = nn.DataParallel(self._model, device_ids=devs)
             logger.info("Use nn.DataParallel for data parallelism")
 
-    
+        for k in self._losses:
+            self._losses[k].to(devs[0])
+
+        self._optimizer.build_optimizer()
+
     def train(self):
         epoch = self._state["epoch"]
         max_epoch = self._hyper_params["max_epoch"]
+        num_iterations = self._hyper_params["num_iterations"]
 
-        self.optimzier.schedule_freeze(epoch)
+        # self._optimizer.schedule_freeze(epoch)
+
+        pbar = tqdm(range(num_iterations))
 
         for iteration, _ in enumerate(pbar):
 
-            training_data = next(dataloader)
+            training_data = next(self._dataloader)
             training_data = move_data_to_device(training_data, self._state["devices"][0])
 
-            self.optimzier.schedule_lr(epoch, iteration)
-            self.optimizer.zero_grad()
+            # self._optimizer.schedule_lr(epoch, iteration)
+            self._optimizer.zero_grad()
 
-            pred_data = self.model(training_data)
+            # from IPython import embed;embed()
+            # forward propagation
+            pred_data = self._model(training_data)
 
-            loss_extra = [loss(pred_data, tarining_data)
-                          for loss in self.losses]
-            training_losses, extras = list(zip(*loss_extra))
-            loss_weights = [loss.get_hps()["weight"] for loss in self.losses]
+            loss_extra_dict = OrderedDict()
+            for k in self._losses:
+                loss_extra_dict[k] = self._losses[k](pred_data, training_data)
 
-            total_loss = [loss * weight for loss, weight in zip(training_losses, loss_weights)]
+            training_losses, extras = OrderedDict(), OrderedDict()
+            for k in self._losses:
+                training_losses[k], extras[k] = loss_extra_dict[k]
 
+            loss_weights = OrderedDict()
+            for k in self._losses:
+                loss_weights[k] = self._losses[k].get_hps()["weight"]
+
+            total_loss = [training_losses[k] * loss_weights[k] for k in self._losses]
+            total_loss = sum(total_loss)
+
+            # from IPython import embed;embed()
+            # backward propagation
             total_loss.backward()
             
-            self.optimizer.step()
+            self._optimizer.step()
 
             # prompt
-            # losses = []
-            # for t in [cls_loss, ctr_loss, bbox_loss, iou]:
-            #     losses.append(t)
-
-            # print_str = 'epoch %d, ' % epoch
-            # for l in losses:
-            #     print_str += lib_repo.retrieve_name(l) + ': %.3f, ' % l.detach().cpu().numpy()
+            print_str = 'epoch %d, ' % epoch
+            for k in training_losses:
+                l = training_losses[k]
+                print_str +=  '%s: %.3f, ' % (k, l.detach().cpu().numpy())
             # print_str += "lr: %.1e" % lr
-            # pbar.set_description(print_str)
+            pbar.set_description(print_str)
 
         # update state at the end of epoch
         self._state["epoch"] += 1
+
+    def is_completed(self):
+        is_completed = (self._state["epoch"] >= self._hyper_params["max_epoch"])
+        return is_completed
 
     def load_snapshot(self, snapshot_file):
         r""" 
         load snapshot
         """
-        if osp.exists(snapshoto_file):
+        if osp.exists(snapshot_file):
             # snapshot = torch.load(snapshoto_file, map_location=torch.device("cuda"))
             dev = self._state["devices"][0]
-            snapshot = torch.load(snapshoto_file, map_location=dev)
-            self.model.load_state_dict(snapshot["model_state_dict"])
-            self.optimizer.load_state_dict(snapshot["optimizer_state_dict"])
+            snapshot = torch.load(snapshot_file, map_location=dev)
+            self._model.load_state_dict(snapshot["model_state_dict"])
+            self._optimizer.load_state_dict(snapshot["optimizer_state_dict"])
             self._state["epoch"] = snapshot["epoch"]+1
-            logger.info("Load snapshot from:", osp.realpath(snapshoto_file))
+            logger.info("Load snapshot from:", osp.realpath(snapshot_file))
         else:
             logger.info("%s does not exist, snapshot not loaded."%snapshot_file)
 
@@ -163,16 +180,16 @@ class RegularTrainer(TrainerBase):
         r""" 
         save snapshot for current epoch
         """
-        snapshot_dir = self._hyper_params["snapshot_dir"]
+        snapshot_dir = self._state["snapshot_dir"]
         epoch = self._state["epoch"]
         snapshot_file = osp.join(snapshot_dir, 
                                  "epoch-{}.pkl".format(epoch))
         snapshot_dict = {'epoch': epoch,
-                         'model_state_dict': lib_repo.unwrap_model(model).state_dict(),
-                         'optimizer_state_dict': self.optimizer.state_dict()}
+                         'model_state_dict': unwrap_model(self._model).state_dict(),
+                         'optimizer_state_dict': self._optimizer.state_dict()}
         ensure_dir(snapshot_dir)
         torch.save(snapshot_dict, snapshot_file)
         while not osp.exists(snapshot_file):
             logger.info("retrying")
             torch.save(snapshot_dict, snapshot_file)
-        logger.info("Snapshot saved at:", snapshot_file)
+        logger.info("Snapshot saved at: %s" % snapshot_file)

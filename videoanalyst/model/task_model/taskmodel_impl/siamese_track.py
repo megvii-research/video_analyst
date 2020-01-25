@@ -70,7 +70,7 @@ class SiamTrack(ModuleBase):
         # phase: train
         if phase == 'train':
             # resolve training data
-            training_data = args
+            training_data = args[0]
             target_img = training_data["im_z"]
             search_img = training_data["im_x"]
             # backbone feature
