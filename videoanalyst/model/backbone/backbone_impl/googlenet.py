@@ -5,6 +5,8 @@ URL: https://github.com/pytorch/vision/blob/master/torchvision/models/inception.
 Pretrained weights downloaded from:
     https://download.pytorch.org/models/inception_v3_google-1a9a5a14.pth
 """
+import logging
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -14,7 +16,7 @@ from videoanalyst.model.backbone.backbone_base import (TRACK_BACKBONES,
 from videoanalyst.model.module_base import ModuleBase
 
 # from videoanalyst.model.common_opr.common_block import conv_bn_relu
-
+logger = logging.getLogger("global")
 
 @VOS_BACKBONES.register
 @TRACK_BACKBONES.register
@@ -149,15 +151,14 @@ class Inception3(ModuleBase):
 
     def update_params(self):
         if self._hyper_params["pretrain_model_path"] != "":
+            model_file = self._hyper_params["pretrain_model_path"]
             try:
-                state_dict = torch.load(
-                    self._hyper_params["pretrain_model_path"],
-                    map_location=torch.device("gpu"))
+                state_dict = torch.load(model_file, map_location=torch.device("gpu"))
             except:
-                state_dict = torch.load(
-                    self._hyper_params["pretrain_model_path"],
-                    map_location=torch.device("cpu"))
+                state_dict = torch.load(model_file, map_location=torch.device("cpu"))
             self.load_state_dict(state_dict, strict=False)
+            logger.info("Load pretrained AlexNet parameters from: %s"%model_file)
+
         self.crop_pad = self._hyper_params['crop_pad']
         self.pruned = self._hyper_params['pruned']
 

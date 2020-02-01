@@ -39,7 +39,7 @@ if __name__ == '__main__':
     task_cfg.freeze()
 
     # build model
-    model = model_builder.build_model(task, task_cfg.model)
+    model = model_builder.build(task, task_cfg.model)
     # build pipeline
     pipeline = pipeline_builder.build_pipeline('track', task_cfg.pipeline)
     pipeline.set_model(model)

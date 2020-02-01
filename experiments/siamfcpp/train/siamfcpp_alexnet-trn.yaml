@@ -40,7 +40,7 @@ train:
       backbone:
         name: "AlexNet"
         AlexNet:
-          pretrain_model_path: ""
+          pretrain_model_path: "models/alexnet/alexnet-nopad-bn.pkl"
       losses:
         names: ["SigmoidCrossEntropyRetina",
                 "SigmoidCrossEntropyCenterness",
@@ -70,7 +70,7 @@ train:
           pretrain_model_path: ""
     data:
       num_epochs: 20
-      minibatch: 64
+      minibatch: 32
       num_workers: 32
       nr_image_per_epoch: 600000
       datapipeline:
@@ -116,7 +116,7 @@ train:
     optimizer:
       name: "SGD"
       SGD:
-        lr: 0.1
+        lr: 0.01
         momentum: 0.9
         weight_decay: 0.00005
 #      freeze_scheduler:
