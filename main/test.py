@@ -35,6 +35,7 @@ if __name__ == '__main__':
     logger.info("Load experiment configuration at: %s" % exp_cfg_path)
 
     # resolve config
+    root_cfg = root_cfg.test
     task, task_cfg = specify_task(root_cfg)
     task_cfg.freeze()
 

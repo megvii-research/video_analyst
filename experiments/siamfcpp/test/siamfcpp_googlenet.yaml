@@ -1,36 +1,36 @@
-task_name: "track"
-track:
-  exp_name: "siamfcpp_googlenet"
-  exp_save: "logs"
-  model:
-    backbone:
-      name: "Inception3"
-      Inception3:
-        crop_pad: 4
-        pruned: True
-    losses:
-      names: []
-    task_head:
-      name: "DenseboxHead"
-      DenseboxHead:
-        total_stride: 8
-        score_size: 19
-        x_size: 303
+test:
+  track:
+    exp_name: "siamfcpp_googlenet"
+    exp_save: "logs"
+    model:
+      backbone:
+        name: "Inception3"
+        Inception3:
+          crop_pad: 4
+          pruned: True
+      losses:
+        names: []
+      task_head:
+        name: "DenseboxHead"
+        DenseboxHead:
+          total_stride: 8
+          score_size: 19
+          x_size: 303
+          num_conv3x3: 2
+          head_conv_bn: [False, False]
+      task_model:
+        name: "SiamTrack"
+        SiamTrack:
+          pretrain_model_path: "models/siamfcpp/siamfcpp-googlenet-vot-md5_f2680ba074213ee39d82fcb84533a1a6.pkl"
+    pipeline:
+      name: "SiamFCppTracker"
+      SiamFCppTracker:
+        test_lr: 0.52
+        window_influence: 0.24
+        penalty_k: 0.08
         num_conv3x3: 2
-        head_conv_bn: [False, False]
-    task_model:
-      name: "SiamTrack"
-      SiamTrack:
-        pretrain_model_path: "models/siamfcpp/siamfcpp-googlenet-vot-md5_f2680ba074213ee39d82fcb84533a1a6.pkl"
-  pipeline:
-    name: "SiamFCppTracker"
-    SiamFCppTracker:
-      test_lr: 0.52
-      window_influence: 0.24
-      penalty_k: 0.08
-      num_conv3x3: 2
-  tester:
-    names: ["VOTTester",]
-    VOTTester:
-      device_num: 1
-      dataset_names: ["VOT2018"]
+    tester:
+      names: ["VOTTester",]
+      VOTTester:
+        device_num: 1
+        dataset_names: ["VOT2018"]

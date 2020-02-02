@@ -18,19 +18,22 @@ default_str = "unknown"
 
 cfg["task_name"] = default_str
 
+# default configuration for test
+cfg["test"] = CfgNode()
+test_cfg = cfg["test"]
 for task in task_list:
-    cfg[task] = CfgNode()
-    cfg[task]["exp_name"] = default_str
-    cfg[task]["exp_save"] = default_str
-    cfg[task]["model"] = get_model_cfg()[task]
-    cfg[task]["pipeline"] = get_pipeline_cfg()[task]
-    cfg[task]["tester"] = get_tester_cfg()[task]
+    test_cfg[task] = CfgNode()
+    test_cfg[task]["exp_name"] = default_str
+    test_cfg[task]["exp_save"] = default_str
+    test_cfg[task]["model"] = get_model_cfg()[task]
+    test_cfg[task]["pipeline"] = get_pipeline_cfg()[task]
+    test_cfg[task]["tester"] = get_tester_cfg()[task]
     # cfg[task]["engine"] = get_engine_cfg()[task]
-    cfg[task]["data"] = get_data_cfg()[task]
+    test_cfg[task]["data"] = get_data_cfg()[task]
 
+# default configuration for train
 cfg["train"] = CfgNode()
 train_cfg = cfg["train"]
-
 for task in task_list:
     train_cfg[task] = CfgNode()
     train_cfg[task]["exp_name"] = default_str
