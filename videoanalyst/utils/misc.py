@@ -6,20 +6,6 @@ import time
 from yacs.config import CfgNode as CN
 
 
-def ensure_dir(dir_path: str):
-    r"""
-    Ensure the existence of path (i.e. mkdir -p)
-    Arguments
-    ---------
-    dir_path: str
-        path to be ensured
-    """
-    if os.path.exists(dir_path):
-        return
-    else:
-        os.makedirs(dir_path)
-
-
 def _register_generic(module_dict, module_name, module):
     assert module_name not in module_dict, print(
         module_name, module_dict, 'defined in several script files')
