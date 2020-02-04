@@ -16,7 +16,7 @@ def ensure_dir(dir_path: str):
     else:
         os.makedirs(dir_path)
 
-def complate_path_wt_root_in_cfg(cfg: CfgNode, root_dir: str, ):
+def complete_path_wt_root_in_cfg(cfg: CfgNode, root_dir: str, ):
     r"""
     Arguments
     ---------
@@ -27,7 +27,7 @@ def complate_path_wt_root_in_cfg(cfg: CfgNode, root_dir: str, ):
     """
     if isinstance(cfg, CfgNode):
         for k in cfg:
-            cfg[k] = complate_path_wt_root_in_cfg(cfg[k], root_dir)
+            cfg[k] = complete_path_wt_root_in_cfg(cfg[k], root_dir)
     elif isinstance(cfg, str) and len(cfg)>0:
         realpath = osp.join(root_dir, cfg)
         if osp.exists(realpath):

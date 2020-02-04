@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 
 from videoanalyst.utils import Registry
 from videoanalyst.model.module_base import ModuleBase
-from videoanalyst.optimizer.optimizer_base import OptimizerBase
+from videoanalyst.optim.optimizer.optimizer_base import OptimizerBase
 
 
 TRACK_TRAINERS = Registry('TRACK_TRAINERS')

@@ -23,7 +23,7 @@ from ..trainer_base import TRACK_TRAINERS, TrainerBase
 from videoanalyst.utils import ensure_dir, move_data_to_device, unwrap_model
 
 from videoanalyst.model.module_base import ModuleBase
-from videoanalyst.optimizer.optimizer_base import OptimizerBase
+from videoanalyst.optim.optimizer.optimizer_base import OptimizerBase
 
 logger = logging.getLogger("global")
 
@@ -106,7 +106,7 @@ class RegularTrainer(TrainerBase):
             training_data = next(self._dataloader)
             training_data = move_data_to_device(training_data, self._state["devices"][0])
 
-            # self._optimizer.schedule_lr(epoch, iteration)
+            schedule_info = self._optimizer.schedule(epoch, iteration)
             self._optimizer.zero_grad()
 
             # from IPython import embed;embed()
@@ -136,6 +136,8 @@ class RegularTrainer(TrainerBase):
 
             # prompt
             print_str = 'epoch %d, ' % epoch
+            for k in schedule_info:
+                print_str +=  '%s: %.1e, ' % (k, schedule_info[k])
             for k in training_losses:
                 l = training_losses[k]
                 print_str +=  '%s: %.3f, ' % (k, l.detach().cpu().numpy())

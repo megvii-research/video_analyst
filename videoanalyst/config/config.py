@@ -7,7 +7,7 @@ from videoanalyst.pipeline.builder import get_config as get_pipeline_cfg
 from videoanalyst.engine.trainer.builder import get_config as get_trainer_cfg
 from videoanalyst.model.builder import get_config as get_model_cfg
 from videoanalyst.data.builder import get_config as get_data_cfg
-from videoanalyst.optimizer.builder import get_config as get_optimizer_cfg
+from videoanalyst.optim.builder import get_config as get_optim_cfg
 
 
 cfg = CfgNode()
@@ -43,7 +43,7 @@ for task in task_list:
     train_cfg[task]["tester"] = get_tester_cfg()[task]
     # train_cfg[task]["engine"] = get_engine_cfg()[task]
     train_cfg[task]["data"] = get_data_cfg()[task]
-    train_cfg[task]["optimizer"] = get_optimizer_cfg()[task]
+    train_cfg[task]["optim"] = get_optim_cfg()[task]
     train_cfg[task]["trainer"] = get_trainer_cfg()[task]
 
 

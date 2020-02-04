@@ -115,12 +115,44 @@ train:
         # devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]
         max_epoch: 20
         num_iterations: 12500
-    optimizer:
-      name: "SGD"
-      SGD:
-        lr: 0.01
-        momentum: 0.9
-        weight_decay: 0.00005
+    optim:
+      optimizer:
+        name: "SGD"
+        SGD:
+          lr: 0.01
+          momentum: 0.9
+          weight_decay: 0.00005
+      scheduler:
+        name: "LRScheduler"
+        LRScheduler:
+          lr_policy:
+          - >
+            {
+            "name": "LinearLR",
+            "start_lr": 0.000001,
+            "end_lr": 0.04,
+            "max_epoch": 5,
+            "max_iter": 12500
+            }
+          - >
+            {
+            "name": "CosineLR",
+            "start_lr": 0.04,
+            "end_lr": 0.000001,
+            "max_epoch": 15,
+            "max_iter": 12500
+            }
+
+      # lr_multiplier:
+      #   backbone:
+      #     filter: ""
+      #     ratio: 0.1
+      #   other:
+      #     filter: ""
+      #     ratio: 1
+
+
+
 #      freeze_scheduler:
 #        isConv:
 #          regex: "conv.\\.conv.*"
@@ -138,26 +170,4 @@ train:
 #          regex: "conv3\\.conv.*"
 #          epoch: 15
 #          freezed: False
-#      lr_scheduler:
-#        phase-0:
-#          name: "LinearLR"
-#          LinearLR:
-#            start_lr: 0.000001 # lr_min
-#            end_lr: 0.04 # lr_base,
-#            max_epoch: 5 # warmup_epoch,
-#            max_iter: 12500 # max_iter
-#        phase-1:
-#          name: "CosineLR"
-#          CosineLR:
-#            start_lr: 0.04 # lr_min
-#            end_lr: 0.000001 # lr_base,
-#            max_epoch: 15 # warmup_epoch,
-#            max_iter: 12500 # max_iter
-#      lr_multiplier:
-#        backbone:
-#          filter: ""
-#          ratio: 0.1
-#        other:
-#          filter: ""
-#          ratio: 1
 

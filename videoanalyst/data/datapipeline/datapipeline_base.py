@@ -12,13 +12,6 @@ import numpy as np
 
 from yacs.config import CfgNode
 
-from ..sampler.sampler_base import SamplerBase
-from ..transformer.transformer_base import TransformerBase
-from ..target.target_base import TargetBase
-
-from ..dataset.builder import build as build_dataset
-from ..filter.builder import build as build_filter
-
 from videoanalyst.utils import Registry
 TRACK_DATAPIPELINES = Registry('TRACK_DATAPIPELINES')
 VOS_DATAPIPELINES = Registry('VOS_DATAPIPELINES')

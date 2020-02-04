@@ -8,7 +8,7 @@ from .trainer_base import TASK_TRAINERS, TrainerBase
 from videoanalyst.utils.misc import merge_cfg_into_hps
 
 from videoanalyst.data import builder as dataloder_builder
-from videoanalyst.optimizer import builder as optimizer_builder
+from videoanalyst.optim.optimizer import builder as optimizer_builder
 from videoanalyst.model import builder as model_builder
 from videoanalyst.model.loss import builder as loss_builder
 

@@ -12,9 +12,9 @@ from videoanalyst.engine import builder as engine_builder
 from videoanalyst.data import builder as dataloader_builder
 from videoanalyst.model import builder as model_builder
 from videoanalyst.model.loss import builder as losses_builder
-from videoanalyst.optimizer import builder as optimizer_builder
+from videoanalyst.optim import builder as optim_builder
 from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.utils import complate_path_wt_root_in_cfg
+from videoanalyst.utils import complete_path_wt_root_in_cfg
 
 logger = logging.getLogger('global')
 
@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
 
     # resolve config
-    root_cfg = complate_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
+    root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.train
     task, task_cfg = specify_task(root_cfg)
     task_cfg.freeze()
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     model = model_builder.build(task, task_cfg.model)
     dataloader = dataloader_builder.build(task, task_cfg.data)
     losses = losses_builder.build(task, task_cfg.model.losses)
-    optimizer = optimizer_builder.build(task, task_cfg.optimizer, model)
+    optimizer = optim_builder.build(task, task_cfg.optim, model)
 
     # build trainer
     trainer = engine_builder.build(task, task_cfg, "trainer")

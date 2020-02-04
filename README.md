@@ -49,9 +49,9 @@ bash ./tools/test_VOT.sh
 │   │   └── utils  # pipeline utils
 │   ├── config  # configuration manager
 │   ├── evaluation  # benchmark
-│   ├── optimize # optimization-related module (learning rate, gradient clipping, etc.)
-│   │   ├── lr_schedule # learning rate scheduler
+│   ├── optim  # optimization-related module (learning rate, gradient clipping, etc.)
 │   │   ├── optimizer # optimizer
+│   │   ├── scheduler # learning rate scheduler
 │   │   └── grad_modifier # gradient-related operation (parameter freezing)
 │   └── utils  # useful tools
 └── README.md

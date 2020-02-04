@@ -31,3 +31,4 @@ class SGD(OptimizerBase):
     def build_optimizer(self):
         kwargs = self._hyper_params
         self._optimizer = optim.SGD(self._model.parameters(), **kwargs)
+        self.bind_optimizer_to_scheduler()
