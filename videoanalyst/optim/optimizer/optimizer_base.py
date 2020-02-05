@@ -20,9 +20,10 @@ from videoanalyst.utils import Registry
 
 from torch.optim.optimizer import Optimizer
 
-from .optimizer_impl.utils.lr_multiply import multiply_lr, resolve_lr_multiplier_cfg
-from .optimizer_impl.utils.freeze import apply_freeze_schedule, resolve_freeze_schedule_cfg
 from ..scheduler.scheduler_base import SchedulerBase
+from .optimizer_impl.utils.lr_policy import build as build_lr_policy, schedule_lr
+from .optimizer_impl.utils.lr_multiply import build as build_lr_multiplier, multiply_lr
+
 
 TRACK_OPTIMIZERS = Registry('TRACK_OPTIMIZERS')
 VOS_OPTIMIZERS = Registry('VOS_OPTIMIZERS')
@@ -40,7 +41,10 @@ class OptimizerBase:
 
     Define your hyper-parameters here in your sub-class.
     """
-    default_hyper_params = dict()
+    default_hyper_params = dict(
+        lr_policy=[],
+        lr_multiplier=[],
+    )
 
     def __init__(self, cfg: CfgNode) -> None:
         r"""
@@ -70,37 +74,7 @@ class OptimizerBase:
         self._cfg = cfg
         self._model = None
         self._optimizer = None
-        self._scheduler = None
-        self._param_groups_divider = None
     
-    def set_model(self, model: nn.Module):
-        r"""
-        Register model to optimize
-
-        Arguments
-        ---------
-        model: nn.Module
-            model to registered in optimizer
-        """
-        self._model = model
-
-    def build_optimizer(self):
-        r"""
-        an interface to build optimizer
-        """
-        if (self._scheduler is not None):
-            self._scheduler.set_optimizer(self)
-
-    def set_scheduler(self, scheduler: SchedulerBase):
-        r"""
-        Set scheduler and register self (optimizer) to scheduler
-        Arguments
-        ---------
-        model: nn.Module
-            model to registered in optimizer
-        """
-        self._scheduler = scheduler
-
     def get_hps(self) -> dict:
         r"""
         Getter function for hyper-parameters
@@ -125,11 +99,55 @@ class OptimizerBase:
             if key not in self._hyper_params:
                 raise KeyError
             self._hyper_params[key] = hps[key]
-            
+
     def update_params(self) -> None:
         r"""
         an interface for update params
         """
+        # lr_policy
+        lr_policy_cfg = self._hyper_params["lr_policy"]
+        if len(lr_policy_cfg) > 0:
+            lr_policy = build_lr_policy(lr_policy_cfg)
+            self._state["lr_policy"] = lr_policy
+        # lr_multiplier
+        lr_multiplier_cfg = self._hyper_params["lr_multiplier"]
+        if len(lr_multiplier_cfg) > 0:
+            lr_multiplier = build_lr_multiplier(lr_multiplier_cfg)
+            self._state["lr_multiplier"] = lr_multiplier
+        
+    def set_model(self, model: nn.Module):
+        r"""
+        Register model to optimize
+
+        Arguments
+        ---------
+        model: nn.Module
+            model to registered in optimizer
+        """
+        self._model = model
+
+    def build_optimizer(self):
+        r"""
+        an interface to build optimizer
+        Prepare self._state["params"] to be set to pytorch optimizer
+        """
+        if "lr_multiplier" in self._state:
+            params = self._state["lr_multiplier"].divide_into_param_groups(self._model)
+        else:
+            params = self._model.parameters()
+        
+        self._state["params"] = params
+
+    # def set_scheduler(self, scheduler: SchedulerBase):
+    #     r"""
+    #     Set scheduler and register self (optimizer) to scheduler
+    #     Arguments
+    #     ---------
+    #     model: nn.Module
+    #         model to registered in optimizer
+    #     """
+    #     self._scheduler = scheduler
+            
     def zero_grad(self):
         self._optimizer.zero_grad()
 
@@ -137,7 +155,7 @@ class OptimizerBase:
         self._optimizer.step()
 
     def state_dict(self):
-        self._optimizer.state_dict()
+        return self._optimizer.state_dict()
 
     def schedule(self, epoch: int, iteration: int) -> Dict:
         r"""
@@ -145,7 +163,12 @@ class OptimizerBase:
         self.set_scheduler need to be called during initialization phase
         """
         schedule_info = dict()
-        if self._scheduler is not None:
-            schedule_info.update(self._scheduler.schedule(epoch, iteration))
+        if "lr_policy" in self._state:
+            lr = self._state["lr_policy"].get_lr(epoch, iteration)
+            schedule_lr(self._optimizer, lr)
+            schedule_info["lr"] = lr
+        # apply learning rate multiplication
+        if "lr_multiplier" in self._state:
+            self._state["lr_multiplier"].multiply_lr(self._optimizer)
 
         return schedule_info

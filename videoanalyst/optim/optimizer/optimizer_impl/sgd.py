@@ -19,7 +19,7 @@ class SGD(OptimizerBase):
     Hyper-parameters
     ----------------
     """
-    default_hyper_params = dict(
+    extra_hyper_params = dict(
         lr=0.1,
         momentum=0.9,
         weight_decay=0.00005,
@@ -29,11 +29,11 @@ class SGD(OptimizerBase):
         super(SGD, self).__init__(cfg)
 
     def build_optimizer(self):
-        super(SGD, self).build_optimizer()
-        if self._param_groups_divider is not None:
-            params = self._param_groups_divider(self._model)
-        else:
-            params = self._model.parameters()
-
+        super(SGD, self).build_optimizer()        
+        params = self._state["params"]
         kwargs = self._hyper_params
+        valid_keys = self.extra_hyper_params.keys()
+        kwargs = {k: kwargs[k] for k in valid_keys}
         self._optimizer = optim.SGD(params, **kwargs)
+
+SGD.default_hyper_params.update(SGD.extra_hyper_params)

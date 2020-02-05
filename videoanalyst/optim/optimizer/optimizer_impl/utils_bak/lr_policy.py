@@ -35,8 +35,6 @@ See the bottom of code for more plot examples.
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import List, Dict
-import json
 import math
 import numpy as np
 
@@ -46,27 +44,29 @@ from videoanalyst.utils import Registry
 
 __all__ = ["ListLR", "LinearLR", "ExponentialLR", "CosineLR"]
 
-LR_POLICIES = Registry("LR_POLICY")
+LR_SCHEDULERS = Registry("LR_SCHEDULERS")
 
-def build(cfg: List[str]):
+def build(cfg: CfgNode):
     r"""
     Build lr scheduler with configuration
 
     Arguments
     ---------
-    cfg: List[str]
-        list of JSON string containing lr scheduling
+    cfg: CfgNode
+        node name: lr_scheduler
     
     Returns
     -------
     ListLR
 
     """
-    # from IPython import embed;embed()
-    cfg = [json.loads(c) for c in cfg]
+    phases = list(cfg.keys())
+    phases.sort()
 
-    SingleLRs = [LR_POLICIES[phase_cfg["name"]](**phase_cfg) 
-                 for phase_cfg in cfg]
+    SingleLRs = [LR_SCHEDULERS[cfg[phase].name](
+                     **cfg[phase][cfg[phase].name]
+                 ) 
+                 for phase in phases]
 
     LR = ListLR(*SingleLRs)
 
@@ -114,7 +114,7 @@ class ListLR(BaseLR):
         return max([LR.max_iter for LR in self.LRs])
 
 
-@LR_POLICIES.register
+@LR_SCHEDULERS.register
 class MultiStageLR(BaseLR):
     """ Multi-stage learning rate scheduler
     """
@@ -146,12 +146,7 @@ class TransitionLR(BaseLR):
     See LinearLR, ExponentialLR, and CosineLR for examples
         w.r.t. meaning of pre_func, trans_func, and post_func.
     """
-    def __init__(self, 
-                 start_lr=0, 
-                 end_lr=0, 
-                 max_epoch=1, 
-                 max_iter=1, 
-                 **kwargs):
+    def __init__(self, start_lr, end_lr, max_epoch, max_iter=1):
         self._start_lr = start_lr
         self._end_lr = end_lr
         self._max_epoch = max_epoch
@@ -174,7 +169,7 @@ class TransitionLR(BaseLR):
     def max_iter(self):
         return self._max_iter
 
-@LR_POLICIES.register
+@LR_SCHEDULERS.register
 class LinearLR(TransitionLR):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -183,7 +178,7 @@ class LinearLR(TransitionLR):
         self._post_func = lambda x: x
 
 
-@LR_POLICIES.register
+@LR_SCHEDULERS.register
 class ExponentialLR(TransitionLR):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -192,7 +187,7 @@ class ExponentialLR(TransitionLR):
         self._post_func = lambda x: math.exp(x)
 
 
-@LR_POLICIES.register
+@LR_SCHEDULERS.register
 class CosineLR(TransitionLR):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

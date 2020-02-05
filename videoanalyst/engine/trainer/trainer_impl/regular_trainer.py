@@ -109,9 +109,9 @@ class RegularTrainer(TrainerBase):
             training_data = move_data_to_device(training_data, self._state["devices"][0])
 
             schedule_info = self._optimizer.schedule(epoch, iteration)
+            # from IPython import embed;embed()
             self._optimizer.zero_grad()
 
-            # from IPython import embed;embed()
             # forward propagation
             pred_data = self._model(training_data)
 

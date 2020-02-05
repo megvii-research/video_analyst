@@ -123,9 +123,6 @@ train:
           lr: 0.01
           momentum: 0.9
           weight_decay: 0.00005
-      scheduler:
-        name: "LRScheduler"
-        LRScheduler:
           lr_policy:
           - >
             {
@@ -156,6 +153,41 @@ train:
             "regex": "^((?!basemodel).)*$",
             "ratio": 1
             }
+
+
+      # scheduler:
+      #   name: "LRScheduler"
+      #   LRScheduler:
+      #     lr_policy:
+      #     - >
+      #       {
+      #       "name": "LinearLR",
+      #       "start_lr": 0.000001,
+      #       "end_lr": 0.02,
+      #       "max_epoch": 1,
+      #       "max_iter": 12500
+      #       }
+      #     - >
+      #       {
+      #       "name": "CosineLR",
+      #       "start_lr": 0.02,
+      #       "end_lr": 0.000001,
+      #       "max_epoch": 19,
+      #       "max_iter": 12500
+      #       }
+      #     lr_multiplier:
+      #     - >
+      #       {
+      #       "name": "backbone",
+      #       "regex": "basemodel",
+      #       "ratio": 0.1
+      #       }
+      #     - >
+      #       {
+      #       "name": "other",
+      #       "regex": "^((?!basemodel).)*$",
+      #       "ratio": 1
+      #       }
 
 
 
