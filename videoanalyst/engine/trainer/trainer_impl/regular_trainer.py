@@ -66,7 +66,7 @@ class RegularTrainer(TrainerBase):
         super(RegularTrainer, self).__init__()
         # famous four elements in Deep Laerning (c.f. <Deep Learning>, Goodfellow et al.)
         # update state
-        self._state["epoch"] = 0
+        self._state["epoch"] = -1  # uninitialized
         self.update_params()
 
     def update_params(self, ):
@@ -93,6 +93,8 @@ class RegularTrainer(TrainerBase):
         self._optimizer.build_optimizer()
 
     def train(self):
+        # epoch counter +1
+        self._state["epoch"] += 1
         epoch = self._state["epoch"]
         max_epoch = self._hyper_params["max_epoch"]
         num_iterations = self._hyper_params["num_iterations"]
@@ -144,8 +146,6 @@ class RegularTrainer(TrainerBase):
             # print_str += "lr: %.1e" % lr
             pbar.set_description(print_str)
 
-        # update state at the end of epoch
-        self._state["epoch"] += 1
 
     def is_completed(self):
         is_completed = (self._state["epoch"] >= self._hyper_params["max_epoch"])

@@ -20,7 +20,8 @@ test:
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl"
+          # pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl"
+          pretrain_model_path: "snapshots/default_training/epoch-18.pkl"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
@@ -35,7 +36,7 @@ test:
         dataset_names: ["VOT2018"]
 train:
   track:
-    exp_name: "siamfcpp_alexnet"
+    exp_name: "siamfcpp_alexnet-trn"
     exp_save: "logs"
     model:
       backbone:
@@ -72,7 +73,7 @@ train:
     data:
       num_epochs: 20
       minibatch: 32
-      num_workers: 8
+      num_workers: 32
       nr_image_per_epoch: 600000
       datapipeline:
         name: "RegularDatapipeline"
@@ -130,26 +131,31 @@ train:
             {
             "name": "LinearLR",
             "start_lr": 0.000001,
-            "end_lr": 0.04,
-            "max_epoch": 5,
+            "end_lr": 0.02,
+            "max_epoch": 1,
             "max_iter": 12500
             }
           - >
             {
             "name": "CosineLR",
-            "start_lr": 0.04,
+            "start_lr": 0.02,
             "end_lr": 0.000001,
-            "max_epoch": 15,
+            "max_epoch": 19,
             "max_iter": 12500
             }
-
-      # lr_multiplier:
-      #   backbone:
-      #     filter: ""
-      #     ratio: 0.1
-      #   other:
-      #     filter: ""
-      #     ratio: 1
+          lr_multiplier:
+          - >
+            {
+            "name": "backbone",
+            "regex": "basemodel",
+            "ratio": 0.1
+            }
+          - >
+            {
+            "name": "other",
+            "regex": "^((?!basemodel).)*$",
+            "ratio": 1
+            }
 
 
 

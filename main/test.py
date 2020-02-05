@@ -10,7 +10,7 @@ from videoanalyst.config.config import specify_task
 from videoanalyst.engine.builder import build as tester_builder
 from videoanalyst.model import builder as model_builder
 from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.utils import complate_path_wt_root_in_cfg
+from videoanalyst.utils import complete_path_wt_root_in_cfg
 
 logger = logging.getLogger('global')
 
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     logger.info("Load experiment configuration at: %s" % exp_cfg_path)
 
     # resolve config
-    root_cfg = complate_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
+    root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.test
     task, task_cfg = specify_task(root_cfg)
     task_cfg.freeze()

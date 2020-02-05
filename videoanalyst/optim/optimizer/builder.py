@@ -30,11 +30,6 @@ def build(task: str, cfg: CfgNode, model: nn.Module) -> OptimizerBase:
     hps = merge_cfg_into_hps(cfg[name], hps)
     module.set_hps(hps)
     module.update_params()
-
-    # if "freeze_scheduler" in cfg: 
-    #     module.build_freeze_scheduler(cfg.freeze_scheduler)
-    # if "lr_scheduler" in cfg:
-    #     module.build_lr_scheduler(cfg.lr_scheduler)
     module.set_model(model)
 
     return module
@@ -53,9 +48,5 @@ def get_config() -> Dict[str, CfgNode]:
             hps = module.default_hyper_params
             for hp_name in hps:
                 cfg[name][hp_name] = hps[hp_name]
-
-        # cfg["freeze_scheduler"] = CfgNode()
-        # cfg["lr_scheduler"] = CfgNode()
-        # cfg["lr_multiplier"] = CfgNode()
 
     return cfg_dict

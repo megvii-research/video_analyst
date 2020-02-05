@@ -67,3 +67,5 @@ tmp/
 /debug
 /datasets
 /models
+/snapshots
+

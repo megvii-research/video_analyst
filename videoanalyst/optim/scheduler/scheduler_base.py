@@ -16,6 +16,7 @@ from torch import optim
 from yacs.config import CfgNode
 
 from videoanalyst.utils import Registry
+# from videoanalyst.optim.optimizer.optimizer_base import OptimizerBase
 
 TRACK_SCHEDULERS = Registry('TRACK_SCHEDULER')
 VOS_SCHEDULERS = Registry('VOS_SCHEDULER')
@@ -89,10 +90,10 @@ class SchedulerBase:
         r"""set model for scheduler"""
         self._model = model
 
-    def set_optimizer(self, optimizer: optim.Optimizer) -> None:
+    def set_optimizer(self, optimizer) -> None:
         r"""get underlying optimizer and set it for scheduler"""
-        self._optimizer = getattr(optimizer, "_optimizer", optimizer)
-        assert isinstance(self._optimizer, optim.Optimizer)
+        self._optimizer = optimizer
+        # assert isinstance(self._optimizer, optim.Optimizer)
 
     def schedule(self, epoch: int, iteration: int) -> Dict:
         r"""

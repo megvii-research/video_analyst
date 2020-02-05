@@ -29,6 +29,11 @@ class SGD(OptimizerBase):
         super(SGD, self).__init__(cfg)
 
     def build_optimizer(self):
+        super(SGD, self).build_optimizer()
+        if self._param_groups_divider is not None:
+            params = self._param_groups_divider(self._model)
+        else:
+            params = self._model.parameters()
+
         kwargs = self._hyper_params
-        self._optimizer = optim.SGD(self._model.parameters(), **kwargs)
-        self.bind_optimizer_to_scheduler()
+        self._optimizer = optim.SGD(params, **kwargs)

@@ -20,7 +20,6 @@ from videoanalyst.utils import Registry
 
 from torch.optim.optimizer import Optimizer
 
-# from .optimizer_impl.utils.lr_policy import schedule_lr
 from .optimizer_impl.utils.lr_multiply import multiply_lr, resolve_lr_multiplier_cfg
 from .optimizer_impl.utils.freeze import apply_freeze_schedule, resolve_freeze_schedule_cfg
 from ..scheduler.scheduler_base import SchedulerBase
@@ -51,6 +50,20 @@ class OptimizerBase:
         ---------
         cfg: CfgNode
             node name: optimizer
+
+        Internal members
+        ----------------
+        _model:
+            underlying nn.Module
+        _optimizer
+            underlying optim.optimizer.optimizer_base.OptimizerBase
+        _scheduler:
+            underlying scheduler
+        _param_groups_divider: function
+            divide parameter for partial scheduling of learning rate 
+            input: nn.Module 
+            output: List[Dict], k-v: 'params': nn.Parameter
+        
         """
         self._hyper_params = self.default_hyper_params
         self._state = dict()
@@ -58,6 +71,7 @@ class OptimizerBase:
         self._model = None
         self._optimizer = None
         self._scheduler = None
+        self._param_groups_divider = None
     
     def set_model(self, model: nn.Module):
         r"""
@@ -69,12 +83,13 @@ class OptimizerBase:
             model to registered in optimizer
         """
         self._model = model
-    
 
     def build_optimizer(self):
         r"""
-        an interface to build optimzier
+        an interface to build optimizer
         """
+        if (self._scheduler is not None):
+            self._scheduler.set_optimizer(self)
 
     def set_scheduler(self, scheduler: SchedulerBase):
         r"""
@@ -85,36 +100,6 @@ class OptimizerBase:
             model to registered in optimizer
         """
         self._scheduler = scheduler
-
-    def bind_optimizer_to_scheduler(self, ):
-        if (self._scheduler is not None) and (self._optimizer is not None):
-            self._scheduler.set_optimizer(self)
-
-
-    # def build_freeze_scheduler(self, cfg: CfgNode):
-    #     r"""
-    #     Arguments
-    #     ---------
-    #     cfg: Cfgnode
-    #     """
-    #     schedules = [resolve_freeze_schedule_cfg(cfg[k]) for k in cfg]
-    #     self._state["freeze_schedules"] = schedules
-
-    # def build_lr_scheduler(self, cfg: CfgNode):
-    #     r"""
-    #     Arguments
-    #     ---------
-    #     cfg: CfgNode
-    #         node name: lr_scheduler
-    #     """
-    #     self._state["lr_scheduler"] = build_lr_scheduler(cfg)
-
-    # def build_lr_multiplier(self, cfg: CfgNode):
-    #     lr_multipliers = [resolve_lr_schedule_cfg(cfg[k]) for k in cfg]
-    #     self._state["lr_multipliers"] = lr_multipliers
-
-    # def get_param_group(self):
-    #     pass
 
     def get_hps(self) -> dict:
         r"""
@@ -154,13 +139,9 @@ class OptimizerBase:
     def state_dict(self):
         self._optimizer.state_dict()
 
-    # def schedule_freeze(self, epoch: int) -> None:
-    #     schedules = self._state.get("freeze_schedules", [])
-    #     apply_freeze_schedule(self._model, epoch, schedules)
-
     def schedule(self, epoch: int, iteration: int) -> Dict:
         r"""
-        an interface for optimzier scheduling (e.g. adjust learning rate)
+        an interface for optimizer scheduling (e.g. adjust learning rate)
         self.set_scheduler need to be called during initialization phase
         """
         schedule_info = dict()
@@ -168,13 +149,3 @@ class OptimizerBase:
             schedule_info.update(self._scheduler.schedule(epoch, iteration))
 
         return schedule_info
-
-        # if "lr_scheduler" in self._state:
-        #     lr = self._state["lr_scheduler"].get_lr(epoch=epoch, iter=iteration)
-        #     schedule_lr(self._optimizer, lr)
-        #     if "lr_multiplier" in self._state:
-        #         multiply_lr(self._optimizer, lr_ratios)
-    
-    # def multiply_lr(self, epoch: int) -> None:
-    #     if "lr_multiplier" in self._state:
-    #         multiply_lr(self.optimizer, self._state["lr_multiplier"])
