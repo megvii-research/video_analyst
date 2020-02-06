@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 import torch
 
-from videoanalyst.engine.tester.tester_base import TRACK_TESTERS, TesterBase
+from ..tester_base import TRACK_TESTERS, TesterBase
 from videoanalyst.evaluation import vot_benchmark
 from videoanalyst.utils import ensure_dir
 
@@ -42,8 +42,6 @@ class VOTTester(TesterBase):
     """
 
     extra_hyper_params = dict(
-        # exp_name="",
-        # exp_save="",
         device_num=1,
         data_root={
             "VOT2018": "datasets/VOT/vot2018",
