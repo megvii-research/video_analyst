@@ -8,16 +8,16 @@ from yacs.config import CfgNode
 from ..tester_base import TRACK_TESTERS, TesterBase
 from .utils.got_benchmark_helper import PipelineTracker
 from videoanalyst.evaluation import got_benchmark
-from videoanalyst.evaluation.got_benchmark.experiments import ExperimentGOT10k
+from videoanalyst.evaluation.got_benchmark.experiments import ExperimentLaSOT
 
 logger = logging.getLogger("global")
 
 @TRACK_TESTERS.register
-class GOT10kTester(TesterBase):
+class LaSOTTester(TesterBase):
     extra_hyper_params = dict(
         # device_num=1,
-        data_root="datasets/GOT-10k",
-        subsets=["val"], # (val|test)
+        data_root="datasets/LaSOT",
+        subsets=["test"], # (train|test|train_test)
     )
     def __init__(self, ):
         super().__init__()
@@ -34,9 +34,9 @@ class GOT10kTester(TesterBase):
             result_dir = osp.join(save_root_dir, "result")
             report_dir = osp.join(save_root_dir, "report")
 
-            experiment = ExperimentGOT10k(root_dir, subset=subset, 
+            experiment = ExperimentLaSOT(root_dir, subset=subset, 
                                           result_dir=result_dir, report_dir=report_dir)
             experiment.run(pipeline_tracker)
 
-GOT10kTester.default_hyper_params = copy.deepcopy(GOT10kTester.default_hyper_params)
-GOT10kTester.default_hyper_params.update(GOT10kTester.extra_hyper_params)
+LaSOTTester.default_hyper_params = copy.deepcopy(LaSOTTester.default_hyper_params)
+LaSOTTester.default_hyper_params.update(LaSOTTester.extra_hyper_params)
