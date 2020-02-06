@@ -33,13 +33,11 @@ if __name__ == '__main__':
     parser = make_parser()
     parsed_args = parser.parse_args()
 
-
     # experiment config
     exp_cfg_path = osp.realpath(parsed_args.config)
     # from IPython import embed;embed() 
     root_cfg.merge_from_file(exp_cfg_path)
     logger.info("Load experiment configuration at: %s" % exp_cfg_path)
-
 
     # resolve config
     root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)

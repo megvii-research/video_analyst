@@ -150,7 +150,7 @@ class RegularTrainer(TrainerBase):
 
 
     def is_completed(self):
-        is_completed = (self._state["epoch"] >= self._hyper_params["max_epoch"])
+        is_completed = (self._state["epoch"]+1 >= self._hyper_params["max_epoch"])
         return is_completed
 
     def load_snapshot(self, snapshot_file):

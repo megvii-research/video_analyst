@@ -38,7 +38,7 @@ def build(task: str, cfg: CfgNode):
     testers = []
     # tester for multiple experiments
     for name in names:
-        tester = modules[name](cfg)
+        tester = modules[name]()
         hps = tester.get_hps()
         hps = merge_cfg_into_hps(cfg.tester[name], hps)
         tester.set_hps(hps)

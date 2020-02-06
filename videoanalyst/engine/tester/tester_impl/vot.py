@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*
 import copy
+
 import itertools
 import logging
 import math
@@ -34,15 +35,17 @@ class VOTTester(TesterBase):
     ----------------
     device_num: int
         number of gpu for test
-    vot_data_root: dict
+    data_root: dict
         vot dataset root directory. dict(dataset_name: path_to_root)
     dataset_names: str
         daataset name (VOT2018|VOT2019)
     """
 
-    default_hyper_params = dict(
+    extra_hyper_params = dict(
+        # exp_name="",
+        # exp_save="",
         device_num=1,
-        vot_data_root={
+        data_root={
             "VOT2018": "datasets/VOT/vot2018",
             "VOT2019": "datasets/VOT/vot2019"
         },
@@ -51,7 +54,7 @@ class VOTTester(TesterBase):
         ],
     )
 
-    def __init__(self, cfg):
+    def __init__(self,):
         r"""
         Crete tester with config and pipeline
 
@@ -62,7 +65,7 @@ class VOTTester(TesterBase):
         pipeline: PipelineBase
             pipeline to test
         """
-        super(VOTTester, self).__init__(cfg)
+        super(VOTTester, self).__init__()
         self._state['speed'] = -1
 
     def update_params(self):
@@ -73,11 +76,11 @@ class VOTTester(TesterBase):
         Run test
         """
         # set dir
-        self.tracker_name = self._cfg.exp_name
+        self.tracker_name = self._hyper_params["exp_name"]
         for dataset_name in self._hyper_params["dataset_names"]:
             self.dataset_name = dataset_name
             # self.tracker_dir = os.path.join(self._cfg.auto.log_dir, self._hyper_params["dataset_name"])
-            self.tracker_dir = os.path.join(self._cfg.exp_save,
+            self.tracker_dir = os.path.join(self._hyper_params["exp_save"],
                                             self.dataset_name)
             self.save_root_dir = os.path.join(self.tracker_dir,
                                               self.tracker_name, "baseline")
@@ -94,7 +97,7 @@ class VOTTester(TesterBase):
         num_gpu = self._hyper_params["device_num"]
         all_devs = [torch.device("cuda:%d" % i) for i in range(num_gpu)]
         logging.info('runing test on devices {}'.format(all_devs))
-        vot_root = self._hyper_params["vot_data_root"][self.dataset_name]
+        vot_root = self._hyper_params["data_root"][self.dataset_name]
         logger.info('Using dataset %s at: %s' % (self.dataset_name, vot_root))
         # setup dataset
         dataset = vot_benchmark.load_dataset(vot_root, self.dataset_name)
@@ -172,13 +175,13 @@ class VOTTester(TesterBase):
         r"""
         Run evaluation & write result to csv file under self.tracker_dir
         """
-        tracker_name = self._cfg.exp_name
+        tracker_name = self._hyper_params["exp_name"]
         result_csv = "%s.csv" % tracker_name
 
         csv_to_write = open(join(self.tracker_dir, result_csv), 'a+')
         dataset = vot_benchmark.VOTDataset(
             self.dataset_name,
-            self._hyper_params["vot_data_root"][self.dataset_name])
+            self._hyper_params["data_root"][self.dataset_name])
         dataset.set_tracker(self.tracker_dir, self.tracker_name)
         ar_benchmark = vot_benchmark.AccuracyRobustnessBenchmark(dataset)
         ar_result = {}
@@ -305,3 +308,6 @@ class VOTTester(TesterBase):
         result_csv.write('%s\n' % header)
         row_data = ','.join([str(v) for v in row_dict.values()])
         result_csv.write('%s\n' % row_data)
+
+VOTTester.default_hyper_params = copy.deepcopy(VOTTester.default_hyper_params)
+VOTTester.default_hyper_params.update(VOTTester.extra_hyper_params)

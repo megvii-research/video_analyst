@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*
+import copy
 
 import numpy as np
 
@@ -36,7 +37,7 @@ class SiamFCppMultiTempTracker(SiamFCppTracker):
     mem_sink_idx: str
         template index to dequeue
     """
-    additional_hyper_params = dict(
+    extra_hyper_params = dict(
         mem_step=5,
         mem_len=5,
         st_mem_coef=0.7,
@@ -44,7 +45,6 @@ class SiamFCppMultiTempTracker(SiamFCppTracker):
     )
 
     def __init__(self, *args, **kwargs):
-        self.default_hyper_params.update(self.additional_hyper_params)
         super().__init__(*args, **kwargs)
         self.update_params()
 
@@ -170,6 +170,7 @@ class SiamFCppMultiTempTracker(SiamFCppTracker):
 
         return track_rect
 
-
+SiamFCppMultiTempTracker.default_hyper_params = copy.deepcopy(
+    SiamFCppMultiTempTracker.default_hyper_params)
 SiamFCppMultiTempTracker.default_hyper_params.update(
-    SiamFCppMultiTempTracker.additional_hyper_params)
+    SiamFCppMultiTempTracker.extra_hyper_params)

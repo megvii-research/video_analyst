@@ -32,6 +32,7 @@ if __name__ == '__main__':
 
     # experiment config
     exp_cfg_path = osp.realpath(parsed_args.config)
+    # from IPython import embed;embed()
     root_cfg.merge_from_file(exp_cfg_path)
     logger.info("Load experiment configuration at: %s" % exp_cfg_path)
 

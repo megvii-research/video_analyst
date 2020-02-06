@@ -1,7 +1,7 @@
 test:
   track:
-    exp_name: "siamfcpp_alexnet"
-    exp_save: "logs"
+    exp_name: &TEST_NAME "siamfcpp_alexnet"
+    exp_save: &TEST_SAVE "logs"
     model:
       backbone:
         name: "AlexNet"
@@ -21,7 +21,7 @@ test:
         name: "SiamTrack"
         SiamTrack:
           # pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl"
-          pretrain_model_path: "snapshots/default_training/epoch-13.pkl"
+          pretrain_model_path: "snapshots/siamfcpp_alexnet-trn/epoch-19.pkl"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
@@ -32,6 +32,8 @@ test:
     tester:
       names: ["VOTTester",]
       VOTTester:
+        exp_name: *TEST_NAME
+        exp_save: *TEST_SAVE
         device_num: 1
         dataset_names: ["VOT2018"]
 train:
@@ -72,7 +74,7 @@ train:
           pretrain_model_path: ""
     data:
       num_epochs: 20
-      minibatch: 32
+      minibatch: 64
       num_workers: 32
       nr_image_per_epoch: 600000
       datapipeline:
@@ -111,7 +113,7 @@ train:
     trainer:
       name: "RegularTrainer"
       RegularTrainer:
-        exp_name: "siamfcpp_alexnet-trn"
+        exp_name: "siamfcpp_alexnet-trn-bch64"
 #        devices: ["cuda"]
         # devices: ["cuda:0", "cuda:1"]
         devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]
@@ -129,14 +131,14 @@ train:
             {
             "name": "LinearLR",
             "start_lr": 0.000001,
-            "end_lr": 0.02,
+            "end_lr": 0.04,
             "max_epoch": 1,
             "max_iter": 12500
             }
           - >
             {
             "name": "CosineLR",
-            "start_lr": 0.02,
+            "start_lr": 0.04,
             "end_lr": 0.000001,
             "max_epoch": 19,
             "max_iter": 12500
@@ -186,41 +188,3 @@ train:
             "epoch": 15,
             "freezed": false
             }
-
-      # scheduler:
-      #   name: "LRScheduler"
-      #   LRScheduler:
-      #     lr_policy:
-      #     - >
-      #       {
-      #       "name": "LinearLR",
-      #       "start_lr": 0.000001,
-      #       "end_lr": 0.02,
-      #       "max_epoch": 1,
-      #       "max_iter": 12500
-      #       }
-      #     - >
-      #       {
-      #       "name": "CosineLR",
-      #       "start_lr": 0.02,
-      #       "end_lr": 0.000001,
-      #       "max_epoch": 19,
-      #       "max_iter": 12500
-      #       }
-      #     lr_multiplier:
-      #     - >
-      #       {
-      #       "name": "backbone",
-      #       "regex": "basemodel",
-      #       "ratio": 0.1
-      #       }
-      #     - >
-      #       {
-      #       "name": "other",
-      #       "regex": "^((?!basemodel).)*$",
-      #       "ratio": 1
-      #       }
-
-
-
-
