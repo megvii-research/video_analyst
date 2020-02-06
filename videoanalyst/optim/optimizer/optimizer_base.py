@@ -20,7 +20,7 @@ from videoanalyst.utils import Registry
 
 from torch.optim.optimizer import Optimizer
 
-from ..scheduler.scheduler_base import SchedulerBase
+# from ..scheduler.scheduler_base import SchedulerBase
 from .optimizer_impl.utils.lr_policy import build as build_lr_policy, schedule_lr
 from .optimizer_impl.utils.lr_multiply import build as build_lr_multiplier, multiply_lr
 
@@ -74,6 +74,7 @@ class OptimizerBase:
         self._cfg = cfg
         self._model = None
         self._optimizer = None
+        self._grad_modifier = None
     
     def get_hps(self) -> dict:
         r"""
@@ -137,6 +138,9 @@ class OptimizerBase:
             params = self._model.parameters()
         
         self._state["params"] = params
+    
+    def set_grad_modifier(self, grad_modifier):
+        self._grad_modifier = grad_modifier
 
     # def set_scheduler(self, scheduler: SchedulerBase):
     #     r"""
@@ -172,3 +176,7 @@ class OptimizerBase:
             self._state["lr_multiplier"].multiply_lr(self._optimizer)
 
         return schedule_info
+
+    def modify_grad(self, epoch, iteration=-1):
+        self._grad_modifier.modify_grad(self._model, epoch, iteration)
+

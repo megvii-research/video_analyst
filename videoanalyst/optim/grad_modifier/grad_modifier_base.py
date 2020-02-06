@@ -18,19 +18,19 @@ from yacs.config import CfgNode
 from videoanalyst.utils import Registry
 # from videoanalyst.optim.optimizer.optimizer_base import OptimizerBase
 
-TRACK_SCHEDULERS = Registry('TRACK_SCHEDULER')
-VOS_SCHEDULERS = Registry('VOS_SCHEDULER')
+TRACK_GRAD_MODIFIERS = Registry('TRACK_GRAD_MODIFIER')
+VOS_GRAD_MODIFIERS = Registry('VOS_GRAD_MODIFIER')
 
-TASK_SCHEDULERS = dict(
-    track=TRACK_SCHEDULERS,
-    vos=VOS_SCHEDULERS,
+TASK_GRAD_MODIFIERS = dict(
+    track=TRACK_GRAD_MODIFIERS,
+    vos=VOS_GRAD_MODIFIERS,
 )
 
-class SchedulerBase:
+class GradModifierBase:
     __metaclass__ = ABCMeta
 
     r"""
-    base class for Scheduler. Reponsible for scheduling optimizer (learning rate) during training
+    base class for GradModifier. Reponsible for scheduling optimizer (learning rate) during training
 
     Define your hyper-parameters here in your sub-class.
     """
@@ -38,7 +38,7 @@ class SchedulerBase:
 
     def __init__(self, ) -> None:
         r"""
-        Scheduler, reponsible for scheduling optimizer
+        GradModifier, reponsible for scheduling optimizer
 
         Arguments
         ---------
@@ -86,16 +86,7 @@ class SchedulerBase:
         an interface for update params
         """
     
-    def set_model(self, model: nn.Module) -> None:
-        r"""set model for scheduler"""
-        self._model = model
-
-    def set_optimizer(self, optimizer) -> None:
-        r"""get underlying optimizer and set it for scheduler"""
-        self._optimizer = optimizer
-        # assert isinstance(self._optimizer, optim.Optimizer)
-
-    def schedule(self, epoch: int, iteration: int) -> Dict:
+    def modify_grad(self, module: nn.Module, epoch: int, iteration: int=-1):
         r"""
         Schedule the underlying optimizer/model
         
@@ -110,4 +101,5 @@ class SchedulerBase:
         Dict:
             dict containing the schedule state
         """
+        
         

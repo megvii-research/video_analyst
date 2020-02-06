@@ -4,10 +4,10 @@ from typing import Dict, List
 
 from yacs.config import CfgNode
 
-from .scheduler_base import TASK_SCHEDULERS, SchedulerBase
+from .grad_modifier_base import TASK_GRAD_MODIFIERS, GradModifierBase
 from videoanalyst.utils import merge_cfg_into_hps
 
-def build(task: str, cfg: CfgNode) -> SchedulerBase:
+def build(task: str, cfg: CfgNode) -> GradModifierBase:
     r"""
     Arguments
     ---------
@@ -18,8 +18,8 @@ def build(task: str, cfg: CfgNode) -> SchedulerBase:
     seed: int
         seed for rng initialization
     """
-    assert task in TASK_SCHEDULERS, "invalid task name"
-    MODULES = TASK_SCHEDULERS[task]
+    assert task in TASK_GRAD_MODIFIERS, "invalid task name"
+    MODULES = TASK_GRAD_MODIFIERS[task]
 
     name = cfg.name
     module = MODULES[name]()
@@ -33,9 +33,9 @@ def build(task: str, cfg: CfgNode) -> SchedulerBase:
 
 
 def get_config() -> Dict[str, CfgNode]:
-    cfg_dict = {name: CfgNode() for name in TASK_SCHEDULERS.keys()}
+    cfg_dict = {name: CfgNode() for name in TASK_GRAD_MODIFIERS.keys()}
 
-    for cfg_name, MODULES in TASK_SCHEDULERS.items():
+    for cfg_name, MODULES in TASK_GRAD_MODIFIERS.items():
         cfg = cfg_dict[cfg_name]
         cfg["name"] = ""
 
@@ -45,5 +45,6 @@ def get_config() -> Dict[str, CfgNode]:
             hps = module.default_hyper_params
             for hp_name in hps:
                 cfg[name][hp_name] = hps[hp_name]
+    # from IPython import embed;embed()
 
     return cfg_dict

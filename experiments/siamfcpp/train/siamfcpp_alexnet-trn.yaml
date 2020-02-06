@@ -21,7 +21,7 @@ test:
         name: "SiamTrack"
         SiamTrack:
           # pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl"
-          pretrain_model_path: "snapshots/default_training/epoch-18.pkl"
+          pretrain_model_path: "snapshots/default_training/epoch-13.pkl"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
@@ -111,9 +111,10 @@ train:
     trainer:
       name: "RegularTrainer"
       RegularTrainer:
+        exp_name: "siamfcpp_alexnet-trn"
 #        devices: ["cuda"]
-        devices: ["cuda:0", "cuda:1"]
-        # devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]
+        # devices: ["cuda:0", "cuda:1"]
+        devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]
         max_epoch: 20
         num_iterations: 12500
     optim:
@@ -153,7 +154,38 @@ train:
             "regex": "^((?!basemodel).)*$",
             "ratio": 1
             }
-
+      grad_modifier:
+        name: "DynamicFreezer"
+        DynamicFreezer:
+          schedule:
+          - >
+            {
+            "name": "isConv",
+            "regex": "basemodel.conv.\\.conv.*",
+            "epoch": 0,
+            "freezed": true
+            }
+          - >
+            {
+            "name": "isConv5",
+            "regex": "basemodel.conv5\\.conv.*",
+            "epoch": 5,
+            "freezed": false
+            }
+          - >
+            {
+            "name": "isConv4",
+            "regex": "basemodel.conv4\\.conv.*",
+            "epoch": 10,
+            "freezed": false
+            }
+          - >
+            {
+            "name": "isConv3",
+            "regex": "basemodel.conv3\\.conv.*",
+            "epoch": 15,
+            "freezed": false
+            }
 
       # scheduler:
       #   name: "LRScheduler"
@@ -191,21 +223,4 @@ train:
 
 
 
-#      freeze_scheduler:
-#        isConv:
-#          regex: "conv.\\.conv.*"
-#          epoch: 0
-#          freezed: True
-#        isConv5:
-#          regex: "conv5\\.conv.*"
-#          epoch: 5
-#          freezed: False
-#        isConv4:
-#          regex: "conv4\\.conv.*"
-#          epoch: 10
-#          freezed: False
-#        isConv3:
-#          regex: "conv3\\.conv.*"
-#          epoch: 15
-#          freezed: False
 

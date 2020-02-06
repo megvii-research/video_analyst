@@ -100,6 +100,7 @@ class RegularTrainer(TrainerBase):
         num_iterations = self._hyper_params["num_iterations"]
 
         # self._optimizer.schedule_freeze(epoch)
+        self._optimizer.modify_grad(epoch)
 
         pbar = tqdm(range(num_iterations))
 
@@ -133,6 +134,7 @@ class RegularTrainer(TrainerBase):
             # from IPython import embed;embed()
             # backward propagation
             total_loss.backward()
+            self._optimizer.modify_grad(epoch, iteration)
             
             self._optimizer.step()
 

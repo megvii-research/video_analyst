@@ -7,7 +7,7 @@ import torch
 from torch import nn
 
 from .optimizer import builder as optimizer_builder
-# from .scheduler import builder as scheduler_builder
+from .grad_modifier import builder as grad_modifier_builder
 
 
 def build(
@@ -31,9 +31,9 @@ def build(
         module built by builder
     """
     optimizer = optimizer_builder.build(task, cfg.optimizer, model)
-    # if "scheduler" in cfg:
-    #     scheduler = scheduler_builder.build(task, cfg.scheduler)    
-    #     optimizer.set_scheduler(scheduler)
+    if "grad_modifier" in cfg:
+        grad_modifier = grad_modifier_builder.build(task, cfg.grad_modifier)    
+        optimizer.set_grad_modifier(grad_modifier)
 
     return optimizer
 
@@ -52,6 +52,6 @@ def get_config() -> Dict[str, CfgNode]:
     for task in cfg_dict:
         cfg = cfg_dict[task]
         cfg["optimizer"] = optimizer_builder.get_config()[task]
-        # cfg["scheduler"] = scheduler_builder.get_config()[task]
+        cfg["grad_modifier"] = grad_modifier_builder.get_config()[task]
 
     return cfg_dict

@@ -10,6 +10,7 @@ from torch import nn
 from collections import OrderedDict
 import torch
 
+
 class FreezeStateMonitor:
     """ Monitor the freezing state continuously and print """
     def __init__(self, module:nn.Module, verbose=True):
@@ -35,10 +36,23 @@ class FreezeStateMonitor:
                 any_change = any_change or change
 
 
-def dynamic_freeze(module, param_filter=(lambda x: True), requires_grad=False, verbose=False):
+def dynamic_freeze(module: nn.Module, compiled_regex=re.compile(".*"), requires_grad: bool=False, verbose: bool=False):
+    """Perform dynamic freezing
+    
+    Parameters
+    ----------
+    module : [type]
+        [description]
+    compiled_regex : [type], optional
+        compiled regular expression, by default re.compile(".*")
+    requires_grad : bool, optional
+        [description], by default False
+    verbose : bool, optional
+        [description], by default False
+    """
     with FreezeStateMonitor(module, verbose=verbose):
         for k, v in module.named_parameters():
-            if param_filter(k):
+            if (compiled_regex.search(k) is not None):
                 v.requires_grad = requires_grad
 
 
@@ -49,7 +63,7 @@ def dynamic_freeze(module, param_filter=(lambda x: True), requires_grad=False, v
 #                            param_filter=param_filter,
 #                            requires_grad=requires_grad_cond(epoch))
 
-def apply_freeze_schedule(module, epoch, schedules: List[Dict], verbose=True):
+def apply_freeze_schedule(module: nn.Module, epoch: int, schedule: List[Dict], verbose: bool=True):
     r"""
     Apply dynamic freezing schedule with verbose
     
@@ -67,31 +81,11 @@ def apply_freeze_schedule(module, epoch, schedules: List[Dict], verbose=True):
 
     """
     with FreezeStateMonitor(module, verbose=verbose):
-        for schedule in schedule_list:
+        for freeze_action in schedule:
             # param_filter, requires_grad_cond
-            param_filter = schedule["filter"]
-            requires_grad = ( (epoch >= schedule["epoch"]) !=
-                              schedule["freezed"] )  
+            compiled_regex = freeze_action["compiled_regex"]
+            requires_grad = ( (epoch >= freeze_action["epoch"]) !=
+                              freeze_action["freezed"] )  # XOR
             dynamic_freeze(module,
-                           param_filter=schedule["filter"],
+                           compiled_regex=compiled_regex,
                            requires_grad=requires_grad)
-
-def resolve_freeze_schedule_cfg(cfg: CfgNode) -> Dict:
-    r"""
-    Resolve yacs configuration object to get schedule dict
-    Arguments
-    ---------
-    cfg: CfgNode
-        node name: freeze_scheduler
-
-    Returns
-    -------
-    Dict
-        returned schedule
-    """
-    schedule = dict()
-    schedule["filter"] = lambda s: re.compile(cfg.regex).search(s) is not None
-    schedule["epoch"] = cfg.epoch
-    schedule["freezed"] = cfg.freezed
-    return schedule
-    
