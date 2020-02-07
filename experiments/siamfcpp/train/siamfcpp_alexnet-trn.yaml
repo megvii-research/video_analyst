@@ -96,11 +96,17 @@ train:
           negative_pair_ratio: 0.1
         submodules:
           dataset:
-            names: ["GOT10kDataset",]
+            names: ["GOT10kDataset", ]
+            # names: ["LaSOTDataset", ]
             GOT10kDataset:
               ratio: 1
               max_diff: 100
               dataset_root: "datasets/GOT-10k"
+              subset: "train"
+            LaSOTDataset:
+              ratio: 1
+              max_diff: 100
+              dataset_root: "datasets/LaSOT"
               subset: "train"
           filter:
             name: "TrackPairFilter"

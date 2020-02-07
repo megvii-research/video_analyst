@@ -16,7 +16,7 @@ from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
 
 torch.set_printoptions(precision=8)
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger("global")
 
 
 @TRACK_TASKMODELS.register
