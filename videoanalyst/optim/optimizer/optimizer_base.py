@@ -160,6 +160,9 @@ class OptimizerBase:
 
     def state_dict(self):
         return self._optimizer.state_dict()
+    
+    def load_state_dict(self, state_dict):
+        self._optimizer.load_state_dict(state_dict)
 
     def schedule(self, epoch: int, iteration: int) -> Dict:
         r"""

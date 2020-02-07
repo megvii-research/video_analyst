@@ -24,7 +24,8 @@ class LaSOTTester(TesterBase):
         # self._experiment = None
 
     def test(self, ):
-        pipeline_tracker = PipelineTracker(self._hyper_params["exp_name"],
+        tracker_name = self._hyper_params["exp_name"]
+        pipeline_tracker = PipelineTracker(tracker_name,
                                            self._pipeline)
 
         for subset in self._hyper_params["subsets"]:
@@ -35,8 +36,9 @@ class LaSOTTester(TesterBase):
             report_dir = osp.join(save_root_dir, "report")
 
             experiment = ExperimentLaSOT(root_dir, subset=subset, 
-                                          result_dir=result_dir, report_dir=report_dir)
+                                         result_dir=result_dir, report_dir=report_dir)
             experiment.run(pipeline_tracker)
+            experiment.report([tracker_name], plot_curves=False)
 
 LaSOTTester.default_hyper_params = copy.deepcopy(LaSOTTester.default_hyper_params)
 LaSOTTester.default_hyper_params.update(LaSOTTester.extra_hyper_params)

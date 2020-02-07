@@ -150,8 +150,8 @@ class Inception3(ModuleBase):
         # return x
 
     def update_params(self):
-        if self._hyper_params["pretrain_model_path"] != "":
-            model_file = self._hyper_params["pretrain_model_path"]
+        model_file = self._hyper_params["pretrain_model_path"]
+        if model_file != "":
             try:
                 state_dict = torch.load(model_file, map_location=torch.device("gpu"))
             except:

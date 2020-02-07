@@ -49,6 +49,7 @@ class RegularTrainer(TrainerBase):
         devices=["cpu"],
         num_iterations=1,
         max_epoch=1,
+        snapshot="",
     )
 
     def __init__(self, ):
@@ -83,14 +84,20 @@ class RegularTrainer(TrainerBase):
         self._model.to(devs[0])
         # torch.cuda.empty_cache()
 
-        if len(self._state["devices"]) > 1:
-            self._model = nn.DataParallel(self._model, device_ids=devs)
-            logger.info("Use nn.DataParallel for data parallelism")
+        # if len(self._state["devices"]) > 1:
+        #     self._model = nn.DataParallel(self._model, device_ids=devs)
+        #     logger.info("Use nn.DataParallel for data parallelism")
 
         for k in self._losses:
             self._losses[k].to(devs[0])
 
         self._optimizer.build_optimizer()
+        
+        self.load_snapshot()
+
+        if len(self._state["devices"]) > 1:
+            self._model = nn.DataParallel(self._model, device_ids=devs)
+            logger.info("Use nn.DataParallel for data parallelism")
 
     def train(self):
         # epoch counter +1
@@ -153,10 +160,12 @@ class RegularTrainer(TrainerBase):
         is_completed = (self._state["epoch"]+1 >= self._hyper_params["max_epoch"])
         return is_completed
 
-    def load_snapshot(self, snapshot_file):
+    def load_snapshot(self, snapshot_file=""):
         r""" 
         load snapshot
         """
+        if len(snapshot_file) <= 0:
+            snapshot_file = self._hyper_params["snapshot"]
         if osp.exists(snapshot_file):
             # snapshot = torch.load(snapshoto_file, map_location=torch.device("cuda"))
             dev = self._state["devices"][0]
@@ -164,21 +173,11 @@ class RegularTrainer(TrainerBase):
             self._model.load_state_dict(snapshot["model_state_dict"])
             self._optimizer.load_state_dict(snapshot["optimizer_state_dict"])
             self._state["epoch"] = snapshot["epoch"]+1
-            logger.info("Load snapshot from:", osp.realpath(snapshot_file))
+            logger.info("Load snapshot from: %s"%osp.realpath(snapshot_file))
         else:
             logger.info("%s does not exist, snapshot not loaded."%snapshot_file)
 
-        # epoch_latest = './latest'
-        # if osp.exists(epoch_latest):
-        #     snapshot = torch.load(epoch_latest, map_location=torch.device("cuda"))
-        #     model.load_state_dict(snapshot['model_state_dict'])
-        #     optimizer.load_state_dict(snapshot['optimizer_state_dict'])
-        #     epoch = snapshot['epoch']+1
-        #     print("Load snapshot from:", osp.realpath(epoch_latest))
-        # else:
-        #     epoch = 0
-
-        print("Train from epoch %d" % self._state["epoch"])
+        logger.info("Train from epoch %d" % self._state["epoch"])
 
     def save_snapshot(self,):
         r""" 

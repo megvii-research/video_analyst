@@ -1,34 +1,34 @@
 test:
   track:
-    exp_name: &TEST_NAME "siamfcpp_alexnet-trn-bch64"
+    exp_name: &TEST_NAME "siamfcpp_googlenet"
     exp_save: &TEST_SAVE "logs"
     model:
       backbone:
-        name: "AlexNet"
-        AlexNet:
-          pretrain_model_path: ""
+        name: "Inception3"
+        Inception3:
+          crop_pad: 4
+          pruned: True
       losses:
         names: []
       task_head:
         name: "DenseboxHead"
         DenseboxHead:
           total_stride: 8
-          score_size: 17
+          score_size: 19
           x_size: 303
-          num_conv3x3: 3
-          head_conv_bn: [False, False, True]
+          num_conv3x3: 2
+          head_conv_bn: [False, False]
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          # pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl"
-          pretrain_model_path: "snapshots/siamfcpp_alexnet-trn-bch64/epoch-14.pkl"
+          pretrain_model_path: "models/siamfcpp/siamfcpp-googlenet-vot-md5_f2680ba074213ee39d82fcb84533a1a6.pkl"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
         test_lr: 0.52
         window_influence: 0.21
         penalty_k: 0.04
-        num_conv3x3: 3
+        num_conv3x3: 2
     tester:
       # names: ["VOTTester",]
       names: ["GOT10kTester",]
@@ -41,21 +41,22 @@ test:
       GOT10kTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
-        subsets: ["val"]  # (val|test)
-        # subsets: ["test"]  # (val|test)
+        subsets: ["test"]  # (val|test)
       LaSOTTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
         subsets: ["test"]  # (val|test)
 train:
   track:
-    exp_name: &TRAIN_NAME "siamfcpp_alexnet-trn-bch64"
+    exp_name: &TRAIN_NAME "siamfcpp_googlenet-trn"
     exp_save: &TRAIN_SAVE "logs"
     model:
       backbone:
-        name: "AlexNet"
-        AlexNet:
-          pretrain_model_path: "models/alexnet/alexnet-nopad-bn.pkl"
+        name: "Inception3"
+        Inception3:
+          crop_pad: 4
+          pruned: True
+          pretrain_model_path: "models/googlenet/inception_v3_google-1a9a5a14-961cad7697695cca7d9ca4814b17a88d.pth"
       losses:
         names: ["SigmoidCrossEntropyRetina",
                 "SigmoidCrossEntropyCenterness",
@@ -63,7 +64,7 @@ train:
         SigmoidCrossEntropyRetina:
           name: "cls"
           weight: 1.0
-          alpha: 0.25
+          alpha: 0.75
           gamma: 2.0
         SigmoidCrossEntropyCenterness:
           name: "ctr"
@@ -76,24 +77,24 @@ train:
         DenseboxHead:
           total_stride: 8
           score_size: 17
-          x_size: 303
-          num_conv3x3: 3
-          head_conv_bn: [False, False, True]
+          x_size: 289 # 303
+          num_conv3x3: 2
+          head_conv_bn: [False, False]
       task_model:
         name: "SiamTrack"
         SiamTrack:
           pretrain_model_path: ""
     data:
       num_epochs: 20
-      minibatch: 64 # 32
+      minibatch: 32 # 256
       num_workers: 32
-      nr_image_per_epoch: 800000
+      nr_image_per_epoch: 300000 # 600000
       datapipeline:
         name: "RegularDatapipeline"
       sampler:
         name: "TrackPairSampler"
         TrackPairSampler:
-          negative_pair_ratio: 0.1
+          negative_pair_ratio: 0.33
         submodules:
           dataset:
             names: ["GOT10kDataset",]
@@ -113,14 +114,14 @@ train:
         RandomCropTransformer:
           max_scale: 0.3
           max_shift: 0.4
-          x_size: 303
+          x_size: 289 # 303
       target:
         name: "DenseboxTarget"
         DenseboxTarget:
           total_stride: 8
           score_size: 17
-          x_size: 303
-          num_conv3x3: 3
+          x_size: 289 # 303
+          num_conv3x3: 2
     trainer:
       name: "RegularTrainer"
       RegularTrainer:
@@ -129,15 +130,14 @@ train:
         # devices: ["cuda:0", "cuda:1"]
         devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]
         max_epoch: 20
-        num_iterations: 12500
-        snapshot: "snapshots/siamfcpp_alexnet-trn-bch64/epoch-14.pkl"
+        num_iterations: 1170
     optim:
       optimizer:
         name: "SGD"
         SGD:
           lr: 0.01
           momentum: 0.9
-          weight_decay: 0.00005
+          weight_decay: 0.0001
           lr_policy:
           - >
             {
@@ -145,7 +145,7 @@ train:
             "start_lr": 0.000001,
             "end_lr": 0.04,
             "max_epoch": 1,
-            "max_iter": 12500
+            "max_iter": 1170
             }
           - >
             {
@@ -153,7 +153,7 @@ train:
             "start_lr": 0.04,
             "end_lr": 0.000001,
             "max_epoch": 19,
-            "max_iter": 12500
+            "max_iter": 1170
             }
           lr_multiplier:
           - >
@@ -175,28 +175,22 @@ train:
           - >
             {
             "name": "isConv",
-            "regex": "basemodel.conv.\\.conv.*",
+            "regex": "basemodel.*\\.conv.\\.",
             "epoch": 0,
             "freezed": true
             }
           - >
             {
-            "name": "isConv5",
-            "regex": "basemodel.conv5\\.conv.*",
-            "epoch": 5,
-            "freezed": false
-            }
-          - >
-            {
-            "name": "isConv4",
-            "regex": "basemodel.conv4\\.conv.*",
+            "name": "isConvStage4",
+            "regex": "basemodel.Mixed_6.*\\.conv.\\.",
             "epoch": 10,
             "freezed": false
             }
           - >
             {
-            "name": "isConv3",
-            "regex": "basemodel.conv3\\.conv.*",
-            "epoch": 15,
+            "name": "isConvStage3",
+            "regex": "basemodel.Mixed_5.*\\.conv.\\.",
+            "epoch": 10,
             "freezed": false
             }
+

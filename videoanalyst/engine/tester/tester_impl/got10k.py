@@ -24,7 +24,8 @@ class GOT10kTester(TesterBase):
         # self._experiment = None
 
     def test(self, ):
-        pipeline_tracker = PipelineTracker(self._hyper_params["exp_name"],
+        tracker_name = self._hyper_params["exp_name"]
+        pipeline_tracker = PipelineTracker(tracker_name,
                                            self._pipeline)
 
         for subset in self._hyper_params["subsets"]:
@@ -37,6 +38,8 @@ class GOT10kTester(TesterBase):
             experiment = ExperimentGOT10k(root_dir, subset=subset, 
                                           result_dir=result_dir, report_dir=report_dir)
             experiment.run(pipeline_tracker)
+            experiment.report([tracker_name], plot_curves=False)
+
 
 GOT10kTester.default_hyper_params = copy.deepcopy(GOT10kTester.default_hyper_params)
 GOT10kTester.default_hyper_params.update(GOT10kTester.extra_hyper_params)
