@@ -108,7 +108,7 @@ class RegularTrainer(TrainerBase):
 
         # self._optimizer.schedule_freeze(epoch)
         self._optimizer.modify_grad(epoch)
-
+        # from IPython import embed;embed()
         pbar = tqdm(range(num_iterations))
 
         for iteration, _ in enumerate(pbar):
@@ -177,7 +177,7 @@ class RegularTrainer(TrainerBase):
         else:
             logger.info("%s does not exist, snapshot not loaded."%snapshot_file)
 
-        logger.info("Train from epoch %d" % self._state["epoch"])
+        logger.info("Train from epoch %d" % (self._state["epoch"]+1))
 
     def save_snapshot(self,):
         r""" 

@@ -49,7 +49,7 @@ test:
         subsets: ["test"]  # (val|test)
 train:
   track:
-    exp_name: &TRAIN_NAME "siamfcpp_alexnet-trn-bch64"
+    exp_name: &TRAIN_NAME "siamfcpp_alexnet-trn"
     exp_save: &TRAIN_SAVE "logs"
     model:
       backbone:
@@ -85,7 +85,7 @@ train:
           pretrain_model_path: ""
     data:
       num_epochs: 20
-      minibatch: 64 # 32
+      minibatch: 32 # 64
       num_workers: 32
       nr_image_per_epoch: 800000
       datapipeline:
@@ -130,7 +130,7 @@ train:
         devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]
         max_epoch: 20
         num_iterations: 12500
-        snapshot: "snapshots/siamfcpp_alexnet-trn-bch64/epoch-14.pkl"
+        snapshot: ""
     optim:
       optimizer:
         name: "SGD"
@@ -175,28 +175,28 @@ train:
           - >
             {
             "name": "isConv",
-            "regex": "basemodel.conv.\\.conv.*",
+            "regex": "basemodel\\.conv.\\.conv.*",
             "epoch": 0,
             "freezed": true
             }
           - >
             {
             "name": "isConv5",
-            "regex": "basemodel.conv5\\.conv.*",
+            "regex": "basemodel\\.conv5\\.conv.*",
             "epoch": 5,
             "freezed": false
             }
           - >
             {
             "name": "isConv4",
-            "regex": "basemodel.conv4\\.conv.*",
+            "regex": "basemodel\\.conv4\\.conv.*",
             "epoch": 10,
             "freezed": false
             }
           - >
             {
             "name": "isConv3",
-            "regex": "basemodel.conv3\\.conv.*",
+            "regex": "basemodel\\.conv3\\.conv.*",
             "epoch": 15,
             "freezed": false
             }

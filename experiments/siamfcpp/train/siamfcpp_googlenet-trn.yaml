@@ -88,7 +88,7 @@ train:
       num_epochs: 20
       minibatch: 32 # 256
       num_workers: 32
-      nr_image_per_epoch: 300000 # 600000
+      nr_image_per_epoch: 300000
       datapipeline:
         name: "RegularDatapipeline"
       sampler:
@@ -130,7 +130,8 @@ train:
         # devices: ["cuda:0", "cuda:1"]
         devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]
         max_epoch: 20
-        num_iterations: 1170
+        num_iterations: 1171
+        snapshot: ""
     optim:
       optimizer:
         name: "SGD"
@@ -145,7 +146,7 @@ train:
             "start_lr": 0.000001,
             "end_lr": 0.04,
             "max_epoch": 1,
-            "max_iter": 1170
+            "max_iter": 1171
             }
           - >
             {
@@ -153,7 +154,7 @@ train:
             "start_lr": 0.04,
             "end_lr": 0.000001,
             "max_epoch": 19,
-            "max_iter": 1170
+            "max_iter": 1171
             }
           lr_multiplier:
           - >
@@ -175,21 +176,21 @@ train:
           - >
             {
             "name": "isConv",
-            "regex": "basemodel.*\\.conv.\\.",
+            "regex": "basemodel.*\\.conv\\.",
             "epoch": 0,
             "freezed": true
             }
           - >
             {
             "name": "isConvStage4",
-            "regex": "basemodel.Mixed_6.*\\.conv.\\.",
+            "regex": "basemodel\\.Mixed_6.*\\.conv\\.",
             "epoch": 10,
             "freezed": false
             }
           - >
             {
             "name": "isConvStage3",
-            "regex": "basemodel.Mixed_5.*\\.conv.\\.",
+            "regex": "basemodel\\.Mixed_5.*\\.conv\\.",
             "epoch": 10,
             "freezed": false
             }
