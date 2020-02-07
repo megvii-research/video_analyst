@@ -152,7 +152,11 @@ class RegularTrainer(TrainerBase):
             for k in training_losses:
                 l = training_losses[k]
                 print_str +=  '%s: %.3f, ' % (k, l.detach().cpu().numpy())
-            # print_str += "lr: %.1e" % lr
+            for extra in extras.values():
+                for k in extra:
+                    l = extra[k]
+                    print_str +=  '%s: %.3f, ' % (k, l)
+
             pbar.set_description(print_str)
 
 

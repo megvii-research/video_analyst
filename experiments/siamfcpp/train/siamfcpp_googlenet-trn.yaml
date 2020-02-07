@@ -86,7 +86,7 @@ train:
           pretrain_model_path: ""
     data:
       num_epochs: 20
-      minibatch: 32 # 256
+      minibatch: 64 # 256
       num_workers: 32
       nr_image_per_epoch: 300000
       datapipeline:
