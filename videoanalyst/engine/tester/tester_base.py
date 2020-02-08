@@ -57,6 +57,13 @@ class TesterBase:
             self._hyper_params[key] = hps[key]
 
     def set_pipeline(self, pipeline: PipelineBase):
+        """Setter for underlying pipeline
+        
+        Parameters
+        ----------
+        pipeline : PipelineBase
+            pipelien to be set as underlying pipeline
+        """
         self._pipeline = pipeline
 
     def update_params(self):

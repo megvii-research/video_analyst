@@ -1,6 +1,6 @@
 test:
   track:
-    exp_name: &TEST_NAME "siamfcpp_alexnet-trn-bch64"
+    exp_name: &TEST_NAME "siamfcpp_alexnet-trn"
     exp_save: &TEST_SAVE "logs"
     model:
       backbone:
@@ -21,7 +21,7 @@ test:
         name: "SiamTrack"
         SiamTrack:
           # pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl"
-          pretrain_model_path: "snapshots/siamfcpp_alexnet-trn-bch64/epoch-14.pkl"
+          pretrain_model_path: "snapshots/"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
@@ -96,7 +96,7 @@ train:
           negative_pair_ratio: 0.1
         submodules:
           dataset:
-            names: ["GOT10kDataset", ]
+            names: ["GOT10kDataset",]
             # names: ["LaSOTDataset", ]
             GOT10kDataset:
               ratio: 1
@@ -131,9 +131,9 @@ train:
       name: "RegularTrainer"
       RegularTrainer:
         exp_name: *TRAIN_NAME
-#        devices: ["cuda"]
-        # devices: ["cuda:0", "cuda:1"]
-        devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]
+        # devices: ["cuda:0"]
+        devices: ["cuda:0", "cuda:1"]
+        # devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]
         max_epoch: 20
         num_iterations: 12500
         snapshot: ""

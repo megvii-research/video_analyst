@@ -12,7 +12,7 @@ __pycache__
 res.cvs
 *.csv
 *.cvs
-# *.json
+*.json
 *.so
 *.o
 *.c
@@ -49,6 +49,7 @@ result
 # checkpoints
 *.brainmodel
 *.pkl
+*.pth
 *epoch*
 
 # input files
