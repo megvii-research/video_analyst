@@ -54,8 +54,6 @@ if __name__ == '__main__':
     optimizer = optim_builder.build(task, task_cfg.optim, model)
     # build trainer
     trainer = engine_builder.build(task, task_cfg, "trainer", dataloader, optimizer)
-
-    trainer.init_train()
     # from IPython import embed;embed()
     logger.info("Start training")
     while not trainer.is_completed():

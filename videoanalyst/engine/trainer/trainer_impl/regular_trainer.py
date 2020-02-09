@@ -76,6 +76,7 @@ class RegularTrainer(TrainerBase):
         self._state["devices"] = [torch.device(dev) for dev in self._hyper_params["devices"]]
         self._state["snapshot_dir"] = osp.join(self._hyper_params["exp_save"],
                                                self._hyper_params["exp_name"])
+        self.init_train()
 
     def init_train(self, ):
         devs = self._state["devices"]
