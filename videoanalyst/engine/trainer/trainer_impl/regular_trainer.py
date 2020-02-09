@@ -22,10 +22,10 @@ from torch.utils.data import DataLoader
 torch.backends.cudnn.enabled = False
 
 from ..trainer_base import TRACK_TRAINERS, TrainerBase
-from videoanalyst.utils import ensure_dir, move_data_to_device, unwrap_model
 
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.optim.optimizer.optimizer_base import OptimizerBase
+from videoanalyst.utils import ensure_dir, Timer, move_data_to_device, unwrap_model
 
 logger = logging.getLogger("global")
 
@@ -108,11 +108,11 @@ class RegularTrainer(TrainerBase):
         # from IPython import embed;embed()
         pbar = tqdm(range(num_iterations))
 
+        time_dict = OrderedDict()
         for iteration, _ in enumerate(pbar):
+            with Timer(name="data", output_dict=time_dict):
+                training_data = next(self._dataloader)
 
-            time_a = time.time()
-            training_data = next(self._dataloader)
-            time_b = time.time()
             training_data = move_data_to_device(training_data, self._state["devices"][0])
 
             schedule_info = self._optimizer.schedule(epoch, iteration)
@@ -120,7 +120,8 @@ class RegularTrainer(TrainerBase):
             self._optimizer.zero_grad()
 
             # forward propagation
-            pred_data = self._model(training_data)
+            with Timer(name="fwd", output_dict=time_dict):
+                pred_data = self._model(training_data)
 
             loss_extra_dict = OrderedDict()
             for k in self._losses:
@@ -139,24 +140,28 @@ class RegularTrainer(TrainerBase):
 
             # from IPython import embed;embed()
             # backward propagation
-            total_loss.backward()
-            self._optimizer.modify_grad(epoch, iteration)
-            
-            self._optimizer.step()
-            time_c = time.time()
+            with Timer(name="bwd", output_dict=time_dict):
+                total_loss.backward()
+            self._optimizer.modify_grad(epoch, iteration)            
+            with Timer(name="optim", output_dict=time_dict):
+                self._optimizer.step()
 
             # prompt
             print_str = 'epoch %d, ' % epoch
             for k in schedule_info:
                 print_str +=  '%s: %.1e, ' % (k, schedule_info[k])
+            # loss info
             for k in training_losses:
                 l = training_losses[k]
                 print_str +=  '%s: %.3f, ' % (k, l.detach().cpu().numpy())
+            # extra info
             for extra in extras.values():
                 for k in extra:
                     l = extra[k]
                     print_str +=  '%s: %.3f, ' % (k, l)
-            print_str += "data_time: {:3f}, train_time: {:3f}".format(time_b-time_a, time_c-time_b)
+            # pring elapsed time
+            for k in time_dict:
+                print_str += "%s: %.1e, "%(k, time_dict[k])
 
             pbar.set_description(print_str)
 

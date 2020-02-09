@@ -30,7 +30,6 @@ class AdaptorDataset(Dataset):
             seed = (torch.initial_seed() + item) % (2**32)
             self.datapipeline = build_datapipeline(**self.kwargs, seed=seed)
         
-        # with Timer(enable=False):
         training_data = next(self.datapipeline)
 
         return training_data

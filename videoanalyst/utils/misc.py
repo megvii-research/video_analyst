@@ -5,6 +5,7 @@ import time
 
 from yacs.config import CfgNode as CN
 
+logger = logging.getLogger("global")
 
 def _register_generic(module_dict, module_name, module):
     assert module_name not in module_dict, print(
@@ -70,21 +71,34 @@ class Timer():
     r"""
     Mesure & print elapsed time witin environment
     """
-    def __init__(self, info='', enable=True):
-        r"""
-        Arguments
-        ---------
-        :param info: prompt to print(will be appended with "elapsed time: %f")
-        :param enable: enable timer or not
-        """
-        self.info = info
-        self.enable = enable
+    def __init__(self, name: str='', output_dict: Dict=None, verbose: bool=False, logger: logging.Logger=logger):
+        """Timing usage
+        
+        Parameters
+        ----------
+        name : str, optional
+            name of timer, used in verbose & output_dict, by default ''
+        output_dict : Dict, optional
+            dict-like object to receive elapsed time in output_dict[name], by default None
+        verbose : bool, optional
+            verbose or not via logger, by default False
+        logger : logging.Logger, optional
+            logger to verbose (info level), by default logger
+        """        
+        self.name = name
+        self.output_dict = output_dict
+        self.verbose = verbose
+        self.logger = logger
 
     def __enter__(self, ):
-        if self.enable:
-            self.tic = time.time()
+        self.tic = time.time()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.enable:
-            self.toc = time.time()
-            print('%s elapsed time: %f'%(self.info, self.toc-self.tic))
+        self.toc = time.time()
+        elapsed_time = self.toc - self.tic
+        if self.output_dict is not None:
+             self.output_dict[self.name] = elapsed_time
+        if self.verbose:
+            print_str = '%s elapsed time: %f'%(self.name, elapsed_time)
+            self.logger.info(print_str)
+

@@ -58,7 +58,7 @@ train:
         Inception3:
           crop_pad: 4
           pruned: True
-          pretrain_model_path: "/data/model_zoo/pretrained_models/googlenet/inception_v3_google-1a9a5a14-961cad7697695cca7d9ca4814b17a88d.pth"
+          pretrain_model_path: "models/googlenet/inception_v3_google-1a9a5a14-961cad7697695cca7d9ca4814b17a88d.pth"
       losses:
         names: ["SigmoidCrossEntropyRetina",
                 "SigmoidCrossEntropyCenterness",
@@ -104,7 +104,7 @@ train:
             GOT10kDataset:
               ratio: 1
               max_diff: 100
-              dataset_root: "/data/dataset/Public/Tracking/GOT-10k"
+              dataset_root: "datasets/GOT-10k"
               subset: "train"
             LaSOTDataset:
               ratio: 1
