@@ -1,6 +1,6 @@
 test:
   track:
-    exp_name: &TEST_NAME "siamfcpp_alexnet-trn"
+    exp_name: &TEST_NAME "siamfcpp_alexnet"
     exp_save: &TEST_SAVE "logs"
     model:
       backbone:
@@ -49,13 +49,13 @@ test:
         subsets: ["test"]  # (val|test)
 train:
   track:
-    exp_name: &TRAIN_NAME "siamfcpp_alexnet-trn"
+    exp_name: &TRAIN_NAME "siamfcpp_alexnet"
     exp_save: &TRAIN_SAVE "logs"
     model:
       backbone:
         name: "AlexNet"
         AlexNet:
-          pretrain_model_path: "models/alexnet/alexnet-nopad-bn.pkl"
+          pretrain_model_path: "models/alexnet/alexnet-nopad-bn-md5_fa7cdefb48f41978cf35e8c4f1159cdc.pkl"
       losses:
         names: ["SigmoidCrossEntropyRetina",
                 "SigmoidCrossEntropyCenterness",
