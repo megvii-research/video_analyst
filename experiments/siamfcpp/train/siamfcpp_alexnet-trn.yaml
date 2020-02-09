@@ -20,7 +20,7 @@ test:
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          pretrain_model_path: "snapshots/"
+          pretrain_model_path: "snapshots/siamfcpp_alexnet/epoch-19.pkl"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
