@@ -71,7 +71,7 @@ class Timer():
     r"""
     Mesure & print elapsed time witin environment
     """
-    def __init__(self, name: str='', output_dict: Dict=None, verbose: bool=False, logger: logging.Logger=logger):
+    def __init__(self, name: str="", output_dict: Dict=None, verbose: bool=False, logger: logging.Logger=logger):
         """Timing usage
         
         Parameters

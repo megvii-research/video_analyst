@@ -30,8 +30,8 @@ def build(
     """
     if task == "track":
         backbone = backbone_builder.build(task, cfg.backbone)
-        losses = loss_builder.build(task, cfg.losses)
         head = head_builder.build(task, cfg.task_head)
+        losses = loss_builder.build(task, cfg.losses)
         task_model = task_builder.build(task, cfg.task_model, backbone, head,
                                         losses)
         return task_model

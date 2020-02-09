@@ -45,47 +45,42 @@ class RegularTrainer(TrainerBase):
     num_iterations: int
         number of iterations
     """
-    default_hyper_params = dict(
-        exp_name="default_training",
-        exp_save="snapshots",
+    extra_hyper_params = dict(
+        # exp_name="default_training",
+        # exp_save="snapshots",
         devices=["cpu"],
         num_iterations=1,
         max_epoch=1,
         snapshot="",
     )
 
-    def __init__(self, dataloader, optimizer):
+    def __init__(self, optimizer, dataloader):
         r"""
         Crete tester with config and pipeline
 
-        # Arguments
-        # ---------
-        # model: ModuleBase
-        # dataloder: DataLoader
-        # losses: ModuleBase
-        # processes: ProcessBase
-
+        Arguments
+        ---------
+        optimizer: ModuleBase
+            including optimizer, model and loss
+        dataloder: DataLoader
+            PyTorch dataloader object. 
+            Usage: batch_data = next(dataloader)
         """
-        super(RegularTrainer, self).__init__(dataloader,optimizer)
-        # famous four elements in Deep Laerning (c.f. <Deep Learning>, Goodfellow et al.)
+        super(RegularTrainer, self).__init__(optimizer, dataloader)
         # update state
         self._state["epoch"] = -1  # uninitialized
-        self.update_params()
 
     def update_params(self, ):
         self._state["devices"] = [torch.device(dev) for dev in self._hyper_params["devices"]]
         self._state["snapshot_dir"] = osp.join(self._hyper_params["exp_save"],
                                                self._hyper_params["exp_name"])
-        self.init_train()
 
     def init_train(self, ):
+        torch.cuda.empty_cache()
+
         devs = self._state["devices"]
         self._model.train()
         self._model.to(devs[0])
-        # torch.cuda.empty_cache()
-        # if len(self._state["devices"]) > 1:
-        #     self._model = nn.DataParallel(self._model, device_ids=devs)
-        #     logger.info("Use nn.DataParallel for data parallelism")
 
         for k in self._losses:
             self._losses[k].to(devs[0])
@@ -185,7 +180,7 @@ class RegularTrainer(TrainerBase):
             self._state["epoch"] = snapshot["epoch"]+1
             logger.info("Load snapshot from: %s"%osp.realpath(snapshot_file))
         else:
-            logger.info("%s does not exist, snapshot not loaded."%snapshot_file)
+            logger.info("%s does not exist, no snapshot loaded."%snapshot_file)
 
         logger.info("Train from epoch %d" % (self._state["epoch"]+1))
 
@@ -206,3 +201,8 @@ class RegularTrainer(TrainerBase):
             logger.info("retrying")
             torch.save(snapshot_dict, snapshot_file)
         logger.info("Snapshot saved at: %s" % snapshot_file)
+
+RegularTrainer.default_hyper_params = copy.deepcopy(
+    RegularTrainer.default_hyper_params)
+RegularTrainer.default_hyper_params.update(
+    RegularTrainer.extra_hyper_params)

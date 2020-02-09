@@ -4,7 +4,6 @@ from paths import ROOT_PATH  # isort:skip
 import argparse
 import logging
 import os.path as osp
-import time
 
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.config.config import specify_task
@@ -15,7 +14,7 @@ from videoanalyst.model import builder as model_builder
 from videoanalyst.model.loss import builder as losses_builder
 from videoanalyst.optim import builder as optim_builder
 from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.utils import complete_path_wt_root_in_cfg
+from videoanalyst.utils import complete_path_wt_root_in_cfg, Timer
 
 logger = logging.getLogger('global')
 
@@ -33,7 +32,6 @@ if __name__ == '__main__':
     # parsing
     parser = make_parser()
     parsed_args = parser.parse_args()
-
     # experiment config
     exp_cfg_path = osp.realpath(parsed_args.config)
     # from IPython import embed;embed() 
@@ -47,17 +45,16 @@ if __name__ == '__main__':
     # build model
     model = model_builder.build(task, task_cfg.model)
     # load data
-    time_a = time.time()
-    dataloader = dataloader_builder.build(task, task_cfg.data)
-    logger.info("Load dataset cost {} s".format(time.time() - time_a))
+    with Timer(name="Dataloader building", verbose=True, logger=logger):
+        dataloader = dataloader_builder.build(task, task_cfg.data)
     # build optimizer
     optimizer = optim_builder.build(task, task_cfg.optim, model)
     # build trainer
-    trainer = engine_builder.build(task, task_cfg, "trainer", dataloader, optimizer)
+    trainer = engine_builder.build(task, task_cfg, "trainer", optimizer, dataloader)
     # from IPython import embed;embed()
+    trainer.init_train()
     logger.info("Start training")
     while not trainer.is_completed():
         trainer.train()
         trainer.save_snapshot()
-
     logger.info("Training completed.")

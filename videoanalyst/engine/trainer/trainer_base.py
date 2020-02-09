@@ -24,9 +24,12 @@ class TrainerBase:
     Interface descriptions:
     """
     # Define your default hyper-parameters here in your sub-class.
-    default_hyper_params = dict()
+    default_hyper_params = dict(
+        exp_name="default_training",
+        exp_save="snapshots",
+    )
 
-    def __init__(self, dataloader, optimizer):
+    def __init__(self, optimizer, dataloader):
         self._hyper_params = deepcopy(
             self.default_hyper_params)  # mapping-like object
         self._state = dict()  # pipeline state

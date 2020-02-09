@@ -131,9 +131,7 @@ train:
       name: "RegularTrainer"
       RegularTrainer:
         exp_name: *TRAIN_NAME
-        # devices: ["cuda:0"]
         devices: ["cuda:0", "cuda:1"]
-        # devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]
         max_epoch: 20
         num_iterations: 12500
         snapshot: ""
