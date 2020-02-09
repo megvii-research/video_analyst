@@ -1,7 +1,7 @@
 test:
   track:
-    exp_name: "siamfcpp_alexnet"
-    exp_save: "logs"
+    exp_name: &TEST_NAME "siamfcpp_alexnet"
+    exp_save: &TEST_SAVE "logs"
     model:
       backbone:
         name: "AlexNet"
@@ -31,5 +31,7 @@ test:
     tester:
       names: ["VOTTester",]
       VOTTester:
+        exp_name: *TEST_NAME
+        exp_save: *TEST_SAVE
         device_num: 1
         dataset_names: ["VOT2018"]

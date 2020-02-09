@@ -20,7 +20,6 @@ test:
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          # pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl"
           pretrain_model_path: "snapshots/"
     pipeline:
       name: "SiamFCppTracker"
@@ -30,9 +29,7 @@ test:
         penalty_k: 0.04
         num_conv3x3: 3
     tester:
-      # names: ["VOTTester",]
-      names: ["GOT10kTester",]
-      # names: ["LaSOTTester",]
+      names: ["GOT10kTester",]  # (VOTTester|GOT10kTester|LaSOTTester)
       VOTTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
@@ -42,11 +39,10 @@ test:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
         subsets: ["val"]  # (val|test)
-        # subsets: ["test"]  # (val|test)
       LaSOTTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
-        subsets: ["test"]  # (val|test)
+        subsets: ["test"]  # (train_test|test)
 train:
   track:
     exp_name: &TRAIN_NAME "siamfcpp_alexnet"
@@ -85,7 +81,7 @@ train:
           pretrain_model_path: ""
     data:
       num_epochs: 20
-      minibatch: 32 # 64
+      minibatch: 32  # 64
       num_workers: 32
       nr_image_per_epoch: 800000
       datapipeline:
@@ -96,8 +92,7 @@ train:
           negative_pair_ratio: 0.1
         submodules:
           dataset:
-            names: ["GOT10kDataset",]
-            # names: ["LaSOTDataset", ]
+            names: ["GOT10kDataset",]  # (GOT10kDataset|LaSOTDataset)
             GOT10kDataset:
               ratio: 1
               max_diff: 100
@@ -131,7 +126,7 @@ train:
       name: "RegularTrainer"
       RegularTrainer:
         exp_name: *TRAIN_NAME
-        devices: ["cuda:0", "cuda:1"]
+        devices: ["cuda:0", "cuda:1"]  # (cpu|cuda|cuda:x)
         max_epoch: 20
         num_iterations: 12500
         snapshot: ""

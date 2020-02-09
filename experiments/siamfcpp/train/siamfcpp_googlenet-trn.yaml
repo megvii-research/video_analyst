@@ -6,6 +6,7 @@ test:
       backbone:
         name: "Inception3"
         Inception3:
+          pretrain_model_path: ""
           crop_pad: 4
           pruned: True
       losses:
@@ -21,7 +22,6 @@ test:
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          # pretrain_model_path: "models/siamfcpp/siamfcpp-googlenet-vot-md5_f2680ba074213ee39d82fcb84533a1a6.pkl"
           pretrain_model_path: "snapshots/"
     pipeline:
       name: "SiamFCppTracker"
@@ -31,9 +31,7 @@ test:
         penalty_k: 0.04
         num_conv3x3: 2
     tester:
-      # names: ["VOTTester",]
-      names: ["GOT10kTester",]
-      # names: ["LaSOTTester",]
+      names: ["GOT10kTester",] # (VOTTester|GOT10kTester|LaSOTTester)
       VOTTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
@@ -43,14 +41,13 @@ test:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
         subsets: ["val"]  # (val|test)
-        # subsets: ["test"]  # (val|test)
       LaSOTTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
-        subsets: ["test"]  # (val|test)
+        subsets: ["test"]  # (train_test|test)
 train:
   track:
-    exp_name: &TRAIN_NAME "siamfcpp_googlenet-trn"
+    exp_name: &TRAIN_NAME "siamfcpp_googlenet"
     exp_save: &TRAIN_SAVE "logs"
     model:
       backbone:
@@ -79,7 +76,7 @@ train:
         DenseboxHead:
           total_stride: 8
           score_size: 17
-          x_size: 289 # 303
+          x_size: 289
           num_conv3x3: 2
           head_conv_bn: [False, False]
       task_model:
@@ -88,7 +85,7 @@ train:
           pretrain_model_path: ""
     data:
       num_epochs: 20
-      minibatch: 128 # 256
+      minibatch: 128  # 256
       num_workers: 32
       nr_image_per_epoch: 300000
       datapipeline:
@@ -99,8 +96,7 @@ train:
           negative_pair_ratio: 0.33
         submodules:
           dataset:
-            names: ["GOT10kDataset",]
-            # names: ["LaSOTDataset", ]
+            names: ["GOT10kDataset",]  # (GOT10kDataset|LaSOTDataset)
             GOT10kDataset:
               ratio: 1
               max_diff: 100
@@ -122,19 +118,19 @@ train:
         RandomCropTransformer:
           max_scale: 0.3
           max_shift: 0.4
-          x_size: 289 # 303
+          x_size: 289
       target:
         name: "DenseboxTarget"
         DenseboxTarget:
           total_stride: 8
           score_size: 17
-          x_size: 289 # 303
+          x_size: 289
           num_conv3x3: 2
     trainer:
       name: "RegularTrainer"
       RegularTrainer:
         exp_name: *TRAIN_NAME
-        devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]
+        devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]  # (cpu|cuda|cuda:x)
         max_epoch: 20
         num_iterations: 1171
         snapshot: ""
@@ -200,4 +196,3 @@ train:
             "epoch": 10,
             "freezed": false
             }
-
