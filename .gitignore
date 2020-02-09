@@ -69,4 +69,5 @@ tmp/
 /datasets
 /models
 /snapshots
+vaenv
 

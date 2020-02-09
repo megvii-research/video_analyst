@@ -15,7 +15,7 @@ from videoanalyst.model.loss import builder as loss_builder
 logger = logging.getLogger(__file__)
 
 
-def build(task: str, cfg: CfgNode) -> TrainerBase:
+def build(task: str, cfg: CfgNode, dataloader, optimizer) -> TrainerBase:
     r"""
     Builder function.
 
@@ -36,7 +36,7 @@ def build(task: str, cfg: CfgNode) -> TrainerBase:
 
     cfg = cfg.trainer
     name = cfg.name
-    trainer = MODULE[name]()
+    trainer = MODULE[name](dataloader, optimizer)
     hps = trainer.get_hps()
     hps = merge_cfg_into_hps(cfg[name], hps)
     trainer.set_hps(hps)

@@ -25,11 +25,11 @@ class SGD(OptimizerBase):
         weight_decay=0.00005,
     )
 
-    def __init__(self, cfg: CfgNode) -> None:
-        super(SGD, self).__init__(cfg)
+    def __init__(self, cfg: CfgNode, model: torch.nn.Module) -> None:
+        super(SGD, self).__init__(cfg, model)
 
-    def build_optimizer(self):
-        super(SGD, self).build_optimizer()        
+    def update_params(self, ):
+        super(SGD, self).update_params()        
         params = self._state["params"]
         kwargs = self._hyper_params
         valid_keys = self.extra_hyper_params.keys()

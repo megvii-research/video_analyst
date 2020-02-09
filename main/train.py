@@ -4,6 +4,7 @@ from paths import ROOT_PATH  # isort:skip
 import argparse
 import logging
 import os.path as osp
+import time
 
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.config.config import specify_task
@@ -38,34 +39,23 @@ if __name__ == '__main__':
     # from IPython import embed;embed() 
     root_cfg.merge_from_file(exp_cfg_path)
     logger.info("Load experiment configuration at: %s" % exp_cfg_path)
-
     # resolve config
     root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.train
     task, task_cfg = specify_task(root_cfg)
     task_cfg.freeze()
-
     # build model
     model = model_builder.build(task, task_cfg.model)
+    # load data
+    time_a = time.time()
     dataloader = dataloader_builder.build(task, task_cfg.data)
-    losses = losses_builder.build(task, task_cfg.model.losses)
+    logger.info("Load dataset cost {} s".format(time.time() - time_a))
+    # build optimizer
     optimizer = optim_builder.build(task, task_cfg.optim, model)
-
     # build trainer
-    trainer = engine_builder.build(task, task_cfg, "trainer")
-
-    # bind model to optimizer
-    optimizer.set_model(model)
-
-    # set model in trainer
-    trainer.set_model(model)
-    trainer.set_dataloader(dataloader)
-    trainer.set_losses(losses)
-    trainer.set_optimizer(optimizer)
-
-
-    trainer.init_train()
+    trainer = engine_builder.build(task, task_cfg, "trainer", dataloader, optimizer)
     # from IPython import embed;embed()
+    logger.info("Start training")
     while not trainer.is_completed():
         trainer.train()
         trainer.save_snapshot()
