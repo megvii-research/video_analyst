@@ -23,14 +23,13 @@ def build(task: str, cfg: CfgNode, model: nn.Module) -> OptimizerBase:
     assert task in TASK_OPTIMIZERS, "invalid task name"
     MODULES = TASK_OPTIMIZERS[task]
     name = cfg.name
-    module = MODULES[name](cfg)
+    module = MODULES[name](cfg, model)
 
 
     hps = module.get_hps()
     hps = merge_cfg_into_hps(cfg[name], hps)
     module.set_hps(hps)
     module.update_params()
-    module.set_model(model)
 
     return module
 

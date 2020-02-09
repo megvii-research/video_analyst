@@ -46,7 +46,7 @@ class OptimizerBase:
         lr_multiplier=[],
     )
 
-    def __init__(self, cfg: CfgNode) -> None:
+    def __init__(self, cfg: CfgNode, model: nn.Module) -> None:
         r"""
         Dataset Sampler, reponsible for sampling from different dataset
 
@@ -72,7 +72,7 @@ class OptimizerBase:
         self._hyper_params = self.default_hyper_params
         self._state = dict()
         self._cfg = cfg
-        self._model = None
+        self._model = model
         self._optimizer = None
         self._grad_modifier = None
     
@@ -115,6 +115,12 @@ class OptimizerBase:
         if len(lr_multiplier_cfg) > 0:
             lr_multiplier = build_lr_multiplier(lr_multiplier_cfg)
             self._state["lr_multiplier"] = lr_multiplier
+        if "lr_multiplier" in self._state:
+            params = self._state["lr_multiplier"].divide_into_param_groups(self._model)
+        else:
+            params = self._model.parameters()
+        
+        self._state["params"] = params
         
     def set_model(self, model: nn.Module):
         r"""
@@ -127,17 +133,6 @@ class OptimizerBase:
         """
         self._model = model
 
-    def build_optimizer(self):
-        r"""
-        an interface to build optimizer
-        Prepare self._state["params"] to be set to pytorch optimizer
-        """
-        if "lr_multiplier" in self._state:
-            params = self._state["lr_multiplier"].divide_into_param_groups(self._model)
-        else:
-            params = self._model.parameters()
-        
-        self._state["params"] = params
     
     def set_grad_modifier(self, grad_modifier):
         self._grad_modifier = grad_modifier

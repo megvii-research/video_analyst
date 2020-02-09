@@ -5,6 +5,8 @@ import logging
 import math
 import os
 import os.path as osp
+import time
+
 from collections import OrderedDict
 from os.path import join
 
@@ -52,7 +54,7 @@ class RegularTrainer(TrainerBase):
         snapshot="",
     )
 
-    def __init__(self, ):
+    def __init__(self, dataloader, optimizer):
         r"""
         Crete tester with config and pipeline
 
@@ -64,7 +66,7 @@ class RegularTrainer(TrainerBase):
         # processes: ProcessBase
 
         """
-        super(RegularTrainer, self).__init__()
+        super(RegularTrainer, self).__init__(dataloader,optimizer)
         # famous four elements in Deep Laerning (c.f. <Deep Learning>, Goodfellow et al.)
         # update state
         self._state["epoch"] = -1  # uninitialized
@@ -77,21 +79,15 @@ class RegularTrainer(TrainerBase):
 
     def init_train(self, ):
         devs = self._state["devices"]
-
-        self._optimizer.set_model(self._model)
-
         self._model.train()
         self._model.to(devs[0])
         # torch.cuda.empty_cache()
-
         # if len(self._state["devices"]) > 1:
         #     self._model = nn.DataParallel(self._model, device_ids=devs)
         #     logger.info("Use nn.DataParallel for data parallelism")
 
         for k in self._losses:
             self._losses[k].to(devs[0])
-
-        self._optimizer.build_optimizer()
         
         self.load_snapshot()
 
@@ -113,7 +109,9 @@ class RegularTrainer(TrainerBase):
 
         for iteration, _ in enumerate(pbar):
 
+            time_a = time.time()
             training_data = next(self._dataloader)
+            time_b = time.time()
             training_data = move_data_to_device(training_data, self._state["devices"][0])
 
             schedule_info = self._optimizer.schedule(epoch, iteration)
@@ -144,6 +142,7 @@ class RegularTrainer(TrainerBase):
             self._optimizer.modify_grad(epoch, iteration)
             
             self._optimizer.step()
+            time_c = time.time()
 
             # prompt
             print_str = 'epoch %d, ' % epoch
@@ -156,6 +155,7 @@ class RegularTrainer(TrainerBase):
                 for k in extra:
                     l = extra[k]
                     print_str +=  '%s: %.3f, ' % (k, l)
+            print_str += "data_time: {:3f}, train_time: {:3f}".format(time_b-time_a, time_c-time_b)
 
             pbar.set_description(print_str)
 
