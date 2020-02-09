@@ -1,5 +1,4 @@
 ## Setup
-### 
 ### Install requirements
 - Linux or MacOS
 - Python >= 3.5
@@ -10,7 +9,7 @@ cd video_analyst
 ```
 You can choose either using native python (with pip/pip3) or using virtual environment (with conda).
 ```
-pip3 install -U -r requirements.txt 
+pip3 install -U -r requirements.txt
 ```
 
 ### Compile evaluation toolkit
