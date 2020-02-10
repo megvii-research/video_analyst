@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from typing import Dict
 
 def index_data(data: Dict, idx: int):

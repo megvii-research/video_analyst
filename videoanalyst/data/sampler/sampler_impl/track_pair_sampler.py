@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from typing import Dict, List, Tuple
 import numpy as np
-import cv2
+# import cv2
 
 from yacs.config import CfgNode
 
 from videoanalyst.evaluation.got_benchmark.datasets import got10k
 from videoanalyst.data.dataset.dataset_base import DatasetBase
 from ..sampler_base import TRACK_SAMPLERS, SamplerBase
+from videoanalyst.utils import load_image
 
 @TRACK_SAMPLERS.register
 class TrackPairSampler(SamplerBase):
@@ -21,12 +22,12 @@ class TrackPairSampler(SamplerBase):
         negative_pair_ratio=0.0,
     )
 
-    def __init__(self, datasets: List[DatasetBase]=[], seed: int=0, filter=None) -> None:
+    def __init__(self, datasets: List[DatasetBase]=[], seed: int=0, filt=None) -> None:
         super().__init__(datasets, seed=seed)
-        if filter is None:
-            self.filter = [lambda x: False]
+        if filt is None:
+            self.filt = [lambda x: False]
         else:
-            self.filter = filter
+            self.filt = filt
 
         self._state["ratios"] = [d._hyper_params["ratio"] for d in self.datasets]
         self._state["max_diffs"] = [d._hyper_params["max_diff"] for d in self.datasets]
@@ -35,14 +36,16 @@ class TrackPairSampler(SamplerBase):
         is_negative_pair = (self._state["rng"].rand() < self._hyper_params["negative_pair_ratio"]) 
         data1 = data2 = None
         
-        while self.filter(data1) or self.filter(data2):
+        while self.filt(data1) or self.filt(data2):
             if is_negative_pair:
                 data1 = self._sample_track_frame()
                 data2 = self._sample_track_frame()
             else:
                 data1, data2 = self._sample_track_pair()
-            data1["image"] = cv2.imread(data1["image"])
-            data2["image"] = cv2.imread(data2["image"])
+            # data1["image"] = cv2.imread(data1["image"])
+            # data2["image"] = cv2.imread(data2["image"])
+            data1["image"] = load_image(data1["image"])
+            data2["image"] = load_image(data2["image"])
         
         sampled_data = dict(
             data1=data1,

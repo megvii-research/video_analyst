@@ -19,7 +19,7 @@ from tqdm import tqdm
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-torch.backends.cudnn.enabled = False
+# torch.backends.cudnn.enabled = False
 
 from ..trainer_base import TRACK_TRAINERS, TrainerBase
 
@@ -74,6 +74,7 @@ class RegularTrainer(TrainerBase):
         self._state["devices"] = [torch.device(dev) for dev in self._hyper_params["devices"]]
         self._state["snapshot_dir"] = osp.join(self._hyper_params["exp_save"],
                                                self._hyper_params["exp_name"])
+        self.init_train()
 
     def init_train(self, ):
         torch.cuda.empty_cache()

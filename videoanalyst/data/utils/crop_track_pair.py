@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Procedure
 * get basic scale: scale_temp_ / scale_curr_

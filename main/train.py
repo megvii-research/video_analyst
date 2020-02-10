@@ -52,7 +52,7 @@ if __name__ == '__main__':
     # build trainer
     trainer = engine_builder.build(task, task_cfg, "trainer", optimizer, dataloader)
     # from IPython import embed;embed()
-    trainer.init_train()
+    # trainer.init_train()
     logger.info("Start training")
     while not trainer.is_completed():
         trainer.train()

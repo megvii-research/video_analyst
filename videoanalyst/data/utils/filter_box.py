@@ -5,14 +5,14 @@ import numpy as np
 def filter_unreasonable_training_boxes(im: np.array, bbox, config: Dict) -> bool:
     r""" 
     Filter too small,too large objects and objects with extreme ratio
+    No input check. Assume that all imput (im, bbox) are valid object
 
     Arguments
     ---------
     im: np.array
-        image
+        image, formate=(H, W, C)
     bbox: np.array or indexable object
-
-
+        bounding box annotation
     """
     eps = 1e-6
     im_area = im.shape[0] * im.shape[1]
@@ -24,7 +24,7 @@ def filter_unreasonable_training_boxes(im: np.array, bbox, config: Dict) -> bool
              bbox_area_rate < config["max_area_rate"]),
              max(bbox_ratio, 1.0 / max(bbox_ratio, eps)) < config["max_ratio"]
              ]
-    # if not all conditions are satisfied, filter the box
+    # if not all conditions are satisfied, filter the sample
     filter_flag = not all(conds)
 
     return filter_flag

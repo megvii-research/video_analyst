@@ -29,10 +29,10 @@ def build(task: str, cfg: CfgNode, seed: int=0) -> DatasetBase:
     datasets = dataset_builder.build(task, dataset_cfg)
 
     filter_cfg = getattr(submodules_cfg, "filter", None)
-    filter = filter_builder.build(task, filter_cfg) if filter_cfg is not None else None
+    filt = filter_builder.build(task, filter_cfg) if filter_cfg is not None else None
 
     name = cfg.name
-    module = MODULES[name](datasets, seed=seed, filter=filter)
+    module = MODULES[name](datasets, seed=seed, filt=filt)
 
     hps = module.get_hps()
     hps = merge_cfg_into_hps(cfg[name], hps)
