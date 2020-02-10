@@ -35,6 +35,7 @@ class SiamTrack(ModuleBase):
     default_hyper_params = dict(
         pretrain_model_path="",
         head_width=256,
+        conv_weight_std=0.01,
     )
 
     def __init__(self, backbone, head, loss):
@@ -145,6 +146,7 @@ class SiamTrack(ModuleBase):
         Load model parameters
         """
         self._make_convs()
+        self._initialize_conv()
 
         if self._hyper_params["pretrain_model_path"] != "":
             model_path = self._hyper_params["pretrain_model_path"]
@@ -181,10 +183,9 @@ class SiamTrack(ModuleBase):
         self.r_x = conv_bn_relu(head_width, head_width, 1, 3, 0, has_relu=False)
         self.c_x = conv_bn_relu(head_width, head_width, 1, 3, 0, has_relu=False)
 
-        # initialze head
-        conv_list = [
-            self.r_z_k.conv, self.c_z_k.conv, self.r_x.conv, self.c_x.conv
-        ]
+    def _initialize_conv(self,):
+        conv_weight_std = self._hyper_params['conv_weight_std']
+        conv_list = [self.r_z_k.conv, self.c_z_k.conv, self.r_x.conv, self.c_x.conv]
         for ith in range(len(conv_list)):
             conv = conv_list[ith]
-            torch.nn.init.normal_(conv.weight, std=0.01)
+            torch.nn.init.normal_(conv.weight, std=conv_weight_std)  # conv_weight_std=0.01
