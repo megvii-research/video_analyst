@@ -5,6 +5,9 @@ import argparse
 import logging
 import os.path as osp
 
+import torch
+# torch.backends.cudnn.enabled = False
+
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.config.config import specify_task
 

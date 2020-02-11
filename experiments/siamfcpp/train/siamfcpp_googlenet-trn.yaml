@@ -48,7 +48,7 @@ test:
 train:
   track:
     exp_name: &TRAIN_NAME "siamfcpp_googlenet"
-    exp_save: &TRAIN_SAVE "logs"
+    exp_save: &TRAIN_SAVE "snapshots"
     model:
       backbone:
         name: "Inception3"
@@ -83,7 +83,10 @@ train:
         name: "SiamTrack"
         SiamTrack:
           pretrain_model_path: ""
+# ==================================================
     data:
+      exp_name: *TRAIN_NAME
+      exp_save: *TRAIN_SAVE
       num_epochs: 20
       minibatch: 128  # 256
       num_workers: 32
@@ -130,10 +133,12 @@ train:
       name: "RegularTrainer"
       RegularTrainer:
         exp_name: *TRAIN_NAME
+        exp_save: *TRAIN_SAVE
         devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]  # (cpu|cuda|cuda:x)
         max_epoch: 20
         num_iterations: 1171
         snapshot: ""
+# ==================================================
     optim:
       optimizer:
         name: "SGD"

@@ -45,8 +45,6 @@ class RegularTrainer(TrainerBase):
         number of iterations
     """
     extra_hyper_params = dict(
-        # exp_name="default_training",
-        # exp_save="snapshots",
         devices=["cpu"],
         num_iterations=1,
         max_epoch=1,
@@ -70,6 +68,7 @@ class RegularTrainer(TrainerBase):
         self._state["epoch"] = -1  # uninitialized
 
     def update_params(self, ):
+        super(RegularTrainer, self).update_params()
         self._state["devices"] = [torch.device(dev) for dev in self._hyper_params["devices"]]
         self._state["snapshot_dir"] = osp.join(self._hyper_params["exp_save"],
                                                self._hyper_params["exp_name"])

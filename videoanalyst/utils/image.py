@@ -8,14 +8,16 @@ from PIL import Image
 
 logger = logging.getLogger("global")
 
-def load_image(img_file: str) -> np.array:
+def load_image(img_file: str, logger=logger) -> np.array:
     """Image loader used by data module (e.g. image sampler)
     
     Parameters
     ----------
-    img_file : str
+    img_file: str
         path to image file
-    
+    logger: str
+        logger used to output exception information
+
     Returns
     -------
     np.array

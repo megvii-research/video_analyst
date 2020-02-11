@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*
-
 from typing import Tuple, Dict
 
 import torch
@@ -7,12 +6,15 @@ from torch.utils.data import Dataset, DataLoader
 import torch.multiprocessing
 torch.multiprocessing.set_sharing_strategy('file_system')
 
-from .datapipeline.builder import build as build_datapipeline
+# from .datapipeline.builder import build as build_datapipeline
+from .datapipeline import builder as datapipeline_builder
 
 from videoanalyst.utils.misc import Timer
 
 class AdaptorDataset(Dataset):
     default_hyper_params = dict(
+        exp_name="",
+        exp_save="snapshots",
         num_epochs=10000,
         minibatch=32,
         num_workers=4,
@@ -28,7 +30,7 @@ class AdaptorDataset(Dataset):
     def __getitem__(self, item):
         if self.datapipeline is None:
             seed = (torch.initial_seed() + item) % (2**32)
-            self.datapipeline = build_datapipeline(**self.kwargs, seed=seed)
+            self.datapipeline = datapipeline_builder.build(**self.kwargs, seed=seed)
         
         training_data = next(self.datapipeline)
 

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Dict, List, Tuple
+import logging
 import numpy as np
 # import cv2
 
@@ -7,8 +8,11 @@ from yacs.config import CfgNode
 
 from videoanalyst.evaluation.got_benchmark.datasets import got10k
 from videoanalyst.data.dataset.dataset_base import DatasetBase
+from videoanalyst.data import _DATA_LOGGER_NAME
 from ..sampler_base import TRACK_SAMPLERS, SamplerBase
 from videoanalyst.utils import load_image
+
+data_logger = logging.getLogger(_DATA_LOGGER_NAME)
 
 @TRACK_SAMPLERS.register
 class TrackPairSampler(SamplerBase):
@@ -42,10 +46,8 @@ class TrackPairSampler(SamplerBase):
                 data2 = self._sample_track_frame()
             else:
                 data1, data2 = self._sample_track_pair()
-            # data1["image"] = cv2.imread(data1["image"])
-            # data2["image"] = cv2.imread(data2["image"])
-            data1["image"] = load_image(data1["image"])
-            data2["image"] = load_image(data2["image"])
+            data1["image"] = load_image(data1["image"], logger=data_logger)
+            data2["image"] = load_image(data2["image"], logger=data_logger)
         
         sampled_data = dict(
             data1=data1,

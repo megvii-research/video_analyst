@@ -46,7 +46,7 @@ test:
 train:
   track:
     exp_name: &TRAIN_NAME "siamfcpp_alexnet"
-    exp_save: &TRAIN_SAVE "logs"
+    exp_save: &TRAIN_SAVE "snapshots"
     model:
       backbone:
         name: "AlexNet"
@@ -79,7 +79,10 @@ train:
         name: "SiamTrack"
         SiamTrack:
           pretrain_model_path: ""
+# ==================================================
     data:
+      exp_name: *TRAIN_NAME
+      exp_save: *TRAIN_SAVE
       num_epochs: 20
       minibatch: 32  # 64
       num_workers: 32
@@ -126,10 +129,12 @@ train:
       name: "RegularTrainer"
       RegularTrainer:
         exp_name: *TRAIN_NAME
+        exp_save: *TRAIN_SAVE
         devices: ["cuda:0", "cuda:1"]  # (cpu|cuda|cuda:x)
         max_epoch: 20
         num_iterations: 12500
         snapshot: ""
+# ==================================================
     optim:
       optimizer:
         name: "SGD"
