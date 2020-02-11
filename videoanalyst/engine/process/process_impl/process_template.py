@@ -20,7 +20,7 @@ from ..process_base import TRACK_PROCESSES, ProcessBase
 logger = logging.getLogger("global")
 
 
-# @TRACK_TRAINERS.register
+@TRACK_PROCESSES.register
 class Process(ProcessBase):
     r"""
     Trainer to test the vot dataset, the result is saved as follows
@@ -40,8 +40,7 @@ class Process(ProcessBase):
         Arguments
         ---------
         """
-        super(VOTTester, self).__init__(cfg, pipeline)
-        self._state['speed'] = -1
+        super(ProcessBase, self).__init__()
 
     def execute(self):
         pass

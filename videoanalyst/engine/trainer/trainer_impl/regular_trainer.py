@@ -101,6 +101,7 @@ class RegularTrainer(TrainerBase):
         self._optimizer.modify_grad(epoch)
         # from IPython import embed;embed()
         pbar = tqdm(range(num_iterations))
+        self._state["pbar"] = pbar
 
         time_dict = OrderedDict()
         for iteration, _ in enumerate(pbar):

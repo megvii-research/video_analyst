@@ -18,21 +18,15 @@ TASK_PROCESSES = dict(
 
 class ProcessBase:
     r"""
-    Trainer base class (e.g. procedure defined for tracker / segmenter / etc.)
-    Interface descriptions:
+    Process base class (e.g. visualization / tensorboard / training info logging)
     """
     # Define your default hyper-parameters here in your sub-class.
     default_hyper_params = dict()
 
-    def __init__(self, 
-                 models: ModuleBase,
-                 data:  
-                 processes, ):
+    def __init__(self,):
         self._hyper_params = deepcopy(
             self.default_hyper_params)  # mapping-like object
         self._state = dict()  # pipeline state
-
-        self.processes = []
 
     def get_hps(self) -> Dict:
         r"""
@@ -63,8 +57,12 @@ class ProcessBase:
         r"""
         an interface for update params
         """
+    
+    def init(self):
+        r"""initialize process
+        """
 
-    def execute(self):
+    def execute(self, trainer_state: Dict, ):
         r"""
         an interface to execute a process
         """
