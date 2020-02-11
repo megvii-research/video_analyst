@@ -31,7 +31,7 @@ def load_image(img_file: str, logger=logger) -> np.array:
         unloadable image file
     """
     if not osp.isfile(img_file):
-        raise FileExistsError("Image file %s does not exist."%img_file)
+        logger.info("Image file %s does not exist."%img_file)
     img = cv2.imread(img_file, cv2.IMREAD_COLOR)
     if img is None:
         img = Image.open(img_file)
@@ -39,6 +39,6 @@ def load_image(img_file: str, logger=logger) -> np.array:
         img = img[:, :, [2,1,0]]  # RGB -> BGR
         logger.info("PIL used in loading image file: %s"%img_file)
     if img is None:
-        raise RuntimeError("Fail to load Image file %s"%img_file)
+        logger.info("Fail to load Image file %s"%img_file)
 
     return img

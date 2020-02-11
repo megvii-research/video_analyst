@@ -107,7 +107,22 @@ class TrackPairSampler(SamplerBase):
 
         return data_frame
 
-    def _sample_track_pair_from_sequence(self, sequence_data, max_diff) -> Tuple[Dict, Dict]:
+    def _sample_track_pair_from_sequence(self, sequence_data: Dict, max_diff: int) -> Tuple[Dict, Dict]:
+        """sample a pair of frames within max_diff distance
+        
+        Parameters
+        ----------
+        sequence_data : List
+            sequence data: image= , anno=
+        max_diff : int
+            maximum difference of indexes between two frames in the  pair
+        
+        Returns
+        -------
+        Tuple[Dict, Dict]
+            track pair data
+            data: image= , anno=
+        """
         len_seq = len(list(sequence_data.values())[0])
         idx1, idx2 = self._sample_pair_idx_pair_within_max_diff(len_seq, max_diff)
         data1 = {k: v[idx1] for k, v in sequence_data.items()}
