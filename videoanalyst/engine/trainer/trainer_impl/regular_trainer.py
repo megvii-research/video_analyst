@@ -104,7 +104,8 @@ class RegularTrainer(TrainerBase):
         # from IPython import embed;embed()
         pbar = tqdm(range(num_iterations))
         self._state["pbar"] = pbar
-
+        self._state["print_str"] = ""
+        
         time_dict = OrderedDict()
         for iteration, _ in enumerate(pbar):
             with Timer(name="data", output_dict=time_dict):
