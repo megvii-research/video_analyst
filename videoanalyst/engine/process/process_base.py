@@ -58,11 +58,19 @@ class ProcessBase:
         an interface for update params
         """
     
-    def init(self):
-        r"""initialize process
+    def init(self, engine_state: Dict):
+        r"""register engine state & initialize process
         """
+        self._state["engine_state"] = engine_state
 
-    def execute(self, trainer_state: Dict, ):
-        r"""
-        an interface to execute a process
+    def execute(self, engine_data: Dict):
+        """an interface to execute a process
+        Execution result will be saved in engine_state
+
+        Parameters
+        ----------
+        engine_state : Dict
+            _state attribute of engine
+        engine_data : Dict
+            data given by engine at each iteration
         """

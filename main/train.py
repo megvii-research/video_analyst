@@ -53,7 +53,7 @@ if __name__ == '__main__':
     # build optimizer
     optimizer = optim_builder.build(task, task_cfg.optim, model)
     # build trainer
-    trainer = engine_builder.build(task, task_cfg, "trainer", optimizer, dataloader)
+    trainer = engine_builder.build(task, task_cfg.trainer, "trainer", optimizer, dataloader)
     # from IPython import embed;embed()
     # trainer.init_train()
     logger.info("Start training")

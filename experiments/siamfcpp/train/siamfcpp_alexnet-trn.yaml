@@ -135,6 +135,10 @@ train:
         max_epoch: 20
         num_iterations: 12500
         snapshot: ""
+      processes:
+        names: ["TrackInfo"]
+        TrackInfo:
+          {}
 # ==================================================
     optim:
       optimizer:

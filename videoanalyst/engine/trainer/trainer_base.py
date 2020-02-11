@@ -29,7 +29,7 @@ class TrainerBase:
         exp_save="snapshots",
     )
 
-    def __init__(self, optimizer, dataloader):
+    def __init__(self, optimizer, dataloader, processes=[]):
         self._hyper_params = deepcopy(
             self.default_hyper_params)  # mapping-like object
         self._state = dict()  # pipeline state
@@ -37,7 +37,7 @@ class TrainerBase:
         self._dataloader = dataloader
         self._losses = optimizer._model.loss
         self._optimizer = optimizer
-        self._processes = []
+        self._processes = processes
 
     def get_hps(self) -> Dict:
         r"""
@@ -72,6 +72,9 @@ class TrainerBase:
         r"""
         an interface to process pre-train overhead before training
         """
+        for process in self._processes:
+            process.init(self._state)
+
 
     def train(self):
         r"""

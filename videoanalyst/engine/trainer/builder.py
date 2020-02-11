@@ -5,6 +5,8 @@ from typing import Dict
 from yacs.config import CfgNode
 
 from .trainer_base import TASK_TRAINERS, TrainerBase
+from ..process.process_base import TASK_PROCESSES
+from ..process import builder as process_builder 
 from videoanalyst.utils.misc import merge_cfg_into_hps
 
 from videoanalyst.data import builder as dataloder_builder
@@ -24,7 +26,7 @@ def build(task: str, cfg: CfgNode, optimizer, dataloader) -> TrainerBase:
     task: str
         builder task name (track|vos)
     cfg: CfgNode
-        node name: train
+        node name: trainer
 
     Returns
     -------
@@ -33,10 +35,16 @@ def build(task: str, cfg: CfgNode, optimizer, dataloader) -> TrainerBase:
     """
     assert task in TASK_TRAINERS, "no tester for task {}".format(task)
     MODULE = TASK_TRAINERS[task]
+    
+    # build processes
+    if "processes" in cfg:
+        process_cfg = cfg.processes
+        processes = process_builder.build(task, process_cfg)
+    else:
+        processes = []
 
-    cfg = cfg.trainer
     name = cfg.name
-    trainer = MODULE[name](optimizer, dataloader)
+    trainer = MODULE[name](optimizer, dataloader, processes)
     hps = trainer.get_hps()
     hps = merge_cfg_into_hps(cfg[name], hps)
     trainer.set_hps(hps)
@@ -61,10 +69,12 @@ def get_config() -> Dict[str, CfgNode]:
         cfg["name"] = ""
 
         for name in modules:
-            # cfg["name"].append(name)
             cfg[name] = CfgNode()
             module = modules[name]
             hps = module.default_hyper_params
             for hp_name in hps:
                 cfg[name][hp_name] = hps[hp_name]
+
+        cfg["processes"] = process_builder.get_config()[cfg_name]
+
     return cfg_dict

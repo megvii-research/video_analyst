@@ -51,7 +51,7 @@ class RegularTrainer(TrainerBase):
         snapshot="",
     )
 
-    def __init__(self, optimizer, dataloader):
+    def __init__(self, optimizer, dataloader, processes=[]):
         r"""
         Crete tester with config and pipeline
 
@@ -63,7 +63,7 @@ class RegularTrainer(TrainerBase):
             PyTorch dataloader object. 
             Usage: batch_data = next(dataloader)
         """
-        super(RegularTrainer, self).__init__(optimizer, dataloader)
+        super(RegularTrainer, self).__init__(optimizer, dataloader, processes)
         # update state
         self._state["epoch"] = -1  # uninitialized
 
@@ -89,7 +89,9 @@ class RegularTrainer(TrainerBase):
         if len(self._state["devices"]) > 1:
             self._model = nn.DataParallel(self._model, device_ids=devs)
             logger.info("Use nn.DataParallel for data parallelism")
-
+        
+        super(RegularTrainer, self).init_train()
+        
     def train(self):
         # epoch counter +1
         self._state["epoch"] += 1
@@ -118,18 +120,20 @@ class RegularTrainer(TrainerBase):
             with Timer(name="fwd", output_dict=time_dict):
                 pred_data = self._model(training_data)
 
+            # compute losses
             loss_extra_dict = OrderedDict()
             for k in self._losses:
                 loss_extra_dict[k] = self._losses[k](pred_data, training_data)
-
+            
+            # split losses & extras
             training_losses, extras = OrderedDict(), OrderedDict()
             for k in self._losses:
                 training_losses[k], extras[k] = loss_extra_dict[k]
 
+            # get loss weights & sum up
             loss_weights = OrderedDict()
             for k in self._losses:
                 loss_weights[k] = self._losses[k].get_hps()["weight"]
-
             total_loss = [training_losses[k] * loss_weights[k] for k in self._losses]
             total_loss = sum(total_loss)
 
@@ -141,23 +145,18 @@ class RegularTrainer(TrainerBase):
             with Timer(name="optim", output_dict=time_dict):
                 self._optimizer.step()
 
-            # prompt
-            print_str = 'epoch %d, ' % epoch
-            for k in schedule_info:
-                print_str +=  '%s: %.1e, ' % (k, schedule_info[k])
-            # loss info
-            for k in training_losses:
-                l = training_losses[k]
-                print_str +=  '%s: %.3f, ' % (k, l.detach().cpu().numpy())
-            # extra info
-            for extra in extras.values():
-                for k in extra:
-                    l = extra[k]
-                    print_str +=  '%s: %.3f, ' % (k, l)
-            # pring elapsed time
-            for k in time_dict:
-                print_str += "%s: %.1e, "%(k, time_dict[k])
 
+            trainer_data = dict(
+                schedule_info=schedule_info,
+                training_losses=training_losses,
+                extras=extras,
+                time_dict=time_dict,
+            )
+
+            for process in self._processes:
+                process.execute(trainer_data)
+
+            print_str = self._state["print_str"]
             pbar.set_description(print_str)
 
 
