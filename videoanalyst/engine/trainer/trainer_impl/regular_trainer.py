@@ -19,7 +19,6 @@ from tqdm import tqdm
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-# torch.backends.cudnn.enabled = False
 
 from ..trainer_base import TRACK_TRAINERS, TrainerBase
 

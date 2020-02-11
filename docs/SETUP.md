@@ -19,12 +19,14 @@ bash compile.sh
 
 ### Set datasets
 Set soft link to dataset directory (see [config example](../experiments/siamfcpp/siamfcpp_alexnet.yaml))
-```
+
+```bash
 ln -s path_to_datasets datasets
 ```
 
 At _path_to_datasets_:
-```
+
+```File Tree
 path_to_datasets
 └── VOT  # experiment configurations, in yaml format
     ├── vot2018
@@ -38,7 +40,16 @@ path_to_datasets
          │    └── list.txt
          └── VOT2019.json
 ```
+
 Auxilary files (list.txt / VOTXXXX.json) located at _videoanalyst/evaluation/vot_benchmark/vot_list_
+
+Script for copying
+
+```bash
+# Assuming that VOT benchmarks located under datasets/VOT
+cp videoanalyst/evaluation/vot_benchmark/vot_list/vot2018/VOT2018.json datasets/VOT/vot2018/
+cp videoanalyst/evaluation/vot_benchmark/vot_list/vot2018/list.json datasets/VOT/vot2018/VOT2018/
+```
 
 #### Download
 We provide download links for VOT2018 / VOT2019:
