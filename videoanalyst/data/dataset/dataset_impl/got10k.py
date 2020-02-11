@@ -122,7 +122,7 @@ class GOT10kDatasetFixed(GOT10kDataset):
         seq_name = osp.basename(seq_dir)
         is_unfixed = (seq_name in self._state["unfixed_list"])
         if is_unfixed:
-            logger.info("Unfixed sequence sampled at: %s"%seq_dir)
+            logger.info("Unfixed GOT10k sequence sampled at: %s"%seq_dir)
 
         return is_unfixed
     
