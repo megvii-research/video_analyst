@@ -39,7 +39,7 @@ class TrackInfo(ProcessBase):
     def init(self, engine_state: Dict):
         super(TrackInfo, self).init(engine_state)
 
-    def execute(self, engine_data: Dict):
+    def update(self, engine_data: Dict):
         r"""
         """
         # etate

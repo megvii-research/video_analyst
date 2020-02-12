@@ -63,8 +63,8 @@ class ProcessBase:
         """
         self._state["engine_state"] = engine_state
 
-    def execute(self, engine_data: Dict):
-        """an interface to execute a process
+    def update(self, engine_data: Dict):
+        """an interface to update with engine_data and execute defined process
         Execution result will be saved in engine_state
 
         Parameters

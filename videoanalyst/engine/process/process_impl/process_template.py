@@ -42,5 +42,5 @@ class Process(ProcessBase):
         """
         super(ProcessBase, self).__init__()
 
-    def execute(self):
+    def update(self):
         pass

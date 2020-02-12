@@ -46,7 +46,8 @@ Auxilary files (list.txt / VOTXXXX.json) located at _videoanalyst/evaluation/vot
 Script for copying
 
 ```bash
-# Assuming that VOT benchmarks located under datasets/VOT
+# Assuming that VOT benchmarks located under datasets/VOT and your
+cd $(git rev-parse --show-toplevel)  # change directory to the repo. root 
 cp videoanalyst/evaluation/vot_benchmark/vot_list/vot2018/VOT2018.json datasets/VOT/vot2018/
 cp videoanalyst/evaluation/vot_benchmark/vot_list/vot2018/list.json datasets/VOT/vot2018/VOT2018/
 ```

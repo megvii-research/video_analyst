@@ -155,7 +155,7 @@ class RegularTrainer(TrainerBase):
             )
 
             for process in self._processes:
-                process.execute(trainer_data)
+                process.update(trainer_data)
 
             print_str = self._state["print_str"]
             pbar.set_description(print_str)
