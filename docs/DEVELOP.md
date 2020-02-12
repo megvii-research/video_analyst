@@ -28,4 +28,66 @@ class TemplateModuleImplementation(TemplateModuleBase):
 ```
 
 ## Configuration Tree
+
 Based on [yaml](https://yaml.org/) and [yacs](https://github.com/rbgirshick/yacs), _videoanalyst_ arranges its configuration in a hierarchical way.
+
+### Hyper-parameters
+
+Developpers are recommended to take default _.yaml_ configuration files as example and start from them. Additionally, the code definitions as well as their descriptions are under _XXX_impl_ of each module.
+
+## Structure
+
+### Trainer
+
+#### Trainer Structure
+
+```File Tree
+Trainer
+├── Dataloder (pytorch)               # make batch of training data
+│   └── AdaptorDataset (pytorch)      # adaptor class (pytorch index dataset)
+│       └── Datapipeline              # integrate data sampling, data augmentation, and target making process
+│           ├── Sampler               # define sampling strategy
+│           │   ├── Dataset           # dataset interface
+│           │   └── Filter            # define rules to filter out invalid sample
+│           ├── Transformer           # data augmentation
+│           └── Target                # target making
+├── Optimizer
+│   ├── Optimizer (pytorch)           # pytorch optimizer
+│   │   ├── lr_scheduler              # learning rate scheduling
+│   │   └── lr_multiplier             # learning rate multiplication ratio
+│   ├── Grad_modifier                 # grad clip, dynamic freezing, etc.
+│   └── TaskModel                     # model, subclass of pytorch module (torch.nn.Module)
+│       ├── Backbone                  # feature extractor
+│       ├── Neck                      # mid-level feature map operation (e.g. cross-correlation)
+│       └── Head                      # task head (bbox regressor, mask decoder, etc.)│
+└── Process                           # define monitoring utils (e.g. pbar.set_description, tensorboard, etc.)
+```
+
+Remarks:
+
+- For model part, we follow the division of [mmdetection](https://github.com/open-mmlab/mmdetection) and divide model into three parts: backbone, neck, and head.
+
+```Python
+model = builder.build(model_cfg)
+optimzier = builder.build(optim_cfg, model)
+dataloader = builder.build
+trainer = builder.build(optimzier, dataloader)
+```
+
+### Tester
+
+#### Tester Structure
+
+```File Tree
+Tester
+├── Benchmark implementation          # depend on concrete benchmarks (e.g. VOT / GOT-10k / LaSOT / etc.)
+└── Pipeline                          # manipulate underlying nn model and perform pre/post-processing
+    └── TaskModel                     # underlying nereural network
+        ├── Backbone                  # feature extractor
+        ├── Neck                      # mid-level feature map operation (e.g. cross-correlation)
+        └── Head                      # task head (bbox regressor, mask decoder, etc.)
+```
+
+Remarks:
+
+- Pipeline object can run standalone.

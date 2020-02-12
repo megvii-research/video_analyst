@@ -1,28 +1,37 @@
 # Video Analyst
+
 This is the implementation of a series of basic algorithms which is useful for video understanding, including Single Object Tracking (SOT), Video Object Segmentation (VOS), etc.
 
 Current implementation list:
-* SOT
-    * [SiamFC++: Towards Robust and Accurate Visual Tracking with Target Estimation Guidelines](https://arxiv.org/abs/1911.06188) 
 
+* SOT
+  * [SiamFC++: Towards Robust and Accurate Visual Tracking with Target Estimation Guidelines](https://arxiv.org/abs/1911.06188)
 
 ## Quick start
+
 ### Setup
+
 Please refer to [SETUP.md](docs/SETUP.md)
 
-### Test on VOT
-```
+### Test
+
+#### Test on VOT
+
+```Bash
 python3 ./main/test.py --config 'experiments/siamfc++/siamfcpp_googlenet.yaml'
 ```
+
 Check out the corresponding _exp_save_ path in _.yaml_ for result and raw result data, both named by _exp_name_ in _.yaml_.
 
 #### Test all experiments
-```
+
+```Bash
 bash ./tools/test_VOT.sh
 ```
 
 ## Repository structure (in progress)
-```
+
+```File Tree
 ├── experiments  # experiment configurations, in yaml format
 ├── main
 │   ├── train.py  # trainng entry point
@@ -58,12 +67,24 @@ bash ./tools/test_VOT.sh
 ```
 
 ## Model ZOO
+
 Please refer to [MODEL_ZOO.md](docs/MODEL_ZOO.md)
 
 ## TODO
+
 * [] Training code
 * [] Test code for OTB, GOT-10k, LaSOT, TrackingNet
 
 ## Acknowledgement
+
 * video_analyst/evaluation/vot_benchmark and other related code have been borrowed from [PySOT](https://github.com/STVIR/pysot)
 * video_analyst/evaluation/got_benchmark and other related code have been borrowed from [got-toolkit](https://github.com/got-10k/toolkit.git)
+
+## Contact
+
+Maintainer (sorted by family name):
+
+* Xi Chen[@XavierCHEN34](https://github.com/XavierCHEN34)
+* Zuoxin Li[@lzx1413](https://github.com/lzx1413)
+* Zeyu Wang[@JWarlock](http://github.com/JWarlock)
+* Yinda Xu[@MARMOTatZJU](https://github.com/MARMOTatZJU)

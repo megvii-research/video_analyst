@@ -1,10 +1,10 @@
 test:
   track:
-    exp_name: &TEST_NAME "siamfcpp_tinyconv_multi_temp"
+    exp_name: &TEST_NAME "siamfcpp_alexnet"
     exp_save: &TEST_SAVE "logs"
     model:
       backbone:
-        name: "TinyConv"
+        name: "AlexNet"
         AlexNet:
           pretrain_model_path: ""
       losses:
@@ -17,22 +17,17 @@ test:
           x_size: 303
           num_conv3x3: 3
           head_conv_bn: [False, False, True]
-          head_width: 64
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          pretrain_model_path: "models/siamfcpp/siamfcpp-tinyconv-vot.pkl"
-          head_width: 64
+          pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_88e4e9ee476545b952b04ae80c480f08.pkl"
     pipeline:
-      name: "SiamFCppMultiTempTracker"
-      SiamFCppMultiTempTracker:
-        test_lr: 0.52
+      name: "SiamFCppTracker"
+      SiamFCppTracker:
+        test_lr: 0.58
         window_influence: 0.21
-        penalty_k: 0.04
+        penalty_k: 0.08
         num_conv3x3: 3
-        mem_step: 5
-        mem_len: 5
-        st_mem_coef: 0.5
     tester:
       names: ["VOTTester",]
       VOTTester:
