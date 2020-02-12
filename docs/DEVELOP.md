@@ -27,6 +27,8 @@ class TemplateModuleImplementation(TemplateModuleBase):
 ...
 ```
 
+Please refer to [docs/TEMPLATES/template_module/template_module_base.py](TEMPLATES/template_module/template_module_base.py) and [docs/TEMPLATES/template_module/builder.py](TEMPLATES/template_module/builder.py) for detail.
+
 ## Configuration Tree
 
 Based on [yaml](https://yaml.org/) and [yacs](https://github.com/rbgirshick/yacs), _videoanalyst_ arranges its configuration in a hierarchical way.
@@ -34,6 +36,8 @@ Based on [yaml](https://yaml.org/) and [yacs](https://github.com/rbgirshick/yacs
 ### Hyper-parameters
 
 Developpers are recommended to take default _.yaml_ configuration files as example and start from them. Additionally, the code definitions as well as their descriptions are under _XXX_impl_ of each module.
+
+Please refer to [docs/templates/template_module/template_module_base.py](templates/template_module/template_module_base.py) and [docs/templates/template_module/builder.py](templates/template_module/builder.py) for detail.
 
 ## Structure
 

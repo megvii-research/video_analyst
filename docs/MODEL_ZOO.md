@@ -11,7 +11,7 @@ Models & Raw results:
 
 ### VOT2018
 
-_experiments/siamfcpp/test/vot_
+VOT test configuration directory: _experiments/siamfcpp/test/vot_
 
 | Backbone | Pipeline | Dataset | A | R | EAO | FPS@GTX2080Ti | FPS@GTX1080Ti | Config. Filename | Model Filename |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -24,7 +24,7 @@ _experiments/siamfcpp/test/vot_
 
 ### GOT-10k
 
-_experiments/siamfcpp/test/got10k_
+GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 
 | Backbone | Pipeline | Dataset | AO | SR.50 | SR.75 | Config. Filename | Model Filename |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|

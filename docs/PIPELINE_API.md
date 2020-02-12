@@ -1,12 +1,16 @@
+# PIPELINE_API
+
 ## Minimal runnable pipeline
+
 Suppose that:
+
 * you have your .yaml file in the string _exp_cfg_path_ and videoanalyst at the same level;
 * you have a GPU with index 0,
-then the following code segment will instantiate and configure a pipeline object which can be used immediately for your own application. It supports following APIs: 
+then the following code segment will instantiate and configure a pipeline object which can be used immediately for your own application. It supports following APIs:
 * _void init(im, state)_
 * _state update(im)_
 
-```
+```Python
 import torch
 
 from videoanalyst.config.config import cfg as root_cfg
