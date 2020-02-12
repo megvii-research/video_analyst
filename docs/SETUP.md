@@ -88,7 +88,7 @@ ln -s path_to_models models
 At _path_to_models_:
 
 ```File Tree
-path_to_datasets
+path_to_models
 ├── siamfcpp
 │   ├── siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl
 │   ├── siamfcpp-googlenet-vot-md5_f2680ba074213ee39d82fcb84533a1a6.pkl

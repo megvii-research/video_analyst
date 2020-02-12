@@ -39,6 +39,10 @@ Developpers are recommended to take default _.yaml_ configuration files as examp
 
 Please refer to [docs/templates/template_module/template_module_base.py](templates/template_module/template_module_base.py) and [docs/templates/template_module/builder.py](templates/template_module/builder.py) for detail.
 
+## Add Your Own Module
+
+TBD
+
 ## Structure
 
 ### Trainer
@@ -67,15 +71,13 @@ Trainer
 └── Process                           # define monitoring utils (e.g. pbar.set_description, tensorboard, etc.)
 ```
 
-Remarks:
-
-- For model part, we follow the division of [mmdetection](https://github.com/open-mmlab/mmdetection) and divide model into three parts: backbone, neck, and head.
+#### Trainer Building Process (Functional Representation)
 
 ```Python
-model = builder.build(model_cfg)
+model = builder.build(model_cfg)  # model_cfg.loss_cfg, model.loss
 optimzier = builder.build(optim_cfg, model)
-dataloader = builder.build
-trainer = builder.build(optimzier, dataloader)
+dataloader = builder.build(data_cfg)
+trainer = builder.build(trainer_cfg, optimzier, dataloader)
 ```
 
 ### Tester

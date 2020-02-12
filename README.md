@@ -29,6 +29,10 @@ Check out the corresponding _exp_save_ path in _.yaml_ for result and raw result
 bash ./tools/test_VOT.sh
 ```
 
+### Training
+
+TBD
+
 ## Repository structure (in progress)
 
 ```File Tree
@@ -66,14 +70,23 @@ bash ./tools/test_VOT.sh
 └── README.md
 ```
 
-## Model ZOO
+## docs
 
-Please refer to [MODEL_ZOO.md](docs/MODEL_ZOO.md)
+For detail, please refer to markdown files under _docs_.
+
+* [SETUP.md](docs/SETUP.md): instructions for setting-up
+* [MODEL_ZOO.md](docs/MODEL_ZOO.md): description of released models
+* [TRAINING.md](docs/TRAINING.md): details related to training
+* [DEVELOP.md](docs/DEVELOP.md): description of project design (registry, configuration tree, etc.)
+* [PIPELINE_API.md](docs/PIPELINE_API.md): description for pipeline API
+* [FORMATTING_INSTRUCTION](docs/FORMATTING_INSTRUCTIONS.md): instruction for code formatting (yapf/isort/flake/etc.)
 
 ## TODO
 
 * [] Training code
-* [] Test code for OTB, GOT-10k, LaSOT, TrackingNet
+  * [] LaSOT
+  * [] COCO
+* [] Test code for OTB, LaSOT, TrackingNet
 
 ## Acknowledgement
 
