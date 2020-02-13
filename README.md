@@ -16,22 +16,23 @@ Please refer to [SETUP.md](docs/SETUP.md)
 ### Test
 
 #### Test on VOT
+
 ```Bash
 python3 ./main/test.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml'
 ```
 
 #### Test on GOT-10k
+
 ```Bash
 python3 ./main/test.py --config 'experiments/siamfcpp/test/got10k/siamfcpp_alexnet-got.yaml'
 ```
-
 
 Please refer to [docs/TEST.md](docs/TEST.md) for detail.
 
 ### Training
 
 ```Bash
-python3 ./main/test.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml'
+python3 ./main/train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml'
 ```
 
 Please refer to [docs/TRAINING.md](docs/TRAINING.md) for detail.
