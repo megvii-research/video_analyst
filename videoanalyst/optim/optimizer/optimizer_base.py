@@ -5,11 +5,10 @@ import pickle
 import tarfile
 import time
 from abc import ABCMeta, abstractmethod
-from typing import List, Dict
+from typing import Dict, List
 
 import cv2 as cv
 import numpy as np
-
 from yacs.config import CfgNode
 
 import torch
@@ -18,11 +17,11 @@ from torch.optim.optimizer import Optimizer
 
 from videoanalyst.utils import Registry
 
-from torch.optim.optimizer import Optimizer
-
+from .optimizer_impl.utils.lr_multiply import build as build_lr_multiplier
+from .optimizer_impl.utils.lr_multiply import multiply_lr
 # from ..scheduler.scheduler_base import SchedulerBase
-from .optimizer_impl.utils.lr_policy import build as build_lr_policy, schedule_lr
-from .optimizer_impl.utils.lr_multiply import build as build_lr_multiplier, multiply_lr
+from .optimizer_impl.utils.lr_policy import build as build_lr_policy
+from .optimizer_impl.utils.lr_policy import schedule_lr
 
 TRACK_OPTIMIZERS = Registry('TRACK_OPTIMIZERS')
 VOS_OPTIMIZERS = Registry('VOS_OPTIMIZERS')

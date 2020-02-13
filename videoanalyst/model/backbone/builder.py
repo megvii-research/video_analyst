@@ -4,8 +4,9 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
-from .backbone_base import TRACK_BACKBONES, VOS_BACKBONES
 from videoanalyst.utils import merge_cfg_into_hps
+
+from .backbone_base import TRACK_BACKBONES, VOS_BACKBONES
 
 logger = logging.getLogger(__file__)
 

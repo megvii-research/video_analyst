@@ -4,15 +4,15 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
-from .trainer_base import TASK_TRAINERS, TrainerBase
-from ..monitor.monitor_base import TASK_MONITORS
-from ..monitor import builder as monitor_builder
-from videoanalyst.utils.misc import merge_cfg_into_hps
-
 from videoanalyst.data import builder as dataloder_builder
-from videoanalyst.optim.optimizer import builder as optimizer_builder
 from videoanalyst.model import builder as model_builder
 from videoanalyst.model.loss import builder as loss_builder
+from videoanalyst.optim.optimizer import builder as optimizer_builder
+from videoanalyst.utils.misc import merge_cfg_into_hps
+
+from ..monitor import builder as monitor_builder
+from ..monitor.monitor_base import TASK_MONITORS
+from .trainer_base import TASK_TRAINERS, TrainerBase
 
 logger = logging.getLogger(__file__)
 

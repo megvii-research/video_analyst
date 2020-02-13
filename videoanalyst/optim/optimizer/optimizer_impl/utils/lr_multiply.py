@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*
-from typing import List, Dict
-from collections import OrderedDict
 import json
 import re
+from collections import OrderedDict
+from typing import Dict, List
 
 from yacs.config import CfgNode
 
 import torch
-from torch import nn
-from torch import optim
+from torch import nn, optim
 
 
 def build(cfg: List[str]):

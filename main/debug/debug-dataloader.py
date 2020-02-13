@@ -1,14 +1,15 @@
 from paths import ROOT_PATH  # isort:skip
 
 import os.path as osp
-import cv2
 
+import cv2
+from IPython import embed
 from yacs.config import CfgNode
+
+from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.data.builder import build as build_dataloader
 from videoanalyst.data.utils.misc import index_data
 from videoanalyst.data.utils.visualization import show_img_FCOS
-
-from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.utils.misc import Timer
 
 exp_cfg_path = osp.join(ROOT_PATH,
@@ -40,5 +41,4 @@ with Timer(info="Dataloader:"):
 # cv2.imshow("im_x", im_x)
 # cv2.waitKey(0)
 
-from IPython import embed
 embed()

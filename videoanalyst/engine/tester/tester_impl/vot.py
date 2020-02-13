@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*
 import copy
-
 import itertools
 import logging
 import math
@@ -15,9 +14,10 @@ from tqdm import tqdm
 
 import torch
 
-from ..tester_base import TRACK_TESTERS, TesterBase
 from videoanalyst.evaluation import vot_benchmark
 from videoanalyst.utils import ensure_dir
+
+from ..tester_base import TRACK_TESTERS, TesterBase
 
 vot_benchmark.init_log('global', logging.INFO)
 logger = logging.getLogger("global")

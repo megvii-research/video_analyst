@@ -2,6 +2,7 @@ r"""
 Get root path & root config path & 
 """
 import os.path as osp
+
 import sys  # isort:skip
 
 module_name = "main"

@@ -18,10 +18,10 @@ Procedure
 
 """
 
-import numpy as np
 import cv2
+import numpy as np
 
-from videoanalyst.pipeline.utils.bbox import xyxy2cxywh, cxywh2xyxy
+from videoanalyst.pipeline.utils.bbox import cxywh2xyxy, xyxy2cxywh
 from videoanalyst.pipeline.utils.crop import get_subwindow_tracking
 
 _MAX_RETRY = 50

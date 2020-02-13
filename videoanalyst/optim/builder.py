@@ -6,8 +6,8 @@ from yacs.config import CfgNode
 import torch
 from torch import nn
 
-from .optimizer import builder as optimizer_builder
 from .grad_modifier import builder as grad_modifier_builder
+from .optimizer import builder as optimizer_builder
 
 
 def build(

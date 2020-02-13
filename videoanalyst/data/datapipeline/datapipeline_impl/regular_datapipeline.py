@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from typing import Dict, List, Tuple
-import numpy as np
-import cv2
 
+import cv2
+import numpy as np
 from yacs.config import CfgNode
 
-from ..datapipeline_base import TRACK_DATAPIPELINES, DatapipelineBase
-from ...sampler.sampler_base import SamplerBase
 from videoanalyst.utils import convert_data_to_dtype
+
+from ...sampler.sampler_base import SamplerBase
+from ..datapipeline_base import TRACK_DATAPIPELINES, DatapipelineBase
 
 
 @TRACK_DATAPIPELINES.register

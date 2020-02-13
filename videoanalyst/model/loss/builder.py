@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*
 import logging
-from typing import Dict
 from collections import OrderedDict
+from typing import Dict
 
 from yacs.config import CfgNode
 

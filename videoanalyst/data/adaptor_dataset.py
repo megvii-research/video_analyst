@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*
-from typing import Tuple, Dict
+from typing import Dict, Tuple
 
 import torch
-from torch.utils.data import Dataset, DataLoader
 import torch.multiprocessing
-torch.multiprocessing.set_sharing_strategy('file_system')
+from torch.utils.data import DataLoader, Dataset
+
+from videoanalyst.utils.misc import Timer
 
 from .datapipeline import builder as datapipeline_builder
 
-from videoanalyst.utils.misc import Timer
+torch.multiprocessing.set_sharing_strategy('file_system')
+
+
 
 
 class AdaptorDataset(Dataset):

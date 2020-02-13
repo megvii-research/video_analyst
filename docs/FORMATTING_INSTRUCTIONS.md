@@ -24,9 +24,11 @@ Order is defined in _video_analyst/.isort.cfg_
 
 ```Bash
 # check
-isort -rc -w 80 -d ./
+isort -rc -w 80 -d ./videoanalyst
+isort -rc -w 80 -d ./main
 # apply
-isort -rc -w 80 ./
+isort -rc -w 80 ./videoanalyst
+isort -rc -w 80 ./main
 ```
 
 ## flake

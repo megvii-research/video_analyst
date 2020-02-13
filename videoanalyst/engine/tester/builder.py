@@ -4,9 +4,10 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
-from .tester_base import TASK_TESTERS
 from videoanalyst.pipeline.pipeline_base import PipelineBase
 from videoanalyst.utils import merge_cfg_into_hps
+
+from .tester_base import TASK_TESTERS
 
 logger = logging.getLogger(__file__)
 

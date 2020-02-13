@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*
 import logging
 from copy import deepcopy
-import logging
 
 import torch
 import torch.nn as nn
-# from torchvision.models.utils import load_state_dict_from_url
 
 from ...module_base import ModuleBase
 from ..backbone_base import TRACK_BACKBONES, VOS_BACKBONES
+
+# from torchvision.models.utils import load_state_dict_from_url
+
 
 logger = logging.getLogger("global")
 

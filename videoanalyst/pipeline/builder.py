@@ -4,9 +4,10 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
+from videoanalyst.model.module_base import ModuleBase
+
 from .tracker import builder as tracker_builder
 from .tracker.tracker_base import TRACK_PIPELINES
-from videoanalyst.model.module_base import ModuleBase
 
 # from .segmenter import builder as segmenter_builder
 

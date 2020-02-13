@@ -4,8 +4,8 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
-from videoanalyst.pipeline.tracker.tracker_base import TRACK_PIPELINES
 from videoanalyst.model.module_base import ModuleBase
+from videoanalyst.pipeline.tracker.tracker_base import TRACK_PIPELINES
 
 # from videoanalyst.model.module_base import TrackerBase
 

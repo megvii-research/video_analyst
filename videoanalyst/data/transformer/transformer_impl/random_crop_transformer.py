@@ -1,12 +1,13 @@
 from typing import Dict, List, Tuple
-import numpy as np
-import cv2
 
+import cv2
+import numpy as np
 from yacs.config import CfgNode
 
-from ..transformer_base import TRACK_TRANSFORMERS, TransformerBase
 from videoanalyst.data.utils.crop_track_pair import crop_track_pair
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
+
+from ..transformer_base import TRACK_TRANSFORMERS, TransformerBase
 
 
 @TRACK_TRANSFORMERS.register

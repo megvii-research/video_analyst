@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*
 import numpy as np
+
 import torch
-from torch import nn
 import torch.nn.functional as F
+from torch import nn
 
 from ...module_base import ModuleBase
 from ..loss_base import TRACK_LOSSES
-
 from .utils import SafeLog
 
 eps = np.finfo(np.float32).tiny

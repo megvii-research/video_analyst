@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*
-from typing import Dict, List, Tuple
 from copy import deepcopy
+from typing import Dict, List, Tuple
 
 from torch import nn
 from torch.utils.data import DataLoader
 
-from videoanalyst.utils import Registry
 from videoanalyst.model.module_base import ModuleBase
+from videoanalyst.utils import Registry
 
 TRACK_MONITORS = Registry('TRACK_MONITOR')
 VOS_MONITORS = Registry('VOS_MONITOR')

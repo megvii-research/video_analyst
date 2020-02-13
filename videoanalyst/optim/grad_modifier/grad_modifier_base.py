@@ -4,16 +4,14 @@ import pickle
 import tarfile
 import time
 from abc import ABCMeta, abstractmethod
-from typing import List, Dict
+from typing import Dict, List
 
 import cv2 as cv
 import numpy as np
+from yacs.config import CfgNode
 
 import torch
-from torch import nn
-from torch import optim
-
-from yacs.config import CfgNode
+from torch import nn, optim
 
 from videoanalyst.utils import Registry
 

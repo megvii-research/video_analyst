@@ -4,8 +4,9 @@ from typing import Dict, List
 
 from yacs.config import CfgNode
 
-from .grad_modifier_base import TASK_GRAD_MODIFIERS, GradModifierBase
 from videoanalyst.utils import merge_cfg_into_hps
+
+from .grad_modifier_base import TASK_GRAD_MODIFIERS, GradModifierBase
 
 
 def build(task: str, cfg: CfgNode) -> GradModifierBase:

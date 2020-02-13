@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-from typing import Dict, List, Tuple
 import json
 import re
+from typing import Dict, List, Tuple
 
-import numpy as np
 import cv2
+import numpy as np
+from yacs.config import CfgNode
 
 import torch
 from torch import nn
 
-from yacs.config import CfgNode
-
-from ..grad_modifier_base import TRACK_GRAD_MODIFIERS, VOS_GRAD_MODIFIERS, GradModifierBase
+from ..grad_modifier_base import (TRACK_GRAD_MODIFIERS, VOS_GRAD_MODIFIERS,
+                                  GradModifierBase)
 from .utils.freeze import apply_freeze_schedule
 
 

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*
 import logging
-from typing import List, Dict
+from typing import Dict, List
 
 from yacs.config import CfgNode
 
-from .monitor_base import TASK_MONITORS, MonitorBase
 from videoanalyst.utils.misc import merge_cfg_into_hps
+
+from .monitor_base import TASK_MONITORS, MonitorBase
 
 
 def build(task: str, cfg: CfgNode) -> List[MonitorBase]:

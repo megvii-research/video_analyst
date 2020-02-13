@@ -1,7 +1,7 @@
-from typing import Dict
 import logging
 import os
 import time
+from typing import Dict
 
 from yacs.config import CfgNode as CN
 

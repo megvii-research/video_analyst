@@ -5,15 +5,15 @@ import pickle
 import tarfile
 import time
 from abc import ABCMeta, abstractmethod
-from typing import List, Dict
+from typing import Dict, List
 
 import cv2 as cv
 import numpy as np
-
 from yacs.config import CfgNode
 
-from ..dataset.dataset_base import DatasetBase
 from videoanalyst.utils import Registry
+
+from ..dataset.dataset_base import DatasetBase
 
 TRACK_SAMPLERS = Registry('TRACK_SAMPLERS')
 VOS_SAMPLERS = Registry('VOS_SAMPLERS')

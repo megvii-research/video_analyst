@@ -5,11 +5,10 @@ import pickle
 import tarfile
 import time
 from abc import ABCMeta, abstractmethod
-from typing import List, Dict
+from typing import Dict, List
 
 import cv2 as cv
 import numpy as np
-
 from yacs.config import CfgNode
 
 from videoanalyst.data.dataset.dataset_base import DatasetBase

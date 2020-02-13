@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*
-from typing import Dict
-import os.path as osp
 import logging
+import os.path as osp
+from typing import Dict
 
 from yacs.config import CfgNode
 
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader, Dataset
+
+from videoanalyst.utils import ensure_dir
 
 from . import _DATA_LOGGER_NAME
+from .adaptor_dataset import AdaptorDataset
 from .datapipeline import builder as datapipeline_builder
 from .sampler import builder as sampler_builder
-from .transformer import builder as transformer_builder
 from .target import builder as target_builder
-from .adaptor_dataset import AdaptorDataset
-from videoanalyst.utils import ensure_dir
+from .transformer import builder as transformer_builder
 
 logger = logging.getLogger("global")
 

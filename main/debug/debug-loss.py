@@ -1,14 +1,15 @@
 from paths import ROOT_PATH  # isort:skip
 
 import os.path as osp
-import numpy as np
+
 import cv2
+import numpy as np
+from yacs.config import CfgNode
+
 import torch
 
-from yacs.config import CfgNode
-from videoanalyst.model.loss.builder import build as build_loss
-
 from videoanalyst.config.config import cfg as root_cfg
+from videoanalyst.model.loss.builder import build as build_loss
 from videoanalyst.utils.misc import Timer
 
 exp_cfg_path = osp.join(ROOT_PATH,

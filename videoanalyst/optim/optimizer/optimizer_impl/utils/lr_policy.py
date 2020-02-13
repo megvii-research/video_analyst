@@ -28,12 +28,12 @@ Visulize scheduled LR
 See the bottom of code for more plot examples.
 """
 
-from abc import ABCMeta, abstractmethod
-from typing import List, Dict
 import json
 import math
-import numpy as np
+from abc import ABCMeta, abstractmethod
+from typing import Dict, List
 
+import numpy as np
 from yacs.config import CfgNode
 
 from videoanalyst.utils import Registry

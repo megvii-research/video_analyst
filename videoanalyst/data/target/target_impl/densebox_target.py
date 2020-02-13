@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple
-import numpy as np
-import cv2
 
+import cv2
+import numpy as np
 from yacs.config import CfgNode
 
 from ..target_base import TRACK_TARGETS, TargetBase

@@ -1,15 +1,15 @@
 from paths import ROOT_PATH  # isort:skip
 
 import os.path as osp
-import cv2
 
+import cv2
 from yacs.config import CfgNode
-from videoanalyst.data.dataset.builder import build as build_dataset
-from videoanalyst.data.sampler.builder import build as build_sampler
-from videoanalyst.data.transformer.builder import build as build_transformer
-from videoanalyst.data.target.builder import build as build_target
 
 from videoanalyst.config.config import cfg as root_cfg
+from videoanalyst.data.dataset.builder import build as build_dataset
+from videoanalyst.data.sampler.builder import build as build_sampler
+from videoanalyst.data.target.builder import build as build_target
+from videoanalyst.data.transformer.builder import build as build_transformer
 
 exp_cfg_path = osp.join(ROOT_PATH,
                         "experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml")

@@ -3,16 +3,14 @@ from typing import Dict, List
 
 from yacs.config import CfgNode
 
-from .datapipeline_base import TASK_DATAPIPELINES, DatapipelineBase
-
-from ..sampler.builder import build as build_sampler
-from ..transformer.builder import build as build_transformer
-from ..target.builder import build as build_target
-
-from ..filter.builder import get_config as get_filter_cfg
-from ..dataset.builder import get_config as get_dataset_cfg
-
 from videoanalyst.utils import merge_cfg_into_hps
+
+from ..dataset.builder import get_config as get_dataset_cfg
+from ..filter.builder import get_config as get_filter_cfg
+from ..sampler.builder import build as build_sampler
+from ..target.builder import build as build_target
+from ..transformer.builder import build as build_transformer
+from .datapipeline_base import TASK_DATAPIPELINES, DatapipelineBase
 
 
 def build(task: str, cfg: CfgNode, seed: int = 0) -> DatapipelineBase:

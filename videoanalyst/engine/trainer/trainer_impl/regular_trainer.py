@@ -6,10 +6,8 @@ import math
 import os
 import os.path as osp
 import time
-
 from collections import OrderedDict
 from os.path import join
-
 from typing import List
 
 import cv2
@@ -20,11 +18,12 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 
-from ..trainer_base import TRACK_TRAINERS, TrainerBase
-
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.optim.optimizer.optimizer_base import OptimizerBase
-from videoanalyst.utils import ensure_dir, Timer, move_data_to_device, unwrap_model
+from videoanalyst.utils import (Timer, ensure_dir, move_data_to_device,
+                                unwrap_model)
+
+from ..trainer_base import TRACK_TRAINERS, TrainerBase
 
 logger = logging.getLogger("global")
 

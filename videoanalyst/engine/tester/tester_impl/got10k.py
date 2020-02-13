@@ -7,10 +7,11 @@ from yacs.config import CfgNode
 
 import torch
 
-from ..tester_base import TRACK_TESTERS, TesterBase
-from .utils.got_benchmark_helper import PipelineTracker
 from videoanalyst.evaluation import got_benchmark
 from videoanalyst.evaluation.got_benchmark.experiments import ExperimentGOT10k
+
+from ..tester_base import TRACK_TESTERS, TesterBase
+from .utils.got_benchmark_helper import PipelineTracker
 
 logger = logging.getLogger("global")
 

@@ -5,13 +5,13 @@ import pickle
 import tarfile
 import time
 from abc import ABCMeta, abstractmethod
-from typing import List, Dict
+from typing import Dict, List
 
 import cv2 as cv
 import numpy as np
-import torch
-
 from yacs.config import CfgNode
+
+import torch
 
 from videoanalyst.utils import Registry
 

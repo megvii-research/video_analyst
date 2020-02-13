@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
-from typing import List, Dict
 import copy
 import logging
 import os.path as osp
+from typing import Dict, List
 
-import numpy as np
 import cv2
-import os.path as osp
-
+import numpy as np
 from yacs.config import CfgNode
 
-from videoanalyst.evaluation.got_benchmark.datasets import GOT10k
-from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, DatasetBase
-from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 from videoanalyst.data import _DATA_LOGGER_NAME
+from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, DatasetBase
+from videoanalyst.evaluation.got_benchmark.datasets import GOT10k
+from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
 logger = logging.getLogger(_DATA_LOGGER_NAME)
 

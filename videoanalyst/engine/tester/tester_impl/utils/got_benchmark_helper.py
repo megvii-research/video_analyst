@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*
-from typing import List
-import numpy as np
 import time
+from typing import List
+
 # from PIL import Image
 import cv2
+import numpy as np
 
 from videoanalyst.evaluation.got_benchmark.utils.viz import show_frame
 from videoanalyst.pipeline.pipeline_base import PipelineBase

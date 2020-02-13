@@ -1,11 +1,13 @@
 from typing import Dict, List, Tuple
-import numpy as np
-import cv2
 
+import cv2
+import numpy as np
 from yacs.config import CfgNode
 
+from videoanalyst.data.utils.filter_box import \
+    filter_unreasonable_training_boxes
+
 from ..filter_base import TRACK_FILTERS, FilterBase
-from videoanalyst.data.utils.filter_box import filter_unreasonable_training_boxes
 
 
 @TRACK_FILTERS.register

@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 from typing import Dict, List, Tuple
-import numpy as np
 
+import numpy as np
 from yacs.config import CfgNode
 
 import torch
 from torch import optim
 
-from videoanalyst.evaluation.got_benchmark.datasets import got10k
 from videoanalyst.data.dataset.dataset_base import DatasetBase
+from videoanalyst.evaluation.got_benchmark.datasets import got10k
+
 from ..optimizer_base import TRACK_OPTIMIZERS, OptimizerBase
 
 

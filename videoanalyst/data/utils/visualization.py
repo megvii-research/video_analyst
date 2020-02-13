@@ -2,8 +2,8 @@
 import os
 import os.path as osp
 
-import numpy as np
 import cv2
+import numpy as np
 
 from videoanalyst.pipeline.utils.misc import tensor_to_imarray, tensor_to_numpy
 

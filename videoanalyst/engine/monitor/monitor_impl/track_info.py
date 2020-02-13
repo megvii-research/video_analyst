@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*
-from typing import List, Dict
 import copy
 import itertools
 import logging
+from typing import Dict, List
 
 import cv2
 import numpy as np

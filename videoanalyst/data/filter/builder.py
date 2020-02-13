@@ -4,8 +4,9 @@ from typing import Dict, List
 
 from yacs.config import CfgNode
 
-from .filter_base import TASK_FILTERS, DatasetBase
 from videoanalyst.utils import merge_cfg_into_hps
+
+from .filter_base import TASK_FILTERS, DatasetBase
 
 
 def build(task: str, cfg: CfgNode) -> DatasetBase:

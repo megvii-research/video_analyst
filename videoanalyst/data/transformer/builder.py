@@ -4,8 +4,9 @@ from typing import Dict, List
 
 from yacs.config import CfgNode
 
-from .transformer_base import TASK_TRANSFORMERS, TransformerBase
 from videoanalyst.utils import merge_cfg_into_hps
+
+from .transformer_base import TASK_TRANSFORMERS, TransformerBase
 
 
 def build(task: str, cfg: CfgNode, seed: int = 0) -> TransformerBase:

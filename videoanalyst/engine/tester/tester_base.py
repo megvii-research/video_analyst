@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*
 from copy import deepcopy
 
-from torch import nn
-
 from yacs.config import CfgNode
 
-from videoanalyst.utils import Registry
+from torch import nn
+
 from videoanalyst.pipeline.pipeline_base import PipelineBase
+from videoanalyst.utils import Registry
 
 TRACK_TESTERS = Registry('TRACK_TESTERS')
 VOS_TESTERS = Registry('VOS_TESTERS')

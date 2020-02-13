@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*
 
-from typing import List, Dict
 import re
+from collections import OrderedDict
+from typing import Dict, List
 
 from yacs.config import CfgNode
 
-from torch import nn
-
-from collections import OrderedDict
 import torch
+from torch import nn
 
 
 class FreezeStateMonitor:
