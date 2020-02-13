@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 import cv2
 import numpy as np

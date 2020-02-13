@@ -1,12 +1,6 @@
 # -*- coding: utf-8 -*
-import copy
 import itertools
 import logging
-import math
-import os
-from collections import OrderedDict
-from multiprocessing import Process, Queue
-from os.path import join
 
 import cv2
 import numpy as np

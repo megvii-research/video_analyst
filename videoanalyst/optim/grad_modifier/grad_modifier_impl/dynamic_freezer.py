@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 import re
-from typing import Dict, List, Tuple
 
 import cv2
 import numpy as np

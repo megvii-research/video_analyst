@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*
 from copy import deepcopy
-from typing import Dict, List, Tuple
+from typing import Dict
 
 from torch import nn
 from torch.utils.data import DataLoader

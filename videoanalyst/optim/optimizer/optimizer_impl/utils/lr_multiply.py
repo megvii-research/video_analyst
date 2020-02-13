@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*
 import json
 import re
-from collections import OrderedDict
-from typing import Dict, List
+from typing import List
 
 from yacs.config import CfgNode
 

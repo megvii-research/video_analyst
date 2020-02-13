@@ -2,13 +2,8 @@
 import copy
 import itertools
 import logging
-import math
-import os
 import os.path as osp
-import time
 from collections import OrderedDict
-from os.path import join
-from typing import List
 
 import cv2
 import numpy as np

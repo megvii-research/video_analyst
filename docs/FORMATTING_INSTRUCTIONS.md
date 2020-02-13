@@ -35,7 +35,9 @@ isort -rc -w 80 ./main
 
 ```Bash
 # check
-autoflake -r ./
+autoflake -r --exclude "**/evaluation/**" ./videoanalyst
+autoflake -r ./main
 # apply
-autoflake -r ./ -i
+autoflake -r -i --exclude "**/evaluation/**" ./videoanalyst
+autoflake -r -i ./main
 ```
