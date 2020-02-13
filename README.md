@@ -16,22 +16,25 @@ Please refer to [SETUP.md](docs/SETUP.md)
 ### Test
 
 #### Test on VOT
-
 ```Bash
-python3 ./main/test.py --config 'experiments/siamfc++/siamfcpp_googlenet.yaml'
+python3 ./main/test.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml'
 ```
 
-Check out the corresponding _exp_save_ path in _.yaml_ for result and raw result data, both named by _exp_name_ in _.yaml_.
-
-#### Test all experiments
-
+#### Test on GOT-10k
 ```Bash
-bash ./tools/test_VOT.sh
+python3 ./main/test.py --config 'experiments/siamfcpp/test/got10k/siamfcpp_alexnet-got.yaml'
 ```
+
+
+Please refer to [docs/TEST.md](docs/TEST.md) for detail.
 
 ### Training
 
-TBD
+```Bash
+python3 ./main/test.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml'
+```
+
+Please refer to [docs/TRAINING.md](docs/TRAINING.md) for detail.
 
 ## Repository structure (in progress)
 
