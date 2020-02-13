@@ -5,6 +5,7 @@ from yacs.config import CfgNode
 
 from videoanalyst.utils import ensure_dir
 
+
 def setup(cfg: CfgNode):
     """Setup for working directory
     

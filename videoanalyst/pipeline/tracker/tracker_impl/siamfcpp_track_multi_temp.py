@@ -100,8 +100,8 @@ class SiamFCppMultiTempTracker(SiamFCppTracker):
             else:
                 with torch.no_grad():
                     score, box, cls, ctr, extra = self._model(*(features[ith]),
-                                                             *fms_x,
-                                                             phase=phase_track)
+                                                              *fms_x,
+                                                              phase=phase_track)
             box = tensor_to_numpy(box[0])
             score = tensor_to_numpy(score[0])[:, 0]
             cls = tensor_to_numpy(cls[0])[:, 0]
@@ -169,6 +169,7 @@ class SiamFCppMultiTempTracker(SiamFCppTracker):
             self._state['features'].append(features_curr)
 
         return track_rect
+
 
 SiamFCppMultiTempTracker.default_hyper_params = copy.deepcopy(
     SiamFCppMultiTempTracker.default_hyper_params)

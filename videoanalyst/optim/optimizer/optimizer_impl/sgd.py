@@ -11,6 +11,7 @@ from videoanalyst.evaluation.got_benchmark.datasets import got10k
 from videoanalyst.data.dataset.dataset_base import DatasetBase
 from ..optimizer_base import TRACK_OPTIMIZERS, OptimizerBase
 
+
 @TRACK_OPTIMIZERS.register
 class SGD(OptimizerBase):
     r"""
@@ -29,11 +30,12 @@ class SGD(OptimizerBase):
         super(SGD, self).__init__(cfg, model)
 
     def update_params(self, ):
-        super(SGD, self).update_params()        
+        super(SGD, self).update_params()
         params = self._state["params"]
         kwargs = self._hyper_params
         valid_keys = self.extra_hyper_params.keys()
         kwargs = {k: kwargs[k] for k in valid_keys}
         self._optimizer = optim.SGD(params, **kwargs)
+
 
 SGD.default_hyper_params.update(SGD.extra_hyper_params)

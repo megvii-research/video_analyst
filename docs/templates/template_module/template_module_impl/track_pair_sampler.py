@@ -14,6 +14,7 @@ from videoanalyst.utils import load_image
 
 data_logger = logging.getLogger(_DATA_LOGGER_NAME)
 
+
 @TRACK_SAMPLERS.register
 class TrackPairSampler(SamplerBase):
     r"""
@@ -22,24 +23,30 @@ class TrackPairSampler(SamplerBase):
     Hyper-parameters
     ----------------
     """
-    default_hyper_params = dict(
-        negative_pair_ratio=0.0,
-    )
+    default_hyper_params = dict(negative_pair_ratio=0.0, )
 
-    def __init__(self, datasets: List[DatasetBase]=[], seed: int=0, filt=None) -> None:
+    def __init__(self,
+                 datasets: List[DatasetBase] = [],
+                 seed: int = 0,
+                 filt=None) -> None:
         super().__init__(datasets, seed=seed)
         if filt is None:
             self.filt = [lambda x: False]
         else:
             self.filt = filt
 
-        self._state["ratios"] = [d._hyper_params["ratio"] for d in self.datasets]
-        self._state["max_diffs"] = [d._hyper_params["max_diff"] for d in self.datasets]
+        self._state["ratios"] = [
+            d._hyper_params["ratio"] for d in self.datasets
+        ]
+        self._state["max_diffs"] = [
+            d._hyper_params["max_diff"] for d in self.datasets
+        ]
 
     def __next__(self) -> Dict:
-        is_negative_pair = (self._state["rng"].rand() < self._hyper_params["negative_pair_ratio"]) 
+        is_negative_pair = (self._state["rng"].rand() <
+                            self._hyper_params["negative_pair_ratio"])
         data1 = data2 = None
-        
+
         while self.filt(data1) or self.filt(data2):
             if is_negative_pair:
                 data1 = self._sample_track_frame()
@@ -48,12 +55,12 @@ class TrackPairSampler(SamplerBase):
                 data1, data2 = self._sample_track_pair()
             data1["image"] = load_image(data1["image"], logger=data_logger)
             data2["image"] = load_image(data2["image"], logger=data_logger)
-        
+
         sampled_data = dict(
             data1=data1,
             data2=data2,
             is_negative_pair=is_negative_pair,
-            )
+        )
 
         return sampled_data
 
@@ -87,7 +94,7 @@ class TrackPairSampler(SamplerBase):
         dataset = self.datasets[dataset_idx]
 
         return dataset_idx, dataset
-    
+
     def _sample_sequence_from_dataset(self, dataset: DatasetBase) -> Dict:
         r"""
         """
@@ -107,7 +114,8 @@ class TrackPairSampler(SamplerBase):
 
         return data_frame
 
-    def _sample_track_pair_from_sequence(self, sequence_data: Dict, max_diff: int) -> Tuple[Dict, Dict]:
+    def _sample_track_pair_from_sequence(self, sequence_data: Dict,
+                                         max_diff: int) -> Tuple[Dict, Dict]:
         """sample a pair of frames within max_diff distance
         
         Parameters
@@ -124,7 +132,8 @@ class TrackPairSampler(SamplerBase):
             data: image= , anno=
         """
         len_seq = len(list(sequence_data.values())[0])
-        idx1, idx2 = self._sample_pair_idx_pair_within_max_diff(len_seq, max_diff)
+        idx1, idx2 = self._sample_pair_idx_pair_within_max_diff(
+            len_seq, max_diff)
         data1 = {k: v[idx1] for k, v in sequence_data.items()}
         data2 = {k: v[idx2] for k, v in sequence_data.items()}
 
@@ -145,8 +154,6 @@ class TrackPairSampler(SamplerBase):
         idx1 = rng.choice(L)
         idx2_choices = list(range(idx1-max_diff, L)) + \
                     list(range(L+1, idx1+max_diff+1))
-        idx2_choices = list(
-            set(idx2_choices).intersection(set(range(L)))
-        )
+        idx2_choices = list(set(idx2_choices).intersection(set(range(L))))
         idx2 = rng.choice(idx2_choices)
         return int(idx1), int(idx2)

@@ -9,13 +9,15 @@ TASK_ENGINE_BUILDERS = dict(
     trainer=trainer_builder,
 )
 
+
 def build(task: str, cfg: CfgNode, engine_type: str, *args, **kwargs):
     """
     Builder function for trainer/tester
     engine_type: trainer or tester
     """
     if engine_type in TASK_ENGINE_BUILDERS:
-        engine = TASK_ENGINE_BUILDERS[engine_type].build(task, cfg, *args, **kwargs)
+        engine = TASK_ENGINE_BUILDERS[engine_type].build(
+            task, cfg, *args, **kwargs)
         return engine
     else:
-        raise ValueError("Invalid engine_type: %s"%engine_type)
+        raise ValueError("Invalid engine_type: %s" % engine_type)

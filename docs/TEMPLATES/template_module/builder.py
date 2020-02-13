@@ -6,6 +6,7 @@ from yacs.config import CfgNode
 from .template_module_base import TASK_TEMPLATE_MODULES, TemplateModuleBase
 from videoanalyst.utils import merge_cfg_into_hps
 
+
 def build(task: str, cfg: CfgNode) -> TemplateModuleBase:
     r"""
     Arguments

@@ -37,22 +37,23 @@ class DenseboxTarget(TargetBase):
             hps['x_size'] - 1 -
             (hps['score_size'] - 1) * hps['total_stride']) // 2
         self._hyper_params = hps
-        
+
     def __call__(self, sampled_data: Dict) -> Dict:
         data_z = sampled_data["data1"]
         im_z, bbox_z = data_z["image"], data_z["anno"]
 
         data_x = sampled_data["data2"]
         im_x, bbox_x = data_x["image"], data_x["anno"]
-        
+
         is_negative_pair = sampled_data["is_negative_pair"]
-        
+
         # input tensor
         im_z = im_z.transpose(2, 0, 1)
         im_x = im_x.transpose(2, 0, 1)
-        
+
         # training target
-        cls_label, ctr_label, box_label = make_densebox_target(bbox_x.reshape(1, 4), self._hyper_params)
+        cls_label, ctr_label, box_label = make_densebox_target(
+            bbox_x.reshape(1, 4), self._hyper_params)
         if is_negative_pair:
             cls_label[cls_label == 0] = -1
             cls_label[cls_label == 1] = 0
@@ -70,4 +71,3 @@ class DenseboxTarget(TargetBase):
         training_data = super().__call__(training_data)
 
         return training_data
-

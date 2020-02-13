@@ -25,7 +25,6 @@ TASK_DATASETS = dict(
 
 class DatasetBase:
     __metaclass__ = ABCMeta
-
     r"""
     base class for DataSet.
     Nota. for tracking dataset, we use format (x0, y0, x1, y1)
@@ -62,6 +61,7 @@ class DatasetBase:
             if key not in self._hyper_params:
                 raise KeyError
             self._hyper_params[key] = hps[key]
+
     def update_params(self):
         r"""
         an interface for update params

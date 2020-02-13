@@ -22,9 +22,9 @@ TASK_TRANSFORMERS = dict(
     vos=VOS_TRANSFORMERS,
 )
 
+
 class TransformerBase:
     __metaclass__ = ABCMeta
-
     r"""
     base class for Sampler. Reponsible for sampling from multiple datasets and forming training pair / sequence.
 
@@ -32,7 +32,7 @@ class TransformerBase:
     """
     default_hyper_params = dict()
 
-    def __init__(self, seed: int=0) -> None:
+    def __init__(self, seed: int = 0) -> None:
         r"""
         Transformer, reponsible for data augmentation
 
@@ -72,6 +72,7 @@ class TransformerBase:
             if key not in self._hyper_params:
                 raise KeyError
             self._hyper_params[key] = hps[key]
+
     def update_params(self, seed: int = 0) -> None:
         r"""
         an interface for update params

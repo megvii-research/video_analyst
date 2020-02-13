@@ -150,7 +150,6 @@ class DenseboxHead(ModuleBase):
             self.cls_conv3x3_list.append(cls_conv3x3)
             self.bbox_conv3x3_list.append(bbox_conv3x3)
 
-
     def _make_conv_output(self):
         head_width = self._hyper_params['head_width']
         self.cls_score_p5 = conv_bn_relu(head_width,
@@ -171,8 +170,8 @@ class DenseboxHead(ModuleBase):
                                             kszie=1,
                                             pad=0,
                                             has_relu=False)
-    
-    def _initialize_conv(self,):
+
+    def _initialize_conv(self, ):
         num_conv3x3 = self._hyper_params['num_conv3x3']
         conv_weight_std = self._hyper_params['conv_weight_std']
 
@@ -190,12 +189,13 @@ class DenseboxHead(ModuleBase):
 
         num_classes = 1
         pi = 0.01
-        bv = - np.log((1-pi)/pi)
+        bv = -np.log((1 - pi) / pi)
         for ith in range(len(conv_list)):
             # fetch conv from list
             conv = conv_list[ith]
             # torch.nn.init.normal_(conv.weight, std=0.01) # from megdl impl.
-            torch.nn.init.normal_(conv.weight, std=conv_weight_std)  # conv_weight_std = 0.0001
+            torch.nn.init.normal_(
+                conv.weight, std=conv_weight_std)  # conv_weight_std = 0.0001
             # nn.init.kaiming_uniform_(conv.weight, a=np.sqrt(5))  # from PyTorch default implementation
             # nn.init.kaiming_uniform_(conv.weight, a=0)  # from PyTorch default implementation
             if conv in conv_classifier:

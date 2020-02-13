@@ -25,10 +25,9 @@ class TrackInfo(MonitorBase):
     ----------------
     """
 
-    default_hyper_params = dict(
-    )
+    default_hyper_params = dict()
 
-    def __init__(self,):
+    def __init__(self, ):
         r"""
         Arguments
         ---------
@@ -43,7 +42,7 @@ class TrackInfo(MonitorBase):
         """
         # etate
         engine_state = self._state["engine_state"]
-        # data        
+        # data
         schedule_info = engine_data["schedule_info"]
         training_losses = engine_data["training_losses"]
         extras = engine_data["extras"]
@@ -52,18 +51,18 @@ class TrackInfo(MonitorBase):
         epoch = engine_state["epoch"]
         print_str = 'epoch %d, ' % epoch
         for k in schedule_info:
-            print_str +=  '%s: %.1e, ' % (k, schedule_info[k])
+            print_str += '%s: %.1e, ' % (k, schedule_info[k])
         # loss info
         for k in training_losses:
             l = training_losses[k]
-            print_str +=  '%s: %.3f, ' % (k, l.detach().cpu().numpy())
+            print_str += '%s: %.3f, ' % (k, l.detach().cpu().numpy())
         # extra info
         for extra in extras.values():
             for k in extra:
                 l = extra[k]
-                print_str +=  '%s: %.3f, ' % (k, l)
+                print_str += '%s: %.3f, ' % (k, l)
         # pring elapsed time
         for k in time_dict:
-            print_str += "%s: %.1e, "%(k, time_dict[k])
+            print_str += "%s: %.1e, " % (k, time_dict[k])
 
         engine_state["print_str"] = print_str

@@ -7,6 +7,7 @@ from yacs.config import CfgNode
 from .grad_modifier_base import TASK_GRAD_MODIFIERS, GradModifierBase
 from videoanalyst.utils import merge_cfg_into_hps
 
+
 def build(task: str, cfg: CfgNode) -> GradModifierBase:
     r"""
     Arguments

@@ -8,7 +8,6 @@ from .target_base import TASK_TARGETS, TargetBase
 from videoanalyst.utils import merge_cfg_into_hps
 
 
-
 def build(task: str, cfg: CfgNode) -> TargetBase:
     r"""
     Arguments

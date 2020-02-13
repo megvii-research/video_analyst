@@ -307,5 +307,6 @@ class VOTTester(TesterBase):
         row_data = ','.join([str(v) for v in row_dict.values()])
         result_csv.write('%s\n' % row_data)
 
+
 VOTTester.default_hyper_params = copy.deepcopy(VOTTester.default_hyper_params)
 VOTTester.default_hyper_params.update(VOTTester.extra_hyper_params)

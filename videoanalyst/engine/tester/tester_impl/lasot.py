@@ -12,6 +12,7 @@ from videoanalyst.evaluation.got_benchmark.experiments import ExperimentLaSOT
 
 logger = logging.getLogger("global")
 
+
 @TRACK_TESTERS.register
 class LaSOTTester(TesterBase):
     r"""LaSOT tester
@@ -28,8 +29,9 @@ class LaSOTTester(TesterBase):
     extra_hyper_params = dict(
         device_num=1,
         data_root="datasets/LaSOT",
-        subsets=["test"], # (train|test|train_test)
+        subsets=["test"],  # (train|test|train_test)
     )
+
     def __init__(self, *args, **kwargs):
         super(LaSOTTester, self).__init__(*args, **kwargs)
         # self._experiment = None
@@ -48,20 +50,24 @@ class LaSOTTester(TesterBase):
         all_devs = self._state["all_devs"]
         dev = all_devs[0]
         self._pipeline.to_device(dev)
-        pipeline_tracker = PipelineTracker(tracker_name,
-                                           self._pipeline)
+        pipeline_tracker = PipelineTracker(tracker_name, self._pipeline)
 
         for subset in self._hyper_params["subsets"]:
             root_dir = self._hyper_params["data_root"]
             dataset_name = "GOT-Benchmark"
-            save_root_dir = osp.join(self._hyper_params["exp_save"], dataset_name)
+            save_root_dir = osp.join(self._hyper_params["exp_save"],
+                                     dataset_name)
             result_dir = osp.join(save_root_dir, "result")
             report_dir = osp.join(save_root_dir, "report")
 
-            experiment = ExperimentLaSOT(root_dir, subset=subset, 
-                                         result_dir=result_dir, report_dir=report_dir)
+            experiment = ExperimentLaSOT(root_dir,
+                                         subset=subset,
+                                         result_dir=result_dir,
+                                         report_dir=report_dir)
             experiment.run(pipeline_tracker)
             experiment.report([tracker_name], plot_curves=False)
 
-LaSOTTester.default_hyper_params = copy.deepcopy(LaSOTTester.default_hyper_params)
+
+LaSOTTester.default_hyper_params = copy.deepcopy(
+    LaSOTTester.default_hyper_params)
 LaSOTTester.default_hyper_params.update(LaSOTTester.extra_hyper_params)

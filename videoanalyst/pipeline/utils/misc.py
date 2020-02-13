@@ -24,7 +24,7 @@ def tensor_to_imarray(t):
     """
     arr = t.detach().cpu().numpy()
     if arr.ndim == 4:
-       arr = arr[0] 
+        arr = arr[0]
     return arr.transpose(1, 2, 0)
 
 

@@ -15,6 +15,7 @@ TASK_HEADS = dict(
     vos=VOS_HEADS,
 )
 
+
 def build(task: str, cfg: CfgNode):
     r"""
     Builder function.

@@ -13,7 +13,7 @@ import torch
 
 class FreezeStateMonitor:
     """ Monitor the freezing state continuously and print """
-    def __init__(self, module:nn.Module, verbose=True):
+    def __init__(self, module: nn.Module, verbose=True):
         """
         :param module: module to be monitored
         :param verbose:
@@ -22,21 +22,30 @@ class FreezeStateMonitor:
         self.verbose = verbose
 
     def __enter__(self, ):
-        self.old_freeze_state = OrderedDict([(k, v.requires_grad) for k, v in self.module.named_parameters()])
+        self.old_freeze_state = OrderedDict([
+            (k, v.requires_grad) for k, v in self.module.named_parameters()
+        ])
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.new_freeze_state = OrderedDict([(k, v.requires_grad) for k, v in self.module.named_parameters()])
+        self.new_freeze_state = OrderedDict([
+            (k, v.requires_grad) for k, v in self.module.named_parameters()
+        ])
         if self.verbose:
-            assert set(list(self.new_freeze_state.keys())) == set(list(self.old_freeze_state.keys()))
+            assert set(list(self.new_freeze_state.keys())) == set(
+                list(self.old_freeze_state.keys()))
             any_change = False
             for k in self.new_freeze_state.keys():
                 change = (self.old_freeze_state[k] != self.new_freeze_state[k])
                 if change:
-                    print(k, "changed:", self.old_freeze_state[k], "->", self.new_freeze_state[k])
+                    print(k, "changed:", self.old_freeze_state[k], "->",
+                          self.new_freeze_state[k])
                 any_change = any_change or change
 
 
-def dynamic_freeze(module: nn.Module, compiled_regex=re.compile(".*"), requires_grad: bool=False, verbose: bool=False):
+def dynamic_freeze(module: nn.Module,
+                   compiled_regex=re.compile(".*"),
+                   requires_grad: bool = False,
+                   verbose: bool = False):
     """Perform dynamic freezing
     
     Parameters
@@ -63,7 +72,11 @@ def dynamic_freeze(module: nn.Module, compiled_regex=re.compile(".*"), requires_
 #                            param_filter=param_filter,
 #                            requires_grad=requires_grad_cond(epoch))
 
-def apply_freeze_schedule(module: nn.Module, epoch: int, schedule: List[Dict], verbose: bool=True):
+
+def apply_freeze_schedule(module: nn.Module,
+                          epoch: int,
+                          schedule: List[Dict],
+                          verbose: bool = True):
     r"""
     Apply dynamic freezing schedule with verbose
     
@@ -84,8 +97,9 @@ def apply_freeze_schedule(module: nn.Module, epoch: int, schedule: List[Dict], v
         for freeze_action in schedule:
             # param_filter, requires_grad_cond
             compiled_regex = freeze_action["compiled_regex"]
-            requires_grad = ( (epoch >= freeze_action["epoch"]) !=
-                              freeze_action["freezed"] )  # XOR
+            requires_grad = (
+                (epoch >= freeze_action["epoch"]) != freeze_action["freezed"]
+            )  # XOR
             dynamic_freeze(module,
                            compiled_regex=compiled_regex,
                            requires_grad=requires_grad)

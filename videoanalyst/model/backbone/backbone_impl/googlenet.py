@@ -18,6 +18,7 @@ from videoanalyst.model.module_base import ModuleBase
 # from videoanalyst.model.common_opr.common_block import conv_bn_relu
 logger = logging.getLogger("global")
 
+
 @VOS_BACKBONES.register
 @TRACK_BACKBONES.register
 class Inception3(ModuleBase):
@@ -153,11 +154,14 @@ class Inception3(ModuleBase):
         model_file = self._hyper_params["pretrain_model_path"]
         if model_file != "":
             try:
-                state_dict = torch.load(model_file, map_location=torch.device("gpu"))
+                state_dict = torch.load(model_file,
+                                        map_location=torch.device("gpu"))
             except:
-                state_dict = torch.load(model_file, map_location=torch.device("cpu"))
+                state_dict = torch.load(model_file,
+                                        map_location=torch.device("cpu"))
             self.load_state_dict(state_dict, strict=False)
-            logger.info("Load pretrained AlexNet parameters from: %s"%model_file)
+            logger.info("Load pretrained AlexNet parameters from: %s" %
+                        model_file)
 
         self.crop_pad = self._hyper_params['crop_pad']
         self.pruned = self._hyper_params['pruned']

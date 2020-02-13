@@ -19,6 +19,7 @@ logger = logging.getLogger(_DATA_LOGGER_NAME)
 
 _current_dir = osp.dirname(osp.realpath(__file__))
 
+
 @TRACK_DATASETS.register
 class GOT10kDataset(DatasetBase):
     r"""
@@ -37,6 +38,7 @@ class GOT10kDataset(DatasetBase):
         ratio=1,
         max_diff=100,
     )
+
     def __init__(self) -> None:
         r"""
         Create dataset with config
@@ -76,11 +78,11 @@ class GOT10kDatasetFixed(GOT10kDataset):
         until the sampled sequence is not a unfixed sequnece.
     """
     extra_hyper_params = dict(
-        unfixed_list=osp.join(_current_dir, "utils/unfixed_got10k_list.txt")
-    )
+        unfixed_list=osp.join(_current_dir, "utils/unfixed_got10k_list.txt"))
+
     def __init__(self) -> None:
         super(GOT10kDatasetFixed, self).__init__()
-    
+
     def update_params(self):
         r"""
         an interface for update params
@@ -96,7 +98,7 @@ class GOT10kDatasetFixed(GOT10kDataset):
             sequence_data = super(GOT10kDatasetFixed, self).__getitem__(item)
 
         return sequence_data
-        
+
     def _read_unfixed_list(self, file: str) -> List[str]:
         """read unfixed list of GOT-10k
         
@@ -110,7 +112,7 @@ class GOT10kDatasetFixed(GOT10kDataset):
         List[str]
             list of video name
         """
-        with open(file,"r") as f:
+        with open(file, "r") as f:
             l = f.readlines()
         l = [s.strip() for s in l]
 
@@ -122,10 +124,10 @@ class GOT10kDatasetFixed(GOT10kDataset):
         seq_name = osp.basename(seq_dir)
         is_unfixed = (seq_name in self._state["unfixed_list"])
         if is_unfixed:
-            logger.info("Unfixed GOT10k sequence sampled at: %s"%seq_dir)
+            logger.info("Unfixed GOT10k sequence sampled at: %s" % seq_dir)
 
         return is_unfixed
-    
+
     def _resample_item(self, item: int):
         if "rng" not in self._state:
             self._state["rng"] = np.random.RandomState(item)
@@ -133,6 +135,7 @@ class GOT10kDatasetFixed(GOT10kDataset):
         new_item = rng.choice(len(self))
 
         return new_item
+
 
 GOT10kDatasetFixed.default_hyper_params = copy.deepcopy(
     GOT10kDatasetFixed.default_hyper_params)

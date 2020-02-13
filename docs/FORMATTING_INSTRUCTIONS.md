@@ -13,9 +13,9 @@ bash path_to_project/check_format.sh
 
 ```Bash
 # check
-yapf -p -r -d --style='{COLUMN_LIMIT:80}' ./
+yapf -p -r -d --style='{COLUMN_LIMIT:80}' -e "videoanalyst/evaluation/*" ./
 # apply
-yapf -p -r -i --style='{COLUMN_LIMIT:80}' ./
+yapf -p -r -i --style='{COLUMN_LIMIT:80}' -e "videoanalyst/evaluation/*" ./
 ```
 
 ## isort

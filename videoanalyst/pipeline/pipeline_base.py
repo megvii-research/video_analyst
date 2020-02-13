@@ -5,6 +5,7 @@ from torch import nn
 
 from videoanalyst.model.module_base import ModuleBase
 
+
 class PipelineBase:
     r"""
     Pipeline base class (e.g. procedure defined for tracker / segmentor / etc.)
@@ -50,6 +51,7 @@ class PipelineBase:
         r"""
         an interface for update params
         """
+
     def init(self, im, state):
         r"""
         an interface for pipeline initialization (e.g. template feature extraction)

@@ -21,6 +21,7 @@ def build(task: str, cfg: CfgNode) -> DatasetBase:
 
     return module
 
+
 def get_config() -> Dict[str, CfgNode]:
     cfg_dict = {name: CfgNode() for name in TASK_FILTERS.keys()}
 

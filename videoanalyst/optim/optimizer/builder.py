@@ -10,6 +10,7 @@ from .optimizer_base import TASK_OPTIMIZERS, OptimizerBase
 
 from videoanalyst.utils import merge_cfg_into_hps
 
+
 def build(task: str, cfg: CfgNode, model: nn.Module) -> OptimizerBase:
     r"""
     Arguments
@@ -23,7 +24,6 @@ def build(task: str, cfg: CfgNode, model: nn.Module) -> OptimizerBase:
     MODULES = TASK_OPTIMIZERS[task]
     name = cfg.name
     module = MODULES[name](cfg, model)
-
 
     hps = module.get_hps()
     hps = merge_cfg_into_hps(cfg[name], hps)

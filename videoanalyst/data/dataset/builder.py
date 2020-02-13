@@ -9,6 +9,7 @@ from yacs.config import CfgNode
 from .dataset_base import TASK_DATASETS, DatasetBase
 from videoanalyst.utils import merge_cfg_into_hps
 
+
 def build(task: str, cfg: CfgNode) -> DatasetBase:
     r"""
     Arguments
@@ -30,7 +31,7 @@ def build(task: str, cfg: CfgNode) -> DatasetBase:
         module.set_hps(hps)
         module.update_params()
         modules.append(module)
-    
+
     return modules
 
 

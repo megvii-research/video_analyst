@@ -11,6 +11,7 @@ from videoanalyst.model.module_base import ModuleBase
 
 logger = logging.getLogger("global")
 
+
 @VOS_BACKBONES.register
 @TRACK_BACKBONES.register
 class AlexNet(ModuleBase):
@@ -49,8 +50,11 @@ class AlexNet(ModuleBase):
         model_file = self._hyper_params["pretrain_model_path"]
         if model_file != "":
             try:
-                state_dict = torch.load(model_file, map_location=torch.device("gpu"))
+                state_dict = torch.load(model_file,
+                                        map_location=torch.device("gpu"))
             except:
-                state_dict = torch.load(model_file, map_location=torch.device("cpu"))
+                state_dict = torch.load(model_file,
+                                        map_location=torch.device("cpu"))
             self.load_state_dict(state_dict, strict=False)
-            logger.info("Load pretrained AlexNet parameters from: %s"%model_file)
+            logger.info("Load pretrained AlexNet parameters from: %s" %
+                        model_file)

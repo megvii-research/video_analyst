@@ -7,6 +7,7 @@ from yacs.config import CfgNode as CN
 
 logger = logging.getLogger("global")
 
+
 def _register_generic(module_dict, module_name, module):
     assert module_name not in module_dict, print(
         module_name, module_dict, 'defined in several script files')
@@ -60,6 +61,7 @@ def load_cfg(path: str):
 
     return config_node
 
+
 def merge_cfg_into_hps(cfg: CN, hps: Dict):
     for hp_name in hps:
         if hp_name in cfg:
@@ -67,11 +69,16 @@ def merge_cfg_into_hps(cfg: CN, hps: Dict):
             hps[hp_name] = new_value
     return hps
 
+
 class Timer():
     r"""
     Mesure & print elapsed time witin environment
     """
-    def __init__(self, name: str="", output_dict: Dict=None, verbose: bool=False, logger: logging.Logger=logger):
+    def __init__(self,
+                 name: str = "",
+                 output_dict: Dict = None,
+                 verbose: bool = False,
+                 logger: logging.Logger = logger):
         """Timing usage
         
         Parameters
@@ -84,7 +91,7 @@ class Timer():
             verbose or not via logger, by default False
         logger : logging.Logger, optional
             logger to verbose (info level), by default logger
-        """        
+        """
         self.name = name
         self.output_dict = output_dict
         self.verbose = verbose
@@ -97,8 +104,7 @@ class Timer():
         self.toc = time.time()
         elapsed_time = self.toc - self.tic
         if self.output_dict is not None:
-             self.output_dict[self.name] = elapsed_time
+            self.output_dict[self.name] = elapsed_time
         if self.verbose:
-            print_str = '%s elapsed time: %f'%(self.name, elapsed_time)
+            print_str = '%s elapsed time: %f' % (self.name, elapsed_time)
             self.logger.info(print_str)
-

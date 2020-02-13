@@ -27,10 +27,9 @@ class Monitor(MonitorBase):
     ----------------
     """
 
-    default_hyper_params = dict(
-    )
+    default_hyper_params = dict()
 
-    def __init__(self,):
+    def __init__(self, ):
         r"""
         Arguments
         ---------

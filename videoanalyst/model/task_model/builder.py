@@ -16,6 +16,7 @@ TASK_TASKMODELS = dict(
     vos=VOS_TASKMODELS,
 )
 
+
 def build(task: str,
           cfg: CfgNode,
           backbone: ModuleBase,

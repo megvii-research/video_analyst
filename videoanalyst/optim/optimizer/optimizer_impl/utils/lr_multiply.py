@@ -33,13 +33,15 @@ def build(cfg: List[str]):
         compiled_regex = re.compile(mult_cfg["regex"])
         schedule["compiled_regex"].append(compiled_regex)
 
-    multipiler = LRMultiplier(schedule["name"], schedule["compiled_regex"], schedule["ratio"])
+    multipiler = LRMultiplier(schedule["name"], schedule["compiled_regex"],
+                              schedule["ratio"])
 
     return multipiler
-    
+
 
 class LRMultiplier():
-    def __init__(self, names: List[str], compiled_regexes: List, ratios: List[float]):
+    def __init__(self, names: List[str], compiled_regexes: List,
+                 ratios: List[float]):
         """multiplier
         
         Parameters
@@ -67,7 +69,7 @@ class LRMultiplier():
         param_groups = divide_into_param_groups(module, compiled_regexes)
 
         return param_groups
-    
+
     def multiply_lr(self, optimizer: optim.Optimizer):
         """Multiply lr 
         
@@ -82,20 +84,22 @@ class LRMultiplier():
 
 
 def divide_into_param_groups(module, compiled_regexes):
-    param_groups = [dict(params=list(),) for _ in range(len(compiled_regexes))]
+    param_groups = [dict(params=list(), ) for _ in range(len(compiled_regexes))]
     for ith, compiled_regex in enumerate(compiled_regexes):
         for param_name, param in module.named_parameters():
             if (compiled_regex.search(param_name) is not None):
                 param_groups[ith]['params'].append(param)
-            
+
     return param_groups
+
 
 def multiply_lr(optimizer, lr_ratios, verbose=False):
     """ apply learning rate ratio for per-layer adjustment """
     assert len(optimizer.param_groups) == len(lr_ratios)
-    for ith, (param_group, lr_ratio) in enumerate(zip(optimizer.param_groups, lr_ratios)):
+    for ith, (param_group,
+              lr_ratio) in enumerate(zip(optimizer.param_groups, lr_ratios)):
         param_group['lr'] *= lr_ratio
         if verbose:
-            print("%d params in param_group %d multiplied by ratio %.2g"%(len(param_group['params']), ith, lr_ratio))
+            print("%d params in param_group %d multiplied by ratio %.2g" %
+                  (len(param_group['params']), ith, lr_ratio))
     return optimizer
-

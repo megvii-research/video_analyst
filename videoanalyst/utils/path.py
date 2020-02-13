@@ -3,6 +3,7 @@ import os.path as osp
 
 from yacs.config import CfgNode
 
+
 def ensure_dir(dir_path: str):
     r"""
     Ensure the existence of path (i.e. mkdir -p)
@@ -16,7 +17,11 @@ def ensure_dir(dir_path: str):
     else:
         os.makedirs(dir_path)
 
-def complete_path_wt_root_in_cfg(cfg: CfgNode, root_dir: str, ):
+
+def complete_path_wt_root_in_cfg(
+    cfg: CfgNode,
+    root_dir: str,
+):
     r"""
     Arguments
     ---------
@@ -28,10 +33,10 @@ def complete_path_wt_root_in_cfg(cfg: CfgNode, root_dir: str, ):
     if isinstance(cfg, CfgNode):
         for k in cfg:
             cfg[k] = complete_path_wt_root_in_cfg(cfg[k], root_dir)
-    elif isinstance(cfg, str) and len(cfg)>0:
+    elif isinstance(cfg, str) and len(cfg) > 0:
         realpath = osp.join(root_dir, cfg)
         if osp.exists(realpath):
             cfg = realpath
             # print(realpath)
-    
+
     return cfg

@@ -14,6 +14,7 @@ from yacs.config import CfgNode
 from ..grad_modifier_base import TRACK_GRAD_MODIFIERS, VOS_GRAD_MODIFIERS, GradModifierBase
 from .utils.freeze import apply_freeze_schedule
 
+
 @TRACK_GRAD_MODIFIERS.register
 @VOS_GRAD_MODIFIERS.register
 class DynamicFreezer(GradModifierBase):
@@ -27,9 +28,8 @@ class DynamicFreezer(GradModifierBase):
     phases: Dict
 
     """
-    default_hyper_params = dict(
-        schedule=[],
-    )
+    default_hyper_params = dict(schedule=[], )
+
     def __init__(self, ) -> None:
         super().__init__()
 
@@ -47,7 +47,7 @@ class DynamicFreezer(GradModifierBase):
                 schedule.append(mult_cfg)
             self._state["schedule"] = schedule
 
-    def modify_grad(self, module: nn.Module, epoch: int, iteration: int=-1):
+    def modify_grad(self, module: nn.Module, epoch: int, iteration: int = -1):
         if (iteration < 0) and ("schedule" in self._state):
             # epoch-level scheduling
             apply_freeze_schedule(module, epoch, self._state["schedule"])

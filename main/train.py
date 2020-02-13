@@ -31,6 +31,7 @@ def make_parser():
 
     return parser
 
+
 if __name__ == '__main__':
     # parsing
     parser = make_parser()
@@ -52,7 +53,8 @@ if __name__ == '__main__':
     # build optimizer
     optimizer = optim_builder.build(task, task_cfg.optim, model)
     # build trainer
-    trainer = engine_builder.build(task, task_cfg.trainer, "trainer", optimizer, dataloader)
+    trainer = engine_builder.build(task, task_cfg.trainer, "trainer", optimizer,
+                                   dataloader)
     # trainer.init_train()
     logger.info("Start training")
     while not trainer.is_completed():

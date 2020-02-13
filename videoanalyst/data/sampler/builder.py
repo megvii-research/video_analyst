@@ -9,7 +9,8 @@ from ..dataset import builder as dataset_builder
 from ..filter import builder as filter_builder
 from videoanalyst.utils import merge_cfg_into_hps
 
-def build(task: str, cfg: CfgNode, seed: int=0) -> DatasetBase:
+
+def build(task: str, cfg: CfgNode, seed: int = 0) -> DatasetBase:
     r"""
     Arguments
     ---------
@@ -29,7 +30,8 @@ def build(task: str, cfg: CfgNode, seed: int=0) -> DatasetBase:
     datasets = dataset_builder.build(task, dataset_cfg)
 
     filter_cfg = getattr(submodules_cfg, "filter", None)
-    filt = filter_builder.build(task, filter_cfg) if filter_cfg is not None else None
+    filt = filter_builder.build(task,
+                                filter_cfg) if filter_cfg is not None else None
 
     name = cfg.name
     module = MODULES[name](datasets, seed=seed, filt=filt)

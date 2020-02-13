@@ -7,6 +7,7 @@ from yacs.config import CfgNode
 from ..filter_base import TRACK_FILTERS, FilterBase
 from videoanalyst.data.utils.filter_box import filter_unreasonable_training_boxes
 
+
 @TRACK_FILTERS.register
 class TrackPairFilter(FilterBase):
     r"""
@@ -23,7 +24,7 @@ class TrackPairFilter(FilterBase):
 
     def __init__(self) -> None:
         super().__init__()
-        
+
     def __call__(self, data: Dict) -> bool:
         if data is None:
             return True
@@ -32,4 +33,3 @@ class TrackPairFilter(FilterBase):
             im, bbox, self._hyper_params)
 
         return filter_flag
-

@@ -17,9 +17,9 @@ TASK_TEMPLATE_MODULES = dict(
     vos=VOS_TEMPLATE_MODULES,
 )
 
+
 class TemplateModuleBase:
     __metaclass__ = ABCMeta
-
     r"""
     base class for TemplateModule. Reponsible for building tempalte module
 
@@ -58,7 +58,7 @@ class TemplateModuleBase:
             if key not in self._hyper_params:
                 raise KeyError
             self._hyper_params[key] = hps[key]
-            
+
     def update_params(self) -> None:
         r"""
         an interface for update params

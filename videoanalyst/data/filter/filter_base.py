@@ -26,7 +26,6 @@ TASK_FILTERS = dict(
 
 class FilterBase:
     __metaclass__ = ABCMeta
-
     r"""
     base class for Filter. Reponsible for filtering invalid sampled data (e.g. samples with extreme size / ratio)
 
@@ -81,7 +80,7 @@ class FilterBase:
         an interface for update params
         """
 
-    def __call__(self, data:Dict) -> bool:
+    def __call__(self, data: Dict) -> bool:
         r"""
         An interface to filter data
 

@@ -12,10 +12,10 @@ from ..target.builder import build as build_target
 from ..filter.builder import get_config as get_filter_cfg
 from ..dataset.builder import get_config as get_dataset_cfg
 
-
 from videoanalyst.utils import merge_cfg_into_hps
 
-def build(task: str, cfg: CfgNode, seed: int=0) -> DatapipelineBase:
+
+def build(task: str, cfg: CfgNode, seed: int = 0) -> DatapipelineBase:
     r"""
     Arguments
     ---------
@@ -29,7 +29,7 @@ def build(task: str, cfg: CfgNode, seed: int=0) -> DatapipelineBase:
     assert task in TASK_DATAPIPELINES, "invalid task name"
     MODULES = TASK_DATAPIPELINES[task]
 
-    sampler =  build_sampler(task, cfg.sampler, seed=seed)
+    sampler = build_sampler(task, cfg.sampler, seed=seed)
     transformers = build_transformer(task, cfg.transformer, seed=seed)
     target = build_target(task, cfg.target)
 

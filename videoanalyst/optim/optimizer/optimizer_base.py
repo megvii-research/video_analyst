@@ -24,7 +24,6 @@ from torch.optim.optimizer import Optimizer
 from .optimizer_impl.utils.lr_policy import build as build_lr_policy, schedule_lr
 from .optimizer_impl.utils.lr_multiply import build as build_lr_multiplier, multiply_lr
 
-
 TRACK_OPTIMIZERS = Registry('TRACK_OPTIMIZERS')
 VOS_OPTIMIZERS = Registry('VOS_OPTIMIZERS')
 
@@ -33,9 +32,9 @@ TASK_OPTIMIZERS = dict(
     vos=VOS_OPTIMIZERS,
 )
 
+
 class OptimizerBase:
     __metaclass__ = ABCMeta
-
     r"""
     base class for Sampler. Reponsible for sampling from multiple datasets and forming training pair / sequence.
 
@@ -75,7 +74,7 @@ class OptimizerBase:
         self._model = model
         self._optimizer = None
         self._grad_modifier = None
-    
+
     def get_hps(self) -> dict:
         r"""
         Getter function for hyper-parameters
@@ -116,12 +115,13 @@ class OptimizerBase:
             lr_multiplier = build_lr_multiplier(lr_multiplier_cfg)
             self._state["lr_multiplier"] = lr_multiplier
         if "lr_multiplier" in self._state:
-            params = self._state["lr_multiplier"].divide_into_param_groups(self._model)
+            params = self._state["lr_multiplier"].divide_into_param_groups(
+                self._model)
         else:
             params = self._model.parameters()
-        
+
         self._state["params"] = params
-        
+
     # def set_model(self, model: nn.Module):
     #     r"""
     #     Register model to optimize
@@ -133,7 +133,6 @@ class OptimizerBase:
     #     """
     #     self._model = model
 
-    
     def set_grad_modifier(self, grad_modifier):
         self._grad_modifier = grad_modifier
 
@@ -146,7 +145,7 @@ class OptimizerBase:
     #         model to registered in optimizer
     #     """
     #     self._scheduler = scheduler
-            
+
     def zero_grad(self):
         self._optimizer.zero_grad()
 
@@ -155,7 +154,7 @@ class OptimizerBase:
 
     def state_dict(self):
         return self._optimizer.state_dict()
-    
+
     def load_state_dict(self, state_dict):
         self._optimizer.load_state_dict(state_dict)
 
@@ -177,4 +176,3 @@ class OptimizerBase:
 
     def modify_grad(self, epoch, iteration=-1):
         self._grad_modifier.modify_grad(self._model, epoch, iteration)
-

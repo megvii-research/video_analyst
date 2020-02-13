@@ -18,7 +18,7 @@ class IOULoss(ModuleBase):
     default_hyper_params = dict(
         name="iou_loss",
         background=0,
-        ignore_label=-1, 
+        ignore_label=-1,
         weight=1.0,
     )
 
@@ -60,21 +60,23 @@ class IOULoss(ModuleBase):
         loss = -self.safelog(iou)
 
         # from IPython import embed;embed()
-        loss = (loss * mask).sum() / torch.max(mask.sum(),
-                                               self.t_one)
+        loss = (loss * mask).sum() / torch.max(mask.sum(), self.t_one)
         iou = iou.detach()
         iou = (iou * mask).sum() / torch.max(mask.sum(), self.t_one)
         extra = dict(iou=iou)
 
         return loss, extra
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     B = 16
-    HW = 17*17
-    pred_cls = pred_ctr = torch.tensor(np.random.rand(B, HW, 1).astype(np.float32))
+    HW = 17 * 17
+    pred_cls = pred_ctr = torch.tensor(
+        np.random.rand(B, HW, 1).astype(np.float32))
     pred_reg = torch.tensor(np.random.rand(B, HW, 4).astype(np.float32))
 
-    gt_cls = torch.tensor(np.random.randint(2, size=(B, HW, 1)), dtype=torch.int8)
+    gt_cls = torch.tensor(np.random.randint(2, size=(B, HW, 1)),
+                          dtype=torch.int8)
     gt_ctr = torch.tensor(np.random.rand(B, HW, 1).astype(np.float32))
     gt_reg = torch.tensor(np.random.rand(B, HW, 4).astype(np.float32))
 
@@ -87,5 +89,5 @@ if __name__=='__main__':
     criterion_reg = IOULoss()
     loss_reg = criterion_reg(pred_reg, gt_reg, gt_cls)
 
-
-    from IPython import embed;embed()
+    from IPython import embed
+    embed()

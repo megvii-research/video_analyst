@@ -69,7 +69,9 @@ class RegularTrainer(TrainerBase):
 
     def update_params(self, ):
         super(RegularTrainer, self).update_params()
-        self._state["devices"] = [torch.device(dev) for dev in self._hyper_params["devices"]]
+        self._state["devices"] = [
+            torch.device(dev) for dev in self._hyper_params["devices"]
+        ]
         self._state["snapshot_dir"] = osp.join(self._hyper_params["exp_save"],
                                                self._hyper_params["exp_name"])
         self.init_train()
@@ -83,15 +85,15 @@ class RegularTrainer(TrainerBase):
 
         for k in self._losses:
             self._losses[k].to(devs[0])
-        
+
         self.load_snapshot()
 
         if len(self._state["devices"]) > 1:
             self._model = nn.DataParallel(self._model, device_ids=devs)
             logger.info("Use nn.DataParallel for data parallelism")
-        
+
         super(RegularTrainer, self).init_train()
-        
+
     def train(self):
         # epoch counter +1
         self._state["epoch"] += 1
@@ -103,13 +105,14 @@ class RegularTrainer(TrainerBase):
         pbar = tqdm(range(num_iterations))
         self._state["pbar"] = pbar
         self._state["print_str"] = ""
-        
+
         time_dict = OrderedDict()
         for iteration, _ in enumerate(pbar):
             with Timer(name="data", output_dict=time_dict):
                 training_data = next(self._dataloader)
 
-            training_data = move_data_to_device(training_data, self._state["devices"][0])
+            training_data = move_data_to_device(training_data,
+                                                self._state["devices"][0])
 
             schedule_info = self._optimizer.schedule(epoch, iteration)
             self._optimizer.zero_grad()
@@ -122,7 +125,7 @@ class RegularTrainer(TrainerBase):
             loss_extra_dict = OrderedDict()
             for k in self._losses:
                 loss_extra_dict[k] = self._losses[k](pred_data, training_data)
-            
+
             # split losses & extras
             training_losses, extras = OrderedDict(), OrderedDict()
             for k in self._losses:
@@ -132,16 +135,17 @@ class RegularTrainer(TrainerBase):
             loss_weights = OrderedDict()
             for k in self._losses:
                 loss_weights[k] = self._losses[k].get_hps()["weight"]
-            total_loss = [training_losses[k] * loss_weights[k] for k in self._losses]
+            total_loss = [
+                training_losses[k] * loss_weights[k] for k in self._losses
+            ]
             total_loss = sum(total_loss)
 
             # backward propagation
             with Timer(name="bwd", output_dict=time_dict):
                 total_loss.backward()
-            self._optimizer.modify_grad(epoch, iteration)            
+            self._optimizer.modify_grad(epoch, iteration)
             with Timer(name="optim", output_dict=time_dict):
                 self._optimizer.step()
-
 
             trainer_data = dict(
                 schedule_info=schedule_info,
@@ -156,9 +160,9 @@ class RegularTrainer(TrainerBase):
             print_str = self._state["print_str"]
             pbar.set_description(print_str)
 
-
     def is_completed(self):
-        is_completed = (self._state["epoch"]+1 >= self._hyper_params["max_epoch"])
+        is_completed = (self._state["epoch"] + 1 >=
+                        self._hyper_params["max_epoch"])
         return is_completed
 
     def load_snapshot(self, snapshot_file=""):
@@ -173,24 +177,26 @@ class RegularTrainer(TrainerBase):
             snapshot = torch.load(snapshot_file, map_location=dev)
             self._model.load_state_dict(snapshot["model_state_dict"])
             self._optimizer.load_state_dict(snapshot["optimizer_state_dict"])
-            self._state["epoch"] = snapshot["epoch"]+1
-            logger.info("Load snapshot from: %s"%osp.realpath(snapshot_file))
+            self._state["epoch"] = snapshot["epoch"] + 1
+            logger.info("Load snapshot from: %s" % osp.realpath(snapshot_file))
         else:
-            logger.info("%s does not exist, no snapshot loaded."%snapshot_file)
+            logger.info("%s does not exist, no snapshot loaded." %
+                        snapshot_file)
 
-        logger.info("Train from epoch %d" % (self._state["epoch"]+1))
+        logger.info("Train from epoch %d" % (self._state["epoch"] + 1))
 
-    def save_snapshot(self,):
+    def save_snapshot(self, ):
         r""" 
         save snapshot for current epoch
         """
         snapshot_dir = self._state["snapshot_dir"]
         epoch = self._state["epoch"]
-        snapshot_file = osp.join(snapshot_dir, 
-                                 "epoch-{}.pkl".format(epoch))
-        snapshot_dict = {'epoch': epoch,
-                         'model_state_dict': unwrap_model(self._model).state_dict(),
-                         'optimizer_state_dict': self._optimizer.state_dict()}
+        snapshot_file = osp.join(snapshot_dir, "epoch-{}.pkl".format(epoch))
+        snapshot_dict = {
+            'epoch': epoch,
+            'model_state_dict': unwrap_model(self._model).state_dict(),
+            'optimizer_state_dict': self._optimizer.state_dict()
+        }
         ensure_dir(snapshot_dir)
         torch.save(snapshot_dict, snapshot_file)
         while not osp.exists(snapshot_file):
@@ -198,7 +204,7 @@ class RegularTrainer(TrainerBase):
             torch.save(snapshot_dict, snapshot_file)
         logger.info("Snapshot saved at: %s" % snapshot_file)
 
+
 RegularTrainer.default_hyper_params = copy.deepcopy(
     RegularTrainer.default_hyper_params)
-RegularTrainer.default_hyper_params.update(
-    RegularTrainer.extra_hyper_params)
+RegularTrainer.default_hyper_params.update(RegularTrainer.extra_hyper_params)

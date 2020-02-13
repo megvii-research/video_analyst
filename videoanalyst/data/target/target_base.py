@@ -23,9 +23,9 @@ TASK_TARGETS = dict(
     vos=VOS_TARGETS,
 )
 
+
 class TargetBase:
     __metaclass__ = ABCMeta
-
     r"""
     Target maker. 
     Responsible for transform image (e.g. HWC -> 1CHW), generating training target, etc.
@@ -70,6 +70,7 @@ class TargetBase:
             if key not in self._hyper_params:
                 raise KeyError
             self._hyper_params[key] = hps[key]
+
     def update_params(self) -> None:
         r"""
         an interface for update params

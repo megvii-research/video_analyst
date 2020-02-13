@@ -7,6 +7,7 @@ from yacs.config import CfgNode
 from .monitor_base import TASK_MONITORS, MonitorBase
 from videoanalyst.utils.misc import merge_cfg_into_hps
 
+
 def build(task: str, cfg: CfgNode) -> List[MonitorBase]:
     r"""
     Builder function.
@@ -37,6 +38,7 @@ def build(task: str, cfg: CfgNode) -> List[MonitorBase]:
         monitors.append(monitor)
 
     return monitors
+
 
 def get_config() -> Dict[str, CfgNode]:
     cfg_dict = {name: CfgNode() for name in TASK_MONITORS.keys()}

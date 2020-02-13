@@ -144,7 +144,7 @@ class SiamFCppTracker(PipelineBase):
         phase = self._hyper_params['phase_init']
         with torch.no_grad():
             features = self._model(imarray_to_tensor(im_z_crop).to(self.device),
-                                  phase=phase)
+                                   phase=phase)
 
         return features, im_z_crop, avg_chans
 
@@ -380,10 +380,10 @@ class SiamFCppTracker(PipelineBase):
         :return:
             box_in_frame: (4, ), cxywh, box in original frame
         """
-        x = (box_in_crop[..., 0]) / scale_x + target_pos[0] - (x_size //
-                                                               2) / scale_x
-        y = (box_in_crop[..., 1]) / scale_x + target_pos[1] - (x_size //
-                                                               2) / scale_x
+        x = (box_in_crop[...,
+                         0]) / scale_x + target_pos[0] - (x_size // 2) / scale_x
+        y = (box_in_crop[...,
+                         1]) / scale_x + target_pos[1] - (x_size // 2) / scale_x
         w = box_in_crop[..., 2] / scale_x
         h = box_in_crop[..., 3] / scale_x
         box_in_frame = np.stack([x, y, w, h], axis=-1)

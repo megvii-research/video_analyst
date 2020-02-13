@@ -10,6 +10,7 @@ from .datapipeline import builder as datapipeline_builder
 
 from videoanalyst.utils.misc import Timer
 
+
 class AdaptorDataset(Dataset):
     default_hyper_params = dict(
         exp_name="",
@@ -20,7 +21,10 @@ class AdaptorDataset(Dataset):
         nr_image_per_epoch=600000,
     )
 
-    def __init__(self, kwargs: Dict = dict(), num_epochs=1, nr_image_per_epoch=1):
+    def __init__(self,
+                 kwargs: Dict = dict(),
+                 num_epochs=1,
+                 nr_image_per_epoch=1):
         self.datapipeline = None
         self.kwargs = kwargs
         self.num_epochs = num_epochs
@@ -29,8 +33,9 @@ class AdaptorDataset(Dataset):
     def __getitem__(self, item):
         if self.datapipeline is None:
             seed = (torch.initial_seed() + item) % (2**32)
-            self.datapipeline = datapipeline_builder.build(**self.kwargs, seed=seed)
-        
+            self.datapipeline = datapipeline_builder.build(**self.kwargs,
+                                                           seed=seed)
+
         training_data = next(self.datapipeline)
 
         return training_data

@@ -44,7 +44,8 @@ if __name__ == '__main__':
     # build model
     model = model_builder.build(task, task_cfg.model)
     # build pipeline
-    pipeline = pipeline_builder.build_pipeline('track', task_cfg.pipeline, model)
+    pipeline = pipeline_builder.build_pipeline('track', task_cfg.pipeline,
+                                               model)
     # build tester
     testers = tester_builder(task, task_cfg, "tester", pipeline)
     # start engine

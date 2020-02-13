@@ -11,7 +11,8 @@ from videoanalyst.model.loss.builder import build as build_loss
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.utils.misc import Timer
 
-exp_cfg_path = osp.join(ROOT_PATH, "experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml")
+exp_cfg_path = osp.join(ROOT_PATH,
+                        "experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml")
 
 cfg = CfgNode()
 
@@ -22,15 +23,16 @@ task = "track"
 
 losses = build_loss(task, cfg.train.model.losses)
 
-
-if __name__=='__main__':
+if __name__ == '__main__':
     B = 16
-    HW = 17*17
-    pred_cls = pred_ctr = torch.tensor(np.random.rand(B, HW, 1).astype(np.float32))
+    HW = 17 * 17
+    pred_cls = pred_ctr = torch.tensor(
+        np.random.rand(B, HW, 1).astype(np.float32))
     pred_reg = torch.tensor(np.random.rand(B, HW, 4).astype(np.float32))
 
     # gt_cls = torch.tensor(np.random.randint(2, size=(B, HW, 1)), dtype=torch.int8)
-    gt_cls = torch.tensor(np.random.randint(2, size=(B, HW, 1)), dtype=torch.float)
+    gt_cls = torch.tensor(np.random.randint(2, size=(B, HW, 1)),
+                          dtype=torch.float)
     gt_ctr = torch.tensor(np.random.rand(B, HW, 1).astype(np.float32))
     gt_reg = torch.tensor(np.random.rand(B, HW, 4).astype(np.float32))
 
@@ -55,4 +57,5 @@ if __name__=='__main__':
     loss_reg = criterion_reg(pred_data, target_data)
 
     print(loss_cls, loss_ctr)
-    from IPython import embed;embed()
+    from IPython import embed
+    embed()

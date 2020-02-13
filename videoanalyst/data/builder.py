@@ -18,6 +18,7 @@ from videoanalyst.utils import ensure_dir
 
 logger = logging.getLogger("global")
 
+
 def build(task: str, cfg: CfgNode) -> DataLoader:
     r"""
     Arguments
@@ -30,13 +31,16 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
     data_logger = build_data_logger(cfg)
 
     if task == "track":
-        py_dataset = AdaptorDataset(dict(task=task, cfg=cfg), 
-                                    num_epochs=cfg.num_epochs, 
+        py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
+                                    num_epochs=cfg.num_epochs,
                                     nr_image_per_epoch=cfg.nr_image_per_epoch)
 
-        dataloader = DataLoader(py_dataset, batch_size=cfg.minibatch, shuffle=False,
+        dataloader = DataLoader(py_dataset,
+                                batch_size=cfg.minibatch,
+                                shuffle=False,
                                 pin_memory=True,
-                                num_workers=cfg.num_workers, drop_last=True)
+                                num_workers=cfg.num_workers,
+                                drop_last=True)
 
     return iter(dataloader)
 
@@ -68,6 +72,7 @@ def get_config() -> Dict[str, CfgNode]:
 
     return cfg_dict
 
+
 def build_data_logger(cfg: CfgNode) -> logging.Logger:
     r"""Build logger for data module
     
@@ -93,7 +98,7 @@ def build_data_logger(cfg: CfgNode) -> logging.Logger:
     fh.setFormatter(formatter)
     # add file handler
     data_logger.addHandler(fh)
-    logger.info("Data log file registered at: %s"%log_file)
+    logger.info("Data log file registered at: %s" % log_file)
     data_logger.info("Data logger built.")
 
     return data_logger

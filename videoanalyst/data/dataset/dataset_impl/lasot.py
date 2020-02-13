@@ -10,6 +10,7 @@ from videoanalyst.evaluation.got_benchmark.datasets import LaSOT
 from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, DatasetBase
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
+
 @TRACK_DATASETS.register
 class LaSOTDataset(DatasetBase):
     r"""
@@ -28,6 +29,7 @@ class LaSOTDataset(DatasetBase):
         ratio=1,
         max_diff=100,
     )
+
     def __init__(self) -> None:
         r"""
         Create dataset with config

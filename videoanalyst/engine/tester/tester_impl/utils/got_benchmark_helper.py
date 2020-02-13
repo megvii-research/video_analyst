@@ -8,9 +8,12 @@ import cv2
 from videoanalyst.evaluation.got_benchmark.utils.viz import show_frame
 from videoanalyst.pipeline.pipeline_base import PipelineBase
 
-class PipelineTracker(object):
 
-    def __init__(self, name: str, pipeline: PipelineBase, is_deterministic: bool=True):
+class PipelineTracker(object):
+    def __init__(self,
+                 name: str,
+                 pipeline: PipelineBase,
+                 is_deterministic: bool = True):
         """Helper tracker for comptability with 
         
         Parameters
@@ -25,7 +28,7 @@ class PipelineTracker(object):
         self.name = name
         self.is_deterministic = is_deterministic
         self.pipeline = pipeline
-    
+
     def init(self, image: np.array, box):
         """Initialize pipeline tracker
         
@@ -55,7 +58,7 @@ class PipelineTracker(object):
         """
         return self.pipeline.update(image)
 
-    def track(self, img_files: List, box, visualize: bool=False):
+    def track(self, img_files: List, box, visualize: bool = False):
         """Perform tracking on a given video sequence
         
         Parameters

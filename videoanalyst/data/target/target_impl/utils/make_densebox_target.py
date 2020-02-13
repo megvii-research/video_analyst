@@ -21,11 +21,13 @@ def make_densebox_target(gt_boxes, config):
     raw_height, raw_width = x_size, x_size
 
     if gt_boxes.shape[1] == 4:
-        gt_boxes = np.concatenate([gt_boxes, np.ones((gt_boxes.shape[0], 1))], axis=1)  # boxes_cnt x 5
+        gt_boxes = np.concatenate(
+            [gt_boxes, np.ones(
+                (gt_boxes.shape[0], 1))], axis=1)  # boxes_cnt x 5
     # l, t, r, b
     gt_boxes = np.concatenate([np.zeros((1, 5)), gt_boxes])  # boxes_cnt x 5
-    gt_boxes_area = (np.abs((gt_boxes[:, 2] - gt_boxes[:, 0])
-                            * (gt_boxes[:, 3] - gt_boxes[:, 1])))
+    gt_boxes_area = (np.abs(
+        (gt_boxes[:, 2] - gt_boxes[:, 0]) * (gt_boxes[:, 3] - gt_boxes[:, 1])))
     gt_boxes = gt_boxes[np.argsort(gt_boxes_area)]
     boxes_cnt = len(gt_boxes)
 
@@ -42,12 +44,13 @@ def make_densebox_target(gt_boxes, config):
     off_b = -(shift_y[:, :, np.newaxis, np.newaxis] -
               gt_boxes[np.newaxis, np.newaxis, :, 3, np.newaxis])
 
-    center = ((np.minimum(off_l, off_r) * np.minimum(off_t, off_b)) / (
-                np.maximum(off_l, off_r) * np.maximum(off_t, off_b) + eps))
+    center = ((np.minimum(off_l, off_r) * np.minimum(off_t, off_b)) /
+              (np.maximum(off_l, off_r) * np.maximum(off_t, off_b) + eps))
     center = np.squeeze(np.sqrt(np.abs(center)))
     center[:, :, 0] = 0
 
-    offset = np.concatenate([off_l, off_t, off_r, off_b], axis=3)  # h x w x boxes_cnt * 4
+    offset = np.concatenate([off_l, off_t, off_r, off_b],
+                            axis=3)  # h x w x boxes_cnt * 4
     cls = gt_boxes[:, 4]
 
     cls_res_list = []
@@ -72,23 +75,29 @@ def make_densebox_target(gt_boxes, config):
         shift_x = np.arange(0, fm_width)
         shift_y = np.arange(0, fm_height)
         shift_x, shift_y = np.meshgrid(shift_x, shift_y)
-        xy = np.vstack((shift_y.ravel(), shift_x.ravel())).transpose()  # (hxw) x 2
+        xy = np.vstack(
+            (shift_y.ravel(), shift_x.ravel())).transpose()  # (hxw) x 2
         # floor(stride / 2) + x * stride?
-        off_xy = offset[fm_offset + xy[:, 0] * stride, fm_offset + xy[:, 1] * stride]  # will reduce dim by 1
+        off_xy = offset[fm_offset + xy[:, 0] * stride,
+                        fm_offset + xy[:, 1] * stride]  # will reduce dim by 1
         # off_max_xy = off_xy.max(axis=2)  # max of l,t,r,b
         off_valid = np.zeros((fm_height, fm_width, boxes_cnt))
 
         is_in_boxes = (off_xy > 0).all(axis=2)
         # is_in_layer = (off_max_xy <=
         #         config.sep_win[fm_i]) & (off_max_xy >= config.sep_win[fm_i + 1])
-        off_valid[xy[:, 0], xy[:, 1], :] = is_in_boxes #& is_in_layer  # xy[:, 0], xy[:, 1] reduce dim by 1 to match is_in_boxes.shape & is_in_layer.shape
-        off_valid[:, :, 0] = 0   # h x w x boxes_cnt
+        off_valid[
+            xy[:, 0],
+            xy[:,
+               1], :] = is_in_boxes  #& is_in_layer  # xy[:, 0], xy[:, 1] reduce dim by 1 to match is_in_boxes.shape & is_in_layer.shape
+        off_valid[:, :, 0] = 0  # h x w x boxes_cnt
 
-        hit_gt_ind = np.argmax(off_valid, axis=2) # h x w
+        hit_gt_ind = np.argmax(off_valid, axis=2)  # h x w
 
         # gt_boxes
         gt_boxes_res = np.zeros((fm_height, fm_width, 4))
-        gt_boxes_res[xy[:, 0], xy[:, 1]] = gt_boxes[hit_gt_ind[xy[:, 0], xy[:, 1]], :4]
+        gt_boxes_res[xy[:, 0], xy[:, 1]] = gt_boxes[hit_gt_ind[xy[:, 0],
+                                                               xy[:, 1]], :4]
         gt_boxes_res_list.append(gt_boxes_res.reshape(-1, 4))
 
         # cls
@@ -98,13 +107,17 @@ def make_densebox_target(gt_boxes, config):
 
         # center
         center_res = np.zeros((fm_height, fm_width))
-        center_res[xy[:, 0], xy[:, 1]] = center[fm_offset+xy[:, 0] * stride,
-                                                fm_offset+xy[:, 1] * stride, hit_gt_ind[xy[:, 0], xy[:, 1]]]
+        center_res[xy[:, 0], xy[:, 1]] = center[fm_offset + xy[:, 0] * stride,
+                                                fm_offset + xy[:, 1] * stride,
+                                                hit_gt_ind[xy[:, 0], xy[:, 1]]]
         ctr_res_list.append(center_res.reshape(-1))
 
-    cls_res_final = np.concatenate(cls_res_list, axis=0)[:, np.newaxis].astype(np.float32)
-    ctr_res_final = np.concatenate(ctr_res_list, axis=0)[:, np.newaxis].astype(np.float32)
-    gt_boxes_res_final = np.concatenate(gt_boxes_res_list, axis=0).astype(np.float32)
+    cls_res_final = np.concatenate(cls_res_list,
+                                   axis=0)[:, np.newaxis].astype(np.float32)
+    ctr_res_final = np.concatenate(ctr_res_list,
+                                   axis=0)[:, np.newaxis].astype(np.float32)
+    gt_boxes_res_final = np.concatenate(gt_boxes_res_list,
+                                        axis=0).astype(np.float32)
 
     # choose pos and neg point
     # labels = np.empty((len(cls_res_final),), dtype=np.float32)
@@ -132,8 +145,6 @@ def make_densebox_target(gt_boxes, config):
 
 if __name__ == '__main__':
     # gt_boxes
-    gt_boxes = np.asarray([[13,25,100,140,1]])
-    resized_image = np.zeros((255,255,3))
+    gt_boxes = np.asarray([[13, 25, 100, 140, 1]])
+    resized_image = np.zeros((255, 255, 3))
     densebox_target(gt_boxes, resized_image.shape)
-
-

@@ -6,7 +6,7 @@ from yacs.config import CfgNode
 
 from .trainer_base import TASK_TRAINERS, TrainerBase
 from ..monitor.monitor_base import TASK_MONITORS
-from ..monitor import builder as monitor_builder 
+from ..monitor import builder as monitor_builder
 from videoanalyst.utils.misc import merge_cfg_into_hps
 
 from videoanalyst.data import builder as dataloder_builder
@@ -35,7 +35,7 @@ def build(task: str, cfg: CfgNode, optimizer, dataloader) -> TrainerBase:
     """
     assert task in TASK_TRAINERS, "no trainer for task {}".format(task)
     MODULES = TASK_TRAINERS[task]
-    
+
     # build monitors
     if "monitors" in cfg:
         monitor_cfg = cfg.monitors

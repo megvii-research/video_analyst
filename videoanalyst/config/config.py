@@ -9,7 +9,6 @@ from videoanalyst.model.builder import get_config as get_model_cfg
 from videoanalyst.data.builder import get_config as get_data_cfg
 from videoanalyst.optim.builder import get_config as get_optim_cfg
 
-
 cfg = CfgNode()  # root_cfg
 task_list = ["track"]
 default_str = "unknown"

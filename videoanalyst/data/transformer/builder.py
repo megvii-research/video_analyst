@@ -8,7 +8,7 @@ from .transformer_base import TASK_TRANSFORMERS, TransformerBase
 from videoanalyst.utils import merge_cfg_into_hps
 
 
-def build(task: str, cfg: CfgNode, seed: int=0) -> TransformerBase:
+def build(task: str, cfg: CfgNode, seed: int = 0) -> TransformerBase:
     r"""
     Arguments
     ---------

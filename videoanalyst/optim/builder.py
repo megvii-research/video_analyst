@@ -11,9 +11,9 @@ from .grad_modifier import builder as grad_modifier_builder
 
 
 def build(
-        task: str,
-        cfg: CfgNode,
-        model: nn.Module,
+    task: str,
+    cfg: CfgNode,
+    model: nn.Module,
 ):
     r"""
     Builder function.
@@ -32,7 +32,7 @@ def build(
     """
     optimizer = optimizer_builder.build(task, cfg.optimizer, model)
     if "grad_modifier" in cfg:
-        grad_modifier = grad_modifier_builder.build(task, cfg.grad_modifier)    
+        grad_modifier = grad_modifier_builder.build(task, cfg.grad_modifier)
         optimizer.set_grad_modifier(grad_modifier)
 
     return optimizer

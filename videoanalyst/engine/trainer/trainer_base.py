@@ -9,14 +9,14 @@ from videoanalyst.utils import Registry
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.optim.optimizer.optimizer_base import OptimizerBase
 
-
 TRACK_TRAINERS = Registry('TRACK_TRAINERS')
-VOS_TRAINERS= Registry('VOS_TRAINERS')
+VOS_TRAINERS = Registry('VOS_TRAINERS')
 
 TASK_TRAINERS = dict(
     track=TRACK_TRAINERS,
     vos=VOS_TRAINERS,
 )
+
 
 class TrainerBase:
     r"""
@@ -68,13 +68,13 @@ class TrainerBase:
         r"""
         an interface for update params
         """
+
     def init_train(self):
         r"""
         an interface to process pre-train overhead before training
         """
         for monitor in self._monitors:
             monitor.init(self._state)
-
 
     def train(self):
         r"""
@@ -83,7 +83,7 @@ class TrainerBase:
 
     def is_completed(self):
         r""""""
-        
+
     def set_dataloader(self, dataloader: DataLoader):
         r""""""
         self._dataloader = dataloader

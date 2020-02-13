@@ -5,6 +5,7 @@ import os.path as osp
 import numpy as np
 import cv2
 
+
 class VideoWriter(object):
     """
     Video writer which handles video recording overhead
@@ -34,14 +35,15 @@ class VideoWriter(object):
         if self.writer is None:
             return
         h, w = frame.shape[:2]
-        h_rsz, w_rsz = int(h*self.scale), int(w*self.scale)
+        h_rsz, w_rsz = int(h * self.scale), int(w * self.scale)
         frame = cv2.resize(frame, (w_rsz, h_rsz))
         if self.writer is None:
             # from IPython import embed;embed()
             video_dir = osp.dirname(osp.realpath(self.video_file))
             if not osp.exists(video_dir):
                 os.makedirs(video_dir)
-            self.writer = cv2.VideoWriter(self.video_file, cv2.VideoWriter_fourcc(*'MJPG'),
+            self.writer = cv2.VideoWriter(self.video_file,
+                                          cv2.VideoWriter_fourcc(*'MJPG'),
                                           self.fps, tuple(frame.shape[1::-1]))
         self.writer.write(frame)
 
@@ -53,7 +55,7 @@ class VideoWriter(object):
         if self.writer is None:
             return
         self.writer.release()
-        print('Video saved at %s'%self.video_file)
+        print('Video saved at %s' % self.video_file)
 
     def __del__(self):
         if self.writer is None:

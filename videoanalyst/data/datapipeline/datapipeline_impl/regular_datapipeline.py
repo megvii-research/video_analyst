@@ -9,6 +9,7 @@ from ..datapipeline_base import TRACK_DATAPIPELINES, DatapipelineBase
 from ...sampler.sampler_base import SamplerBase
 from videoanalyst.utils import convert_data_to_dtype
 
+
 @TRACK_DATAPIPELINES.register
 class RegularDatapipeline(DatapipelineBase):
     r"""
@@ -17,11 +18,13 @@ class RegularDatapipeline(DatapipelineBase):
     Hyper-parameters
     ----------------
     """
-    default_hyper_params = dict(
-    )
+    default_hyper_params = dict()
 
-    def __init__(self, sampler: SamplerBase, 
-                 pipeline: List = [], ) -> None:
+    def __init__(
+            self,
+            sampler: SamplerBase,
+            pipeline: List = [],
+    ) -> None:
         super().__init__()
         self.sampler = sampler
         self.pipeline = pipeline

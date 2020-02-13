@@ -14,6 +14,7 @@ TASK_BACKBONES = dict(
     vos=VOS_BACKBONES,
 )
 
+
 def build(task: str, cfg: CfgNode):
     r"""
     Builder function.

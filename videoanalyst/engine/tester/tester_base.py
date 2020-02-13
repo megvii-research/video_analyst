@@ -16,6 +16,7 @@ TASK_TESTERS = dict(
     vos=VOS_TESTERS,
 )
 
+
 class TesterBase:
     r"""
     Tester base class (e.g. procedure defined for tracker / segmenter / etc.)
@@ -40,7 +41,7 @@ class TesterBase:
             self.default_hyper_params)  # mapping-like object
         self._state = dict()  # pipeline state
         self._pipeline = pipeline
-    
+
     def get_hps(self) -> dict():
         r"""
         Getter function for hyper-parameters
@@ -75,6 +76,7 @@ class TesterBase:
         r"""
         an interface for update params
         """
+
     def test(self):
         r"""
         an interface to start testing

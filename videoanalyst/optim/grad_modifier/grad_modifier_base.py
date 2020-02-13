@@ -25,9 +25,9 @@ TASK_GRAD_MODIFIERS = dict(
     vos=VOS_GRAD_MODIFIERS,
 )
 
+
 class GradModifierBase:
     __metaclass__ = ABCMeta
-
     r"""
     base class for GradModifier. Reponsible for scheduling optimizer (learning rate) during training
 
@@ -79,13 +79,13 @@ class GradModifierBase:
             if key not in self._hyper_params:
                 raise KeyError
             self._hyper_params[key] = hps[key]
-            
+
     def update_params(self) -> None:
         r"""
         an interface for update params
         """
-    
-    def modify_grad(self, module: nn.Module, epoch: int, iteration: int=-1):
+
+    def modify_grad(self, module: nn.Module, epoch: int, iteration: int = -1):
         r"""
         Schedule the underlying optimizer/model
         
@@ -100,5 +100,3 @@ class GradModifierBase:
         Dict:
             dict containing the schedule state
         """
-        
-        
