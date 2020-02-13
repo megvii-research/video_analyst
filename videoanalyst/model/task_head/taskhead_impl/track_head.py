@@ -87,8 +87,6 @@ class DenseboxHead(ModuleBase):
         bbox = r_out
 
         for i in range(0, num_conv3x3):
-            # cls = self.cls_conv3x3_list[i](cls)
-            # bbox = self.bbox_conv3x3_list[i](bbox)
             cls = getattr(self, 'cls_p5_conv%d' % (i + 1))(cls)
             bbox = getattr(self, 'bbox_p5_conv%d' % (i + 1))(bbox)
 
@@ -134,7 +132,6 @@ class DenseboxHead(ModuleBase):
         self.cls_conv3x3_list = []
         self.bbox_conv3x3_list = []
         for i in range(num_conv3x3):
-            # is_last_conv = (i >= num_conv3x3)
             cls_conv3x3 = conv_bn_relu(head_width,
                                        head_width,
                                        stride=1,
@@ -178,10 +175,8 @@ class DenseboxHead(ModuleBase):
     def _initialize_conv(self,):
         num_conv3x3 = self._hyper_params['num_conv3x3']
         conv_weight_std = self._hyper_params['conv_weight_std']
-        # head_conv_bn = self._hyper_params['head_conv_bn']
-        # head_width = self._hyper_params['head_width']
-        # initialze head
 
+        # initialze head
         conv_list = []
         for i in range(num_conv3x3):
             conv_list.append(getattr(self, 'cls_p5_conv%d' % (i + 1)).conv)
@@ -190,8 +185,6 @@ class DenseboxHead(ModuleBase):
         conv_list.append(self.cls_score_p5.conv)
         conv_list.append(self.ctr_score_p5.conv)
         conv_list.append(self.bbox_offsets_p5.conv)
-        # conv_list = [self.cls_p5_conv1.conv, self.cls_p5_conv2.conv, self.cls_score_p5.conv, self.ctr_score_p5.conv,
-        #              self.bbox_p5_conv1.conv, self.bbox_p5_conv2.conv, self.bbox_offsets_p5.conv]
         conv_classifier = [self.cls_score_p5.conv]
         assert all(elem in conv_list for elem in conv_classifier)
 
@@ -208,8 +201,7 @@ class DenseboxHead(ModuleBase):
             if conv in conv_classifier:
                 torch.nn.init.constant_(conv.bias, torch.tensor(bv))
             else:
-                # torch.nn.init.constant_(conv.bias, 0)
-                # from PyTorch default implementation
+                # torch.nn.init.constant_(conv.bias, 0)  # from PyTorch default implementation
                 fan_in, _ = nn.init._calculate_fan_in_and_fan_out(conv.weight)
                 bound = 1 / np.sqrt(fan_in)
                 nn.init.uniform_(conv.bias, -bound, bound)

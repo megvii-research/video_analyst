@@ -32,10 +32,8 @@ def build(cfg: List[str]):
         schedule["ratio"].append(mult_cfg["ratio"])
         compiled_regex = re.compile(mult_cfg["regex"])
         schedule["compiled_regex"].append(compiled_regex)
-        # schedule["filter"].append(lambda s: re.compile(mult_cfg["regex"]).search(s) is not None)
 
     multipiler = LRMultiplier(schedule["name"], schedule["compiled_regex"], schedule["ratio"])
-    # from IPython import embed;embed()
 
     return multipiler
     
@@ -56,7 +54,6 @@ class LRMultiplier():
         self.names = names
         self.compiled_regexes = compiled_regexes
         self.ratios = ratios
-        # from IPython import embed;embed()
 
     def divide_into_param_groups(self, module: nn.Module):
         """divide into param_groups which need to be set to torch.optim.Optimizer
@@ -85,13 +82,11 @@ class LRMultiplier():
 
 
 def divide_into_param_groups(module, compiled_regexes):
-    # param_groups = [{'params': group_filter(module)} for group_filter in compiled_regexes]
     param_groups = [dict(params=list(),) for _ in range(len(compiled_regexes))]
     for ith, compiled_regex in enumerate(compiled_regexes):
         for param_name, param in module.named_parameters():
             if (compiled_regex.search(param_name) is not None):
                 param_groups[ith]['params'].append(param)
-    # from IPython import embed;embed()
             
     return param_groups
 

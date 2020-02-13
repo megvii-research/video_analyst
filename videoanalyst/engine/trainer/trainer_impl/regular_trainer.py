@@ -99,9 +99,7 @@ class RegularTrainer(TrainerBase):
         max_epoch = self._hyper_params["max_epoch"]
         num_iterations = self._hyper_params["num_iterations"]
 
-        # self._optimizer.schedule_freeze(epoch)
         self._optimizer.modify_grad(epoch)
-        # from IPython import embed;embed()
         pbar = tqdm(range(num_iterations))
         self._state["pbar"] = pbar
         self._state["print_str"] = ""
@@ -114,7 +112,6 @@ class RegularTrainer(TrainerBase):
             training_data = move_data_to_device(training_data, self._state["devices"][0])
 
             schedule_info = self._optimizer.schedule(epoch, iteration)
-            # from IPython import embed;embed()
             self._optimizer.zero_grad()
 
             # forward propagation
@@ -138,7 +135,6 @@ class RegularTrainer(TrainerBase):
             total_loss = [training_losses[k] * loss_weights[k] for k in self._losses]
             total_loss = sum(total_loss)
 
-            # from IPython import embed;embed()
             # backward propagation
             with Timer(name="bwd", output_dict=time_dict):
                 total_loss.backward()

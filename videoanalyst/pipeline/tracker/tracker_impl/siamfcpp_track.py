@@ -107,14 +107,24 @@ class SiamFCppTracker(PipelineBase):
             (hps['score_size'] - 1) * hps['total_stride']) // 2
         self._hyper_params = hps
 
-    def feature(self, im, target_pos, target_sz, avg_chans=None):
-        r"""
-        Extract feature
-        :param im: initial frame
-        :param target_pos: target position (x, y)
-        :param target_sz: target size (w, h)
-        :param avg_chans: channel mean values
-        :return:
+    def feature(self, im: np.array, target_pos, target_sz, avg_chans=None):
+        """Extract feature
+
+        Parameters
+        ----------
+        im : np.array
+            initial frame
+        target_pos : 
+            target position (x, y)
+        target_sz : [type]
+            target size (w, h)
+        avg_chans : [type], optional
+            channel mean values, (B, G, R), by default None
+        
+        Returns
+        -------
+        [type]
+            [description]
         """
         if avg_chans is None:
             avg_chans = np.mean(im, axis=(0, 1))

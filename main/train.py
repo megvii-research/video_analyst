@@ -37,7 +37,6 @@ if __name__ == '__main__':
     parsed_args = parser.parse_args()
     # experiment config
     exp_cfg_path = osp.realpath(parsed_args.config)
-    # from IPython import embed;embed() 
     root_cfg.merge_from_file(exp_cfg_path)
     logger.info("Load experiment configuration at: %s" % exp_cfg_path)
     # resolve config
@@ -54,7 +53,6 @@ if __name__ == '__main__':
     optimizer = optim_builder.build(task, task_cfg.optim, model)
     # build trainer
     trainer = engine_builder.build(task, task_cfg.trainer, "trainer", optimizer, dataloader)
-    # from IPython import embed;embed()
     # trainer.init_train()
     logger.info("Start training")
     while not trainer.is_completed():

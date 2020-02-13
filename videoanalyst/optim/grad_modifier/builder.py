@@ -45,6 +45,5 @@ def get_config() -> Dict[str, CfgNode]:
             hps = module.default_hyper_params
             for hp_name in hps:
                 cfg[name][hp_name] = hps[hp_name]
-    # from IPython import embed;embed()
 
     return cfg_dict

@@ -7,7 +7,6 @@ import cv2
 
 from videoanalyst.pipeline.utils.misc import tensor_to_imarray, tensor_to_numpy
 
-# def show_img_FCOS(config, image_rand_focus, target_img, gt_target, distractor_boxes_recentered=None, dataset='untitled'):
 def show_img_FCOS(cfg, training_data, distractor_boxes_recentered=[], dataset='untitled'):
     r"""
     Visualize training data
@@ -34,7 +33,6 @@ def show_img_FCOS(cfg, training_data, distractor_boxes_recentered=[], dataset='u
     color['neg'] = (255, 0, 0)
     color['ign'] = (255, 255, 255)
     # to prove the correctness of the gt box and sample point
-    # from IPython import embed;embed()
     gts = gt_target[gt_target[:, 0] == 1, :][:, 2:]
 
     show_img = cv2.resize(image_rand_focus, (x_size, x_size))

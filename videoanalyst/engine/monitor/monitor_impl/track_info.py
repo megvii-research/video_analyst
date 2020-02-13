@@ -11,7 +11,6 @@ from tqdm import tqdm
 import torch
 
 from ..monitor_base import TRACK_MONITORS, MonitorBase
-# from videoanalyst.utils import ensure_dir
 
 logger = logging.getLogger("global")
 

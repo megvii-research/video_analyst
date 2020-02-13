@@ -83,18 +83,10 @@ class TrainerBase:
 
     def is_completed(self):
         r""""""
-
-    # def set_model(self, model: ModuleBase):
-    #     r""""""
-    #     self._model = model
-
+        
     def set_dataloader(self, dataloader: DataLoader):
         r""""""
         self._dataloader = dataloader
-
-    # def set_losses(self, losses: ModuleBase):
-    #     r""""""
-    #     self._losses = losses
 
     def set_optimizer(self, optimizer: OptimizerBase):
         r""""""

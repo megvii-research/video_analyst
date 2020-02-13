@@ -27,7 +27,6 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
     cfg: CfgNode
         node name: data
     """
-    # assert task in TASK_SAMPLERS, "invalid task name"
     data_logger = build_data_logger(cfg)
 
     if task == "track":

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*
-
 from yacs.config import CfgNode
 
 from .tester import builder as tester_builder

@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*
 """
-@author: jemmy li
-@contact: zengarden2009@gmail.com
-
-Adapted for ResearchTracking by Yinda XU: xuyinda@megvii.com
-
 Support LR(Learning Rate) scheduling for training
 Usage:
 In train.py:
@@ -31,7 +26,6 @@ Visulize scheduled LR
                           ExponentialLR(start_lr=1e-1, end_lr=1e-4, max_epoch=15, max_iter=5000))
     plot_LR(lr_scheduler, 'Exponential decay with warmup')
 See the bottom of code for more plot examples.
-
 """
 
 from abc import ABCMeta, abstractmethod

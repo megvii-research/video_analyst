@@ -10,12 +10,9 @@ from videoanalyst.data.builder import get_config as get_data_cfg
 from videoanalyst.optim.builder import get_config as get_optim_cfg
 
 
-cfg = CfgNode()
-
+cfg = CfgNode()  # root_cfg
 task_list = ["track"]
-
 default_str = "unknown"
-
 cfg["task_name"] = default_str
 
 # default configuration for test
@@ -28,7 +25,6 @@ for task in task_list:
     test_cfg[task]["model"] = get_model_cfg()[task]
     test_cfg[task]["pipeline"] = get_pipeline_cfg()[task]
     test_cfg[task]["tester"] = get_tester_cfg()[task]
-    # cfg[task]["engine"] = get_engine_cfg()[task]
     test_cfg[task]["data"] = get_data_cfg()[task]
 
 # default configuration for train
@@ -41,7 +37,6 @@ for task in task_list:
     train_cfg[task]["model"] = get_model_cfg()[task]
     train_cfg[task]["pipeline"] = get_pipeline_cfg()[task]
     train_cfg[task]["tester"] = get_tester_cfg()[task]
-    # train_cfg[task]["engine"] = get_engine_cfg()[task]
     train_cfg[task]["data"] = get_data_cfg()[task]
     train_cfg[task]["optim"] = get_optim_cfg()[task]
     train_cfg[task]["trainer"] = get_trainer_cfg()[task]

@@ -16,7 +16,6 @@ from torch import optim
 from yacs.config import CfgNode
 
 from videoanalyst.utils import Registry
-# from videoanalyst.optim.optimizer.optimizer_base import OptimizerBase
 
 TRACK_GRAD_MODIFIERS = Registry('TRACK_GRAD_MODIFIER')
 VOS_GRAD_MODIFIERS = Registry('VOS_GRAD_MODIFIER')

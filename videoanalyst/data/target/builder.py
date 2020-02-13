@@ -22,7 +22,6 @@ def build(task: str, cfg: CfgNode) -> TargetBase:
     MODULES = TASK_TARGETS[task]
 
     name = cfg.name
-    # from IPython import embed;embed()
     module = MODULES[name]()
     hps = module.get_hps()
     hps = merge_cfg_into_hps(cfg[name], hps)

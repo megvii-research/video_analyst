@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from typing import Dict, List
 
 from yacs.config import CfgNode
@@ -42,10 +41,10 @@ def build(task: str, cfg: CfgNode, seed: int=0) -> DatapipelineBase:
     name = cfg.name
     module = MODULES[name](sampler, pipeline)
 
-    # hps = module.get_hps()
-    # hps = merge_cfg_into_hps(cfg[name], hps)
-    # module.set_hps(hps)
-    # module.update_params()
+    hps = module.get_hps()
+    hps = merge_cfg_into_hps(cfg[name], hps)
+    module.set_hps(hps)
+    module.update_params()
 
     return module
 
@@ -67,6 +66,5 @@ def get_config() -> Dict[str, CfgNode]:
         cfg["submodules"] = CfgNode()
         cfg["submodules"] = get_filter_cfg()
         cfg["submodules"] = get_dataset_cfg()
-
 
     return cfg_dict

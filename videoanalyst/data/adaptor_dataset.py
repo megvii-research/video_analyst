@@ -6,7 +6,6 @@ from torch.utils.data import Dataset, DataLoader
 import torch.multiprocessing
 torch.multiprocessing.set_sharing_strategy('file_system')
 
-# from .datapipeline.builder import build as build_datapipeline
 from .datapipeline import builder as datapipeline_builder
 
 from videoanalyst.utils.misc import Timer
