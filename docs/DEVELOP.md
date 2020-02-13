@@ -68,7 +68,7 @@ Trainer
 │       ├── Backbone                  # feature extractor
 │       ├── Neck                      # mid-level feature map operation (e.g. cross-correlation)
 │       └── Head                      # task head (bbox regressor, mask decoder, etc.)│
-└── Process                           # define monitoring utils (e.g. pbar.set_description, tensorboard, etc.)
+└── Monitor                           # monitoring (e.g. pbar.set_description, tensorboard, etc.)
 ```
 
 #### Trainer Building Process (Functional Representation)
@@ -96,7 +96,15 @@ Tester
 
 Remarks:
 
-- Pipeline object can run standalone.
+- Pipeline object can run standalone. See [docs/PIPELINE_API.md](PIPELINE_API.md) for detail.
+
+## Training
+
+### Regex
+
+### Scheduler
+
+### Grad modifier
 
 ## Misc
 

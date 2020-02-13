@@ -32,8 +32,8 @@ class GOT10kTester(TesterBase):
         data_root="datasets/GOT-10k",
         subsets=["val"], # (val|test)
     )
-    def __init__(self, ):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super(GOT10kTester, self).__init__(*args, **kwargs)
         # self._experiment = None
 
     def update_params(self):

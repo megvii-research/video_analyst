@@ -33,8 +33,8 @@ def build(task: str, cfg: CfgNode, optimizer, dataloader) -> TrainerBase:
     TrainerBase
         tester built by builder
     """
-    assert task in TASK_TRAINERS, "no tester for task {}".format(task)
-    MODULE = TASK_TRAINERS[task]
+    assert task in TASK_TRAINERS, "no trainer for task {}".format(task)
+    MODULES = TASK_TRAINERS[task]
     
     # build monitors
     if "monitors" in cfg:
@@ -44,7 +44,7 @@ def build(task: str, cfg: CfgNode, optimizer, dataloader) -> TrainerBase:
         monitors = []
 
     name = cfg.name
-    trainer = MODULE[name](optimizer, dataloader, monitors)
+    trainer = MODULES[name](optimizer, dataloader, monitors)
     hps = trainer.get_hps()
     hps = merge_cfg_into_hps(cfg[name], hps)
     trainer.set_hps(hps)
@@ -64,13 +64,13 @@ def get_config() -> Dict[str, CfgNode]:
     """
     cfg_dict = {name: CfgNode() for name in TASK_TRAINERS.keys()}
 
-    for cfg_name, modules in TASK_TRAINERS.items():
+    for cfg_name, MODULES in TASK_TRAINERS.items():
         cfg = cfg_dict[cfg_name]
         cfg["name"] = ""
 
-        for name in modules:
+        for name in MODULES:
             cfg[name] = CfgNode()
-            module = modules[name]
+            module = MODULES[name]
             hps = module.default_hyper_params
             for hp_name in hps:
                 cfg[name][hp_name] = hps[hp_name]

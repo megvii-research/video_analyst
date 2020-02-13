@@ -11,6 +11,10 @@ from videoanalyst.pipeline.pipeline_base import PipelineBase
 TRACK_TESTERS = Registry('TRACK_TESTERS')
 VOS_TESTERS = Registry('VOS_TESTERS')
 
+TASK_TESTERS = dict(
+    track=TRACK_TESTERS,
+    vos=VOS_TESTERS,
+)
 
 class TesterBase:
     r"""
@@ -25,11 +29,17 @@ class TesterBase:
         exp_save="",
     )
 
-    def __init__(self,):
+    def __init__(self, pipeline: PipelineBase):
+        """
+        Parameters
+        ----------
+        pipeline : PipelineBase
+            Pipeline to be tested
+        """
         self._hyper_params = deepcopy(
             self.default_hyper_params)  # mapping-like object
         self._state = dict()  # pipeline state
-        self._pipeline = None
+        self._pipeline = pipeline
     
     def get_hps(self) -> dict():
         r"""
@@ -57,12 +67,7 @@ class TesterBase:
             self._hyper_params[key] = hps[key]
 
     def set_pipeline(self, pipeline: PipelineBase):
-        """Setter for underlying pipeline
-        
-        Parameters
-        ----------
-        pipeline : PipelineBase
-            pipelien to be set as underlying pipeline
+        r"""Setter for underlying pipeline
         """
         self._pipeline = pipeline
 

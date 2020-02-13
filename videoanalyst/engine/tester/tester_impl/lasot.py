@@ -30,8 +30,8 @@ class LaSOTTester(TesterBase):
         data_root="datasets/LaSOT",
         subsets=["test"], # (train|test|train_test)
     )
-    def __init__(self, ):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super(LaSOTTester, self).__init__(*args, **kwargs)
         # self._experiment = None
 
     def update_params(self):

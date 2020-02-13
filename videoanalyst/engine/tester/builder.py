@@ -4,14 +4,14 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
-from .tester_base import TRACK_TESTERS, VOS_TESTERS
-
+from .tester_base import TASK_TESTERS
+from videoanalyst.pipeline.pipeline_base import PipelineBase
 from videoanalyst.utils import merge_cfg_into_hps
 
 logger = logging.getLogger(__file__)
 
 
-def build(task: str, cfg: CfgNode):
+def build(task: str, cfg: CfgNode, pipeline: PipelineBase):
     r"""
     Builder function.
 
@@ -27,18 +27,14 @@ def build(task: str, cfg: CfgNode):
     TesterBase
         tester built by builder
     """
-    if task == "track":
-        modules = TRACK_TESTERS
-    elif task == "vos":
-        modules = VOS_TESTERS
-    else:
-        logger.error("no tester for task {}".format(task))
-        exit(-1)
+    assert task in TASK_TESTERS, "no tester for task {}".format(task)
+    MODULES = TASK_TESTERS[task]
+
     names = cfg.tester.names
     testers = []
     # tester for multiple experiments
     for name in names:
-        tester = modules[name]()
+        tester = MODULES[name](pipeline)
         hps = tester.get_hps()
         hps = merge_cfg_into_hps(cfg.tester[name], hps)
         tester.set_hps(hps)
@@ -56,15 +52,15 @@ def get_config() -> Dict[str, CfgNode]:
     Dict[str, CfgNode]
         config with list of available components
     """
-    cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
+    cfg_dict = {name: CfgNode() for name in TASK_TESTERS.keys()}
 
-    for cfg_name, module in zip(["track", "vos"], [TRACK_TESTERS, VOS_TESTERS]):
+    for cfg_name, MODULES in TASK_TESTERS.items():
         cfg = cfg_dict[cfg_name]
         cfg["names"] = []
-        for name in module:
+        for name in MODULES:
             cfg["names"].append(name)
             cfg[name] = CfgNode()
-            tester = module[name]
+            tester = MODULES[name]
             hps = tester.default_hyper_params
             for hp_name in hps:
                 cfg[name][hp_name] = hps[hp_name]
