@@ -6,6 +6,10 @@
   * SiamFC++-AlexNet
   * SiamFC++-GoogLeNet
   * SiamFC++-ShuffleNetV2
+* Training Components
+  * Dataset helper, data sampler, transformer (data augmentation), etc.
+  * Optimization: learing rate scheduler, dynamic freezing, etc.
+  * Trainer & Monitor
 
 ## 2019/12/31
 

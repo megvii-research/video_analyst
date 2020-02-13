@@ -21,7 +21,7 @@ def build_pipeline(task: str, cfg: CfgNode, model: ModuleBase):
     task: str
         builder task name (track|vos)
     cfg: CfgNode
-        buidler configuration
+        node name: pipeline
 
     Returns
     -------
