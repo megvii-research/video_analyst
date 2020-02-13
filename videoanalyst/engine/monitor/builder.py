@@ -4,10 +4,10 @@ from typing import List, Dict
 
 from yacs.config import CfgNode
 
-from .process_base import TASK_PROCESSES, ProcessBase
+from .monitor_base import TASK_MONITORS, MonitorBase
 from videoanalyst.utils.misc import merge_cfg_into_hps
 
-def build(task: str, cfg: CfgNode) -> List[ProcessBase]:
+def build(task: str, cfg: CfgNode) -> List[MonitorBase]:
     r"""
     Builder function.
 
@@ -16,32 +16,32 @@ def build(task: str, cfg: CfgNode) -> List[ProcessBase]:
     task: str
         builder task name (track|vos)
     cfg: CfgNode
-        node name: processes
+        node name: monitors
     
     Returns
     -------
-    List[ProcessBase]
-        list of processes
+    List[MonitorBase]
+        list of monitors
     """
-    assert task in TASK_PROCESSES, "no tester for task {}".format(task)
-    modules = TASK_PROCESSES[task]
+    assert task in TASK_MONITORS, "no tester for task {}".format(task)
+    modules = TASK_MONITORS[task]
 
     names = cfg.names
-    processes = []
+    monitors = []
     for name in names:
-        process = modules[name]()
-        hps = process.get_hps()
+        monitor = modules[name]()
+        hps = monitor.get_hps()
         hps = merge_cfg_into_hps(cfg[name], hps)
-        process.set_hps(hps)
-        process.update_params()
-        processes.append(process)
+        monitor.set_hps(hps)
+        monitor.update_params()
+        monitors.append(monitor)
 
-    return processes
+    return monitors
 
 def get_config() -> Dict[str, CfgNode]:
-    cfg_dict = {name: CfgNode() for name in TASK_PROCESSES.keys()}
+    cfg_dict = {name: CfgNode() for name in TASK_MONITORS.keys()}
 
-    for cfg_name, modules in TASK_PROCESSES.items():
+    for cfg_name, modules in TASK_MONITORS.items():
         cfg = cfg_dict[cfg_name]
         cfg["names"] = [""]
 

@@ -8,17 +8,17 @@ from torch.utils.data import DataLoader
 from videoanalyst.utils import Registry
 from videoanalyst.model.module_base import ModuleBase
 
-TRACK_PROCESSES = Registry('TRACK_PROCESSES')
-VOS_PROCESSES = Registry('VOS_PROCESSES')
+TRACK_MONITORS = Registry('TRACK_MONITOR')
+VOS_MONITORS = Registry('VOS_MONITOR')
 
-TASK_PROCESSES = dict(
-    track=TRACK_PROCESSES,
-    vos=VOS_PROCESSES,
+TASK_MONITORS = dict(
+    track=TRACK_MONITORS,
+    vos=VOS_MONITORS,
 )
 
-class ProcessBase:
+class MonitorBase:
     r"""
-    Process base class (e.g. visualization / tensorboard / training info logging)
+    Monitor base class for engine monitoring (e.g. visualization / tensorboard / training info logging)
     """
     # Define your default hyper-parameters here in your sub-class.
     default_hyper_params = dict()
@@ -59,12 +59,12 @@ class ProcessBase:
         """
     
     def init(self, engine_state: Dict):
-        r"""register engine state & initialize process
+        r"""register engine state & initialize monitor
         """
         self._state["engine_state"] = engine_state
 
     def update(self, engine_data: Dict):
-        """an interface to update with engine_data and execute defined process
+        """an interface to update with engine_data and update iteration data for monitoring
         Execution result will be saved in engine_state
 
         Parameters

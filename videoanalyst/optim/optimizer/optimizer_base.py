@@ -122,16 +122,16 @@ class OptimizerBase:
         
         self._state["params"] = params
         
-    def set_model(self, model: nn.Module):
-        r"""
-        Register model to optimize
+    # def set_model(self, model: nn.Module):
+    #     r"""
+    #     Register model to optimize
 
-        Arguments
-        ---------
-        model: nn.Module
-            model to registered in optimizer
-        """
-        self._model = model
+    #     Arguments
+    #     ---------
+    #     model: nn.Module
+    #         model to registered in optimizer
+    #     """
+    #     self._model = model
 
     
     def set_grad_modifier(self, grad_modifier):

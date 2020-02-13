@@ -10,14 +10,14 @@ from tqdm import tqdm
 
 import torch
 
-from ..process_base import TRACK_PROCESSES, ProcessBase
+from ..monitor_base import TRACK_MONITORS, MonitorBase
 # from videoanalyst.utils import ensure_dir
 
 logger = logging.getLogger("global")
 
 
-@TRACK_PROCESSES.register
-class TrackInfo(ProcessBase):
+@TRACK_MONITORS.register
+class TrackInfo(MonitorBase):
     r"""
     Print tracking information during training.
     Compatible with _RegularTrainer_

@@ -14,19 +14,15 @@ from tqdm import tqdm
 
 import torch
 
-from ..process_base import TRACK_PROCESSES, ProcessBase
+from ..monitor_base import TRACK_MONITORS, MonitorBase
 # from videoanalyst.utils import ensure_dir
 
 logger = logging.getLogger("global")
 
 
-@TRACK_PROCESSES.register
-class Process(ProcessBase):
+@TRACK_MONITORS.register
+class Monitor(MonitorBase):
     r"""
-    Trainer to test the vot dataset, the result is saved as follows
-    exp_dir/logs/$dataset_name$/$tracker_name$/baseline
-                                    |-$video_name$/ floder of result files        
-                                    |-eval_result.csv evaluation result file
 
     Hyper-parameters
     ----------------
@@ -40,7 +36,7 @@ class Process(ProcessBase):
         Arguments
         ---------
         """
-        super(ProcessBase, self).__init__()
+        super(Monitor, self).__init__()
 
     def update(self):
         pass

@@ -5,8 +5,8 @@ from typing import Dict
 from yacs.config import CfgNode
 
 from .trainer_base import TASK_TRAINERS, TrainerBase
-from ..process.process_base import TASK_PROCESSES
-from ..process import builder as process_builder 
+from ..monitor.monitor_base import TASK_MONITORS
+from ..monitor import builder as monitor_builder 
 from videoanalyst.utils.misc import merge_cfg_into_hps
 
 from videoanalyst.data import builder as dataloder_builder
@@ -36,15 +36,15 @@ def build(task: str, cfg: CfgNode, optimizer, dataloader) -> TrainerBase:
     assert task in TASK_TRAINERS, "no tester for task {}".format(task)
     MODULE = TASK_TRAINERS[task]
     
-    # build processes
-    if "processes" in cfg:
-        process_cfg = cfg.processes
-        processes = process_builder.build(task, process_cfg)
+    # build monitors
+    if "monitors" in cfg:
+        monitor_cfg = cfg.monitors
+        monitors = monitor_builder.build(task, monitor_cfg)
     else:
-        processes = []
+        monitors = []
 
     name = cfg.name
-    trainer = MODULE[name](optimizer, dataloader, processes)
+    trainer = MODULE[name](optimizer, dataloader, monitors)
     hps = trainer.get_hps()
     hps = merge_cfg_into_hps(cfg[name], hps)
     trainer.set_hps(hps)
@@ -75,6 +75,6 @@ def get_config() -> Dict[str, CfgNode]:
             for hp_name in hps:
                 cfg[name][hp_name] = hps[hp_name]
 
-        cfg["processes"] = process_builder.get_config()[cfg_name]
+        cfg["monitors"] = monitor_builder.get_config()[cfg_name]
 
     return cfg_dict

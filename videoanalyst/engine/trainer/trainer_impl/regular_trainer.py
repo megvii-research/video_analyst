@@ -51,7 +51,7 @@ class RegularTrainer(TrainerBase):
         snapshot="",
     )
 
-    def __init__(self, optimizer, dataloader, processes=[]):
+    def __init__(self, optimizer, dataloader, monitors=[]):
         r"""
         Crete tester with config and pipeline
 
@@ -63,7 +63,7 @@ class RegularTrainer(TrainerBase):
             PyTorch dataloader object. 
             Usage: batch_data = next(dataloader)
         """
-        super(RegularTrainer, self).__init__(optimizer, dataloader, processes)
+        super(RegularTrainer, self).__init__(optimizer, dataloader, monitors)
         # update state
         self._state["epoch"] = -1  # uninitialized
 
@@ -154,8 +154,8 @@ class RegularTrainer(TrainerBase):
                 time_dict=time_dict,
             )
 
-            for process in self._processes:
-                process.update(trainer_data)
+            for monitor in self._monitors:
+                monitor.update(trainer_data)
 
             print_str = self._state["print_str"]
             pbar.set_description(print_str)

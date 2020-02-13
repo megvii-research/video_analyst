@@ -29,7 +29,7 @@ class TrainerBase:
         exp_save="snapshots",
     )
 
-    def __init__(self, optimizer, dataloader, processes=[]):
+    def __init__(self, optimizer, dataloader, monitors=[]):
         self._hyper_params = deepcopy(
             self.default_hyper_params)  # mapping-like object
         self._state = dict()  # pipeline state
@@ -37,7 +37,7 @@ class TrainerBase:
         self._dataloader = dataloader
         self._losses = optimizer._model.loss
         self._optimizer = optimizer
-        self._processes = processes
+        self._monitors = monitors
 
     def get_hps(self) -> Dict:
         r"""
@@ -72,8 +72,8 @@ class TrainerBase:
         r"""
         an interface to process pre-train overhead before training
         """
-        for process in self._processes:
-            process.init(self._state)
+        for monitor in self._monitors:
+            monitor.init(self._state)
 
 
     def train(self):
@@ -84,21 +84,18 @@ class TrainerBase:
     def is_completed(self):
         r""""""
 
-    def set_model(self, model: ModuleBase):
-        r""""""
-        self._model = model
+    # def set_model(self, model: ModuleBase):
+    #     r""""""
+    #     self._model = model
 
-    def set_dataloader(self, dataloader: DataLoader):
-        r""""""
-        self._dataloader = dataloader
+    # def set_dataloader(self, dataloader: DataLoader):
+    #     r""""""
+    #     self._dataloader = dataloader
 
-    def set_losses(self, losses: ModuleBase):
-        r""""""
-        self._losses = losses
+    # def set_losses(self, losses: ModuleBase):
+    #     r""""""
+    #     self._losses = losses
 
-    def set_optimizer(self, optimizer: OptimizerBase):
-        r""""""
-        self._optimizer = optimizer
-
-    def set_processes(self, processes: List):
-        self._processes = processes
+    # def set_optimizer(self, optimizer: OptimizerBase):
+    #     r""""""
+    #     self._optimizer = optimizer

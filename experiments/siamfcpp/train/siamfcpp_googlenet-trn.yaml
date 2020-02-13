@@ -139,7 +139,7 @@ train:
         max_epoch: 20
         num_iterations: 1171
         snapshot: ""
-      processes:
+      monitors:
         names: ["TrackInfo"]
         TrackInfo:
           {}
