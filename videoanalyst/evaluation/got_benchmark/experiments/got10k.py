@@ -45,7 +45,7 @@ class ExperimentGOT10k(object):
         self.nbins_iou = 101
         self.repetitions = 3
 
-    def run(self, tracker, visualize=False, save_video=False):
+    def run(self, tracker, visualize=False, save_video=False, overwrite_result=True):
         if self.subset == 'test':
             print('\033[93m[WARNING]:\n' \
                   'The groundtruths of GOT-10k\'s test set is withholded.\n' \
@@ -79,7 +79,7 @@ class ExperimentGOT10k(object):
                 record_file = os.path.join(
                     self.result_dir, tracker.name, seq_name,
                     '%s_%03d.txt' % (seq_name, r + 1))
-                if os.path.exists(record_file):
+                if os.path.exists(record_file) and not overwrite_result:
                     print('  Found results, skipping', seq_name)
                     continue
 

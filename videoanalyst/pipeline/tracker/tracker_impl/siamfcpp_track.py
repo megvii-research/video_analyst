@@ -73,22 +73,29 @@ class SiamFCppTracker(PipelineBase):
         phase_track="track",
     )
 
-    def __init__(self, debug=False):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super(SiamFCppTracker, self).__init__(*args, **kwargs)
         self.update_params()
 
         # set underlying model to device
-        self.model = None
         self.device = torch.device("cpu")
-        self.debug = debug
+        self.debug = False
+        self.set_model(self._model)
 
     def set_model(self, model):
-        self.model = model.to(self.device)
-        self.model.eval()
+        """model to be set to pipeline. change device & turn it into eval mode
+        
+        Parameters
+        ----------
+        model : ModuleBase
+            model to be set to pipeline
+        """
+        self._model = model.to(self.device)
+        self._model.eval()
 
     def to_device(self, device):
         self.device = device
-        self.model = self.model.to(device)
+        self._model = self._model.to(device)
 
     def update_params(self):
         hps = self._hyper_params
@@ -126,7 +133,7 @@ class SiamFCppTracker(PipelineBase):
         )
         phase = self._hyper_params['phase_init']
         with torch.no_grad():
-            features = self.model(imarray_to_tensor(im_z_crop).to(self.device),
+            features = self._model(imarray_to_tensor(im_z_crop).to(self.device),
                                   phase=phase)
 
         return features, im_z_crop, avg_chans
@@ -193,7 +200,7 @@ class SiamFCppTracker(PipelineBase):
             func_get_subwindow=get_subwindow_tracking,
         )
         with torch.no_grad():
-            score, box, cls, ctr, *args = self.model(
+            score, box, cls, ctr, *args = self._model(
                 imarray_to_tensor(im_x_crop).to(self.device),
                 *features,
                 phase=phase_track)

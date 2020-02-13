@@ -41,18 +41,12 @@ if __name__ == '__main__':
     root_cfg = root_cfg.test
     task, task_cfg = specify_task(root_cfg)
     task_cfg.freeze()
-
     # build model
     model = model_builder.build(task, task_cfg.model)
     # build pipeline
-    pipeline = pipeline_builder.build_pipeline('track', task_cfg.pipeline)
-    pipeline.set_model(model)
-
+    pipeline = pipeline_builder.build_pipeline('track', task_cfg.pipeline, model)
     # build tester
     testers = tester_builder(task, task_cfg, "tester", pipeline)
-    # for tester in testers:
-    #     tester.set_pipeline(pipeline)
-
     # start engine
     for tester in testers:
         tester.test()

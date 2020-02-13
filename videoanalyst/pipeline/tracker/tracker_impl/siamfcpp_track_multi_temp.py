@@ -92,14 +92,14 @@ class SiamFCppMultiTempTracker(SiamFCppTracker):
         for ith in range(self._hyper_params['mem_len']):
             if fms_x is None:
                 with torch.no_grad():
-                    score, box, cls, ctr, extra = self.model(
+                    score, box, cls, ctr, extra = self._model(
                         imarray_to_tensor(im_x_crop).to(self.device),
                         *(features[ith]),
                         phase=phase_track)
                 fms_x = extra['c_x'], extra['r_x']
             else:
                 with torch.no_grad():
-                    score, box, cls, ctr, extra = self.model(*(features[ith]),
+                    score, box, cls, ctr, extra = self._model(*(features[ith]),
                                                              *fms_x,
                                                              phase=phase_track)
             box = tensor_to_numpy(box[0])

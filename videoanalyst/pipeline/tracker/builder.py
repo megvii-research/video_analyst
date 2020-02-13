@@ -5,13 +5,14 @@ from typing import Dict
 from yacs.config import CfgNode
 
 from videoanalyst.pipeline.tracker.tracker_base import TRACK_PIPELINES
+from videoanalyst.model.module_base import ModuleBase
 
 # from videoanalyst.model.module_base import TrackerBase
 
 logger = logging.getLogger(__file__)
 
 
-def build(cfg: CfgNode, **kwargs):
+def build(cfg: CfgNode, model: ModuleBase):
     r"""
     Builder function.
 
@@ -27,7 +28,7 @@ def build(cfg: CfgNode, **kwargs):
     """
     track_pipelines = TRACK_PIPELINES
     trackpipeline_name = cfg.name
-    track_pipeline = track_pipelines[trackpipeline_name](**kwargs)
+    track_pipeline = track_pipelines[trackpipeline_name](model)
     hps = track_pipeline.get_hps()
 
     for hp_name in hps:

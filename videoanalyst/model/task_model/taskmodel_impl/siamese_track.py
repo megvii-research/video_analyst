@@ -162,7 +162,7 @@ class SiamTrack(ModuleBase):
                 self.load_state_dict(state_dict, strict=True)
             except:
                 self.load_state_dict(state_dict, strict=False)
-            logger.info("loaded pretrain weights from {}".format(model_path))
+            logger.info("Pretrained weights loaded from {}".format(model_path))
 
     def _make_convs(self):
         head_width = self._hyper_params['head_width']
