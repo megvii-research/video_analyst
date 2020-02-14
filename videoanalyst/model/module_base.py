@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*
-from abc import abstractmethod
 from copy import deepcopy
 
 from torch import nn
@@ -41,7 +40,6 @@ class ModuleBase(nn.Module):
                 raise KeyError
             self._hyper_params[key] = hps[key]
 
-    @abstractmethod
     def update_params(self):
         r"""
         an interface for update params

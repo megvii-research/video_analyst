@@ -1,7 +1,7 @@
 tqdm
 pylint
 yacs
-pillow
+pillow==
 Cython==0.26.1
 yapf==0.28.0
 opencv-python==4.1.0.25
@@ -10,3 +10,7 @@ torch==1.1.0
 torchvision==0.3.0
 colorama==0.3.7
 numba==0.45.0
+matplotlib==3.0.0
+wget==3.2
+shapely==1.7.0
+scipy==1.2.1

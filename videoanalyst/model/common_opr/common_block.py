@@ -14,7 +14,8 @@ class conv_bn_relu(nn.Module):
                  pad=0,
                  has_bn=True,
                  has_relu=True,
-                 bias=True):
+                 bias=True,
+                 groups=1):
         r"""
         Basic block with one conv, one bn, one relu in series.
 
@@ -36,6 +37,8 @@ class conv_bn_relu(nn.Module):
             use relu or not
         bias: bool
             conv has bias or not
+        groups: int or str
+            number of groups. To be forwarded to torch.nn.Conv2d
         """
         super(conv_bn_relu, self).__init__()
         self.conv = nn.Conv2d(in_channel,
@@ -43,7 +46,8 @@ class conv_bn_relu(nn.Module):
                               kernel_size=kszie,
                               stride=stride,
                               padding=pad,
-                              bias=bias)
+                              bias=bias,
+                              groups=groups)
 
         if has_bn:
             self.bn = nn.BatchNorm2d(out_channel)

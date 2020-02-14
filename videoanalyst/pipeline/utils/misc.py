@@ -23,7 +23,9 @@ def tensor_to_imarray(t):
     :return: numpy.array, (H, W, C)
     """
     arr = t.detach().cpu().numpy()
-    return arr[0].transpose(1, 2, 0)
+    if arr.ndim == 4:
+        arr = arr[0]
+    return arr.transpose(1, 2, 0)
 
 
 def tensor_to_numpy(t):

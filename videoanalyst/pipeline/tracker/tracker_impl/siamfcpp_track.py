@@ -57,6 +57,8 @@ class SiamFCppTracker(PipelineBase):
     """
     default_hyper_params = dict(
         total_stride=8,
+        score_size=17,
+        score_offset=87,
         context_amount=0.5,
         test_lr=0.52,
         penalty_k=0.04,
@@ -71,22 +73,29 @@ class SiamFCppTracker(PipelineBase):
         phase_track="track",
     )
 
-    def __init__(self, debug=False):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super(SiamFCppTracker, self).__init__(*args, **kwargs)
         self.update_params()
 
         # set underlying model to device
-        self.model = None
         self.device = torch.device("cpu")
-        self.debug = debug
+        self.debug = False
+        self.set_model(self._model)
 
     def set_model(self, model):
-        self.model = model.to(self.device)
-        self.model.eval()
+        """model to be set to pipeline. change device & turn it into eval mode
+        
+        Parameters
+        ----------
+        model : ModuleBase
+            model to be set to pipeline
+        """
+        self._model = model.to(self.device)
+        self._model.eval()
 
     def to_device(self, device):
         self.device = device
-        self.model = self.model.to(device)
+        self._model = self._model.to(device)
 
     def update_params(self):
         hps = self._hyper_params
@@ -98,14 +107,24 @@ class SiamFCppTracker(PipelineBase):
             (hps['score_size'] - 1) * hps['total_stride']) // 2
         self._hyper_params = hps
 
-    def feature(self, im, target_pos, target_sz, avg_chans=None):
-        r"""
-        Extract feature
-        :param im: initial frame
-        :param target_pos: target position (x, y)
-        :param target_sz: target size (w, h)
-        :param avg_chans: channel mean values
-        :return:
+    def feature(self, im: np.array, target_pos, target_sz, avg_chans=None):
+        """Extract feature
+
+        Parameters
+        ----------
+        im : np.array
+            initial frame
+        target_pos : 
+            target position (x, y)
+        target_sz : [type]
+            target size (w, h)
+        avg_chans : [type], optional
+            channel mean values, (B, G, R), by default None
+        
+        Returns
+        -------
+        [type]
+            [description]
         """
         if avg_chans is None:
             avg_chans = np.mean(im, axis=(0, 1))
@@ -124,8 +143,8 @@ class SiamFCppTracker(PipelineBase):
         )
         phase = self._hyper_params['phase_init']
         with torch.no_grad():
-            features = self.model(imarray_to_tensor(im_z_crop).to(self.device),
-                                  phase=phase)
+            features = self._model(imarray_to_tensor(im_z_crop).to(self.device),
+                                   phase=phase)
 
         return features, im_z_crop, avg_chans
 
@@ -191,7 +210,7 @@ class SiamFCppTracker(PipelineBase):
             func_get_subwindow=get_subwindow_tracking,
         )
         with torch.no_grad():
-            score, box, cls, ctr, *args = self.model(
+            score, box, cls, ctr, *args = self._model(
                 imarray_to_tensor(im_x_crop).to(self.device),
                 *features,
                 phase=phase_track)
@@ -361,10 +380,10 @@ class SiamFCppTracker(PipelineBase):
         :return:
             box_in_frame: (4, ), cxywh, box in original frame
         """
-        x = (box_in_crop[..., 0]) / scale_x + target_pos[0] - (x_size //
-                                                               2) / scale_x
-        y = (box_in_crop[..., 1]) / scale_x + target_pos[1] - (x_size //
-                                                               2) / scale_x
+        x = (box_in_crop[...,
+                         0]) / scale_x + target_pos[0] - (x_size // 2) / scale_x
+        y = (box_in_crop[...,
+                         1]) / scale_x + target_pos[1] - (x_size // 2) / scale_x
         w = box_in_crop[..., 2] / scale_x
         h = box_in_crop[..., 3] / scale_x
         box_in_frame = np.stack([x, y, w, h], axis=-1)

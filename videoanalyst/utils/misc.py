@@ -1,21 +1,10 @@
 import logging
-import os
+import time
+from typing import Dict
 
 from yacs.config import CfgNode as CN
 
-
-def ensure_dir(dir_path: str):
-    r"""
-    Ensure the existence of path (i.e. mkdir -p)
-    Arguments
-    ---------
-    dir_path: str
-        path to be ensured
-    """
-    if os.path.exists(dir_path):
-        return
-    else:
-        os.makedirs(dir_path)
+logger = logging.getLogger("global")
 
 
 def _register_generic(module_dict, module_name, module):
@@ -70,3 +59,51 @@ def load_cfg(path: str):
         config_node = CN.load_cfg(f)
 
     return config_node
+
+
+def merge_cfg_into_hps(cfg: CN, hps: Dict):
+    for hp_name in hps:
+        if hp_name in cfg:
+            new_value = cfg[hp_name]
+            hps[hp_name] = new_value
+    return hps
+
+
+class Timer():
+    r"""
+    Mesure & print elapsed time witin environment
+    """
+    def __init__(self,
+                 name: str = "",
+                 output_dict: Dict = None,
+                 verbose: bool = False,
+                 logger: logging.Logger = logger):
+        """Timing usage
+        
+        Parameters
+        ----------
+        name : str, optional
+            name of timer, used in verbose & output_dict, by default ''
+        output_dict : Dict, optional
+            dict-like object to receive elapsed time in output_dict[name], by default None
+        verbose : bool, optional
+            verbose or not via logger, by default False
+        logger : logging.Logger, optional
+            logger to verbose (info level), by default logger
+        """
+        self.name = name
+        self.output_dict = output_dict
+        self.verbose = verbose
+        self.logger = logger
+
+    def __enter__(self, ):
+        self.tic = time.time()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.toc = time.time()
+        elapsed_time = self.toc - self.tic
+        if self.output_dict is not None:
+            self.output_dict[self.name] = elapsed_time
+        if self.verbose:
+            print_str = '%s elapsed time: %f' % (self.name, elapsed_time)
+            self.logger.info(print_str)

@@ -5,25 +5,22 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from videoanalyst.model.loss.loss_base import TRACK_LOSSES
-from videoanalyst.model.module_base import ModuleBase
+from ...module_base import ModuleBase
+from ..loss_base import TRACK_LOSSES
+from .utils import SafeLog
 
 eps = np.finfo(np.float32).tiny
-
-
-class SafeLog(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.register_buffer("t_eps", torch.tensor(eps, requires_grad=False))
-
-    def forward(self, t):
-        return torch.log(torch.max(self.t_eps, t))
 
 
 @TRACK_LOSSES.register
 class IOULoss(ModuleBase):
 
-    default_hyper_params = {"background": 0, "ignore_label": -1, "weight": 1.0}
+    default_hyper_params = dict(
+        name="iou_loss",
+        background=0,
+        ignore_label=-1,
+        weight=1.0,
+    )
 
     def __init__(self, background=0, ignore_label=-1):
         super().__init__()
@@ -36,7 +33,13 @@ class IOULoss(ModuleBase):
         self.ignore_label = self._hyper_params["ignore_label"]
         self.weight = self._hyper_params["weight"]
 
-    def forward(self, pred, gt, cls_gt):
+    # def forward(self, pred, gt, cls_gt):
+    def forward(self, pred_data, target_data):
+        # resolve prediction & target
+        pred = pred_data["box_pred"]
+        gt = target_data["box_gt"]
+        cls_gt = target_data["cls_gt"]
+        # mask
         mask = ((1 - (cls_gt == self.background)) *
                 (1 - (cls_gt == self.ignore_label))).detach()
         mask = mask.type(torch.Tensor).squeeze(2).to(pred.device)
@@ -57,9 +60,34 @@ class IOULoss(ModuleBase):
         loss = -self.safelog(iou)
 
         # from IPython import embed;embed()
-        loss = (loss * mask).sum() / torch.max(mask.sum(),
-                                               self.t_one) * self.weight
+        loss = (loss * mask).sum() / torch.max(mask.sum(), self.t_one)
         iou = iou.detach()
         iou = (iou * mask).sum() / torch.max(mask.sum(), self.t_one)
+        extra = dict(iou=iou)
 
-        return loss, iou
+        return loss, extra
+
+
+if __name__ == '__main__':
+    B = 16
+    HW = 17 * 17
+    pred_cls = pred_ctr = torch.tensor(
+        np.random.rand(B, HW, 1).astype(np.float32))
+    pred_reg = torch.tensor(np.random.rand(B, HW, 4).astype(np.float32))
+
+    gt_cls = torch.tensor(np.random.randint(2, size=(B, HW, 1)),
+                          dtype=torch.int8)
+    gt_ctr = torch.tensor(np.random.rand(B, HW, 1).astype(np.float32))
+    gt_reg = torch.tensor(np.random.rand(B, HW, 4).astype(np.float32))
+
+    criterion_cls = SigmoidCrossEntropyRetina()
+    loss_cls = criterion_cls(pred_cls, gt_cls)
+
+    criterion_ctr = SigmoidCrossEntropyCenterness()
+    loss_ctr = criterion_ctr(pred_ctr, gt_ctr, gt_cls)
+
+    criterion_reg = IOULoss()
+    loss_reg = criterion_reg(pred_reg, gt_reg, gt_cls)
+
+    from IPython import embed
+    embed()

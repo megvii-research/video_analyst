@@ -4,9 +4,16 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
+from videoanalyst.utils import merge_cfg_into_hps
+
 from .backbone_base import TRACK_BACKBONES, VOS_BACKBONES
 
 logger = logging.getLogger(__file__)
+
+TASK_BACKBONES = dict(
+    track=TRACK_BACKBONES,
+    vos=VOS_BACKBONES,
+)
 
 
 def build(task: str, cfg: CfgNode):
@@ -25,10 +32,8 @@ def build(task: str, cfg: CfgNode):
     torch.nn.Module
         module built by builder
     """
-    if task == "track":
-        modules = TRACK_BACKBONES
-    elif task == "vos":
-        modules = VOS_BACKBONES
+    if task in TASK_BACKBONES:
+        modules = TASK_BACKBONES[task]
     else:
         logger.error("no backbone for task {}".format(task))
         exit(-1)
@@ -38,11 +43,7 @@ def build(task: str, cfg: CfgNode):
         name, task)
     module = modules[name]()
     hps = module.get_hps()
-
-    for hp_name in hps:
-        if hp_name in cfg[name]:
-            new_value = cfg[name][hp_name]
-            hps[hp_name] = new_value
+    hps = merge_cfg_into_hps(cfg[name], hps)
     module.set_hps(hps)
     module.update_params()
     return module

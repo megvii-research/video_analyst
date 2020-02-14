@@ -1,1 +1,3 @@
-from .segmenter import *from .tracker import *
+# -*- coding: utf-8 -*
+from .segmenter import *
+from .tracker import *

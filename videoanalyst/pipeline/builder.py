@@ -4,13 +4,15 @@ from typing import Dict
 
 from yacs.config import CfgNode
 
+from videoanalyst.model.module_base import ModuleBase
+
 from .tracker import builder as tracker_builder
 from .tracker.tracker_base import TRACK_PIPELINES
 
 # from .segmenter import builder as segmenter_builder
 
 
-def build_pipeline(task: str, cfg: CfgNode):
+def build_pipeline(task: str, cfg: CfgNode, model: ModuleBase):
     """
     Builder function.
 
@@ -19,7 +21,7 @@ def build_pipeline(task: str, cfg: CfgNode):
     task: str
         builder task name (track|vos)
     cfg: CfgNode
-        buidler configuration
+        node name: pipeline
 
     Returns
     -------
@@ -27,7 +29,7 @@ def build_pipeline(task: str, cfg: CfgNode):
         module built by builder
     """
     if task == "track":
-        track_pipeline = tracker_builder.build(cfg)
+        track_pipeline = tracker_builder.build(cfg, model)
         return track_pipeline
     else:
         print("model for task {} is not complted".format(task))

@@ -58,35 +58,21 @@ class DenseboxHead(ModuleBase):
         number of conv3x3 tiled in head
     head_conv_bn: list
         has_bn flag of conv3x3 in head, list with length of num_conv3x3
+    head_width: int
+        feature width in head structure
     """
-    default_hyper_params = dict(total_stride=8,
-                                score_size=17,
-                                x_size=303,
-                                num_conv3x3=3,
-                                head_conv_bn=[False, False, True]
-                                # "score_offset": 87,
-                                )
+    default_hyper_params = dict(
+        total_stride=8,
+        score_size=17,
+        x_size=303,
+        num_conv3x3=3,
+        head_conv_bn=[False, False, True],
+        head_width=256,
+        conv_weight_std=0.0001,
+    )
 
     def __init__(self):
         super(DenseboxHead, self).__init__()
-        self.cls_score_p5 = conv_bn_relu(256,
-                                         1,
-                                         stride=1,
-                                         kszie=1,
-                                         pad=0,
-                                         has_relu=False)
-        self.ctr_score_p5 = conv_bn_relu(256,
-                                         1,
-                                         stride=1,
-                                         kszie=1,
-                                         pad=0,
-                                         has_relu=False)
-        self.bbox_offsets_p5 = conv_bn_relu(256,
-                                            4,
-                                            stride=1,
-                                            kszie=1,
-                                            pad=0,
-                                            has_relu=False)
 
         self.bi = torch.nn.Parameter(torch.tensor(0.).type(torch.Tensor))
         self.si = torch.nn.Parameter(torch.tensor(1.).type(torch.Tensor))
@@ -101,8 +87,9 @@ class DenseboxHead(ModuleBase):
         bbox = r_out
 
         for i in range(0, num_conv3x3):
-            cls = self.cls_conv3x3_list[i](cls)
-            bbox = self.bbox_conv3x3_list[i](bbox)
+            cls = getattr(self, 'cls_p5_conv%d' % (i + 1))(cls)
+            bbox = getattr(self, 'bbox_p5_conv%d' % (i + 1))(bbox)
+
         # classification score
         cls_score = self.cls_score_p5(cls)  #todo
         cls_score = cls_score.permute(0, 2, 3, 1)
@@ -135,23 +122,25 @@ class DenseboxHead(ModuleBase):
         self.fm_ctr.require_grad = False
 
         self._make_conv3x3()
+        self._make_conv_output()
+        self._initialize_conv()
 
     def _make_conv3x3(self):
         num_conv3x3 = self._hyper_params['num_conv3x3']
         head_conv_bn = self._hyper_params['head_conv_bn']
+        head_width = self._hyper_params['head_width']
         self.cls_conv3x3_list = []
         self.bbox_conv3x3_list = []
         for i in range(num_conv3x3):
-            # is_last_conv = (i >= num_conv3x3)
-            cls_conv3x3 = conv_bn_relu(256,
-                                       256,
+            cls_conv3x3 = conv_bn_relu(head_width,
+                                       head_width,
                                        stride=1,
                                        kszie=3,
                                        pad=0,
                                        has_bn=head_conv_bn[i])
 
-            bbox_conv3x3 = conv_bn_relu(256,
-                                        256,
+            bbox_conv3x3 = conv_bn_relu(head_width,
+                                        head_width,
                                         stride=1,
                                         kszie=3,
                                         pad=0,
@@ -160,3 +149,59 @@ class DenseboxHead(ModuleBase):
             setattr(self, 'bbox_p5_conv%d' % (i + 1), bbox_conv3x3)
             self.cls_conv3x3_list.append(cls_conv3x3)
             self.bbox_conv3x3_list.append(bbox_conv3x3)
+
+    def _make_conv_output(self):
+        head_width = self._hyper_params['head_width']
+        self.cls_score_p5 = conv_bn_relu(head_width,
+                                         1,
+                                         stride=1,
+                                         kszie=1,
+                                         pad=0,
+                                         has_relu=False)
+        self.ctr_score_p5 = conv_bn_relu(head_width,
+                                         1,
+                                         stride=1,
+                                         kszie=1,
+                                         pad=0,
+                                         has_relu=False)
+        self.bbox_offsets_p5 = conv_bn_relu(head_width,
+                                            4,
+                                            stride=1,
+                                            kszie=1,
+                                            pad=0,
+                                            has_relu=False)
+
+    def _initialize_conv(self, ):
+        num_conv3x3 = self._hyper_params['num_conv3x3']
+        conv_weight_std = self._hyper_params['conv_weight_std']
+
+        # initialze head
+        conv_list = []
+        for i in range(num_conv3x3):
+            conv_list.append(getattr(self, 'cls_p5_conv%d' % (i + 1)).conv)
+            conv_list.append(getattr(self, 'bbox_p5_conv%d' % (i + 1)).conv)
+
+        conv_list.append(self.cls_score_p5.conv)
+        conv_list.append(self.ctr_score_p5.conv)
+        conv_list.append(self.bbox_offsets_p5.conv)
+        conv_classifier = [self.cls_score_p5.conv]
+        assert all(elem in conv_list for elem in conv_classifier)
+
+        num_classes = 1
+        pi = 0.01
+        bv = -np.log((1 - pi) / pi)
+        for ith in range(len(conv_list)):
+            # fetch conv from list
+            conv = conv_list[ith]
+            # torch.nn.init.normal_(conv.weight, std=0.01) # from megdl impl.
+            torch.nn.init.normal_(
+                conv.weight, std=conv_weight_std)  # conv_weight_std = 0.0001
+            # nn.init.kaiming_uniform_(conv.weight, a=np.sqrt(5))  # from PyTorch default implementation
+            # nn.init.kaiming_uniform_(conv.weight, a=0)  # from PyTorch default implementation
+            if conv in conv_classifier:
+                torch.nn.init.constant_(conv.bias, torch.tensor(bv))
+            else:
+                # torch.nn.init.constant_(conv.bias, 0)  # from PyTorch default implementation
+                fan_in, _ = nn.init._calculate_fan_in_and_fan_out(conv.weight)
+                bound = 1 / np.sqrt(fan_in)
+                nn.init.uniform_(conv.bias, -bound, bound)
