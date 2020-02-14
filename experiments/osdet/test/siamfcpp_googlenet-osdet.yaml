@@ -29,10 +29,23 @@ test:
         window_influence: 0.21
         penalty_k: 0.04
         num_conv3x3: 2
-    tester:
-      names: ["VOTTester",]
-      VOTTester:
-        exp_name: *TEST_NAME
-        exp_save: *TEST_SAVE
-        device_num: 1
-        dataset_names: ["VOT2018"]
+    # tester:
+    #   names: ["VOTTester",]
+    #   VOTTester:
+    #     exp_name: *TEST_NAME
+    #     exp_save: *TEST_SAVE
+    #     device_num: 1
+    #     dataset_names: ["VOT2018"]
+train:
+  track:
+    data:
+      sampler:
+        submodules:
+          dataset:
+            names: ["GOT10kDataset",]  # (GOT10kDataset|LaSOTDataset)
+            GOT10kDataset: &GOT10KDATASET_CFG
+              ratio: 1
+              max_diff: 100
+              dataset_root: "datasets/GOT-10k"
+              subset: "train"
+            # GOT10kDatasetFixed: *GOT10KDATASET_CFG  # got10k dataset with exclusion of unfixed sequences
