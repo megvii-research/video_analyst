@@ -1,6 +1,6 @@
 # PIPELINE_API
 
-## Minimal runnable pipeline
+## Minimal Runnable Pipeline
 
 Suppose that:
 
@@ -46,3 +46,15 @@ pipeline.init(im_template)
 im_current = cv2.imread("test file")
 state_current = pipeline.update(im_template)
 ```
+
+## One-shot Detection Demo
+
+Naturally, Siamese Tracker can be used for one-shot detection. A such API together with an runnable example are given at [demo/main/osdet_demo.py](../demo/main/osdet_demo.py).
+
+```Bash
+python3 demo/main/osdet_demo.py --shift_x=0.45 --shift_y=0.6
+```
+
+After running the above code, you should get [this result](../demo/resources/osdet_demo/osdet_demo.png).
+
+By default, this example use a _.yaml_ configuration adapted from _siamfc-googlenet-vot_.
