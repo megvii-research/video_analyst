@@ -3,7 +3,7 @@
 ## 2020/02/14
 
 * Add one-shot detection demo
-  * [API](demo/main/osdet_demo.py)
+  * API (see [docs/PIPELINE_API.md](docs/PIPELINE_API.md)
   * Runnable demo
 * Complete ShuffleNetV2x1.0 experiment
 

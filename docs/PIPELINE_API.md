@@ -49,7 +49,7 @@ state_current = pipeline.update(im_template)
 
 ## One-shot Detection Demo
 
-Naturally, Siamese Tracker can be used for one-shot detection. A such API together with an runnable example are given at [demo/main/osdet_demo.py](../demo/main/osdet_demo.py).
+Naturally, Siamese Tracker can be used for one-shot detection. A such API together with an runnable example are given at [demo/main/osdet_demo.py](../demo/main/osdet/osdet_demo.py).
 
 ```Bash
 python3 demo/main/osdet_demo.py --shift_x=0.45 --shift_y=0.6
