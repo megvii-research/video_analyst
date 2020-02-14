@@ -1,5 +1,6 @@
 # Video Analyst
 
+[![Build Status](https://travis-ci.org/MegviiDetection/video_analyst.svg?branch=master)](https://travis-ci.org/MegviiDetection/video_analyst)
 This is the implementation of a series of basic algorithms which is useful for video understanding, including Single Object Tracking (SOT), Video Object Segmentation (VOS), etc.
 
 Current implementation list:
@@ -105,3 +106,4 @@ Maintainer (sorted by family name):
 * Zuoxin Li[@lzx1413](https://github.com/lzx1413)
 * Zeyu Wang[@JWarlock](http://github.com/JWarlock)
 * Yinda Xu[@MARMOTatZJU](https://github.com/MARMOTatZJU)
+
