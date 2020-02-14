@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*
+from typing import Tuple
+from collections import Iterable
 
 import cv2
 import numpy as np
@@ -138,3 +140,78 @@ def get_crop(im,
                                  avg_chans)
 
     return im_crop, scale
+
+
+
+def _make_valid_int_pair(sz) -> Tuple[int, int]:
+    """Cast size to int pair
+    
+    Parameters
+    ----------
+    sz : int or Iterable pair
+        size
+    
+    Returns
+    -------
+    Tuple[int, int]
+        int pair
+    """
+    if not isinstance(sz, Iterable):
+        sz = (int(sz), ) * 2
+    else:
+        sz = sz[:2]
+        sz = tuple(map(int, sz))    
+    return sz
+
+# def get_subwindow(im, pos, model_sz, original_sz, avg_chans=(0, 0, 0)):
+def get_subwindow(im: np.array, 
+                  src_pos, 
+                  src_sz, 
+                  dst_sz, 
+                  avg_chans=(0, 0, 0)) -> np.array:
+    """Get (arbitrary aspect ratio) subwindow via cv2.warpAffine
+
+    Parameters
+    ----------
+    im: np.array
+        image, (H, W, C)
+    src_pos : [type]
+        source position, (cx, cy)
+    src_sz : [type]
+        source size, (w, h)
+    dst_sz : [type]
+        destination size, (w, h)
+    avg_chans : tuple, optional
+        [description], by default (0, 0, 0)
+    
+    Returns
+    -------
+    np.array
+        cropped image, (H, W, C)
+    """
+    
+    src_sz = _make_valid_int_pair(src_sz)
+    dst_sz = _make_valid_int_pair(dst_sz)
+
+    crop_cxywh = np.concatenate(
+        [np.array(src_pos), np.array(src_sz)], axis=-1)
+    crop_xyxy = cxywh2xyxy(crop_cxywh)
+    # warpAffine transform matrix
+    M_13 = crop_xyxy[0]
+    M_23 = crop_xyxy[1]
+    M_11 = (crop_xyxy[2] - M_13) / (dst_sz[0] - 1)
+    M_22 = (crop_xyxy[3] - M_23) / (dst_sz[1] - 1)
+    mat2x3 = np.array([
+        M_11,
+        0,
+        M_13,
+        0,
+        M_22,
+        M_23,
+    ]).reshape(2, 3)
+    im_patch = cv2.warpAffine(im,
+                              mat2x3, dst_sz,
+                              flags=(cv2.INTER_LINEAR | cv2.WARP_INVERSE_MAP),
+                              borderMode=cv2.BORDER_CONSTANT,
+                              borderValue=tuple(map(int, avg_chans)))
+    return im_patch
