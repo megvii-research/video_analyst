@@ -49,6 +49,7 @@ result
 # checkpoints
 *.brainmodel
 *.pkl
+*.pth
 *epoch*
 
 # input files
@@ -67,3 +68,6 @@ tmp/
 /debug
 /datasets
 /models
+/snapshots
+vaenv
+
