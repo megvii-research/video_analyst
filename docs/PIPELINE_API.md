@@ -10,7 +10,10 @@ then the following code segment will instantiate and configure a pipeline object
 * _void init(im, state)_
 * _state update(im)_
 
+Example code:
+
 ```Python
+import cv2
 import torch
 
 from videoanalyst.config.config import cfg as root_cfg
@@ -24,10 +27,22 @@ root_cfg.merge_from_file(exp_cfg_path)
 task, task_cfg = specify_task(root_cfg)
 task_cfg.freeze()
 
+exp_cfg_path = osp.realpath(parsed_args.config)
+# from IPython import embed;embed()
+root_cfg.merge_from_file(exp_cfg_path)
+logger.info("Load experiment configuration at: %s" % exp_cfg_path)
+
+
 # build model
 model = model_builder.build_model(task, task_cfg.model)
 # build pipeline
-pipeline = pipeline_builder.build_pipeline('track', task_cfg.pipeline)
-pipeline.set_model(model)
+pipeline = pipeline_builder.build_pipeline('track', task_cfg.pipeline, model)
 pipeline.to_device(torch.device("cuda:0"))
+# register your template
+im_template = cv2.imread("test file")
+state_template = ...
+pipeline.init(im_template)
+# perform tracking based on your template
+im_current = cv2.imread("test file")
+state_current = pipeline.update(im_template)
 ```

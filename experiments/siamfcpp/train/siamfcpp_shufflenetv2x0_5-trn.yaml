@@ -133,7 +133,7 @@ train:
       RegularTrainer:
         exp_name: *TRAIN_NAME
         exp_save: *TRAIN_SAVE
-        devices: ["cuda:0", "cuda:1"]  # (cpu|cuda|cuda:x)
+        devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]  # (cpu|cuda|cuda:x)
         max_epoch: 20
         num_iterations: 12500
         snapshot: ""
