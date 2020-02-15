@@ -32,5 +32,3 @@ if __name__ == "__main__":
     cv2.imshow("template", im_z)
     cv2.imshow("search", im_x)
     cv2.waitKey(0)
-
-    from IPython import embed;embed()

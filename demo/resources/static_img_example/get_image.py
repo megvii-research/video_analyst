@@ -36,10 +36,6 @@ def imarray_to_tensor(arr):
 arr_z = imarray_to_tensor(im_z)
 arr_x = imarray_to_tensor(im_x)
 
-# change color order because deploy model do not support it
-# arr_z = arr_z[:, [2, 1, 0], :, :]
-# arr_x = arr_x[:, [2, 1, 0], :, :]
-
 if DEBUG:
     cv2.rectangle(im, search_bbox[:2], search_bbox[2:], (255, 0, 0))
     cv2.rectangle(im, target_bbox[:2], target_bbox[2:], (0, 255, 255))
