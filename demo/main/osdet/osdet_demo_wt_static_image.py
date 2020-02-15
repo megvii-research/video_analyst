@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*
 from paths import ROOT_PATH  # isort:skip
 import demo
-from demo.resources.static_img_example.getImage import im, bbox, im_z, im_x, target_bbox, search_bbox
+from demo.resources.static_img_example.get_image import im, bbox, im_z, im_x, target_bbox, search_bbox
 
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.config.config import specify_task
@@ -38,11 +38,11 @@ def make_parser():
                         default="experiments/osdet/test/siamfcpp_googlenet-osdet.yaml",
                         type=str,
                         help='experiment configuration')
-    parser.add_argument('--shift_x',
+    parser.add_argument('--shift-x',
                         default=0.5,
                         type=float,
                         help='crop position x, [0, 1]')
-    parser.add_argument('--shift_y',
+    parser.add_argument('--shift-y',
                         default=0.5,
                         type=float,
                         help='crop position y, [0, 1]')
