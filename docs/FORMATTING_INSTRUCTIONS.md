@@ -5,7 +5,6 @@ It is recommended to format the code before committing it. Here is some useful c
 * _check_ means "only show change, not apply".
 * _apply_ means "apply directly"
 
-
 ## isort
 
 Order is defined in _video_analyst/.isort.cfg_
@@ -31,7 +30,6 @@ autoflake -r -i ./main
 ```
 
 ## yapf
-
 
 ```Bash
 # check

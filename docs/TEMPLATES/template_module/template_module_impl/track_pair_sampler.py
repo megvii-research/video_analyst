@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
-import logging
 from typing import Dict, List, Tuple
-
+import logging
 import numpy as np
+# import cv2
+
 from yacs.config import CfgNode
 
-from videoanalyst.data import _DATA_LOGGER_NAME
-from videoanalyst.data.dataset.dataset_base import DatasetBase
 from videoanalyst.evaluation.got_benchmark.datasets import got10k
-from videoanalyst.utils import load_image
-
+from videoanalyst.data.dataset.dataset_base import DatasetBase
+from videoanalyst.data import _DATA_LOGGER_NAME
 from ..sampler_base import TRACK_SAMPLERS, SamplerBase
-
+from videoanalyst.utils import load_image
 
 data_logger = logging.getLogger(_DATA_LOGGER_NAME)
 

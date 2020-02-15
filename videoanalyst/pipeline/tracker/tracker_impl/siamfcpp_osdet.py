@@ -15,9 +15,10 @@ from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
 
 # ============================== Tracker definition ============================== #
 @TRACK_PIPELINES.register
-class SiamFCppTracker(PipelineBase):
+class SiamFCppOneShotDetector(PipelineBase):
     r"""
-    Basic SiamFC++ tracker
+    One-shot detector
+    Based on Basic SiamFC++ tracker
 
     Hyper-parameters
     ----------------
@@ -74,7 +75,7 @@ class SiamFCppTracker(PipelineBase):
     )
 
     def __init__(self, *args, **kwargs):
-        super(SiamFCppTracker, self).__init__(*args, **kwargs)
+        super(SiamFCppOneShotDetector, self).__init__(*args, **kwargs)
         self.update_params()
 
         # set underlying model to device
@@ -167,18 +168,18 @@ class SiamFCppTracker(PipelineBase):
         features, im_z_crop, avg_chans = self.feature(im, target_pos, target_sz)
 
         score_size = self._hyper_params['score_size']
-        if self._hyper_params['windowing'] == 'cosine':
-            window = np.outer(np.hanning(score_size), np.hanning(score_size))
-            window = window.reshape(-1)
-        elif self._hyper_params['windowing'] == 'uniform':
-            window = np.ones((score_size, score_size))
-        else:
-            window = np.ones((score_size, score_size))
+        # if self._hyper_params['windowing'] == 'cosine':
+        #     window = np.outer(np.hanning(score_size), np.hanning(score_size))
+        #     window = window.reshape(-1)
+        # elif self._hyper_params['windowing'] == 'uniform':
+        #     window = np.ones((score_size, score_size))
+        # else:
+        #     window = np.ones((score_size, score_size))
 
         self._state['z_crop'] = im_z_crop
         self._state['avg_chans'] = avg_chans
         self._state['features'] = features
-        self._state['window'] = window
+        # self._state['window'] = window
         # self.state['target_pos'] = target_pos
         # self.state['target_sz'] = target_sz
         self._state['state'] = (target_pos, target_sz)
@@ -233,8 +234,8 @@ class SiamFCppTracker(PipelineBase):
             box = self._cvt_box_crop2frame(box_wh, target_pos, x_size, scale_x)
 
         # restrict new_target_pos & new_target_sz
-        new_target_pos, new_target_sz = self._restrict_box(
-            new_target_pos, new_target_sz)
+        # new_target_pos, new_target_sz = self._restrict_box(
+        #     new_target_pos, new_target_sz)
 
         # record basic mid-level info
         self._state['x_crop'] = im_x_crop
@@ -253,7 +254,6 @@ class SiamFCppTracker(PipelineBase):
     def update(self, im):
 
         # get track
-        # target_pos_prior, target_sz_prior = self.state['target_pos'], self.state['target_sz']
         target_pos_prior, target_sz_prior = self._state['state']
         features = self._state['features']
 
@@ -265,7 +265,6 @@ class SiamFCppTracker(PipelineBase):
                                            update_state=True)
 
         # save underlying state
-        # self.state['target_pos'], self.state['target_sz'] = target_pos, target_sz
         self._state['state'] = target_pos, target_sz
 
         # return rect format
@@ -313,9 +312,9 @@ class SiamFCppTracker(PipelineBase):
 
         # ipdb.set_trace()
         # cos window (motion model)
-        window_influence = self._hyper_params['window_influence']
-        pscore = pscore * (
-            1 - window_influence) + self._state['window'] * window_influence
+        # window_influence = self._hyper_params['window_influence']
+        # pscore = pscore * (
+        #     1 - window_influence) + self._state['window'] * window_influence
         best_pscore_id = np.argmax(pscore)
 
         return best_pscore_id, pscore, penalty
@@ -341,8 +340,9 @@ class SiamFCppTracker(PipelineBase):
         # which can influence final EAO heavily given a model & a set of hyper-parameters
 
         # box post-postprocessing
-        test_lr = self._hyper_params['test_lr']
-        lr = penalty[best_pscore_id] * score[best_pscore_id] * test_lr
+        # test_lr = self._hyper_params['test_lr']
+        # lr = penalty[best_pscore_id] * score[best_pscore_id] * test_lr
+        lr = 1.0  # no EMA smoothing, size directly determined by prediction
         res_x = pred_in_crop[0] + target_pos[0] - (x_size // 2) / scale_x
         res_y = pred_in_crop[1] + target_pos[1] - (x_size // 2) / scale_x
         res_w = target_sz[0] * (1 - lr) + pred_in_crop[2] * lr

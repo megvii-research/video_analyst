@@ -76,6 +76,7 @@ class TesterBase:
         r"""
         an interface for update params
         """
+
     def test(self):
         r"""
         an interface to start testing

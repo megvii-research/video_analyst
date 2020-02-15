@@ -9,7 +9,6 @@ Usage of Python script:
 ```Bash
 python3 ./main/train.py --config 'path/to/config.yaml'
 python3 ./main/test.py --config 'path/to/config.yaml'
-
 ```
 
 Configuration .yaml files are givin under [experiments/train/](../experiments/train/)
