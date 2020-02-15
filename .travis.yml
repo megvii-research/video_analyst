@@ -13,5 +13,5 @@ cache: pip
 install:
   - pip install yapf==0.28.0
 
-before_script:
+script:
   - bash check_format.sh
