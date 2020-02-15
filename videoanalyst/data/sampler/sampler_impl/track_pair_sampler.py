@@ -14,8 +14,6 @@ from ..sampler_base import TRACK_SAMPLERS, SamplerBase
 
 # import cv2
 
-
-
 data_logger = logging.getLogger(_DATA_LOGGER_NAME)
 
 

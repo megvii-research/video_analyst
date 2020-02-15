@@ -68,7 +68,6 @@ class TrainerBase:
         r"""
         an interface for update params
         """
-
     def init_train(self):
         r"""
         an interface to process pre-train overhead before training
@@ -80,10 +79,8 @@ class TrainerBase:
         r"""
         an interface to train for one epoch
         """
-
     def is_completed(self):
         r""""""
-
     def set_dataloader(self, dataloader: DataLoader):
         r""""""
         self._dataloader = dataloader

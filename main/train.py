@@ -19,8 +19,6 @@ from videoanalyst.utils import Timer, complete_path_wt_root_in_cfg
 
 # torch.backends.cudnn.enabled = False
 
-
-
 logger = logging.getLogger('global')
 
 
