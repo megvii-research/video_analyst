@@ -12,8 +12,6 @@ from .datapipeline import builder as datapipeline_builder
 torch.multiprocessing.set_sharing_strategy('file_system')
 
 
-
-
 class AdaptorDataset(Dataset):
     default_hyper_params = dict(
         exp_name="",

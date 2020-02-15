@@ -77,7 +77,6 @@ class SamplerBase:
         r"""
         an interface for update params
         """
-
     def __next__(self) -> dict:
         r"""
         An interface to sample data

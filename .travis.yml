@@ -8,10 +8,10 @@ python:
 
 env: UBUNTU_VERSION=ubuntu1804
 
-before_script:
-  - yapf -p -r -d --style='{COLUMN_LIMIT:80}' ./
-  - isort -rc -w 80 -d ./
-  - autoflake -r ./
+cache: pip
 
-after_success:
-  - coverage report
+install:
+  - pip install yapf==0.28.0
+
+script:
+  - bash check_format.sh

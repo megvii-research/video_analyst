@@ -10,8 +10,8 @@ from .task_model import builder as task_builder
 
 
 def build(
-    task: str,
-    cfg: CfgNode,
+        task: str,
+        cfg: CfgNode,
 ):
     r"""
     Builder function.

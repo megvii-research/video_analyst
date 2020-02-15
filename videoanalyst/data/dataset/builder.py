@@ -11,7 +11,6 @@ from .dataset_base import TASK_DATASETS, DatasetBase
 # from product_net.data.transformer.transfomer_base import TransformerBase
 
 
-
 def build(task: str, cfg: CfgNode) -> DatasetBase:
     r"""
     Arguments
