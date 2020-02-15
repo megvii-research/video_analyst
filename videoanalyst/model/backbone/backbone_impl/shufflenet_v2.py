@@ -10,7 +10,6 @@ from ..backbone_base import TRACK_BACKBONES, VOS_BACKBONES
 
 # from torchvision.models.utils import load_state_dict_from_url
 
-
 logger = logging.getLogger("global")
 
 

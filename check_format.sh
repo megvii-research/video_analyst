@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIFF=`yapf -p -r -d --style='{COLUMN_LIMIT:80}' ./`
+DIFF=`yapf -p -r -d --style='{COLUMN_LIMIT:80}' -e "videoanalyst/evaluation/*" /`
 if [ ! -z "$DIFF" ]
 then
     echo "yapf format check failed"
