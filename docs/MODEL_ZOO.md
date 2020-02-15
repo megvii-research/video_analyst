@@ -35,7 +35,9 @@ GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 | ShuffleNetV2x0.5 | SiamFCppTracker | GOT-10k-val | 74.2 | 87.0| 67.1 | siamfcpp_shufflenetv2x0_5_got.yaml | siamfcpp-shufflenetv2x0_5-got-md5_d710ce17736d31a28bfe37cfbb997c5a.pkl |
 | ShuffleNetV2x0.5 | SiamFCppTracker | GOT-10k-test | 59.4 | 71.9 | 45.9 | siamfcpp_shufflenetv2x0_5_got.yaml | siamfcpp-shufflenetv2x1_0-got-md5_20bb2fdc1482ac60104a93eb11403753.pkl |
 | ShuffleNetV2x1.0 | SiamFCppTracker | GOT-10k-val | 75.9 | 88.3 | 70.2 | siamfcpp_shufflenetv2x1_0_got.yaml | siamfcpp-shufflenetv2x0_5-got-md5_d710ce17736d31a28bfe37cfbb997c5a.pkl |
-| ShuffleNetV2x1.0 | SiamFCppTracker | GOT-10k-test | 55.1 | 63.7 | 40.6 | siamfcpp_shufflenetv2x1_0_got.yaml | siamfcpp-shufflenetv2x1_0-got-md5_20bb2fdc1482ac60104a93eb11403753.pkl |
+| ShuffleNetV2x1.0 | SiamFCppTracker | GOT-10k-test | 55.1 | 63.7 | 40.6 | siamfcpp_shufflenetv2x1_0_got.yaml | siamfcpp-shufflenetv2x0_5-got-md5_d710ce17736d31a28bfe37cfbb997c5a.pkl |
+| ShuffleNetV2x1.0-dev | SiamFCppTracker | GOT-10k-val | 76.6 | 88.8 | 71.5 | siamfcpp_shufflenetv2x1_0_got-dev.yaml | siamfcpp-shufflenetv2x0_5-got-md5_d710ce17736d31a28bfe37cfbb997c5a.pkl |
+| ShuffleNetV2x1.0-dev | SiamFCppTracker | GOT-10k-test | 57.9 | 68.1 | 43.6 | siamfcpp_shufflenetv2x1_0_got-dev.yaml |  |
 
 #### Pipeline
 
