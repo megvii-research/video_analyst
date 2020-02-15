@@ -6,19 +6,19 @@ import cv2
 
 from yacs.config import CfgNode
 
-from ..template_module_base import TRACK_TEMPLATE_MODULES, VOS_TEMPLATE_MODULES, TemplateModuleBase
+from ..contrib_module_base import TRACK_CONTRIB_MODULES, VOS_CONTRIB_MODULES, ContribModuleBase
 
 
-@TRACK_TEMPLATE_MODULES.register
-@VOS_TEMPLATE_MODULES.register
-class InheritedTemplateModuleImplementation(TemplateModuleBase):
+@TRACK_CONTRIB_MODULES.register
+@VOS_CONTRIB_MODULES.register
+class ContribModuleImplementation(ContribModuleBase):
     r"""
-    Template Module Implementation
+    Contrib Module Implementation
 
     Hyper-parameters
     ----------------
     """
-    extra_hyper_params = dict(template_module_hp="", )
+    default_hyper_params = dict(contrib_module_hp="", )
 
     def __init__(self, ) -> None:
         super().__init__()
