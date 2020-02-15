@@ -1,5 +1,5 @@
 # encoding: utf-8
-from typing import Tuple
+from typing import Tuple, Dict
 
 import numpy as np
 
