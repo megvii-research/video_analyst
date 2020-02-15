@@ -1,5 +1,12 @@
 # Changelog
 
+Date format: YY/MM/DD
+
+## 2020/02/15
+
+* Add contrib module's template
+  * _docs/TEMPLATES/contrib_module_
+
 ## 2020/02/14
 
 * Add one-shot detection demo
