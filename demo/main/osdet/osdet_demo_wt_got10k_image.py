@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*
 from paths import ROOT_PATH  # isort:skip
 import demo
-from demo.resources.static_img_example.getImage import im, bbox, im_z, im_x, target_bbox, search_bbox
 
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.config.config import specify_task
@@ -134,4 +133,4 @@ if __name__ == "__main__":
     cv2.imshow("im_concat", im_concat)
     cv2.waitKey(0)
 
-    # from IPython import embed;embed()
+    from IPython import embed;embed()
