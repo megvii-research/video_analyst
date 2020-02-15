@@ -41,7 +41,9 @@ Please refer to [docs/TEMPLATES/README.md](TEMPLATES/README.md) for detail.
 
 ## Add Your Own Module
 
-TBD
+Please refer to [docs/TEMPLATES/README.md](TEMPLATES/README.md) for detail.
+
+Additioanlly, users are recommended to contribute their code under [contrib](../contrib/__init__.py). It is a good practice to seperate stable part and experimental part of the project.
 
 ## Structure
 
