@@ -66,8 +66,3 @@ class DatapipelineBase:
         r"""
         An interface to load batch data
         """
-    def __iter__(self):
-        return self
-
-    def __length__(self):
-        return 99999999999999999

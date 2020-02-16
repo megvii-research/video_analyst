@@ -161,15 +161,14 @@ class TransitionLR(BaseLR):
             raise ValueError('Invalid iter.')
         start_value = self._pre_func(self._start_lr)
         end_value = self._pre_func(self._end_lr)
-        trans_ratio = self._trans_func((epoch * self.max_iter + iter) /
-                                       (self._max_epoch * self.max_iter))
+        trans_ratio = self._trans_func(
+            (epoch * self.max_iter + iter) / (self._max_epoch * self.max_iter))
         value = self._post_func(start_value +
                                 (end_value - start_value) * trans_ratio)
         return value
 
     def __len__(self):
         return self._max_epoch
-
 
 
 @LR_POLICIES.register

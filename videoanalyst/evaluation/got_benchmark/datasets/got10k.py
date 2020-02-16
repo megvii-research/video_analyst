@@ -48,7 +48,7 @@ class GOT10k(object):
             print("cache file {} exists".format(cache_path))
             with open(cache_path, "rb") as f:
                 GOT10k.data_dict = pickle.load(f)
-            print("loaded cache file")
+            print("loaded cache file {}".format(cache_path))
         else:
             print("start loading got-10k {}".format(subset))
             for seq_name in tqdm(self.seq_names):

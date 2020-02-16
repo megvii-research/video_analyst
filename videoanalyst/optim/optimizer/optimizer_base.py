@@ -178,4 +178,3 @@ class OptimizerBase:
 
     def modify_grad(self, epoch, iteration=-1):
         self._grad_modifier.modify_grad(self._model, epoch, iteration)
-    

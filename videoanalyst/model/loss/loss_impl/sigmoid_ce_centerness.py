@@ -55,8 +55,7 @@ class SigmoidCrossEntropyCenterness(ModuleBase):
         pred = pred_data["ctr_pred"]
         label = target_data["ctr_gt"]
         # mask
-        mask = (~(label == self.background)).type(torch.Tensor).to(
-            pred.device)
+        mask = (~(label == self.background)).type(torch.Tensor).to(pred.device)
         not_neg_mask = (pred >= 0).type(torch.Tensor).to(pred.device)
         loss = (pred * not_neg_mask - pred * label +
                 self.safelog(1. + torch.exp(-torch.abs(pred)))) * mask

@@ -96,7 +96,6 @@ class RegularTrainer(TrainerBase):
 
         self._optimizer.modify_grad(epoch)
         pbar = tqdm(range(num_iterations))
-        #pbar = tqdm(num_iterations)
         self._state["pbar"] = pbar
         self._state["print_str"] = ""
 
@@ -165,7 +164,6 @@ class RegularTrainer(TrainerBase):
         if len(snapshot_file) <= 0:
             snapshot_file = self._hyper_params["snapshot"]
         if osp.exists(snapshot_file):
-            # snapshot = torch.load(snapshoto_file, map_location=torch.device("cuda"))
             dev = self._state["devices"][0]
             snapshot = torch.load(snapshot_file, map_location=dev)
             self._model.load_state_dict(snapshot["model_state_dict"])
