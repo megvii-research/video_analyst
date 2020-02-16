@@ -5,6 +5,7 @@ import os.path as osp
 import cv2
 import numpy as np
 from PIL import Image
+#import mxnet as mx
 
 logger = logging.getLogger("global")
 
@@ -37,6 +38,7 @@ def load_image(img_file: str, logger=logger) -> np.array:
         logger.info("Image file %s does not exist." % img_file)
     # read with OpenCV
     img = cv2.imread(img_file, cv2.IMREAD_COLOR)
+    #img = mx.image.imread(img_file).asnumpy()
     if img is None:
         # retrying
         for ith in range(_RETRY_NUM):

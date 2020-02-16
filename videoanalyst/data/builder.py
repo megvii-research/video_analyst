@@ -7,18 +7,33 @@ from yacs.config import CfgNode
 
 import torch
 from torch.utils.data import DataLoader, Dataset
+from torch.utils.data.dataloader import default_collate
 
-from videoanalyst.utils import ensure_dir
+from videoanalyst.utils import ensure_dir, Timer
 
 from . import _DATA_LOGGER_NAME
-from .adaptor_dataset import AdaptorDataset
+from .adaptor_dataset import AdaptorDataset, AdaptorIterableDataset
 from .datapipeline import builder as datapipeline_builder
 from .sampler import builder as sampler_builder
 from .target import builder as target_builder
 from .transformer import builder as transformer_builder
 
 logger = logging.getLogger("global")
+from itertools import chain
+class MultiStreamDataloader:
+    def __init__(self, datasets):
+        self.datasets = datasets
+    def __length__(self):
+        return len(self.datasets[0])
 
+    def get_stream_loaders(self):
+        return zip(*[DataLoader(dataset, num_workers=1, batch_size=None, pin_memory=True) for dataset in self.datasets])
+    
+    def __iter__(self):
+        for batch_parts in self.get_stream_loaders():
+            with Timer(name="defalt_collert", logger=logger, verbose=True):
+                data =  default_collate(list(chain(*batch_parts)))
+            yield data
 
 def build(task: str, cfg: CfgNode) -> DataLoader:
     r"""
@@ -32,6 +47,7 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
     data_logger = build_data_logger(cfg)
 
     if task == "track":
+        '''
         py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
                                     num_epochs=cfg.num_epochs,
                                     nr_image_per_epoch=cfg.nr_image_per_epoch)
@@ -41,8 +57,14 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
                                 shuffle=False,
                                 pin_memory=True,
                                 num_workers=cfg.num_workers,
-                                drop_last=True)
-
+                                drop_last=True, 
+                                )
+        '''
+        py_datasets = AdaptorIterableDataset.split_datasets(dict(task=task, cfg=cfg),
+                                    num_epochs=cfg.num_epochs,
+                                    nr_image_per_epoch=cfg.nr_image_per_epoch,
+                                    batch_size=cfg.minibatch, max_workers=cfg.num_workers)
+        dataloader = MultiStreamDataloader(py_datasets)
     return iter(dataloader)
 
 

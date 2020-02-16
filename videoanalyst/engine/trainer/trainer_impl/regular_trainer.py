@@ -92,11 +92,11 @@ class RegularTrainer(TrainerBase):
         # epoch counter +1
         self._state["epoch"] += 1
         epoch = self._state["epoch"]
-        max_epoch = self._hyper_params["max_epoch"]
-        num_iterations = self._hyper_params["num_iterations"]
+        num_iterations = self.max_iter_per_epoch()
 
         self._optimizer.modify_grad(epoch)
         pbar = tqdm(range(num_iterations))
+        #pbar = tqdm(num_iterations)
         self._state["pbar"] = pbar
         self._state["print_str"] = ""
 
@@ -104,7 +104,6 @@ class RegularTrainer(TrainerBase):
         for iteration, _ in enumerate(pbar):
             with Timer(name="data", output_dict=time_dict):
                 training_data = next(self._dataloader)
-
             training_data = move_data_to_device(training_data,
                                                 self._state["devices"][0])
 
@@ -150,7 +149,7 @@ class RegularTrainer(TrainerBase):
 
             for monitor in self._monitors:
                 monitor.update(trainer_data)
-
+            del training_data
             print_str = self._state["print_str"]
             pbar.set_description(print_str)
 

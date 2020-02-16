@@ -112,6 +112,10 @@ class ListLR(BaseLR):
     def max_iter(self):
         return max([LR.max_iter for LR in self.LRs])
 
+    def set_max_iter(self, num):
+        for LR in self.LRs:
+            LR.max_iter = num
+
 
 @LR_POLICIES.register
 class MultiStageLR(BaseLR):
@@ -149,17 +153,16 @@ class TransitionLR(BaseLR):
         self._start_lr = start_lr
         self._end_lr = end_lr
         self._max_epoch = max_epoch
-        self._max_iter = max_iter
 
     def get_lr(self, epoch=0, iter=0):
         if not (0 <= epoch < self._max_epoch):
             raise ValueError('Invalid epoch.')
-        if not (0 <= iter < self._max_iter):
+        if not (0 <= iter < self.max_iter):
             raise ValueError('Invalid iter.')
         start_value = self._pre_func(self._start_lr)
         end_value = self._pre_func(self._end_lr)
-        trans_ratio = self._trans_func((epoch * self._max_iter + iter) /
-                                       (self._max_epoch * self._max_iter))
+        trans_ratio = self._trans_func((epoch * self.max_iter + iter) /
+                                       (self._max_epoch * self.max_iter))
         value = self._post_func(start_value +
                                 (end_value - start_value) * trans_ratio)
         return value
@@ -167,9 +170,6 @@ class TransitionLR(BaseLR):
     def __len__(self):
         return self._max_epoch
 
-    @property
-    def max_iter(self):
-        return self._max_iter
 
 
 @LR_POLICIES.register

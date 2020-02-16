@@ -2,6 +2,8 @@
 from paths import ROOT_PATH  # isort:skip
 
 import argparse
+#   import cv2
+#cv2.setNumThreads(0)
 import logging
 import os.path as osp
 
@@ -20,7 +22,8 @@ from videoanalyst.utils import Timer, complete_path_wt_root_in_cfg
 # torch.backends.cudnn.enabled = False
 
 logger = logging.getLogger('global')
-
+torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.deterministic = True
 
 def make_parser():
     parser = argparse.ArgumentParser(description='Test')

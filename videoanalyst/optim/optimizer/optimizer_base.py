@@ -81,6 +81,13 @@ class OptimizerBase:
         """
         return self._hyper_params
 
+    def set_max_iternum_per_epoch(self, num):
+        r"""
+        set the max_iter in lr policy
+        """
+
+        self._state["lr_policy"].set_max_iter(num)
+
     def set_hps(self, hps: dict) -> None:
         r"""
         Set hyper-parameters
@@ -171,3 +178,4 @@ class OptimizerBase:
 
     def modify_grad(self, epoch, iteration=-1):
         self._grad_modifier.modify_grad(self._model, epoch, iteration)
+    

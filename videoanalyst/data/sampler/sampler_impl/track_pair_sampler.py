@@ -11,6 +11,7 @@ from videoanalyst.evaluation.got_benchmark.datasets import got10k
 from videoanalyst.utils import load_image
 
 from ..sampler_base import TRACK_SAMPLERS, SamplerBase
+import time
 
 # import cv2
 
@@ -67,10 +68,15 @@ class TrackPairSampler(SamplerBase):
         return sampled_data
 
     def _sample_track_pair(self) -> Tuple[Dict, Dict]:
+        time_a = time.time()
         dataset_idx, dataset = self._sample_dataset()
+        time_b = time.time()
         sequence_data = self._sample_sequence_from_dataset(dataset)
+        time_c = time.time()
         data1, data2 = self._sample_track_pair_from_sequence(
             sequence_data, self._state["max_diffs"][dataset_idx])
+        time_d = time.time()
+        #print("{}, {}, {}".format(time_b-time_a, time_c-time_b, time_d-time_c))
 
         return data1, data2
 

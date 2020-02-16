@@ -2,14 +2,16 @@
 from typing import Dict, List
 
 import cv2
+import logging
 import numpy as np
 from yacs.config import CfgNode
 
-from videoanalyst.utils import convert_data_to_dtype
+from videoanalyst.utils import convert_data_to_dtype, Timer
 
 from ...sampler.sampler_base import SamplerBase
 from ..datapipeline_base import TRACK_DATAPIPELINES, DatapipelineBase
 
+logger = logging.getLogger('global')
 
 @TRACK_DATAPIPELINES.register
 class RegularDatapipeline(DatapipelineBase):
