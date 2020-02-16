@@ -5,6 +5,8 @@ import os.path as osp
 
 from yacs.config import CfgNode
 
+import torch
+
 from videoanalyst.evaluation import got_benchmark
 from videoanalyst.evaluation.got_benchmark.experiments import ExperimentLaSOT
 
