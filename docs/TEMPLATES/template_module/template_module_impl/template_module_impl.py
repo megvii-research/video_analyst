@@ -12,14 +12,14 @@ from ..template_module_base import (TRACK_TEMPLATE_MODULES,
 
 @TRACK_TEMPLATE_MODULES.register
 @VOS_TEMPLATE_MODULES.register
-class InheritedTemplateModuleImplementation(TemplateModuleBase):
+class TemplateModuleImplementation(TemplateModuleBase):
     r"""
     Template Module Implementation
 
     Hyper-parameters
     ----------------
     """
-    extra_hyper_params = dict(template_module_hp="", )
+    default_hyper_params = dict(template_module_hp="", )
 
     def __init__(self, ) -> None:
         super().__init__()
