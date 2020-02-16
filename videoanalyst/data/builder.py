@@ -18,6 +18,7 @@ from .sampler import builder as sampler_builder
 from .target import builder as target_builder
 from .transformer import builder as transformer_builder
 
+logger = logging.getLogger("global")
 
 def build(task: str, cfg: CfgNode) -> DataLoader:
     r"""
