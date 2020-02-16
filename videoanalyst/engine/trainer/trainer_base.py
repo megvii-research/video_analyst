@@ -38,11 +38,10 @@ class TrainerBase:
         self._losses = optimizer._model.loss
         self._optimizer = optimizer
         self._monitors = monitors
-        self._optimizer.set_max_iternum_per_epoch(15000//128)
+        self._optimizer.set_max_iternum_per_epoch(self._dataloader.dataset.max_iter_per_epoch)
 
     def max_iter_per_epoch(self):
-        #return len(self._dataloader)//self._dataloader.batch_size
-        return 15000//128
+        return self._dataloader.dataset.max_iter_per_epoch
 
     def get_hps(self) -> Dict:
         r"""

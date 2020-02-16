@@ -55,14 +55,6 @@ class AdaptorIterableDataset(IterableDataset):
         return [cls(kwargs, num_epochs, nr_image_per_epoch, batch_size=split_size) for _ in range(num_workers)]
 
 class AdaptorDataset(Dataset):
-    default_hyper_params = dict(
-        exp_name="",
-        exp_save="snapshots",
-        num_epochs=10000,
-        minibatch=32,
-        num_workers=4,
-        nr_image_per_epoch=600000,
-    )
 
     def __init__(self,
                  kwargs: Dict = dict(),
@@ -72,6 +64,7 @@ class AdaptorDataset(Dataset):
         self.kwargs = kwargs
         self.num_epochs = num_epochs
         self.nr_image_per_epoch = nr_image_per_epoch
+        self.max_iter_per_epoch = 0
 
     def __getitem__(self, item):
         if self.datapipeline is None:
@@ -85,3 +78,4 @@ class AdaptorDataset(Dataset):
 
     def __len__(self):
         return self.nr_image_per_epoch * self.num_epochs
+    

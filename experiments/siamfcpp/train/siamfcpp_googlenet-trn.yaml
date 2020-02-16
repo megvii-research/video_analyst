@@ -89,8 +89,8 @@ train:
       exp_save: *TRAIN_SAVE
       num_epochs: 20
       minibatch: 128  # 256
-      num_workers: 16
-      nr_image_per_epoch: 15000
+      num_workers: 32
+      nr_image_per_epoch: 150000
       datapipeline:
         name: "RegularDatapipeline"
       sampler:

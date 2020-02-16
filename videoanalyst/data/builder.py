@@ -34,6 +34,33 @@ class MultiStreamDataloader:
             with Timer(name="defalt_collert", logger=logger, verbose=True):
                 data =  default_collate(list(chain(*batch_parts)))
             yield data
+class DataPretcher():
+
+    def __init__(self, dataloader):
+        self.dataloader = iter(dataloader)
+        self.stream = torch.cuda.Stream()
+        self.preload()
+
+    def __len__(self):
+        return len(self.dataloader)
+    
+
+    def preload(self):
+        try:
+            self.next_data = next(self.dataloader)
+        except StopIteration:
+            self.next_data = None
+            return
+        with torch.cuda.stream(self.stream):
+            if torch.cuda.is_available():
+                for key in self.next_data:
+                    self.next_data[key] = self.next_data[key].cuda(non_blocking=True)
+            
+    def next(self):
+        torch.cuda.current_stream().wait_stream(self.stream)
+        data = self.next_data
+        self.preload()
+        return data
 
 def build(task: str, cfg: CfgNode) -> DataLoader:
     r"""
@@ -47,10 +74,10 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
     data_logger = build_data_logger(cfg)
 
     if task == "track":
-        '''
         py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
                                     num_epochs=cfg.num_epochs,
                                     nr_image_per_epoch=cfg.nr_image_per_epoch)
+        py_dataset.max_iter_per_epoch = cfg.nr_image_per_epoch // cfg.minibatch
 
         dataloader = DataLoader(py_dataset,
                                 batch_size=cfg.minibatch,
@@ -65,7 +92,10 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
                                     nr_image_per_epoch=cfg.nr_image_per_epoch,
                                     batch_size=cfg.minibatch, max_workers=cfg.num_workers)
         dataloader = MultiStreamDataloader(py_datasets)
-    return iter(dataloader)
+        dataloader = DataPretcher(dataloader)
+        '''
+        dataloader = iter(dataloader)
+    return dataloader
 
 
 def get_config() -> Dict[str, CfgNode]:
@@ -81,13 +111,12 @@ def get_config() -> Dict[str, CfgNode]:
 
     for task in cfg_dict:
         cfg = cfg_dict[task]
-
-        module = AdaptorDataset
-        # modify _AdaptorDataset.default_hyper_params_ to add new config name under _data_
-        hps = module.default_hyper_params
-        for hp_name in hps:
-            cfg[hp_name] = hps[hp_name]
-
+        cfg["exp_name"] = ""
+        cfg["exp_save"] = "snapshots"
+        cfg["num_epochs"] = 1
+        cfg["minibatch"] = 32
+        cfg["num_workers"] = 4
+        cfg["nr_image_per_epoch"] = 150000
         cfg["datapipeline"] = datapipeline_builder.get_config()[task]
         cfg["sampler"] = sampler_builder.get_config()[task]
         cfg["transformer"] = transformer_builder.get_config()[task]

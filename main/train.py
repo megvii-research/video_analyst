@@ -2,8 +2,8 @@
 from paths import ROOT_PATH  # isort:skip
 
 import argparse
-#   import cv2
-#cv2.setNumThreads(0)
+import cv2
+cv2.setNumThreads(1)
 import logging
 import os.path as osp
 
