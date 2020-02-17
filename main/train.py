@@ -4,6 +4,7 @@ from paths import ROOT_PATH  # isort:skip
 import argparse
 import logging
 import os.path as osp
+import pickle
 
 import torch
 
@@ -15,7 +16,7 @@ from videoanalyst.model import builder as model_builder
 from videoanalyst.model.loss import builder as losses_builder
 from videoanalyst.optim import builder as optim_builder
 from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.utils import Timer, complete_path_wt_root_in_cfg
+from videoanalyst.utils import Timer, ensure_dir, complete_path_wt_root_in_cfg
 
 # torch.backends.cudnn.enabled = False
 
@@ -52,6 +53,13 @@ if __name__ == '__main__':
     root_cfg = root_cfg.train
     task, task_cfg = specify_task(root_cfg)
     task_cfg.freeze()
+    # backup config
+    cfg_bak_dir = osp.join(task_cfg.exp_name, task_cfg.exp_save, "logs")
+    ensure_dir(cfg_bak_dir)
+    cfg_bak_file = osp.join(cfg_bak_dir, "%s_bak.pkl"%task_cfg.exp_name)
+    with open(cfg_bak_file, "wb") as f:
+        pickle.dump(task_cfg, f)
+    logger.info("Task configuration backed up at %s"%cfg_bak_file)
     # build model
     model = model_builder.build(task, task_cfg.model)
     # load data
