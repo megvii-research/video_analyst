@@ -23,7 +23,9 @@ Resuming from snapshot file
 python3 ./main/train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml' --resume-from-file='snapshots/siamfcpp_alexnet/epoch-10.pkl'
 ```
 
-Configuration .yaml files are givin under [experiments/train/](../experiments/train/)
+Configuration .yaml files are givin under [experiments/train/](../experiments/train/).
+
+Before the training starts, the merged configuration file will be backed up at _EXP_SAVE/EXP_NAME/logs_.
 
 ### Training details
 
