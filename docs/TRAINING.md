@@ -11,6 +11,18 @@ python3 ./main/train.py --config 'path/to/config.yaml'
 python3 ./main/test.py --config 'path/to/config.yaml'
 ```
 
+Resuming from epoch number
+
+```Bash
+python3 ./main/train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml' --resume-from-epoch=10
+```
+
+Resuming from snapshot file
+
+```Bash
+python3 ./main/train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml' --resume-from-file='snapshots/siamfcpp_alexnet/epoch-10.pkl'
+```
+
 Configuration .yaml files are givin under [experiments/train/](../experiments/train/)
 
 ### Training details
