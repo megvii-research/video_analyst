@@ -54,7 +54,7 @@ if __name__ == '__main__':
     task, task_cfg = specify_task(root_cfg)
     task_cfg.freeze()
     # backup config
-    cfg_bak_dir = osp.join(task_cfg.exp_name, task_cfg.exp_save, "logs")
+    cfg_bak_dir = osp.join(task_cfg.exp_save, task_cfg.exp_name, "logs")
     ensure_dir(cfg_bak_dir)
     cfg_bak_file = osp.join(cfg_bak_dir, "%s_bak.pkl"%task_cfg.exp_name)
     with open(cfg_bak_file, "wb") as f:
