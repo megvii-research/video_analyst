@@ -27,10 +27,17 @@ def make_parser():
     parser.add_argument('--config',
                         default='',
                         type=str,
-                        help='experiment configuration')
+                        help='path to experiment configuration')
+    parser.add_argument('--resume-from-epoch',
+                        default=-1,
+                        type=int,
+                        help=r"latest completed epoch's number (from which training resumes)")
+    parser.add_argument('--resume-from-file',
+                        default="",
+                        type=str,
+                        help=r"latest completed epoch's snapshot file (from which training resumes)")
 
     return parser
-
 
 if __name__ == '__main__':
     # parsing
@@ -55,6 +62,7 @@ if __name__ == '__main__':
     # build trainer
     trainer = engine_builder.build(task, task_cfg.trainer, "trainer", optimizer,
                                    dataloader)
+    trainer.resume(parsed_args.resume_from_epoch, parsed_args.resume_from_file)
     # trainer.init_train()
     logger.info("Start training")
     while not trainer.is_completed():

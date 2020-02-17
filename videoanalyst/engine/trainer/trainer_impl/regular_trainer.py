@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*
+from typing import Tuple
 import copy
 import itertools
 import logging
@@ -60,6 +61,7 @@ class RegularTrainer(TrainerBase):
         super(RegularTrainer, self).__init__(optimizer, dataloader, monitors)
         # update state
         self._state["epoch"] = -1  # uninitialized
+        self._state["initialized"] = False
 
     def update_params(self, ):
         super(RegularTrainer, self).update_params()
@@ -68,27 +70,31 @@ class RegularTrainer(TrainerBase):
         ]
         self._state["snapshot_dir"] = osp.join(self._hyper_params["exp_save"],
                                                self._hyper_params["exp_name"])
-        self.init_train()
+        
+        self._state["snapshot_file"] = self._hyper_params["snapshot"]
 
     def init_train(self, ):
         torch.cuda.empty_cache()
-
+        # move model & loss to target devices
         devs = self._state["devices"]
         self._model.train()
         self._model.to(devs[0])
-
         for k in self._losses:
             self._losses[k].to(devs[0])
-
+        # load from self._state["snapshot_file"]
         self.load_snapshot()
-
+        # parallelism with Data Parallel (DP)
         if len(self._state["devices"]) > 1:
             self._model = nn.DataParallel(self._model, device_ids=devs)
             logger.info("Use nn.DataParallel for data parallelism")
-
         super(RegularTrainer, self).init_train()
+        logger.info("%s initialized", type(self).__name__)
 
     def train(self):
+        if not self._state["initialized"]:
+            self.init_train()
+        self._state["initialized"] == True
+
         # epoch counter +1
         self._state["epoch"] += 1
         epoch = self._state["epoch"]
@@ -155,16 +161,16 @@ class RegularTrainer(TrainerBase):
             pbar.set_description(print_str)
 
     def is_completed(self):
+        r"""Return completion status"""
         is_completed = (self._state["epoch"] + 1 >=
                         self._hyper_params["max_epoch"])
         return is_completed
 
-    def load_snapshot(self, snapshot_file=""):
+    def load_snapshot(self):
         r""" 
-        load snapshot
+        load snapshot based on self._hyper_params["snapshot"] or self._state["epoch"]
         """
-        if len(snapshot_file) <= 0:
-            snapshot_file = self._hyper_params["snapshot"]
+        snapshot_file = self._state["snapshot_file"]
         if osp.exists(snapshot_file):
             # snapshot = torch.load(snapshoto_file, map_location=torch.device("cuda"))
             dev = self._state["devices"][0]
@@ -183,9 +189,8 @@ class RegularTrainer(TrainerBase):
         r""" 
         save snapshot for current epoch
         """
-        snapshot_dir = self._state["snapshot_dir"]
         epoch = self._state["epoch"]
-        snapshot_file = osp.join(snapshot_dir, "epoch-{}.pkl".format(epoch))
+        snapshot_dir, snapshot_file = self._infer_snapshot_dir_file_from_epoch(epoch)
         snapshot_dict = {
             'epoch': epoch,
             'model_state_dict': unwrap_model(self._model).state_dict(),
@@ -197,6 +202,41 @@ class RegularTrainer(TrainerBase):
             logger.info("retrying")
             torch.save(snapshot_dict, snapshot_file)
         logger.info("Snapshot saved at: %s" % snapshot_file)
+    
+    def _infer_snapshot_dir_file_from_epoch(self, epoch: int) -> Tuple[str, str]:
+        r"""Infer snapshot's directory & file path based on self._state & epoch number pased in
+
+        Parameters
+        ----------
+        epoch : int
+            epoch number
+        
+        Returns
+        -------
+        Tuple[str, str]
+            directory and snapshot file
+            dir, path
+        """
+        snapshot_dir = self._state["snapshot_dir"]
+        snapshot_file = osp.join(snapshot_dir, "epoch-{}.pkl".format(epoch))
+        return snapshot_dir, snapshot_file
+
+    def resume(self, epoch: int = -1, snapshot_file: str = ""):
+        r"""Apply resuming by setting self._state["snapshot_file"]
+        Priviledge snapshot_file to epoch number
+
+        Parameters
+        ----------
+        epoch : int, optional
+            latest epoch number, by default -1
+        snapshot_file : str, optional
+            latest snapshot file path, by default ""
+        """
+        if len(snapshot_file)>0 and osp.exists(snapshot_file):
+            self._state["snapshot_file"] = snapshot_file
+        elif epoch >= 0:
+            _, snapshot_file = self._infer_snapshot_dir_file_from_epoch(epoch)
+            self._state["snapshot_file"] = snapshot_file
 
 
 RegularTrainer.default_hyper_params = copy.deepcopy(
