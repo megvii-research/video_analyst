@@ -93,7 +93,7 @@ class RegularTrainer(TrainerBase):
     def train(self):
         if not self._state["initialized"]:
             self.init_train()
-        self._state["initialized"] == True
+        self._state["initialized"] = True
 
         # epoch counter +1
         self._state["epoch"] += 1
