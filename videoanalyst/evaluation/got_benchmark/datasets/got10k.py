@@ -82,7 +82,7 @@ class GOT10k(object):
         else:
             assert len(img_files) == len(anno)
 
-        if self.return_meta:
+        if self.return_meta or self.subset == "val":
             meta = self._fetch_meta(seq_dir)
             return img_files, anno, meta
         else:
@@ -103,6 +103,8 @@ class GOT10k(object):
             seq_name = self.seq_names[index]
         else:
             if not index in self.seq_names:
+                print('Sequence {} not found.'.format(index))
+                print(len(self.seq_names))
                 raise Exception('Sequence {} not found.'.format(index))
             seq_name = index
         img_files = GOT10k.data_dict[seq_name]["img_files"]
