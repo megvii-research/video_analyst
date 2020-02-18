@@ -33,8 +33,16 @@ Please refer to [docs/TEST.md](docs/TEST.md) for detail.
 
 ### Training
 
+#### From epoch 0
+
 ```Bash
 python3 ./main/train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml'
+```
+
+#### Resuming (e.g. from epoch 10)
+
+```Bash
+python3 ./main/train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml' --resume-from-epoch=10
 ```
 
 Please refer to [docs/TRAINING.md](docs/TRAINING.md) for detail.
