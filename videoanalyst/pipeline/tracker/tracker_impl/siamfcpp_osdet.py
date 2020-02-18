@@ -10,7 +10,7 @@ from videoanalyst.pipeline.tracker.tracker_base import TRACK_PIPELINES
 from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
                                          get_subwindow_tracking,
                                          imarray_to_tensor, tensor_to_numpy,
-                                         xywh2cxywh, xyxy2cxywh)
+                                         xywh2cxywh, xyxy2cxywh, cxywh2xyxy)
 
 
 # ============================== Tracker definition ============================== #
@@ -210,6 +210,13 @@ class SiamFCppOneShotDetector(PipelineBase):
             context_amount=context_amount,
             func_get_subwindow=get_subwindow_tracking,
         )
+        # store crop information
+        self._state["crop_info"] = dict(
+            target_pos=target_pos,
+            target_sz=target_sz,
+            scale_x=scale_x,
+            avg_chans=avg_chans,
+        )
         with torch.no_grad():
             score, box, cls, ctr, *args = self._model(
                 imarray_to_tensor(im_x_crop).to(self.device),
@@ -239,8 +246,11 @@ class SiamFCppOneShotDetector(PipelineBase):
 
         # record basic mid-level info
         self._state['x_crop'] = im_x_crop
-        bbox_pred_in_crop = np.rint(box[best_pscore_id]).astype(np.int)
+        # bbox_pred_in_crop = np.rint(box[best_pscore_id]).astype(np.int)
+        bbox_pred_in_crop = box[best_pscore_id]
         self._state['bbox_pred_in_crop'] = bbox_pred_in_crop
+        self._state['bbox_pred_in_frame'] = bbox_pred_in_crop
+
         # record optional mid-level info
         if update_state:
             self._state['score'] = score
@@ -389,3 +399,52 @@ class SiamFCppOneShotDetector(PipelineBase):
         box_in_frame = np.stack([x, y, w, h], axis=-1)
 
         return box_in_frame
+
+    # def _transform_box_from_crop_to_frame(self, best_pscore_id, score, box_wh, target_pos,
+    #                      target_sz, scale_x, x_size, penalty):
+    def _transform_bbox_from_crop_to_frame(self, bbox_in_crop, crop_info=None):
+        r"""
+        Perform SiameseRPN-based tracker's post-processing of box
+        :param score: (HW, ), score prediction
+        :param box_wh: (HW, 4), cxywh, bbox prediction (format changed)
+        :param target_pos: (2, ) previous position (x & y)
+        :param target_sz: (2, ) previous state (w & h)
+        :param scale_x: scale of cropped patch of current frame
+        :param x_size: size of cropped patch
+        :param penalty: scale/ratio change penalty calculated during score post-processing
+        :return:
+            new_target_pos: (2, ), new target position
+            new_target_sz: (2, ), new target size
+        """
+        if crop_info is None:
+            crop_info = self._state["crop_info"]
+        target_pos = crop_info["target_pos"]
+        target_sz = crop_info["target_sz"]
+        scale_x = crop_info["scale_x"]
+        x_size = self._hyper_params["x_size"]
+
+        # pred_in_crop = box_wh[best_pscore_id, :] / np.float32(scale_x)
+        bbox_in_crop = np.array(bbox_in_crop).reshape(-1, 4)
+        pred_in_crop = xyxy2cxywh(bbox_in_crop)
+        pred_in_crop = pred_in_crop / np.float32(scale_x)
+
+        # about np.float32(scale_x)
+        # attention!, this casting is done implicitly
+        # which can influence final EAO heavily given a model & a set of hyper-parameters
+
+        # box post-postprocessing
+        # test_lr = self._hyper_params['test_lr']
+        # lr = penalty[best_pscore_id] * score[best_pscore_id] * test_lr
+        # from IPython import embed;embed()
+        lr = 1.0  # no EMA smoothing, size directly determined by prediction
+        res_x = pred_in_crop[..., 0] + target_pos[0] - (x_size // 2) / scale_x
+        res_y = pred_in_crop[..., 1] + target_pos[1] - (x_size // 2) / scale_x
+        res_w = target_sz[0] * (1 - lr) + pred_in_crop[..., 2] * lr
+        res_h = target_sz[1] * (1 - lr) + pred_in_crop[..., 3] * lr
+
+        # new_target_pos = np.array([res_x, res_y])
+        # new_target_sz = np.array([res_w, res_h])
+        # return new_target_pos, new_target_sz
+
+        bbox_in_frame = cxywh2xyxy(np.stack([res_x, res_y, res_w, res_h], axis=1))
+        return bbox_in_frame

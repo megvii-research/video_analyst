@@ -48,4 +48,5 @@ train:
               max_diff: 100
               dataset_root: "datasets/GOT-10k"
               subset: "train"
+              check_integrity: False
             # GOT10kDatasetFixed: *GOT10KDATASET_CFG  # got10k dataset with exclusion of unfixed sequences
