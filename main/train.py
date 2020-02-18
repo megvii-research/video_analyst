@@ -48,6 +48,7 @@ if __name__ == '__main__':
     exp_cfg_path = osp.realpath(parsed_args.config)
     root_cfg.merge_from_file(exp_cfg_path)
     logger.info("Load experiment configuration at: %s" % exp_cfg_path)
+    logger.info("Merged with root_cfg imported from videoanalyst.config.config.cfg")
     # resolve config
     root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.train
@@ -56,9 +57,9 @@ if __name__ == '__main__':
     # backup config
     cfg_bak_dir = osp.join(task_cfg.exp_save, task_cfg.exp_name, "logs")
     ensure_dir(cfg_bak_dir)
-    cfg_bak_file = osp.join(cfg_bak_dir, "%s_bak.pkl"%task_cfg.exp_name)
-    with open(cfg_bak_file, "wb") as f:
-        pickle.dump(task_cfg, f)
+    cfg_bak_file = osp.join(cfg_bak_dir, "%s_bak.yaml"%task_cfg.exp_name)
+    with open(cfg_bak_file, "w") as f:
+        f.write(task_cfg.dump())
     logger.info("Task configuration backed up at %s"%cfg_bak_file)
     # build model
     model = model_builder.build(task, task_cfg.model)

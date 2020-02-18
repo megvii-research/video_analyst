@@ -39,6 +39,10 @@ Developpers are recommended to take default _.yaml_ configuration files as examp
 
 Please refer to [docs/TEMPLATES/README.md](TEMPLATES/README.md) for detail.
 
+### P.S.
+
+- For serialization purpose, in _default_hyper_params_, do not use bare _dict_ object. Wrap it with _yacs.config.CfgNode_.
+
 ## Add Your Own Module
 
 TBD
