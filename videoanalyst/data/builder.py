@@ -20,6 +20,7 @@ from .transformer import builder as transformer_builder
 
 logger = logging.getLogger("global")
 
+
 def build(task: str, cfg: CfgNode) -> DataLoader:
     r"""
     Arguments
