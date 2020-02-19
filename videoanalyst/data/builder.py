@@ -45,15 +45,6 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
             num_workers=cfg.num_workers,
             drop_last=True,
         )
-        '''
-        py_datasets = AdaptorIterableDataset.split_datasets(dict(task=task, cfg=cfg),
-                                    num_epochs=cfg.num_epochs,
-                                    nr_image_per_epoch=cfg.nr_image_per_epoch,
-                                    batch_size=cfg.minibatch, max_workers=cfg.num_workers)
-        dataloader = MultiStreamDataloader(py_datasets)
-        dataloader = DataPretcher(dataloader)
-        '''
-        dataloader = iter(dataloader)
     return dataloader
 
 
