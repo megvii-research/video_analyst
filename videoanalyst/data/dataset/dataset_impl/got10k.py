@@ -35,6 +35,7 @@ class GOT10kDataset(DatasetBase):
         subset="train",
         ratio=1,
         max_diff=100,
+        check_integrity=True, 
     )
 
     def __init__(self) -> None:
@@ -55,7 +56,8 @@ class GOT10kDataset(DatasetBase):
         """
         dataset_root = osp.realpath(self._hyper_params["dataset_root"])
         subset = self._hyper_params["subset"]
-        self._state["dataset"] = GOT10k(dataset_root, subset=subset)
+        check_integrity = self._hyper_params["check_integrity"]
+        self._state["dataset"] = GOT10k(dataset_root, subset=subset, check_integrity=check_integrity)
 
     def __getitem__(self, item: int) -> Dict:
         img_files, anno = self._state["dataset"][item]

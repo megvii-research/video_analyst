@@ -10,7 +10,7 @@ from videoanalyst.pipeline.tracker.tracker_base import TRACK_PIPELINES
 from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
                                          get_subwindow_tracking,
                                          imarray_to_tensor, tensor_to_numpy,
-                                         xywh2cxywh, xyxy2cxywh)
+                                         xywh2cxywh, xyxy2cxywh, cxywh2xyxy)
 
 
 # ============================== Tracker definition ============================== #
@@ -210,6 +210,13 @@ class SiamFCppOneShotDetector(PipelineBase):
             context_amount=context_amount,
             func_get_subwindow=get_subwindow_tracking,
         )
+        # store crop information
+        self._state["crop_info"] = dict(
+            target_pos=target_pos,
+            target_sz=target_sz,
+            scale_x=scale_x,
+            avg_chans=avg_chans,
+        )
         with torch.no_grad():
             score, box, cls, ctr, *args = self._model(
                 imarray_to_tensor(im_x_crop).to(self.device),
@@ -239,8 +246,11 @@ class SiamFCppOneShotDetector(PipelineBase):
 
         # record basic mid-level info
         self._state['x_crop'] = im_x_crop
-        bbox_pred_in_crop = np.rint(box[best_pscore_id]).astype(np.int)
+        # bbox_pred_in_crop = np.rint(box[best_pscore_id]).astype(np.int)
+        bbox_pred_in_crop = box[best_pscore_id]
         self._state['bbox_pred_in_crop'] = bbox_pred_in_crop
+        self._state['bbox_pred_in_frame'] = bbox_pred_in_crop
+
         # record optional mid-level info
         if update_state:
             self._state['score'] = score
@@ -389,3 +399,43 @@ class SiamFCppOneShotDetector(PipelineBase):
         box_in_frame = np.stack([x, y, w, h], axis=-1)
 
         return box_in_frame
+
+    def _transform_bbox_from_crop_to_frame(self, bbox_in_crop, crop_info=None):
+        r"""Transform bbox from crop to frame, 
+            Based on latest detection setting (cropping position / cropping scale)
+        
+        Arguments
+        ---------
+        bbox_in_crop:
+            bboxes on crop that will be transformed on bboxes on frame
+            object able to be reshaped into (-1, 4), xyxy, 
+        crop_info: Dict
+            dictionary containing cropping information. Transform will be performed based on crop_info
+            target_pos: cropping position
+            target_sz: target size based on which cropping range was calculated
+            scale_x: cropping scale, length on crop / length on frame
+        
+        Returns
+        -------
+        np.array
+            bboxes on frame. (N, 4)
+        """
+        if crop_info is None:
+            crop_info = self._state["crop_info"]
+        target_pos = crop_info["target_pos"]
+        target_sz = crop_info["target_sz"]
+        scale_x = crop_info["scale_x"]
+        x_size = self._hyper_params["x_size"]
+
+        bbox_in_crop = np.array(bbox_in_crop).reshape(-1, 4)
+        pred_in_crop = xyxy2cxywh(bbox_in_crop)
+        pred_in_crop = pred_in_crop / np.float32(scale_x)
+
+        lr = 1.0  # no EMA smoothing, size directly determined by prediction
+        res_x = pred_in_crop[..., 0] + target_pos[0] - (x_size // 2) / scale_x
+        res_y = pred_in_crop[..., 1] + target_pos[1] - (x_size // 2) / scale_x
+        res_w = target_sz[0] * (1 - lr) + pred_in_crop[..., 2] * lr
+        res_h = target_sz[1] * (1 - lr) + pred_in_crop[..., 3] * lr
+
+        bbox_in_frame = cxywh2xyxy(np.stack([res_x, res_y, res_w, res_h], axis=1))
+        return bbox_in_frame
