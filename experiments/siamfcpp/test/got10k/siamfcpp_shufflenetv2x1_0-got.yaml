@@ -21,7 +21,7 @@ test:
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          pretrain_model_path: "models/siamfcpp/siamfcpp-shufflenetv2x1_0-got-md5_20bb2fdc1482ac60104a93eb11403753.pkl"
+          pretrain_model_path: "models/siamfcpp/siamfcpp-shufflenetv2x1_0-got-md5_aa824cc413b100bcb10f57c4d0e52423.pkl"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
