@@ -400,21 +400,25 @@ class SiamFCppOneShotDetector(PipelineBase):
 
         return box_in_frame
 
-    # def _transform_box_from_crop_to_frame(self, best_pscore_id, score, box_wh, target_pos,
-    #                      target_sz, scale_x, x_size, penalty):
     def _transform_bbox_from_crop_to_frame(self, bbox_in_crop, crop_info=None):
-        r"""
-        Perform SiameseRPN-based tracker's post-processing of box
-        :param score: (HW, ), score prediction
-        :param box_wh: (HW, 4), cxywh, bbox prediction (format changed)
-        :param target_pos: (2, ) previous position (x & y)
-        :param target_sz: (2, ) previous state (w & h)
-        :param scale_x: scale of cropped patch of current frame
-        :param x_size: size of cropped patch
-        :param penalty: scale/ratio change penalty calculated during score post-processing
-        :return:
-            new_target_pos: (2, ), new target position
-            new_target_sz: (2, ), new target size
+        r"""Transform bbox from crop to frame, 
+            Based on latest detection setting (cropping position / cropping scale)
+        
+        Arguments
+        ---------
+        bbox_in_crop:
+            bboxes on crop that will be transformed on bboxes on frame
+            object able to be reshaped into (-1, 4), xyxy, 
+        crop_info: Dict
+            dictionary containing cropping information. Transform will be performed based on crop_info
+            target_pos: cropping position
+            target_sz: target size based on which cropping range was calculated
+            scale_x: cropping scale, length on crop / length on frame
+        
+        Returns
+        -------
+        np.array
+            bboxes on frame. (N, 4)
         """
         if crop_info is None:
             crop_info = self._state["crop_info"]
@@ -423,28 +427,15 @@ class SiamFCppOneShotDetector(PipelineBase):
         scale_x = crop_info["scale_x"]
         x_size = self._hyper_params["x_size"]
 
-        # pred_in_crop = box_wh[best_pscore_id, :] / np.float32(scale_x)
         bbox_in_crop = np.array(bbox_in_crop).reshape(-1, 4)
         pred_in_crop = xyxy2cxywh(bbox_in_crop)
         pred_in_crop = pred_in_crop / np.float32(scale_x)
 
-        # about np.float32(scale_x)
-        # attention!, this casting is done implicitly
-        # which can influence final EAO heavily given a model & a set of hyper-parameters
-
-        # box post-postprocessing
-        # test_lr = self._hyper_params['test_lr']
-        # lr = penalty[best_pscore_id] * score[best_pscore_id] * test_lr
-        # from IPython import embed;embed()
         lr = 1.0  # no EMA smoothing, size directly determined by prediction
         res_x = pred_in_crop[..., 0] + target_pos[0] - (x_size // 2) / scale_x
         res_y = pred_in_crop[..., 1] + target_pos[1] - (x_size // 2) / scale_x
         res_w = target_sz[0] * (1 - lr) + pred_in_crop[..., 2] * lr
         res_h = target_sz[1] * (1 - lr) + pred_in_crop[..., 3] * lr
-
-        # new_target_pos = np.array([res_x, res_y])
-        # new_target_sz = np.array([res_w, res_h])
-        # return new_target_pos, new_target_sz
 
         bbox_in_frame = cxywh2xyxy(np.stack([res_x, res_y, res_w, res_h], axis=1))
         return bbox_in_frame
