@@ -61,7 +61,7 @@ train:
         SigmoidCrossEntropyRetina:
           name: "cls"
           weight: 1.0
-          alpha: 0.25
+          alpha: 0.5
           gamma: 2.0
         SigmoidCrossEntropyCenterness:
           name: "ctr"
@@ -94,7 +94,7 @@ train:
       sampler:
         name: "TrackPairSampler"
         TrackPairSampler:
-          negative_pair_ratio: 0.1
+          negative_pair_ratio: 0.2
         submodules:
           dataset:
             names: ["GOT10kDataset",]  # (GOT10kDataset|LaSOTDataset)
