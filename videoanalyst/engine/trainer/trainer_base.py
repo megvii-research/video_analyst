@@ -34,10 +34,16 @@ class TrainerBase:
             self.default_hyper_params)  # mapping-like object
         self._state = dict()  # pipeline state
         self._model = optimizer._model
-        self._dataloader = dataloader
         self._losses = optimizer._model.loss
         self._optimizer = optimizer
         self._monitors = monitors
+        self._optimizer.set_max_iternum_per_epoch(
+            dataloader.dataset.max_iter_per_epoch)
+        self._max_iter_per_epoch = dataloader.dataset.max_iter_per_epoch
+        self._dataloader = iter(dataloader)  # get the iterabel data loader
+
+    def max_iter_per_epoch(self):
+        return self._max_iter_per_epoch
 
     def get_hps(self) -> Dict:
         r"""

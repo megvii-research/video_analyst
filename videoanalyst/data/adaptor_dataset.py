@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*
+from itertools import chain
 from typing import Dict
 
 import torch
@@ -13,15 +14,6 @@ torch.multiprocessing.set_sharing_strategy('file_system')
 
 
 class AdaptorDataset(Dataset):
-    default_hyper_params = dict(
-        exp_name="",
-        exp_save="snapshots",
-        num_epochs=10000,
-        minibatch=32,
-        num_workers=4,
-        nr_image_per_epoch=600000,
-    )
-
     def __init__(self,
                  kwargs: Dict = dict(),
                  num_epochs=1,
@@ -30,6 +22,7 @@ class AdaptorDataset(Dataset):
         self.kwargs = kwargs
         self.num_epochs = num_epochs
         self.nr_image_per_epoch = nr_image_per_epoch
+        self.max_iter_per_epoch = 0
 
     def __getitem__(self, item):
         if self.datapipeline is None:

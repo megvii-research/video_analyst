@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-from typing import Dict, List, Tuple
 import logging
-import numpy as np
-import cv2
+from typing import Dict, List, Tuple
 
+import cv2
+import numpy as np
 from yacs.config import CfgNode
 
-from ..template_module_base import TRACK_TEMPLATE_MODULES, VOS_TEMPLATE_MODULES, TemplateModuleBase
+from ..template_module_base import (TRACK_TEMPLATE_MODULES,
+                                    VOS_TEMPLATE_MODULES, TemplateModuleBase)
 
 
 @TRACK_TEMPLATE_MODULES.register

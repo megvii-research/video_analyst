@@ -90,7 +90,7 @@ train:
       num_epochs: 20
       minibatch: 128  # 256
       num_workers: 32
-      nr_image_per_epoch: 300000
+      nr_image_per_epoch: 150000
       datapipeline:
         name: "RegularDatapipeline"
       sampler:

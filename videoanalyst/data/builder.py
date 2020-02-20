@@ -7,8 +7,9 @@ from yacs.config import CfgNode
 
 import torch
 from torch.utils.data import DataLoader, Dataset
+from torch.utils.data.dataloader import default_collate
 
-from videoanalyst.utils import ensure_dir
+from videoanalyst.utils import Timer, ensure_dir
 
 from . import _DATA_LOGGER_NAME
 from .adaptor_dataset import AdaptorDataset
@@ -35,15 +36,17 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
         py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
                                     num_epochs=cfg.num_epochs,
                                     nr_image_per_epoch=cfg.nr_image_per_epoch)
+        py_dataset.max_iter_per_epoch = cfg.nr_image_per_epoch // cfg.minibatch
 
-        dataloader = DataLoader(py_dataset,
-                                batch_size=cfg.minibatch,
-                                shuffle=False,
-                                pin_memory=True,
-                                num_workers=cfg.num_workers,
-                                drop_last=True)
-
-    return iter(dataloader)
+        dataloader = DataLoader(
+            py_dataset,
+            batch_size=cfg.minibatch,
+            shuffle=False,
+            pin_memory=True,
+            num_workers=cfg.num_workers,
+            drop_last=True,
+        )
+    return dataloader
 
 
 def get_config() -> Dict[str, CfgNode]:
@@ -59,13 +62,12 @@ def get_config() -> Dict[str, CfgNode]:
 
     for task in cfg_dict:
         cfg = cfg_dict[task]
-
-        module = AdaptorDataset
-        # modify _AdaptorDataset.default_hyper_params_ to add new config name under _data_
-        hps = module.default_hyper_params
-        for hp_name in hps:
-            cfg[hp_name] = hps[hp_name]
-
+        cfg["exp_name"] = ""
+        cfg["exp_save"] = "snapshots"
+        cfg["num_epochs"] = 1
+        cfg["minibatch"] = 32
+        cfg["num_workers"] = 4
+        cfg["nr_image_per_epoch"] = 150000
         cfg["datapipeline"] = datapipeline_builder.get_config()[task]
         cfg["sampler"] = sampler_builder.get_config()[task]
         cfg["transformer"] = transformer_builder.get_config()[task]
