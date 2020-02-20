@@ -2,6 +2,7 @@
 import logging
 import os.path as osp
 from typing import Dict
+import gc
 
 from yacs.config import CfgNode
 
@@ -33,11 +34,23 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
     data_logger = build_data_logger(cfg)
 
     if task == "track":
+        # build dummy dataset for purpose of dataset setup (e.g. caching path list)  
+        logger.info("Build dummy AdaptorDataset")
+        dummy_py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
+                                          num_epochs=cfg.num_epochs,
+                                          nr_image_per_epoch=cfg.nr_image_per_epoch)
+        dummy_py_dataset.max_iter_per_epoch = cfg.nr_image_per_epoch // cfg.minibatch
+        logger.info("Read dummy training sample")
+        training_sample = dummy_py_dataset[0]  # read dummy sample
+        del dummy_py_dataset
+        gc.collect(generation=2)
+        logger.info("Dummy AdaptorDataset destroyed.")
+        # build real dataset
+        logger.info("Build real AdaptorDataset")
         py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
                                     num_epochs=cfg.num_epochs,
                                     nr_image_per_epoch=cfg.nr_image_per_epoch)
         py_dataset.max_iter_per_epoch = cfg.nr_image_per_epoch // cfg.minibatch
-
         dataloader = DataLoader(
             py_dataset,
             batch_size=cfg.minibatch,
