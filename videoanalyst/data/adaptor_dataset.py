@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*
 from itertools import chain
 from typing import Dict
+import logging
 
 import torch
 import torch.multiprocessing
@@ -10,8 +11,9 @@ from videoanalyst.utils.misc import Timer
 
 from .datapipeline import builder as datapipeline_builder
 
-torch.multiprocessing.set_sharing_strategy('file_system')
+logger = logging.getLogger("global")
 
+torch.multiprocessing.set_sharing_strategy('file_system')
 
 class AdaptorDataset(Dataset):
     def __init__(self,
@@ -26,9 +28,10 @@ class AdaptorDataset(Dataset):
 
     def __getitem__(self, item):
         if self.datapipeline is None:
-            seed = (torch.initial_seed() + item) % (2**32)
+            seed = (torch.initial_seed() + item*3119) % 10007
             self.datapipeline = datapipeline_builder.build(**self.kwargs,
                                                            seed=seed)
+            logger.info("AdaptorDataset #%d built datapipeline with seed=%d"%(item, seed))
 
         training_data = next(self.datapipeline)
 
