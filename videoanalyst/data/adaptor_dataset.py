@@ -24,7 +24,6 @@ class AdaptorDataset(Dataset):
         self.kwargs = kwargs
         self.num_epochs = num_epochs
         self.nr_image_per_epoch = nr_image_per_epoch
-        self.max_iter_per_epoch = 0
 
     def __getitem__(self, item):
         if self.datapipeline is None:

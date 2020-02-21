@@ -36,6 +36,9 @@ class OptimizerBase:
     Define your hyper-parameters here in your sub-class.
     """
     default_hyper_params = dict(
+        minibatch=1,
+        nr_image_per_epoch=1, 
+        num_iterations=1,
         lr_policy=[],
         lr_multiplier=[],
     )
@@ -81,13 +84,6 @@ class OptimizerBase:
         """
         return self._hyper_params
 
-    def set_max_iternum_per_epoch(self, num):
-        r"""
-        set the max_iter in lr policy
-        """
-
-        self._state["lr_policy"].set_max_iter(num)
-
     def set_hps(self, hps: dict) -> None:
         r"""
         Set hyper-parameters
@@ -106,10 +102,13 @@ class OptimizerBase:
         r"""
         an interface for update params
         """
+        # get iteration number
+        self._hyper_params["num_iterations"] = self._hyper_params["nr_image_per_epoch"] // self._hyper_params["minibatch"]
         # lr_policy
         lr_policy_cfg = self._hyper_params["lr_policy"]
         if len(lr_policy_cfg) > 0:
-            lr_policy = build_lr_policy(lr_policy_cfg)
+            lr_policy = build_lr_policy(lr_policy_cfg, 
+                                        max_iter=self._hyper_params["num_iterations"])
             self._state["lr_policy"] = lr_policy
         # lr_multiplier
         lr_multiplier_cfg = self._hyper_params["lr_multiplier"]

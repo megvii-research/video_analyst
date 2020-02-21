@@ -39,7 +39,6 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
         dummy_py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
                                           num_epochs=cfg.num_epochs,
                                           nr_image_per_epoch=cfg.nr_image_per_epoch)
-        dummy_py_dataset.max_iter_per_epoch = cfg.nr_image_per_epoch // cfg.minibatch
         logger.info("Read dummy training sample")
         training_sample = dummy_py_dataset[0]  # read dummy sample
         del dummy_py_dataset
@@ -50,7 +49,6 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
         py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
                                     num_epochs=cfg.num_epochs,
                                     nr_image_per_epoch=cfg.nr_image_per_epoch)
-        py_dataset.max_iter_per_epoch = cfg.nr_image_per_epoch // cfg.minibatch
         dataloader = DataLoader(
             py_dataset,
             batch_size=cfg.minibatch,

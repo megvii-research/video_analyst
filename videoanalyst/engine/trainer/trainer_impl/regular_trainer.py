@@ -41,6 +41,8 @@ class RegularTrainer(TrainerBase):
     """
     extra_hyper_params = dict(
         devices=["cpu"],
+        minibatch=1,
+        nr_image_per_epoch=1,
         num_iterations=1,
         max_epoch=1,
         snapshot="",
@@ -65,6 +67,7 @@ class RegularTrainer(TrainerBase):
 
     def update_params(self, ):
         super(RegularTrainer, self).update_params()
+        self._hyper_params["num_iterations"] = self._hyper_params["nr_image_per_epoch"] // self._hyper_params["minibatch"]
         self._state["devices"] = [
             torch.device(dev) for dev in self._hyper_params["devices"]
         ]
@@ -98,7 +101,7 @@ class RegularTrainer(TrainerBase):
         # epoch counter +1
         self._state["epoch"] += 1
         epoch = self._state["epoch"]
-        num_iterations = self.max_iter_per_epoch()
+        num_iterations = self._hyper_params["num_iterations"]
 
         self._optimizer.modify_grad(epoch)
         pbar = tqdm(range(num_iterations))
