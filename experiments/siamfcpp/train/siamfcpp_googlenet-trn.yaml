@@ -40,7 +40,7 @@ test:
       GOT10kTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
-        subsets: ["val"]  # (val|test)
+        subsets: ["val", "test"]  # (val|test)
       LaSOTTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
