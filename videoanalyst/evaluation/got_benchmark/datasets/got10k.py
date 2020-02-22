@@ -37,6 +37,7 @@ class GOT10k(object):
         self.root_dir = root_dir
         self.subset = subset
         self.return_meta = False if subset == 'test' else return_meta
+        self.cache_path = "Unknown cache path"
 
         if list_file is None:
             list_file = os.path.join(root_dir, subset, 'list.txt')
@@ -46,30 +47,62 @@ class GOT10k(object):
         with open(list_file, 'r') as f:
             self.seq_names = f.read().strip().split('\n')
 
-        # check if subset cache already exists in cls.data_dict
-        if (self.subset in GOT10k.data_dict) and (len(GOT10k.data_dict[self.subset]) > 0):
+        # check if subset cache already exists in GOT10k.data_dict and is valid w.r.t. list.txt
+        if self._check_cache_for_current_subset():
             return
 
-        # load subset cache into cls.data_dict
-        if cache_path is None:
-            cache_path = os.path.join(root_dir, subset+".pkl")
+        # load subset cache into GOT10k.data_dict
+        cache_path = self._get_cache_path(cache_path=cache_path)
+        self.cache_path = cache_path
         if os.path.isfile(cache_path) and not ignore_cache:
-            print("cache file {} exists".format(cache_path))
-            with open(cache_path, "rb") as f:
-                GOT10k.data_dict[self.subset] = pickle.load(f)
-            print("loaded cache file {}".format(cache_path))
-        # build subset cache in cls.data_dict and cache to storage
-        else:
-            print("start loading got-10k {}".format(subset))
-            for seq_name in tqdm(self.seq_names):
-                seq_dir = os.path.join(root_dir, subset, seq_name)
-                img_files, anno, meta = self.load_single_sequence(seq_dir)
-                GOT10k.data_dict[self.subset][seq_name] = dict(img_files = img_files, anno=anno, meta=meta)
-            with open(cache_path, "wb") as f:
-                pickle.dump(GOT10k.data_dict[self.subset], f)
-            print("dump cache file to {}".format(cache_path))
+            print("{}: cache file exists: {} ".format(GOT10k.__name__, cache_path))
+            self._load_cache_for_current_subset(cache_path)
+            if self._check_cache_for_current_subset():
+                print("{}: record check has been processed and validity is conformed for cache file: {} ".format(GOT10k.__name__, cache_path))
+                return
+            else:
+                print("{}: cache file {} not valid, rebuilding cache...".format(GOT10k.__name__, cache_path))
+        # build subset cache in GOT10k.data_dict and cache to storage
+        self._build_cache_for_current_subset()
+        print("{}: current cache file: {} ".format(GOT10k.__name__, self.cache_path))
+        print("{}: consider cleaning this cache file in case of erros such as FileNotFoundError or IOError".format(GOT10k.__name__, self.cache_path))
 
 
+    def _get_cache_path(self, cache_path : str=None):
+        r"""Ensure cache_path.
+            If cache_path does not exist, turn to default set: root_dir/subset.pkl.
+        """
+        if (cache_path is None) or (not os.path.isfile(cache_path)):
+            print("{}: passed cache file {} invalid, change to default cache path".format(GOT10k.__name__, cache_path))
+            cache_path = os.path.join(self.root_dir, self.subset+".pkl")
+        return cache_path
+
+    def _check_cache_for_current_subset(self) -> bool:
+        r""" check if GOT10k.data_dict[subset] exists and contains all record in seq_names
+        """
+        is_valid_data_dict = (self.subset in GOT10k.data_dict) and \
+                             (set(GOT10k.data_dict[self.subset].keys()) == set(self.seq_names))
+        return is_valid_data_dict
+
+    def _build_cache_for_current_subset(self):
+        r"""Build cache for current subset (self.subset)
+        """
+        root_dir = self.root_dir
+        subset = self.subset
+        print("{}: start loading got-10k {}".format(GOT10k.__name__, subset))
+        for seq_name in tqdm(self.seq_names):
+            seq_dir = os.path.join(root_dir, subset, seq_name)
+            img_files, anno, meta = self.load_single_sequence(seq_dir)
+            GOT10k.data_dict[self.subset][seq_name] = dict(img_files = img_files, anno=anno, meta=meta)
+        with open(self.cache_path, "wb") as f:
+            pickle.dump(GOT10k.data_dict[self.subset], f)
+        print("{}: dump cache file to {}".format(GOT10k.__name__, self.cache_path))
+
+    def _load_cache_for_current_subset(self, cache_path: str):
+        assert os.path.exists(cache_path), "cache_path does not exist: %s "%cache_path
+        with open(cache_path, "rb") as f:
+            GOT10k.data_dict[self.subset] = pickle.load(f)
+        print("{}: loaded cache file {}".format(GOT10k.__name__, cache_path))
 
     def load_single_sequence(self, seq_dir):
         img_files = sorted(glob.glob(os.path.join(
@@ -104,7 +137,7 @@ class GOT10k(object):
         else:
             if not index in self.seq_names:
                 print('Sequence {} not found.'.format(index))
-                print(len(self.seq_names))
+                print("Length of seq_names: %d"%len(self.seq_names))
                 raise Exception('Sequence {} not found.'.format(index))
             seq_name = index
         img_files = GOT10k.data_dict[self.subset][seq_name]["img_files"]
