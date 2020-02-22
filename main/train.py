@@ -24,10 +24,12 @@ cv2.setNumThreads(1)
 
 # torch.backends.cudnn.enabled = False
 
-logger = logging.getLogger('global')
+# pytorch reproducibility
+# https://pytorch.org/docs/stable/notes/randomness.html#cudnn
 torch.backends.cudnn.benchmark = False
 torch.backends.cudnn.deterministic = True
 
+logger = logging.getLogger('global')
 
 def make_parser():
     parser = argparse.ArgumentParser(description='Test')
