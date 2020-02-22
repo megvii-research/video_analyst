@@ -102,7 +102,7 @@ class OptimizerBase:
         r"""
         an interface for update params
         """
-        # get iteration number
+        # calculate & update iteration number
         self._hyper_params["num_iterations"] = self._hyper_params["nr_image_per_epoch"] // self._hyper_params["minibatch"]
         # lr_policy
         lr_policy_cfg = self._hyper_params["lr_policy"]

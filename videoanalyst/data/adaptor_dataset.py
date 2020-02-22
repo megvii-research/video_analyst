@@ -13,9 +13,14 @@ from .datapipeline import builder as datapipeline_builder
 
 logger = logging.getLogger("global")
 
-torch.multiprocessing.set_sharing_strategy('file_system')
+_SHARING_STRATETY = "file_system"
+if _SHARING_STRATETY in torch.multiprocessing.get_all_sharing_strategies():
+    torch.multiprocessing.set_sharing_strategy(_SHARING_STRATETY)
+
 
 class AdaptorDataset(Dataset):
+    _SEED_STEP = 10007
+    _SEED_DIVIDER = 1000003
     def __init__(self,
                  kwargs: Dict = dict(),
                  num_epochs=1,
@@ -27,7 +32,7 @@ class AdaptorDataset(Dataset):
 
     def __getitem__(self, item):
         if self.datapipeline is None:
-            seed = (torch.initial_seed() + item*3119) % 10007
+            seed = (torch.initial_seed() + item*self._SEED_STEP) % self._SEED_DIVIDER
             self.datapipeline = datapipeline_builder.build(**self.kwargs,
                                                            seed=seed)
             logger.info("AdaptorDataset #%d built datapipeline with seed=%d"%(item, seed))
