@@ -37,7 +37,8 @@ class GOT10k(object):
         self.root_dir = root_dir
         self.subset = subset
         self.return_meta = False if subset == 'test' else return_meta
-        self.cache_path = "Unknown cache path"
+        self.cache_path = cache_path
+        self.ignore_cache = ignore_cache
 
         if list_file is None:
             list_file = os.path.join(root_dir, subset, 'list.txt')
@@ -46,15 +47,95 @@ class GOT10k(object):
 
         with open(list_file, 'r') as f:
             self.seq_names = f.read().strip().split('\n')
+        # Former seq_dirs/anno_files have been replaced by caching mechanism.
+        # See _ensure_cache for detail.
+        # self.seq_dirs = [os.path.join(root_dir, subset, s)
+        #                  for s in self.seq_names]
+        # self.anno_files = [os.path.join(d, 'groundtruth.txt')
+        #                    for d in self.seq_dirs]
+        self._ensure_cache()
 
+    def __getitem__(self, index):
+        r"""
+        Args:
+            index (integer or string): Index or name of a sequence.
+
+        Returns:
+            tuple: (img_files, anno) if ``return_meta`` is False, otherwise
+                (img_files, anno, meta), where ``img_files`` is a list of
+                file names, ``anno`` is a N x 4 (rectangles) numpy array, while
+                ``meta`` is a dict contains meta information about the sequence.
+        """
+        if isinstance(index, int):
+            seq_name = self.seq_names[index]
+        else:
+            if not index in self.seq_names:
+                print('Sequence {} not found.'.format(index))
+                print("Length of seq_names: %d"%len(self.seq_names))
+                raise Exception('Sequence {} not found.'.format(index))
+            seq_name = index
+        img_files = GOT10k.data_dict[self.subset][seq_name]["img_files"]
+        anno = GOT10k.data_dict[self.subset][seq_name]["anno"]
+
+        if self.subset == 'test' and (anno.size // 4 == 1):
+            anno = anno.reshape(-1, 4)
+            # anno = anno[np.newaxis, :]
+        else:
+            assert len(img_files) == len(anno)
+
+        if self.return_meta:
+            meta = GOT10k.data_dict[self.subset][seq_name]["meta"]
+            return img_files, anno, meta
+        else:
+            return img_files, anno
+
+    def __len__(self):
+        return len(self.seq_names)
+
+    def _check_integrity(self, root_dir, subset, list_file=None):
+        assert subset in ['train', 'val', 'test']
+        if list_file is None:
+            list_file = os.path.join(root_dir, subset, 'list.txt')
+
+        if os.path.isfile(list_file):
+            with open(list_file, 'r') as f:
+                seq_names = f.read().strip().split('\n')
+
+            # check each sequence folder
+            for seq_name in seq_names:
+                seq_dir = os.path.join(root_dir, subset, seq_name)
+                if not os.path.isdir(seq_dir):
+                    print('Warning: sequence %s not exists.' % seq_name)
+        else:
+            # dataset not exists
+            raise Exception('Dataset not found or corrupted.')
+
+    def _fetch_meta(self, seq_dir):
+        # meta information
+        meta_file = os.path.join(seq_dir, 'meta_info.ini')
+        with open(meta_file) as f:
+            meta = f.read().strip().split('\n')[1:]
+        meta = [line.split(': ') for line in meta]
+        meta = {line[0]: line[1] for line in meta}
+
+        # attributes
+        attributes = ['cover', 'absence', 'cut_by_image']
+        for att in attributes:
+            meta[att] = np.loadtxt(os.path.join(seq_dir, att + '.label'))
+
+        return meta
+
+    def _ensure_cache(self):
+        """Perform all overheads related to cache (building/loading/check)
+        """
         # check if subset cache already exists in GOT10k.data_dict and is valid w.r.t. list.txt
         if self._check_cache_for_current_subset():
             return
 
         # load subset cache into GOT10k.data_dict
-        cache_path = self._get_cache_path(cache_path=cache_path)
+        cache_path = self._get_cache_path(cache_path=self.cache_path)
         self.cache_path = cache_path
-        if os.path.isfile(cache_path) and not ignore_cache:
+        if os.path.isfile(cache_path) and not self.ignore_cache:
             print("{}: cache file exists: {} ".format(GOT10k.__name__, cache_path))
             self._load_cache_for_current_subset(cache_path)
             if self._check_cache_for_current_subset():
@@ -65,7 +146,8 @@ class GOT10k(object):
         # build subset cache in GOT10k.data_dict and cache to storage
         self._build_cache_for_current_subset()
         print("{}: current cache file: {} ".format(GOT10k.__name__, self.cache_path))
-        print("{}: consider cleaning this cache file in case of erros such as FileNotFoundError or IOError".format(GOT10k.__name__, self.cache_path))
+        print("{}: need to clean this cache file if you move dataset directory".format(GOT10k.__name__))
+        print("{}: consider cleaning this cache file in case of erros such as FileNotFoundError or IOError".format(GOT10k.__name__))
 
 
     def _get_cache_path(self, cache_path : str=None):
@@ -120,73 +202,3 @@ class GOT10k(object):
             return img_files, anno, meta
         else:
             return img_files, anno, None
-    
-    def __getitem__(self, index):
-        r"""        
-        Args:
-            index (integer or string): Index or name of a sequence.
-        
-        Returns:
-            tuple: (img_files, anno) if ``return_meta`` is False, otherwise
-                (img_files, anno, meta), where ``img_files`` is a list of
-                file names, ``anno`` is a N x 4 (rectangles) numpy array, while
-                ``meta`` is a dict contains meta information about the sequence.
-        """
-        if isinstance(index, int):
-            seq_name = self.seq_names[index]
-        else:
-            if not index in self.seq_names:
-                print('Sequence {} not found.'.format(index))
-                print("Length of seq_names: %d"%len(self.seq_names))
-                raise Exception('Sequence {} not found.'.format(index))
-            seq_name = index
-        img_files = GOT10k.data_dict[self.subset][seq_name]["img_files"]
-        anno = GOT10k.data_dict[self.subset][seq_name]["anno"]
-
-        if self.subset == 'test' and (anno.size // 4 == 1):
-            anno = anno.reshape(-1, 4)
-            # anno = anno[np.newaxis, :]
-        else:
-            assert len(img_files) == len(anno)
-
-        if self.return_meta:
-            meta = GOT10k.data_dict[self.subset][seq_name]["meta"]
-            return img_files, anno, meta
-        else:
-            return img_files, anno
-
-    def __len__(self):
-        return len(self.seq_names)
-
-    def _check_integrity(self, root_dir, subset, list_file=None):
-        assert subset in ['train', 'val', 'test']
-        if list_file is None:
-            list_file = os.path.join(root_dir, subset, 'list.txt')
-
-        if os.path.isfile(list_file):
-            with open(list_file, 'r') as f:
-                seq_names = f.read().strip().split('\n')
-            
-            # check each sequence folder
-            for seq_name in seq_names:
-                seq_dir = os.path.join(root_dir, subset, seq_name)
-                if not os.path.isdir(seq_dir):
-                    print('Warning: sequence %s not exists.' % seq_name)
-        else:
-            # dataset not exists
-            raise Exception('Dataset not found or corrupted.')
-
-    def _fetch_meta(self, seq_dir):
-        # meta information
-        meta_file = os.path.join(seq_dir, 'meta_info.ini')
-        with open(meta_file) as f:
-            meta = f.read().strip().split('\n')[1:]
-        meta = [line.split(': ') for line in meta]
-        meta = {line[0]: line[1] for line in meta}
-
-        # attributes
-        attributes = ['cover', 'absence', 'cut_by_image']
-        for att in attributes:
-            meta[att] = np.loadtxt(os.path.join(seq_dir, att + '.label'))
-
-        return meta
