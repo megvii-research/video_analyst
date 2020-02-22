@@ -41,6 +41,8 @@ class RegularTrainer(TrainerBase):
     """
     extra_hyper_params = dict(
         devices=["cpu"],
+        minibatch=1,
+        nr_image_per_epoch=1,
         num_iterations=1,
         max_epoch=1,
         snapshot="",
@@ -65,6 +67,7 @@ class RegularTrainer(TrainerBase):
 
     def update_params(self, ):
         super(RegularTrainer, self).update_params()
+        self._hyper_params["num_iterations"] = self._hyper_params["nr_image_per_epoch"] // self._hyper_params["minibatch"]
         self._state["devices"] = [
             torch.device(dev) for dev in self._hyper_params["devices"]
         ]
@@ -98,7 +101,6 @@ class RegularTrainer(TrainerBase):
         # epoch counter +1
         self._state["epoch"] += 1
         epoch = self._state["epoch"]
-        max_epoch = self._hyper_params["max_epoch"]
         num_iterations = self._hyper_params["num_iterations"]
 
         self._optimizer.modify_grad(epoch)
@@ -110,7 +112,6 @@ class RegularTrainer(TrainerBase):
         for iteration, _ in enumerate(pbar):
             with Timer(name="data", output_dict=time_dict):
                 training_data = next(self._dataloader)
-
             training_data = move_data_to_device(training_data,
                                                 self._state["devices"][0])
 
@@ -156,7 +157,7 @@ class RegularTrainer(TrainerBase):
 
             for monitor in self._monitors:
                 monitor.update(trainer_data)
-
+            del training_data
             print_str = self._state["print_str"]
             pbar.set_description(print_str)
 
@@ -172,7 +173,6 @@ class RegularTrainer(TrainerBase):
         """
         snapshot_file = self._state["snapshot_file"]
         if osp.exists(snapshot_file):
-            # snapshot = torch.load(snapshoto_file, map_location=torch.device("cuda"))
             dev = self._state["devices"][0]
             snapshot = torch.load(snapshot_file, map_location=dev)
             self._model.load_state_dict(snapshot["model_state_dict"])

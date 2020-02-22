@@ -2,6 +2,23 @@
 
 Date format: YY/MM/DD
 
+## 2020/02/22
+
+____Major changes____
+
+* Caching mechanism added to [got10k dataset](videoanalyst/evaluation/got_benchmark/datasets/got10k.py)
+  * Build cache at _root_dir/subset.pkl_ (default), subset=[train, val, test]
+  * Cache created/loaded in GOT10k.data_dict and will be queried every time _\_\_getitem\_\__ is called
+* Remove _num_iterations_ item in training .yaml files
+  * replaced by value calculated with _nr_image_per_epoch_ and _minibatch_
+    * _num_iterations_ = _nr_image_per_epoch_ // _minibatch_
+  * all training configs has been updated.
+
+____Minor changes____
+
+* pipeline.builder's builder method has been changed
+  * _build_pipeline_ -> _build_
+
 ## 2020/02/15
 
 * Add contrib module's template

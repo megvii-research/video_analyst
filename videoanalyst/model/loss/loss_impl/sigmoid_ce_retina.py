@@ -71,7 +71,7 @@ class SigmoidCrossEntropyRetina(ModuleBase):
         pred = pred_data["cls_pred"]
         label = target_data["cls_gt"]
         # mask
-        mask = 1 - (label == self.ignore_label)
+        mask = ~(label == self.ignore_label)
         mask = mask.type(torch.Tensor).to(label.device)
         vlabel = label * mask
         zero_mat = torch.zeros(pred.shape[0], pred.shape[1], pred.shape[2] + 1)

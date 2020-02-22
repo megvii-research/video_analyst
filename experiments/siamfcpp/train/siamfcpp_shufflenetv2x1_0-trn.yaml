@@ -88,7 +88,7 @@ train:
       num_epochs: 20
       minibatch: 32  # 64
       num_workers: 32
-      nr_image_per_epoch: 800000
+      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 400000
       datapipeline:
         name: "RegularDatapipeline"
       sampler:
@@ -135,7 +135,9 @@ train:
         exp_save: *TRAIN_SAVE
         devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]  # (cpu|cuda|cuda:x)
         max_epoch: 20
-        num_iterations: 12500
+        minibatch: *MINIBATCH
+        nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
+        # num_iterations: 12500
         snapshot: ""
       monitors:
         names: ["TrackInfo"]
@@ -149,22 +151,22 @@ train:
           lr: 0.01
           momentum: 0.9
           weight_decay: 0.00005
+          minibatch: *MINIBATCH
+          nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
           lr_policy:
           - >
             {
             "name": "LinearLR",
             "start_lr": 0.000001,
             "end_lr": 0.04,
-            "max_epoch": 1,
-            "max_iter": 12500
+            "max_epoch": 1
             }
           - >
             {
             "name": "CosineLR",
             "start_lr": 0.04,
             "end_lr": 0.000001,
-            "max_epoch": 19,
-            "max_iter": 12500
+            "max_epoch": 19
             }
           lr_multiplier:
           - >

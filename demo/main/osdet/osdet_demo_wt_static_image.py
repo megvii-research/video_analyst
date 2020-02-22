@@ -67,7 +67,7 @@ task_cfg.freeze()
 # build model
 model = model_builder.build(task, task_cfg.model)
 # build pipeline
-pipeline = pipeline_builder.build_pipeline(task, task_cfg.pipeline,
+pipeline = pipeline_builder.build(task, task_cfg.pipeline,
                                             model)
 
 dev = torch.device(parsed_args.device)

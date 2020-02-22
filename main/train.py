@@ -6,6 +6,8 @@ import logging
 import os.path as osp
 import pickle
 
+import cv2
+
 import torch
 
 from videoanalyst.config.config import cfg as root_cfg
@@ -18,10 +20,16 @@ from videoanalyst.optim import builder as optim_builder
 from videoanalyst.pipeline import builder as pipeline_builder
 from videoanalyst.utils import Timer, ensure_dir, complete_path_wt_root_in_cfg
 
+cv2.setNumThreads(1)
+
 # torch.backends.cudnn.enabled = False
 
-logger = logging.getLogger('global')
+# pytorch reproducibility
+# https://pytorch.org/docs/stable/notes/randomness.html#cudnn
+torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.deterministic = True
 
+logger = logging.getLogger('global')
 
 def make_parser():
     parser = argparse.ArgumentParser(description='Test')

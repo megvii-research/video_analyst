@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*
+from itertools import chain
 from typing import Dict
+import logging
 
 import torch
 import torch.multiprocessing
@@ -9,19 +11,18 @@ from videoanalyst.utils.misc import Timer
 
 from .datapipeline import builder as datapipeline_builder
 
-torch.multiprocessing.set_sharing_strategy('file_system')
+logger = logging.getLogger("global")
+
+# pytorch wrapper for multiprocessing
+# https://pytorch.org/docs/stable/multiprocessing.html#strategy-management
+_SHARING_STRATETY = "file_system"
+if _SHARING_STRATETY in torch.multiprocessing.get_all_sharing_strategies():
+    torch.multiprocessing.set_sharing_strategy(_SHARING_STRATETY)
 
 
 class AdaptorDataset(Dataset):
-    default_hyper_params = dict(
-        exp_name="",
-        exp_save="snapshots",
-        num_epochs=10000,
-        minibatch=32,
-        num_workers=4,
-        nr_image_per_epoch=600000,
-    )
-
+    _SEED_STEP = 10007  # better to be a prime number
+    _SEED_DIVIDER = 1000003  # better to be a prime number
     def __init__(self,
                  kwargs: Dict = dict(),
                  num_epochs=1,
@@ -33,9 +34,10 @@ class AdaptorDataset(Dataset):
 
     def __getitem__(self, item):
         if self.datapipeline is None:
-            seed = (torch.initial_seed() + item) % (2**32)
+            seed = (torch.initial_seed() + item*self._SEED_STEP) % self._SEED_DIVIDER
             self.datapipeline = datapipeline_builder.build(**self.kwargs,
                                                            seed=seed)
+            logger.info("AdaptorDataset #%d built datapipeline with seed=%d"%(item, seed))
 
         training_data = next(self.datapipeline)
 

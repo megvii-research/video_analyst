@@ -34,10 +34,10 @@ class TrainerBase:
             self.default_hyper_params)  # mapping-like object
         self._state = dict()  # pipeline state
         self._model = optimizer._model
-        self._dataloader = dataloader
         self._losses = optimizer._model.loss
         self._optimizer = optimizer
         self._monitors = monitors
+        self._dataloader = iter(dataloader)  # get the iterabel data loader
 
     def get_hps(self) -> Dict:
         r"""

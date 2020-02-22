@@ -2,13 +2,15 @@
 import logging
 import os.path as osp
 from typing import Dict
+import gc
 
 from yacs.config import CfgNode
 
 import torch
 from torch.utils.data import DataLoader, Dataset
+from torch.utils.data.dataloader import default_collate
 
-from videoanalyst.utils import ensure_dir
+from videoanalyst.utils import Timer, ensure_dir
 
 from . import _DATA_LOGGER_NAME
 from .adaptor_dataset import AdaptorDataset
@@ -32,18 +34,30 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
     data_logger = build_data_logger(cfg)
 
     if task == "track":
+        # build dummy dataset for purpose of dataset setup (e.g. caching path list)  
+        logger.info("Build dummy AdaptorDataset")
+        dummy_py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
+                                          num_epochs=cfg.num_epochs,
+                                          nr_image_per_epoch=cfg.nr_image_per_epoch)
+        logger.info("Read dummy training sample")
+        training_sample = dummy_py_dataset[0]  # read dummy sample
+        del dummy_py_dataset
+        gc.collect(generation=2)
+        logger.info("Dummy AdaptorDataset destroyed.")
+        # build real dataset
+        logger.info("Build real AdaptorDataset")
         py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
                                     num_epochs=cfg.num_epochs,
                                     nr_image_per_epoch=cfg.nr_image_per_epoch)
-
-        dataloader = DataLoader(py_dataset,
-                                batch_size=cfg.minibatch,
-                                shuffle=False,
-                                pin_memory=True,
-                                num_workers=cfg.num_workers,
-                                drop_last=True)
-
-    return iter(dataloader)
+        dataloader = DataLoader(
+            py_dataset,
+            batch_size=cfg.minibatch,
+            shuffle=False,
+            pin_memory=True,
+            num_workers=cfg.num_workers,
+            drop_last=True,
+        )
+    return dataloader
 
 
 def get_config() -> Dict[str, CfgNode]:
@@ -59,13 +73,12 @@ def get_config() -> Dict[str, CfgNode]:
 
     for task in cfg_dict:
         cfg = cfg_dict[task]
-
-        module = AdaptorDataset
-        # modify _AdaptorDataset.default_hyper_params_ to add new config name under _data_
-        hps = module.default_hyper_params
-        for hp_name in hps:
-            cfg[hp_name] = hps[hp_name]
-
+        cfg["exp_name"] = ""
+        cfg["exp_save"] = "snapshots"
+        cfg["num_epochs"] = 1
+        cfg["minibatch"] = 32
+        cfg["num_workers"] = 4
+        cfg["nr_image_per_epoch"] = 150000
         cfg["datapipeline"] = datapipeline_builder.get_config()[task]
         cfg["sampler"] = sampler_builder.get_config()[task]
         cfg["transformer"] = transformer_builder.get_config()[task]
