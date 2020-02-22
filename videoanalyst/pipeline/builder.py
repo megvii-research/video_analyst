@@ -12,7 +12,7 @@ from .tracker.tracker_base import TRACK_PIPELINES
 # from .segmenter import builder as segmenter_builder
 
 
-def build_pipeline(task: str, cfg: CfgNode, model: ModuleBase):
+def build(task: str, cfg: CfgNode, model: ModuleBase):
     """
     Builder function.
 

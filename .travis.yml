@@ -1,0 +1,17 @@
+dist: bionic  # ubuntu 18.04
+language: python
+
+python:
+  - "3.5"
+  - "3.6"
+  - "3.7"
+
+env: UBUNTU_VERSION=ubuntu1804
+
+cache: pip
+
+install:
+  - pip install yapf==0.28.0
+
+script:
+  - bash check_format.sh

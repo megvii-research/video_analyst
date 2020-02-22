@@ -1,17 +1,41 @@
 # encoding: utf-8
+from typing import Tuple, Dict
+
 import numpy as np
 
 
-def make_densebox_target(gt_boxes, config):
+def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     """
     Model training target generation function
-    :param gt_boxes: ground truth bounding boxes with class, shape=(N, 5), order=(x0, y0, x1, y1, class)
-    :param config: config object
-        config.x_size
-        config.score_size
-        config.total_stride
-        config.score_offset
-    :return: shape=(N, 6), order=(class, center-ness, left_offset, top_offset, right_offset, bottom_offset)
+
+    Arguments
+    ---------
+    gt_boxes : np.array
+        ground truth bounding boxes with class, shape=(N, 5), order=(x0, y0, x1, y1, class)
+    config: configuration of target making (old format)
+        Keys
+        ----
+        x_size : int
+            search image size
+        score_size : int
+            score feature map size
+        total_stride : int
+            total stride of backbone
+        score_offset : int
+            offset between the edge of score map and the border of the search image
+
+    Returns
+    -------
+    Tuple
+        cls_res_final : np.array
+            class
+            shape=(N, 1)
+        ctr_res_final : np.array
+            shape=(N, 1)
+        gt_boxes_res_final : np.array
+            shape=(N, 4)
+        # previous format
+        # shape=(N, 6), order=(class, center-ness, left_offset, top_offset, right_offset, bottom_offset)
     """
     x_size = config["x_size"]
     score_size = config["score_size"]
@@ -96,8 +120,8 @@ def make_densebox_target(gt_boxes, config):
 
         # gt_boxes
         gt_boxes_res = np.zeros((fm_height, fm_width, 4))
-        gt_boxes_res[xy[:, 0], xy[:, 1]] = gt_boxes[hit_gt_ind[xy[:, 0],
-                                                               xy[:, 1]], :4]
+        gt_boxes_res[xy[:, 0],
+                     xy[:, 1]] = gt_boxes[hit_gt_ind[xy[:, 0], xy[:, 1]], :4]
         gt_boxes_res_list.append(gt_boxes_res.reshape(-1, 4))
 
         # cls
@@ -107,8 +131,9 @@ def make_densebox_target(gt_boxes, config):
 
         # center
         center_res = np.zeros((fm_height, fm_width))
-        center_res[xy[:, 0], xy[:, 1]] = center[fm_offset + xy[:, 0] * stride,
-                                                fm_offset + xy[:, 1] * stride,
+        center_res[xy[:, 0], xy[:, 1]] = center[fm_offset +
+                                                xy[:, 0] * stride, fm_offset +
+                                                xy[:, 1] * stride,
                                                 hit_gt_ind[xy[:, 0], xy[:, 1]]]
         ctr_res_list.append(center_res.reshape(-1))
 

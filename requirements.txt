@@ -1,7 +1,7 @@
 tqdm
 pylint
 yacs
-pillow==
+pillow
 Cython==0.26.1
 yapf==0.28.0
 opencv-python==4.1.0.25

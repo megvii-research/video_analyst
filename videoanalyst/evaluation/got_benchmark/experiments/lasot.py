@@ -29,8 +29,8 @@ class ExperimentLaSOT(ExperimentOTB):
                  result_dir='results', report_dir='reports'):
         # assert subset.upper() in ['TRAIN', 'TEST']
         self.dataset = LaSOT(root_dir, subset, return_meta=return_meta)
-        self.result_dir = result_dir
-        self.report_dir = report_dir
+        self.result_dir = os.path.join(result_dir, 'LaSOT')
+        self.report_dir = os.path.join(report_dir, 'LaSOT')
 
         # as nbins_iou increases, the success score
         # converges to the average overlap (AO)
@@ -38,7 +38,7 @@ class ExperimentLaSOT(ExperimentOTB):
         self.nbins_ce = 51
         self.nbins_nce = 51
 
-    def report(self, tracker_names):
+    def report(self, tracker_names, plot_curves=True):
         assert isinstance(tracker_names, (list, tuple))
 
         # assume tracker_names[0] is your tracker
@@ -124,7 +124,8 @@ class ExperimentLaSOT(ExperimentOTB):
         with open(report_file, 'w') as f:
             json.dump(performance, f, indent=4)
         # plot precision and success curves
-        self.plot_curves(tracker_names)
+        if plot_curves:
+            self.plot_curves(tracker_names)
 
         return performance
 

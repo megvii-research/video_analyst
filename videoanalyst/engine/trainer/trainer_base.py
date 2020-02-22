@@ -34,10 +34,10 @@ class TrainerBase:
             self.default_hyper_params)  # mapping-like object
         self._state = dict()  # pipeline state
         self._model = optimizer._model
-        self._dataloader = dataloader
         self._losses = optimizer._model.loss
         self._optimizer = optimizer
         self._monitors = monitors
+        self._dataloader = iter(dataloader)  # get the iterabel data loader
 
     def get_hps(self) -> Dict:
         r"""
@@ -68,7 +68,6 @@ class TrainerBase:
         r"""
         an interface for update params
         """
-
     def init_train(self):
         r"""
         an interface to process pre-train overhead before training
@@ -80,10 +79,8 @@ class TrainerBase:
         r"""
         an interface to train for one epoch
         """
-
     def is_completed(self):
         r""""""
-
     def set_dataloader(self, dataloader: DataLoader):
         r""""""
         self._dataloader = dataloader

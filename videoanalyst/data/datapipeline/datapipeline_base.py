@@ -62,7 +62,6 @@ class DatapipelineBase:
         r"""
         an interface for update params
         """
-
     def __next__(self) -> Dict:
         r"""
         An interface to load batch data
