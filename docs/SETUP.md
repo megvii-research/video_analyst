@@ -17,6 +17,20 @@ You can choose either using native python (with pip/pip3) or using virtual envir
 pip3 install -U -r requirements.txt
 ```
 
+### python-tkinter
+
+In case of:
+
+```Python
+ModuleNotFoundError: No module named 'tkinter'
+```
+
+Please install python3-tk by running:
+
+```Bash
+sudo apt-get install python3-tk
+```
+
 ## Compile evaluation toolkit
 
 ```Bash
