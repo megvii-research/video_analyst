@@ -110,9 +110,9 @@ class GOT10k(object):
         img_files = GOT10k.data_dict[seq_name]["img_files"]
         anno = GOT10k.data_dict[seq_name]["anno"]
 
-        if self.subset == 'test' and anno.ndim == 1:
-            assert len(anno) == 4
-            anno = anno[np.newaxis, :]
+        if self.subset == 'test' and (anno.size // 4 == 1):
+            anno = anno.reshape(-1, 4)
+            # anno = anno[np.newaxis, :]
         else:
             assert len(img_files) == len(anno)
 
