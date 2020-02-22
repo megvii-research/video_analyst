@@ -7,11 +7,7 @@ This is the implementation of a series of basic algorithms which is useful for v
 Current implementation list:
 
 * SOT
-  * [SiamFC++: Towards Robust and Accurate Visual Tracking with Target Estimation Guidelines](https://arxiv.org/abs/1911.06188) [[demo]](https://www.youtube.com/watch?v=TCziWahnXT8&list=PL4KqNq8e6fJkfk35zHRaUd21ExV522JK0&index=4&t=0s&app=desktop)
-<div align="center">
-  <img src="docs/resources/siamfcpp_ice2.gif" width="800px" />
-  <p>Example SiamFC++ outputs.</p>
-</div> 
+  * [SiamFC++: Towards Robust and Accurate Visual Tracking with Target Estimation Guidelines](https://arxiv.org/abs/1911.06188)
 
 ## Quick start
 
