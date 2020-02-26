@@ -61,7 +61,6 @@ configs/lizuoxin
 
 log.txt
 .idea/
-tmp/
 *.protobuf
 
 /logs
@@ -70,4 +69,4 @@ tmp/
 /models
 /snapshots
 vaenv
-
+/tmp

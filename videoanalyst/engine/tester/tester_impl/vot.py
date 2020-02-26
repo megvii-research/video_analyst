@@ -8,6 +8,7 @@ from collections import OrderedDict
 from multiprocessing import Process, Queue
 from os.path import join
 
+from yacs.config import CfgNode
 import cv2
 import numpy as np
 from tqdm import tqdm
@@ -43,10 +44,10 @@ class VOTTester(TesterBase):
 
     extra_hyper_params = dict(
         device_num=1,
-        data_root={
-            "VOT2018": "datasets/VOT/vot2018",
-            "VOT2019": "datasets/VOT/vot2019"
-        },
+        data_root=CfgNode(dict(
+            VOT2018="datasets/VOT/vot2018",
+            VOT2019="datasets/VOT/vot2019"
+        )),
         dataset_names=[
             "VOT2018",
         ],

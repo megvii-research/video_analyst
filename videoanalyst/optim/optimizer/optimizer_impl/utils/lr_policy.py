@@ -31,7 +31,7 @@ See the bottom of code for more plot examples.
 import json
 import math
 from abc import ABCMeta, abstractmethod
-from typing import List
+from typing import List, Dict
 
 import numpy as np
 from yacs.config import CfgNode
@@ -43,7 +43,7 @@ __all__ = ["ListLR", "LinearLR", "ExponentialLR", "CosineLR"]
 LR_POLICIES = Registry("LR_POLICY")
 
 
-def build(cfg: List[str]):
+def build(cfg: List[str], **kwargs):
     r"""
     Build lr scheduler with configuration
 
@@ -51,7 +51,9 @@ def build(cfg: List[str]):
     ---------
     cfg: List[str]
         list of JSON string containing lr scheduling
-    
+    **kwargs
+        extra keyword argument that apply to all schedule
+
     Returns
     -------
     ListLR
@@ -60,9 +62,11 @@ def build(cfg: List[str]):
     # from IPython import embed;embed()
     cfg = [json.loads(c) for c in cfg]
 
-    SingleLRs = [
-        LR_POLICIES[phase_cfg["name"]](**phase_cfg) for phase_cfg in cfg
-    ]
+    SingleLRs = []
+    for phase_cfg in cfg:
+        phase_cfg.update(kwargs)
+        policy = LR_POLICIES[phase_cfg["name"]](**phase_cfg) 
+        SingleLRs.append(policy)
 
     LR = ListLR(*SingleLRs)
 

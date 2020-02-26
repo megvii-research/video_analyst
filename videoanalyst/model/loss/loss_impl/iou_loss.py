@@ -40,8 +40,8 @@ class IOULoss(ModuleBase):
         gt = target_data["box_gt"]
         cls_gt = target_data["cls_gt"]
         # mask
-        mask = ((1 - (cls_gt == self.background)) *
-                (1 - (cls_gt == self.ignore_label))).detach()
+        mask = ((~(cls_gt == self.background)) *
+                (~(cls_gt == self.ignore_label))).detach()
         mask = mask.type(torch.Tensor).squeeze(2).to(pred.device)
 
         aog = torch.abs(gt[:, :, 2] - gt[:, :, 0] +

@@ -62,7 +62,7 @@ def get_config() -> Dict[str, CfgNode]:
                 cfg[name][hp_name] = hps[hp_name]
 
         cfg["submodules"] = CfgNode()
-        cfg["submodules"] = get_filter_cfg()
-        cfg["submodules"] = get_dataset_cfg()
+        cfg["submodules"] = get_filter_cfg()[cfg_name]
+        cfg["submodules"] = get_dataset_cfg()[cfg_name]
 
     return cfg_dict

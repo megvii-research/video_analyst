@@ -7,7 +7,11 @@ This is the implementation of a series of basic algorithms which is useful for v
 Current implementation list:
 
 * SOT
-  * [SiamFC++: Towards Robust and Accurate Visual Tracking with Target Estimation Guidelines](https://arxiv.org/abs/1911.06188)
+  * [SiamFC++: Towards Robust and Accurate Visual Tracking with Target Estimation Guidelines](https://arxiv.org/abs/1911.06188) [[demo]](https://www.youtube.com/watch?v=TCziWahnXT8&list=PL4KqNq8e6fJkfk35zHRaUd21ExV522JK0&index=4&t=0s&app=desktop)
+<div align="center">
+  <img src="docs/resources/siamfcpp_ice2.gif" width="800px" />
+  <p>Example SiamFC++ outputs.</p>
+</div> 
 
 ## Quick start
 
@@ -33,8 +37,16 @@ Please refer to [docs/TEST.md](docs/TEST.md) for detail.
 
 ### Training
 
+#### From epoch 0
+
 ```Bash
 python3 ./main/train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml'
+```
+
+#### Resuming (e.g. from epoch 10)
+
+```Bash
+python3 ./main/train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml' --resume-from-epoch=10
 ```
 
 Please refer to [docs/TRAINING.md](docs/TRAINING.md) for detail.
