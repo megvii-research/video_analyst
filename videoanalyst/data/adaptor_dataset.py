@@ -19,6 +19,7 @@ _SHARING_STRATETY = "file_system"
 if _SHARING_STRATETY in torch.multiprocessing.get_all_sharing_strategies():
     torch.multiprocessing.set_sharing_strategy(_SHARING_STRATETY)
 
+
 class AdaptorDataset(Dataset):
     _SEED_STEP = 10007  # better to be a prime number
     _SEED_DIVIDER = 1000003  # better to be a prime number

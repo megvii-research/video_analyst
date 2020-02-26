@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*
 import logging
 import os.path as osp
+
 from typing import Dict, List
+
 import gc
 
 from yacs.config import CfgNode
@@ -61,6 +63,7 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
 
 
 def get_config(task_list: List) -> Dict[str, CfgNode]:
+
     r"""
     Get available component list config
 
@@ -83,6 +86,7 @@ def get_config(task_list: List) -> Dict[str, CfgNode]:
         cfg["sampler"] = sampler_builder.get_config(task_list)[task]
         cfg["transformer"] = transformer_builder.get_config(task_list)[task]
         cfg["target"] = target_builder.get_config(task_list)[task]
+
 
     return cfg_dict
 
