@@ -30,8 +30,8 @@ def build(task: str, cfg: CfgNode) -> ContribModule:
     return module
 
 
-def get_config() -> Dict[str, CfgNode]:
-    cfg_dict = {name: CfgNode() for name in TASK_CONTRIB_MODULES.keys()}
+def get_config(task_list) -> Dict[str, CfgNode]:
+    cfg_dict = {name: CfgNode() for name in task_list}
 
     for cfg_name, modules in TASK_CONTRIB_MODULES.items():
         cfg = cfg_dict[cfg_name]

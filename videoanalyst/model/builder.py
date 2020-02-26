@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-from typing import Dict
+from typing import Dict, List
 
 from yacs.config import CfgNode
 
@@ -40,7 +40,7 @@ def build(
         exit(-1)
 
 
-def get_config() -> Dict[str, CfgNode]:
+def get_config(task_list: List) -> Dict[str, CfgNode]:
     r"""
     Get available component list config
 
@@ -49,13 +49,13 @@ def get_config() -> Dict[str, CfgNode]:
     Dict[str, CfgNode]
         config with list of available components
     """
-    cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
+    cfg_dict = {task: CfgNode() for task in task_list}
 
     for task in cfg_dict:
         cfg = cfg_dict[task]
-        cfg["backbone"] = backbone_builder.get_config()[task]
-        cfg["losses"] = loss_builder.get_config()[task]
-        cfg["task_model"] = task_builder.get_config()[task]
-        cfg["task_head"] = head_builder.get_config()[task]
+        cfg["backbone"] = backbone_builder.get_config(task_list)[task]
+        cfg["losses"] = loss_builder.get_config(task_list)[task]
+        cfg["task_model"] = task_builder.get_config(task_list)[task]
+        cfg["task_head"] = head_builder.get_config(task_list)[task]
 
     return cfg_dict

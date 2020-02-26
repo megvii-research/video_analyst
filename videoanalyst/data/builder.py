@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*
 import logging
 import os.path as osp
-from typing import Dict
+from typing import Dict, List
 import gc
 
 from yacs.config import CfgNode
@@ -60,7 +60,7 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
     return dataloader
 
 
-def get_config() -> Dict[str, CfgNode]:
+def get_config(task_list: List) -> Dict[str, CfgNode]:
     r"""
     Get available component list config
 
@@ -69,7 +69,7 @@ def get_config() -> Dict[str, CfgNode]:
     Dict[str, CfgNode]
         config with list of available components
     """
-    cfg_dict = {"track": CfgNode(), "vos": CfgNode()}
+    cfg_dict = {task: CfgNode() for task in task_list}
 
     for task in cfg_dict:
         cfg = cfg_dict[task]
@@ -79,10 +79,10 @@ def get_config() -> Dict[str, CfgNode]:
         cfg["minibatch"] = 32
         cfg["num_workers"] = 4
         cfg["nr_image_per_epoch"] = 150000
-        cfg["datapipeline"] = datapipeline_builder.get_config()[task]
-        cfg["sampler"] = sampler_builder.get_config()[task]
-        cfg["transformer"] = transformer_builder.get_config()[task]
-        cfg["target"] = target_builder.get_config()[task]
+        cfg["datapipeline"] = datapipeline_builder.get_config(task_list)[task]
+        cfg["sampler"] = sampler_builder.get_config(task_list)[task]
+        cfg["transformer"] = transformer_builder.get_config(task_list)[task]
+        cfg["target"] = target_builder.get_config(task_list)[task]
 
     return cfg_dict
 

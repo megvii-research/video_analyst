@@ -65,7 +65,7 @@ Please refer to [docs/TRAINING.md](docs/TRAINING.md) for detail.
 │   │   ├── dataloader.py  # data loading procedure
 │   │   └── transformer  # data augmentation
 │   ├── engine  # procedure controller, including traiing control / hp&model loading
-│   │   ├── hook  # hook for tasks during training, including visualization / logging / benchmarking
+│   │   ├── monitor  # monitor for tasks during training, including visualization / logging / benchmarking
 │   │   ├── trainer.py  # train a epoch
 │   │   ├── tester.py  # test a model on a benchmark
 │   ├── model # model builder

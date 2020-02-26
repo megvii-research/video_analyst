@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*
 
-from typing import Dict
+from typing import Dict, List
 
 from yacs.config import CfgNode
 
@@ -36,7 +36,7 @@ def build(task: str, cfg: CfgNode, model: ModuleBase):
         exit(-1)
 
 
-def get_config() -> Dict[str, CfgNode]:
+def get_config(task_list: List) -> Dict[str, CfgNode]:
     """
     Get available component list config
 
@@ -45,7 +45,7 @@ def get_config() -> Dict[str, CfgNode]:
     CfgNode
         config with list of available components
     """
-    cfg_dict = {"track": CfgNode()}
+    cfg_dict = {task: CfgNode() for task in task_list}
 
     for cfg_name, module in zip([
             "track",
