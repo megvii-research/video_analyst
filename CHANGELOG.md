@@ -2,6 +2,13 @@
 
 Date format: YY/MM/DD
 
+## 2020/02/27
+
+____Major changes____
+
+* Add TensorboardLogger in __monitor__
+  * Recursively put engine_data as scalar into Tensorboard
+
 ## 2020/02/22
 
 ____Major changes____

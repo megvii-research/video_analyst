@@ -138,9 +138,13 @@ train:
         # num_iterations: 12500
         snapshot: ""
       monitors:
-        names: ["TrackInfo"]
+        names: ["TrackInfo", "TensorboardLogger"]
         TrackInfo:
           {}
+        TensorboardLogger:
+          exp_name: *TRAIN_NAME
+          exp_save: *TRAIN_SAVE
+
 # ==================================================
     optim:
       optimizer:
