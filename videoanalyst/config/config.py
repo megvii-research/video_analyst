@@ -9,7 +9,7 @@ from videoanalyst.optim.builder import get_config as get_optim_cfg
 from videoanalyst.pipeline.builder import get_config as get_pipeline_cfg
 
 cfg = CfgNode()  # root_cfg
-task_list = ["track"]
+task_list = ["track", "vos"]
 default_str = "unknown"
 cfg["task_name"] = default_str
 
@@ -20,10 +20,10 @@ for task in task_list:
     test_cfg[task] = CfgNode()
     test_cfg[task]["exp_name"] = default_str
     test_cfg[task]["exp_save"] = default_str
-    test_cfg[task]["model"] = get_model_cfg()[task]
-    test_cfg[task]["pipeline"] = get_pipeline_cfg()[task]
-    test_cfg[task]["tester"] = get_tester_cfg()[task]
-    test_cfg[task]["data"] = get_data_cfg()[task]
+    test_cfg[task]["model"] = get_model_cfg(task_list)[task]
+    test_cfg[task]["pipeline"] = get_pipeline_cfg(task_list)[task]
+    test_cfg[task]["tester"] = get_tester_cfg(task_list)[task]
+    test_cfg[task]["data"] = get_data_cfg(task_list)[task]
 
 # default configuration for train
 cfg["train"] = CfgNode()
@@ -32,12 +32,12 @@ for task in task_list:
     train_cfg[task] = CfgNode()
     train_cfg[task]["exp_name"] = default_str
     train_cfg[task]["exp_save"] = default_str
-    train_cfg[task]["model"] = get_model_cfg()[task]
-    train_cfg[task]["pipeline"] = get_pipeline_cfg()[task]
-    train_cfg[task]["tester"] = get_tester_cfg()[task]
-    train_cfg[task]["data"] = get_data_cfg()[task]
-    train_cfg[task]["optim"] = get_optim_cfg()[task]
-    train_cfg[task]["trainer"] = get_trainer_cfg()[task]
+    train_cfg[task]["model"] = get_model_cfg(task_list)[task]
+    train_cfg[task]["pipeline"] = get_pipeline_cfg(task_list)[task]
+    train_cfg[task]["tester"] = get_tester_cfg(task_list)[task]
+    train_cfg[task]["data"] = get_data_cfg(task_list)[task]
+    train_cfg[task]["optim"] = get_optim_cfg(task_list)[task]
+    train_cfg[task]["trainer"] = get_trainer_cfg(task_list)[task]
 
 
 def specify_task(cfg: CfgNode) -> (str, CfgNode):

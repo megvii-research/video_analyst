@@ -5,7 +5,8 @@
 Models & Raw results:
 
 * [Google Drive](https://drive.google.com/open?id=1XhWIU1KIt9wvFpzZqEDaX-GrgZ9AVcOC)
-* [BaiduYun](https://pan.baidu.com/s/19GhRrv2RcEQBFAJ-TNs8mg), code: qvfq
+* [BaiduYun](https://pan.baidu.com/s/1o75xm2kbYnJ7pv7LmzD77A), code: y3n6
+* [Tencent Weiyun](https://share.weiyun.com/56C92l4), code: wg47g7
 
 ## Models
 
