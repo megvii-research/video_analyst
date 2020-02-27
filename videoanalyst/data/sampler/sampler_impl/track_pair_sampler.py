@@ -42,7 +42,7 @@ class TrackPairSampler(SamplerBase):
             d._hyper_params["max_diff"] for d in self.datasets
         ]
 
-    def __next__(self) -> Dict:
+    def __getitem__(self, item) -> dict:
         is_negative_pair = (self._state["rng"].rand() <
                             self._hyper_params["negative_pair_ratio"])
         data1 = data2 = None
