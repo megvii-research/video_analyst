@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*
 import logging
-from typing import Dict
+from typing import Dict, List
 
 from yacs.config import CfgNode
 
@@ -53,7 +53,7 @@ def build(task: str, cfg: CfgNode, optimizer, dataloader) -> TrainerBase:
     return trainer
 
 
-def get_config() -> Dict[str, CfgNode]:
+def get_config(task_list: List) -> Dict[str, CfgNode]:
     r"""
     Get available component list config
 
@@ -62,7 +62,7 @@ def get_config() -> Dict[str, CfgNode]:
     Dict[str, CfgNode]
         config with list of available components
     """
-    cfg_dict = {name: CfgNode() for name in TASK_TRAINERS.keys()}
+    cfg_dict = {name: CfgNode() for name in task_list}
 
     for cfg_name, MODULES in TASK_TRAINERS.items():
         cfg = cfg_dict[cfg_name]
@@ -75,6 +75,6 @@ def get_config() -> Dict[str, CfgNode]:
             for hp_name in hps:
                 cfg[name][hp_name] = hps[hp_name]
 
-        cfg["monitors"] = monitor_builder.get_config()[cfg_name]
+        cfg["monitors"] = monitor_builder.get_config(task_list)[cfg_name]
 
     return cfg_dict
