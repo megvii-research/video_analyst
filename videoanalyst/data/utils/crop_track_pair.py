@@ -31,8 +31,9 @@ def crop_track_pair(im_temp,
                     bbox_temp,
                     im_curr,
                     bbox_curr,
-                    config,
+                    config=None,
                     avg_chans=None,
+                    rng=np.random,
                     DEBUG=False):
     context_amount = config["context_amount"]
     z_size = config["z_size"]
@@ -71,11 +72,11 @@ def crop_track_pair(im_temp,
         if i < _MAX_RETRY:
             s_max = 1 + max_scale
             s_min = 1 / s_max
-            scale_rand = np.random.uniform(s_min, s_max)
+            scale_rand = rng.uniform(s_min, s_max)
             s_max = 1 + max_scale_temp
             s_min = 1 / s_max
             scale_rand_temp = np.exp(
-                np.random.uniform(np.log(s_min), np.log(s_max)))
+                rng.uniform(np.log(s_min), np.log(s_max)))
         else:
             scale_rand = scale_rand_temp = 1
             if DEBUG: print('not augmented')
@@ -86,12 +87,12 @@ def crop_track_pair(im_temp,
 
         # random shift
         if i < _MAX_RETRY:
-            dx = np.random.uniform(-max_shift, max_shift) * s_curr / 2
-            dy = np.random.uniform(-max_shift, max_shift) * s_curr / 2
-            dx_temp = np.random.uniform(-max_shift_temp,
-                                        max_shift_temp) * s_temp / 2
-            dy_temp = np.random.uniform(-max_shift_temp,
-                                        max_shift_temp) * s_temp / 2
+            dx = rng.uniform(-max_shift, max_shift) * s_curr / 2
+            dy = rng.uniform(-max_shift, max_shift) * s_curr / 2
+            dx_temp = rng.uniform(-max_shift_temp,
+                                  max_shift_temp) * s_temp / 2
+            dy_temp = rng.uniform(-max_shift_temp,
+                                  max_shift_temp) * s_temp / 2
         else:
             dx = dy = dx_temp = dy_temp = 0
             if DEBUG: print('not augmented')

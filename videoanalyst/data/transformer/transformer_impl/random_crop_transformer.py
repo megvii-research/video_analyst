@@ -30,7 +30,7 @@ class RandomCropTransformer(TransformerBase):
     )
 
     def __init__(self, seed: int = 0) -> None:
-        super().__init__(seed=seed)
+        super(RandomCropTransformer, self).__init__(seed=seed)
 
     def __call__(self, sampled_data: Dict) -> Dict:
         r"""
@@ -44,7 +44,8 @@ class RandomCropTransformer(TransformerBase):
         im_curr, bbox_curr = data2["image"], data2["anno"]
         im_z, bbox_z, im_x, bbox_x = crop_track_pair(im_temp, bbox_temp,
                                                      im_curr, bbox_curr,
-                                                     self._hyper_params)
+                                                     config=self._hyper_params,
+                                                     rng=self._state["rng"])
 
         sampled_data["data1"] = dict(image=im_z, anno=bbox_z)
         sampled_data["data2"] = dict(image=im_x, anno=bbox_x)
