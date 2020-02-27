@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from typing import Dict
 
 from abc import ABCMeta
 
@@ -31,24 +32,24 @@ class DatasetBase:
         self._hyper_params = self.default_hyper_params
         self._state = dict()
 
-    def get_hps(self) -> dict():
+    def get_hps(self) -> Dict:
         r"""
         Getter function for hyper-parameters
 
         Returns
         -------
-        dict
+        Dict
             hyper-parameters
         """
         return self._hyper_params
 
-    def set_hps(self, hps: dict()) -> None:
+    def set_hps(self, hps: Dict) -> None:
         r"""
         Set hyper-parameters
 
         Arguments
         ---------
-        hps: dict
+        hps: Dict
             dict of hyper-parameters, the keys must in self.__hyper_params__
         """
         for key in hps:
@@ -60,11 +61,11 @@ class DatasetBase:
         r"""
         an interface for update params
         """
-    def __getitem__(self, item: int) -> dict:
+    def __getitem__(self, item: int) -> Dict:
         r"""
         An interface to get data item (Index-based Dataset).
         """
-    def __next__(self) -> dict:
+    def __next__(self) -> Dict:
         r"""
         An interface to get data item (Sampler-based Dataset).
         """

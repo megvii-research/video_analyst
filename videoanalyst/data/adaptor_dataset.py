@@ -39,7 +39,7 @@ class AdaptorDataset(Dataset):
                                                            seed=seed)
             logger.info("AdaptorDataset #%d built datapipeline with seed=%d"%(item, seed))
 
-        training_data = next(self.datapipeline)
+        training_data = self.datapipeline[item]
 
         return training_data
 

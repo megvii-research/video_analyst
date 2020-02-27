@@ -30,11 +30,11 @@ class RegularDatapipeline(DatapipelineBase):
         self.sampler = sampler
         self.pipeline = pipeline
 
-    def __next__(self) -> Dict:
+    def __getitem__(self, item) -> Dict:
         r"""
         An interface to load batch data
         """
-        sampled_data = next(self.sampler)
+        sampled_data = self.sampler[item]
 
         for proc in self.pipeline:
             sampled_data = proc(sampled_data)
