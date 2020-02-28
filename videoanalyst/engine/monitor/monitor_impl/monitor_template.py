@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*
 import itertools
 import logging
+from typing import Dict
 
 import cv2
 import numpy as np
@@ -30,5 +31,8 @@ class Monitor(MonitorBase):
         """
         super(Monitor, self).__init__()
 
-    def update(self):
+    def init(self, engine_state: Dict):
+        super(Monitor, self).init(engine_state)
+
+    def update(self, engine_data: Dict):
         pass

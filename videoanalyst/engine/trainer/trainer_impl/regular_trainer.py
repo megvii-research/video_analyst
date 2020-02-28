@@ -103,6 +103,10 @@ class RegularTrainer(TrainerBase):
         epoch = self._state["epoch"]
         num_iterations = self._hyper_params["num_iterations"]
 
+        # udpate engine_state
+        self._state["max_epoch"] = self._hyper_params["max_epoch"]
+        self._state["max_iteration"] = num_iterations
+
         self._optimizer.modify_grad(epoch)
         pbar = tqdm(range(num_iterations))
         self._state["pbar"] = pbar
@@ -110,6 +114,7 @@ class RegularTrainer(TrainerBase):
 
         time_dict = OrderedDict()
         for iteration, _ in enumerate(pbar):
+            self._state["iteration"] = iteration
             with Timer(name="data", output_dict=time_dict):
                 training_data = next(self._dataloader)
             training_data = move_data_to_device(training_data,
