@@ -15,7 +15,7 @@ def move_data_to_device(data_dict: Dict, dev: torch.device):
 
 def unwrap_model(model):
     r""" unwrap nn.dataparallel wrapped module for model serialization """
-    return model.module if isinstance(model, nn.DataParallel) else model
+    return model.module if isinstance(model, (nn.DataParallel, nn.parallel.DistributedDataParallel)) else model
 
 
 def convert_data_to_dtype(data_dict: Dict[str, torch.Tensor],

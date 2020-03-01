@@ -71,6 +71,8 @@ class TrainerBase:
     def init_train(self):
         r"""
         an interface to process pre-train overhead before training
+        trainer's implementation is responsible for checking and 
+            calling it automatically before training starts.
         """
         for monitor in self._monitors:
             monitor.init(self._state)
