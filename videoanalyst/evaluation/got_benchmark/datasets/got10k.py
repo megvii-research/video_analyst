@@ -139,7 +139,7 @@ class GOT10k(object):
             print("{}: cache file exists: {} ".format(GOT10k.__name__, cache_path))
             self._load_cache_for_current_subset(cache_path)
             if self._check_cache_for_current_subset():
-                print("{}: record check has been processed and validity is conformed for cache file: {} ".format(GOT10k.__name__, cache_path))
+                print("{}: record check has been processed and validity is confirmed for cache file: {} ".format(GOT10k.__name__, cache_path))
                 return
             else:
                 print("{}: cache file {} not valid, rebuilding cache...".format(GOT10k.__name__, cache_path))
