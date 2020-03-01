@@ -24,7 +24,7 @@ from .transformer import builder as transformer_builder
 logger = logging.getLogger("global")
 
 
-def build(task: str, cfg: CfgNode) -> DataLoader:
+def build(task: str, cfg: CfgNode, seed: int =0) -> DataLoader:
     r"""
     Arguments
     ---------
@@ -40,7 +40,8 @@ def build(task: str, cfg: CfgNode) -> DataLoader:
         logger.info("Build dummy AdaptorDataset")
         dummy_py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
                                           num_epochs=cfg.num_epochs,
-                                          nr_image_per_epoch=cfg.nr_image_per_epoch)
+                                          nr_image_per_epoch=cfg.nr_image_per_epoch,
+                                          seed=seed)
         logger.info("Read dummy training sample")
         training_sample = dummy_py_dataset[0]  # read dummy sample
         del dummy_py_dataset
