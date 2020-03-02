@@ -56,7 +56,7 @@ def build(task: str, cfg: CfgNode, seed: int =0) -> DataLoader:
             py_dataset,
             batch_size=cfg.minibatch,
             shuffle=False,
-            pin_memory=True,
+            pin_memory=cfg.pin_memory,
             num_workers=cfg.num_workers,
             drop_last=True,
         )
@@ -83,6 +83,7 @@ def get_config(task_list: List) -> Dict[str, CfgNode]:
         cfg["minibatch"] = 32
         cfg["num_workers"] = 4
         cfg["nr_image_per_epoch"] = 150000
+        cfg["pin_memory"] = True
         cfg["datapipeline"] = datapipeline_builder.get_config(task_list)[task]
         cfg["sampler"] = sampler_builder.get_config(task_list)[task]
         cfg["transformer"] = transformer_builder.get_config(task_list)[task]

@@ -2,6 +2,14 @@
 
 Date format: YY/MM/DD
 
+## 2020/03/02
+
+____Major changes____
+
+* Add training with PyTorch Distributed Data Parallel (DDP)
+  * _main/dist_trian.py_, 
+  * _.../trainer_impl/distributed_regular_trainer.py_
+
 ## 2020/02/27
 
 ____Major changes____

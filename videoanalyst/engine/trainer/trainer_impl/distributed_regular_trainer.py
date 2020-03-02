@@ -88,19 +88,10 @@ class DistributedRegularTrainer(TrainerBase):
             self._losses[k].to(devs[0])
         # load from self._state["snapshot_file"]
         self.load_snapshot()
-
         # parallelism with Distributed Data Parallel (DDP)
-        # if len(self._state["devices"]) > 1:
-            # self._model = nn.DataParallel(self._model, device_ids=devs)
         self._model = nn.parallel.DistributedDataParallel(self._model, device_ids=devs,
                                                           find_unused_parameters=True)  # TODO: devs should be calculated based on rank & num_workers
-        # for k in self._losses:
-        #     self._losses[k] = nn.parallel.DistributedDataParallel(
-        #                             self._losses[k], device_ids=devs,
-        #                             find_unused_parameters=True)  # TODO: devs should be calculated based on rank & num_workers
-
         logger.info("Use nn.parallel.DistributedDataParallel for parallelism")
-
         super(DistributedRegularTrainer, self).init_train()
         logger.info("%s initialized", type(self).__name__)
 

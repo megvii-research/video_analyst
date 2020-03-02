@@ -22,7 +22,6 @@ from videoanalyst.model import builder as model_builder
 from videoanalyst.model.loss import builder as losses_builder
 from videoanalyst.optim import builder as optim_builder
 from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.engine.trainer.trainer_base import TrainerBase
 from videoanalyst.utils import Timer, ensure_dir, complete_path_wt_root_in_cfg
 
 cv2.setNumThreads(1)
@@ -76,6 +75,22 @@ def cleanup():
 
 def run_dist_training(rank_id : int, world_size: int,
                       task: str, task_cfg: CfgNode, parsed_args):
+    """method to run on distributed process
+       passed to multiprocessing.spawn
+    
+    Parameters
+    ----------
+    rank_id : int
+        rank id, ith spawned process 
+    world_size : int
+        total number of spawned process
+    task : str
+        task name (passed to builder)
+    task_cfg : CfgNode
+        task builder (passed to builder)
+    parsed_args : [type]
+        parsed arguments from command line
+    """
     # set up distributed
     setup(rank_id, world_size)
     # build model
@@ -123,27 +138,11 @@ if __name__ == '__main__':
     with open(cfg_bak_file, "w") as f:
         f.write(task_cfg.dump())
     logger.info("Task configuration backed up at %s"%cfg_bak_file)
-
-
-    # # build model (including losses)
-    # model = model_builder.build(task, task_cfg.model)
-    # # build optimizer
-    # optimizer = optim_builder.build(task, task_cfg.optim, model)
-    # load data
+    # build dummy dataloader (for dataset initialization)
     with Timer(name="Dummy dataloader building", verbose=True, logger=logger):
         dataloader = dataloader_builder.build(task, task_cfg.data)
     del dataloader
     logger.info("Dummy dataloader destroyed.")
-    # # build trainer
-    # trainer = engine_builder.build(task, task_cfg.trainer, "trainer", optimizer,
-    #                                dataloader)
-    # trainer.resume(parsed_args.resume_from_epoch, parsed_args.resume_from_file)
-
-    # # trainer.init_train()
-    # logger.info("Start training")
-    # while not trainer.is_completed():
-    #     trainer.train()
-    #     trainer.save_snapshot()
 
     world_size = task_cfg.num_processes
     torch.multiprocessing.set_start_method('spawn', force=True)
@@ -152,4 +151,3 @@ if __name__ == '__main__':
              nprocs=world_size,
              join=True)
     logger.info("Distributed training completed.")
-    
