@@ -6,6 +6,8 @@ By running [tools/train_test-alexnet.sh](../tools/train_test-alexnet.sh) or [too
 
 Usage of Python script:
 
+e.g. path/to/config.yaml = experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml
+
 ```Bash
 python3 ./main/train.py --config 'path/to/config.yaml'
 python3 ./main/test.py --config 'path/to/config.yaml'
@@ -14,22 +16,33 @@ python3 ./main/test.py --config 'path/to/config.yaml'
 Resuming from epoch number
 
 ```Bash
-python3 ./main/train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml' --resume-from-epoch=10
+python3 ./main/train.py --config 'path/to/config.yaml' --resume-from-epoch=10
 ```
 
 Resuming from snapshot file
 
 ```Bash
-python3 ./main/train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml' --resume-from-file='snapshots/siamfcpp_alexnet/epoch-10.pkl'
+python3 ./main/train.py --config 'path/to/config.yaml' --resume-from-file='snapshots/siamfcpp_alexnet/epoch-10.pkl'
 ```
 
-Training with PyTorch Distributed Data Parallel (DDP)
+### Training with PyTorch Distributed Data Parallel (DDP)
 
 ```Bash
 python3 ./main/dist_train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-dist_trn.yaml'
 ```
 
-Configuration .yaml files are givin under [experiments/train/](../experiments/train/).
+#### Quick fix for DDP
+
+* "RuntimeError: error executing torch_shm_manage"
+  * CUDA version mismatch with installed PyTorch, two solution
+    * Install CUDA version that matches installed PyTorch, or
+    * Compile PyTorch insteatd of prebuilt binaries so that it matches the installed CUDA
+* "RuntimeError: cuda runtime error (2) : out of memory at"
+  * pin_memory = False (train.data.pin_memory)
+
+### Configuration Files
+
+This project use [yacs](https://github.com/rbgirshick/yacs) for configuration/hyper-parameter management. Configuration .yaml files are givin under [experiments/train/](../experiments/train/).
 
 Before the training starts, the merged configuration file will be backed up at _EXP_SAVE/EXP_NAME/logs_.
 
@@ -40,6 +53,7 @@ Harware configuration:
 * #CPU: 32
 * #GPU: 4
 * Memory: 64 GiB
+* Training with PyTorch DataParallel (DP)
 
 Several indexes related to training process have been listed in the table bellow:
 
