@@ -28,8 +28,10 @@ python3 ./main/train.py --config 'path/to/config.yaml' --resume-from-file='snaps
 ### Training with PyTorch Distributed Data Parallel (DDP)
 
 ```Bash
-python3 ./main/dist_train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-dist_trn.yaml'
+python3 -W ignore ./main/dist_train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-dist_trn.yaml'
 ```
+
+Nota: _-W ignore_ neglects warning to ensure the program exits normally so that _test.py_ can run after it.
 
 #### Quick fix for DDP
 

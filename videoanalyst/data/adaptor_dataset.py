@@ -37,6 +37,8 @@ class AdaptorDataset(Dataset):
 
     def __getitem__(self, item):
         if self.datapipeline is None:
+            # build datapipeline with random seed the first time when __getitem__ is called
+            # usually, dataset is already spawned (into subprocess) at this point.
             seed = (torch.initial_seed() + item*self._SEED_STEP + self.ext_seed*self._EXT_SEED_STEP) % self._SEED_DIVIDER
             self.datapipeline = datapipeline_builder.build(**self.kwargs,
                                                            seed=seed)
