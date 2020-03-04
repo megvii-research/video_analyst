@@ -65,7 +65,7 @@ def setup(rank: int, world_size: int):
     os.environ['MASTER_ADDR'] = 'localhost'
     os.environ['MASTER_PORT'] = '12355'
     dist.init_process_group("nccl", rank=rank, world_size=world_size)  # initialize the process group
-    torch.manual_seed(42)  # same initialized model for every process
+    # torch.manual_seed(42)  # same initialized model for every process
 
 def cleanup():
     """Cleanup distributed  
@@ -74,7 +74,7 @@ def cleanup():
     dist.destroy_process_group()
 
 def run_dist_training(rank_id : int, world_size: int,
-                      task: str, task_cfg: CfgNode, parsed_args):
+                      task: str, task_cfg: CfgNode, parsed_args, model):
     """method to run on distributed process
        passed to multiprocessing.spawn
     
@@ -94,7 +94,7 @@ def run_dist_training(rank_id : int, world_size: int,
     # set up distributed
     setup(rank_id, world_size)
     # build model
-    model = model_builder.build(task, task_cfg.model)
+    # model = model_builder.build(task, task_cfg.model)
     # build optimizer
     optimizer = optim_builder.build(task, task_cfg.optim, model)
     # load data
@@ -144,10 +144,12 @@ if __name__ == '__main__':
     del dataloader
     logger.info("Dummy dataloader destroyed.")
 
+    model = model_builder.build(task, task_cfg.model)
+
     world_size = task_cfg.num_processes
     torch.multiprocessing.set_start_method('spawn', force=True)
     mp.spawn(run_dist_training, 
-             args=(world_size, task, task_cfg, parsed_args),
+             args=(world_size, task, task_cfg, parsed_args, model),
              nprocs=world_size,
              join=True)
     logger.info("Distributed training completed.")
