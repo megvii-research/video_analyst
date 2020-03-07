@@ -176,4 +176,5 @@ class OptimizerBase:
         return schedule_info
 
     def modify_grad(self, epoch, iteration=-1):
-        self._grad_modifier.modify_grad(self._model, epoch, iteration)
+        if self._grad_modifier is not None:
+            self._grad_modifier.modify_grad(self._model, epoch, iteration)
