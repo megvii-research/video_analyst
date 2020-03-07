@@ -11,6 +11,8 @@ from yacs.config import CfgNode
 import torch
 from torch.utils.data import DataLoader, Dataset
 from torch.utils.data.dataloader import default_collate
+import torch.distributed as dist
+from torch.utils.data.distributed import DistributedSampler
 
 from videoanalyst.utils import Timer, ensure_dir
 
@@ -43,15 +45,27 @@ def build(task: str, cfg: CfgNode, seed: int =0) -> DataLoader:
                                           nr_image_per_epoch=cfg.nr_image_per_epoch,
                                           seed=seed)
         logger.info("Read dummy training sample")
-        training_sample = dummy_py_dataset[0]  # read dummy sample
-        del dummy_py_dataset
+        dummy_sample = dummy_py_dataset[0]  # read dummy sample
+        del dummy_py_dataset, dummy_sample
         gc.collect(generation=2)
         logger.info("Dummy AdaptorDataset destroyed.")
+        # get world size in case of DDP
+        try:
+            world_size = dist.get_world_size()
+        except:
+            world_size = 1
         # build real dataset
         logger.info("Build real AdaptorDataset")
         py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
                                     num_epochs=cfg.num_epochs,
-                                    nr_image_per_epoch=cfg.nr_image_per_epoch)
+                                    nr_image_per_epoch=cfg.nr_image_per_epoch*world_size)
+        # use DistributedSampler in case of DDP
+        if world_size > 1:
+            py_sampler = DistributedSampler(py_dataset)
+            data_logger.info("Use dist.DistributedSampler, world_size=%d"%world_size)
+        else:
+            py_sampler = None
+        # build real dataloader
         dataloader = DataLoader(
             py_dataset,
             batch_size=cfg.minibatch,
@@ -59,6 +73,7 @@ def build(task: str, cfg: CfgNode, seed: int =0) -> DataLoader:
             pin_memory=cfg.pin_memory,
             num_workers=cfg.num_workers,
             drop_last=True,
+            sampler=py_sampler,
         )
     return dataloader
 

@@ -97,7 +97,7 @@ def run_dist_training(rank_id : int, world_size: int,
     # model = model_builder.build(task, task_cfg.model)
     # build optimizer
     optimizer = optim_builder.build(task, task_cfg.optim, model)
-    # load data
+    # build dataloader with trainer 
     with Timer(name="Dataloader building", verbose=True, logger=logger):
         dataloader = dataloader_builder.build(task, task_cfg.data, seed=rank_id)
     # build trainer
@@ -143,11 +143,12 @@ if __name__ == '__main__':
         dataloader = dataloader_builder.build(task, task_cfg.data)
     del dataloader
     logger.info("Dummy dataloader destroyed.")
-
+    # build model
     model = model_builder.build(task, task_cfg.model)
-
+    # prepare to spawn
     world_size = task_cfg.num_processes
     torch.multiprocessing.set_start_method('spawn', force=True)
+    # spawn trainer process
     mp.spawn(run_dist_training, 
              args=(world_size, task, task_cfg, parsed_args, model),
              nprocs=world_size,
