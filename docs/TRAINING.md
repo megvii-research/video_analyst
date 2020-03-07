@@ -42,6 +42,28 @@ Nota: _-W ignore_ neglects warning to ensure the program exits normally so that 
 * "RuntimeError: cuda runtime error (2) : out of memory at"
   * pin_memory = False (train.data.pin_memory)
 
+#### Influence
+
+As reported in several issues (e.g. [Training performance degrades with DistributedDataParallel](https://discuss.pytorch.org/t/training-performance-degrades-with-distributeddataparallel/47152/19) / [DDP on 8 gpu work much worse then on single](https://discuss.pytorch.org/t/ddp-on-8-gpu-work-much-worse-then-on-single/63358) / [Performance degrades with DataParallel](https://discuss.pytorch.org/t/performance-degrades-with-dataparallel/57452)) and based on our observation, using DDP in a plug-in-and-play way may cause performance degradation. Here we report our results with DDP.
+
+| Exp | Pipeline | Dataset | AO | Hardware |
+|:---:|:---:|:---:|:---:|:---:|
+| alexnet | SiamFCppTracker | GOT-10k-val |  | 2080ti |
+| alexnet | SiamFCppTracker | GOT-10k-test |  | 2080ti |
+| googlenet | SiamFCppTracker | GOT-10k-val | 76.0 | 2080ti |
+| googlenet | SiamFCppTracker | GOT-10k-test | 58.1 | 2080ti |
+| shufflenetv2x0_5 | SiamFCppTracker | GOT-10k-val | 72.5 | 2080ti |
+| shufflenetv2x0_5 | SiamFCppTracker | GOT-10k-test | 53.0 | 2080ti |
+| shufflenetv2x1_0 | SiamFCppTracker | GOT-10k-val | 75.2 | 2080ti |
+| shufflenetv2x1_0 | SiamFCppTracker | GOT-10k-test | 55.7 | 2080ti |
+
+Several hypotheses:
+
+* BN implementation (sync / non-sync)
+* Learning rate reducing method
+
+We plan to continuously track the issues of DDP to align its performance with DP.
+
 ### Configuration Files
 
 This project use [yacs](https://github.com/rbgirshick/yacs) for configuration/hyper-parameter management. Configuration .yaml files are givin under [experiments/train/](../experiments/train/).
