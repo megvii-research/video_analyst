@@ -31,7 +31,7 @@ def build(
         module built by builder
     """
     optimizer = optimizer_builder.build(task, cfg.optimizer, model)
-    if "grad_modifier" in cfg:
+    if ("grad_modifier" in cfg) and (cfg.grad_modifier.name != ""):
         grad_modifier = grad_modifier_builder.build(task, cfg.grad_modifier)
         optimizer.set_grad_modifier(grad_modifier)
 
