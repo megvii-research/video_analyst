@@ -42,25 +42,30 @@ Nota: _-W ignore_ neglects warning to ensure the program exits normally so that 
 * "RuntimeError: cuda runtime error (2) : out of memory at"
   * pin_memory = False (train.data.pin_memory)
 
-#### Influence
+#### Performance Influence of DDP
 
-As reported in several issues (e.g. [Training performance degrades with DistributedDataParallel](https://discuss.pytorch.org/t/training-performance-degrades-with-distributeddataparallel/47152/19) / [DDP on 8 gpu work much worse then on single](https://discuss.pytorch.org/t/ddp-on-8-gpu-work-much-worse-then-on-single/63358) / [Performance degrades with DataParallel](https://discuss.pytorch.org/t/performance-degrades-with-dataparallel/57452)) and based on our observation, using DDP in a plug-in-and-play way may cause performance degradation. Here we report our results with DDP.
+As reported in several issues (e.g. [Training performance degrades with DistributedDataParallel](https://discuss.pytorch.org/t/training-performance-degrades-with-distributeddataparallel/47152) / [DDP on 8 gpu work much worse then on single](https://discuss.pytorch.org/t/ddp-on-8-gpu-work-much-worse-then-on-single/63358) / [Performance degrades with DataParallel](https://discuss.pytorch.org/t/performance-degrades-with-dataparallel/57452)) and based on our observation, using DDP in a plug-in-and-play way may cause performance degradation. Here we report our results with DDP:
 
-| Exp | Pipeline | Dataset | AO | Hardware |
-|:---:|:---:|:---:|:---:|:---:|
-| alexnet | SiamFCppTracker | GOT-10k-val |  | 2080ti |
-| alexnet | SiamFCppTracker | GOT-10k-test |  | 2080ti |
-| googlenet | SiamFCppTracker | GOT-10k-val | 76.0 | 2080ti |
-| googlenet | SiamFCppTracker | GOT-10k-test | 58.1 | 2080ti |
-| shufflenetv2x0_5 | SiamFCppTracker | GOT-10k-val | 72.5 | 2080ti |
-| shufflenetv2x0_5 | SiamFCppTracker | GOT-10k-test | 53.0 | 2080ti |
-| shufflenetv2x1_0 | SiamFCppTracker | GOT-10k-val | 75.2 | 2080ti |
-| shufflenetv2x1_0 | SiamFCppTracker | GOT-10k-test | 55.7 | 2080ti |
+| Exp | Pipeline | Dataset | AO (DP)(*) | AO (DDP)(+) | Diff. | Hardware |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| alexnet | SiamFCppTracker | GOT-10k-val | 72.2 | 71.9 | -0.3 | 2080ti |
+| alexnet | SiamFCppTracker | GOT-10k-test | 53.1 | 52.6 | -0.5 | 2080ti |
+| googlenet | SiamFCppTracker | GOT-10k-val | 76.3 | 76.0 | -0.3 | 2080ti |
+| googlenet | SiamFCppTracker | GOT-10k-test | 60.0 | 58.1 | -1.9 | 2080ti |
+| shufflenetv2x0_5 | SiamFCppTracker | GOT-10k-val | 73.1 | 72.5 | -0.6 | 2080ti |
+| shufflenetv2x0_5 | SiamFCppTracker | GOT-10k-test | 53.1 | 53.0 | -0.1 | 2080ti |
+| shufflenetv2x1_0 | SiamFCppTracker | GOT-10k-val | 76.1 | 75.2 | -0.9 | 2080ti |
+| shufflenetv2x1_0 | SiamFCppTracker | GOT-10k-test | 55.6 | 55.7 | +0.1 | 2080ti |
 
-Several hypotheses:
+* (*): AO (DP) reported here comes from the average reported in the following _Stability_ section .
+* (+): AO (DDP) reported here are performance of a single training of each experiment. Average level need to be determined with more training trials further.
+
+Several hypotheses need to be taken into consideration with regard to the slight performance degradation :
 
 * BN implementation (sync / non-sync)
-* Learning rate reducing method
+  * Currently, we still use normal BN in _model_ module
+* Gradient reducing method
+  * Currently, we do not change learning rate. However, gradient reducing methods may not be the same in DP and DDP, which requires a further adjustment of learning rate.
 
 We plan to continuously track the issues of DDP to align its performance with DP.
 
@@ -116,8 +121,8 @@ Results are listed as follows and they shall serve as reference for reproduction
 | 4 | googlenet | SiamFCppTracker | GOT-10k-val | 76.0 | 1080ti |
 | 1 | googlenet | SiamFCppTracker | GOT-10k-test | 60.3 | 2080ti |
 | 2 | googlenet | SiamFCppTracker | GOT-10k-test | 59.8 | 2080ti |
-| 3 | googlenet | SiamFCppTracker | GOT-10k-test | 59.2 | 2080ti | 18e94f567a82bd482f64b8059a8e82c464629eb5 |
-| 4 | googlenet | SiamFCppTracker | GOT-10k-test | 60.7 | 1080ti | db966bc51f420c9133385cb8e8deb281e555ac82 |
+| 3 | googlenet | SiamFCppTracker | GOT-10k-test | 59.2 | 2080ti |
+| 4 | googlenet | SiamFCppTracker | GOT-10k-test | 60.7 | 1080ti |
 
 ### shufflenetv2x0_5
 
