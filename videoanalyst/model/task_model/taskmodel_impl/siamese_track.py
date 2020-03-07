@@ -13,6 +13,7 @@ from videoanalyst.model.common_opr.common_block import (conv_bn_relu,
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
                                                           VOS_TASKMODELS)
+from videoanalyst.utils import md5sum
 
 torch.set_printoptions(precision=8)
 
@@ -165,6 +166,8 @@ class SiamTrack(ModuleBase):
             except:
                 self.load_state_dict(state_dict, strict=False)
             logger.info("Pretrained weights loaded from {}".format(model_path))
+            logger.info("Check md5sum of Pretrained weights: %s" %
+                        md5sum(model_path))
 
     def _make_convs(self):
         head_width = self._hyper_params['head_width']
