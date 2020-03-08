@@ -87,6 +87,7 @@ train:
       minibatch: &MINIBATCH 32  # 64
       num_workers: 32
       nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 400000
+      pin_memory: false
       datapipeline:
         name: "RegularDatapipeline"
       sampler:

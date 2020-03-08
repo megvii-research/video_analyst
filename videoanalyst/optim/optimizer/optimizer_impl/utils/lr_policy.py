@@ -175,32 +175,37 @@ class TransitionLR(BaseLR):
     def max_iter(self):
         return self._max_iter
 
+def _IDENTITY(x):
+    return x
 
 @LR_POLICIES.register
 class LinearLR(TransitionLR):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._pre_func = lambda x: x
-        self._trans_func = lambda x: x
-        self._post_func = lambda x: x
+        self._pre_func = _IDENTITY
+        self._trans_func = _IDENTITY
+        self._post_func = _IDENTITY
 
 
 @LR_POLICIES.register
 class ExponentialLR(TransitionLR):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._pre_func = lambda x: math.log(x)
-        self._trans_func = lambda x: x
-        self._post_func = lambda x: math.exp(x)
+        self._pre_func = math.log
+        self._trans_func = _IDENTITY
+        self._post_func = math.exp
 
 
 @LR_POLICIES.register
 class CosineLR(TransitionLR):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._pre_func = lambda x: x
-        self._trans_func = lambda x: (1 - math.cos(x * math.pi)) / 2
-        self._post_func = lambda x: x
+        self._pre_func = _IDENTITY
+        self._trans_func = self._cosine_curve
+        self._post_func = _IDENTITY
+    
+    def _cosine_curve(self, x):
+        return (1 - math.cos(x * math.pi)) / 2
 
 
 def plot_LR(LR: BaseLR, title='Untitled'):

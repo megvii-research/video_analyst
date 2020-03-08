@@ -23,6 +23,12 @@ VOT test configuration directory: _experiments/siamfcpp/test/vot_
 | GoogLeNet | SiamFCppTracker | VOT2018 | 0.588 | 0.183 | 0.437 | ~80 | ~65 | siamfcpp_googlenet-new.yaml | siamfcpp-googlenet-vot-md5_e14e9b6c82799602d777fd21a081c907.pkl |
 | GoogLeNet | SiamFCppMultiTempTracker | VOT2018 | 0.587 | 0.150 |  0.467 | ~50 | ~45 | siamfcpp_googlenet-multi_temp.yaml | siamfcpp-googlenet-vot-md5_f2680ba074213ee39d82fcb84533a1a6.pkl |
 
+__Nota__:
+
+Points reported here are reproducible with PyTorch<=1.2.0. For PyTorch>=1.3.0, the reproducibility is not guaranteed due to a "breaking change" of PyTorch. See "Breaking Changes" under [release 1.3.0](https://github.com/pytorch/pytorch/releases) for detail.
+
+However, we still recommend using the newest version of PyTorch as earlier versions usually carry numerous historical bugs (e.g. bugs with dataloader, ddp, etc.).
+
 ### GOT-10k
 
 GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_

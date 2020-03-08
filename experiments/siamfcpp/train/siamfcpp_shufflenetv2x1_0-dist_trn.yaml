@@ -1,6 +1,6 @@
 test:
   track:
-    exp_name: &TEST_NAME "siamfcpp_shufflenetv2x1_0"
+    exp_name: &TEST_NAME "siamfcpp_shufflenetv2x1_0-dist"
     exp_save: &TEST_SAVE "logs"
     model:
       backbone:
@@ -21,7 +21,7 @@ test:
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          pretrain_model_path: "snapshots/siamfcpp_shufflenetv2x1_0/epoch-19.pkl"
+          pretrain_model_path: "snapshots/siamfcpp_shufflenetv2x1_0-dist/epoch-19.pkl"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
@@ -46,8 +46,9 @@ test:
         subsets: ["test"]  # (train_test|test)
 train:
   track:
-    exp_name: &TRAIN_NAME "siamfcpp_shufflenetv2x1_0"
+    exp_name: &TRAIN_NAME "siamfcpp_shufflenetv2x1_0-dist"
     exp_save: &TRAIN_SAVE "snapshots"
+    num_processes: 4
     model:
       backbone:
         name: "ShuffleNetV2_x1_0"
@@ -86,9 +87,9 @@ train:
       exp_name: *TRAIN_NAME
       exp_save: *TRAIN_SAVE
       num_epochs: 20
-      minibatch: &MINIBATCH 32  # 64
-      num_workers: 32
-      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 400000
+      minibatch: &MINIBATCH 8  # single GPU's MINIBATCH(32)/num_processes(4)
+      num_workers: 8  # single GPU's num_workers(32)/num_processes(4)
+      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 100000  # single GPU's NR_IMAGE_PER_EPOCH(400000)/num_processes(4)
       pin_memory: false
       datapipeline:
         name: "RegularDatapipeline"
@@ -130,8 +131,8 @@ train:
           x_size: 303
           num_conv3x3: 3
     trainer:
-      name: "RegularTrainer"
-      RegularTrainer:
+      name: "DistributedRegularTrainer"
+      DistributedRegularTrainer:
         exp_name: *TRAIN_NAME
         exp_save: *TRAIN_SAVE
         devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]  # (cpu|cuda|cuda:x)
@@ -141,7 +142,7 @@ train:
         # num_iterations: 12500
         snapshot: ""
       monitors:
-        names: ["TrackInfo", "TensorboardLogger"]
+        names: ["TrackInfo"]  # "TensorboardLogger"
         TrackInfo:
           {}
         TensorboardLogger:
