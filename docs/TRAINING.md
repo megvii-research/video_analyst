@@ -41,6 +41,8 @@ Nota: _-W ignore_ neglects warning to ensure the program exits normally so that 
     * Compile PyTorch insteatd of prebuilt binaries so that it matches the installed CUDA
 * "RuntimeError: cuda runtime error (2) : out of memory at"
   * pin_memory = False (train.data.pin_memory)
+* Other comments
+  * DDP may require higher version of PyTorch (e.g. torch==1.4.0) as early versions of PyTorch 1.x seem to have bugs in DDP.
 
 #### Performance Influence of DDP
 
