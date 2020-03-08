@@ -66,3 +66,18 @@ class TinyConv(ModuleBase):
         x = self.conv3b(x)
 
         return x
+
+    def update_params(self):
+        model_file = self._hyper_params["pretrain_model_path"]
+        if model_file != "":
+            try:
+                state_dict = torch.load(model_file,
+                                        map_location=torch.device("gpu"))
+            except:
+                state_dict = torch.load(model_file,
+                                        map_location=torch.device("cpu"))
+            self.load_state_dict(state_dict, strict=False)
+            logger.info("Load pretrained TinyConv parameters from: %s" %
+                        model_file)
+            logger.info("Check md5sum of pretrained TinyConv parameters: %s" %
+                        md5sum(model_file))

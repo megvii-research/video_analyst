@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-from typing import Tuple
+from typing import Tuple, List
 import copy
 import itertools
 import logging
@@ -13,11 +13,13 @@ from tqdm import tqdm
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
+import torch.distributed as dist
 
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.optim.optimizer.optimizer_base import OptimizerBase
 from videoanalyst.utils import (Timer, ensure_dir, move_data_to_device,
-                                unwrap_model)
+                                unwrap_model, average_gradients)
+
 
 from ..trainer_base import TRACK_TRAINERS, TrainerBase
 
@@ -25,9 +27,9 @@ logger = logging.getLogger("global")
 
 
 @TRACK_TRAINERS.register
-class RegularTrainer(TrainerBase):
+class DistributedRegularTrainer(TrainerBase):
     r"""
-    Trainer to test the vot dataset, the result is saved as follows
+    Distributed Trainer to test the vot dataset, the result is saved as follows
     exp_dir/logs/$dataset_name$/$tracker_name$/baseline
                                     |-$video_name$/ floder of result files
                                     |-eval_result.csv evaluation result file
@@ -60,13 +62,13 @@ class RegularTrainer(TrainerBase):
             PyTorch dataloader object. 
             Usage: batch_data = next(dataloader)
         """
-        super(RegularTrainer, self).__init__(optimizer, dataloader, monitors)
+        super(DistributedRegularTrainer, self).__init__(optimizer, dataloader, monitors)
         # update state
         self._state["epoch"] = -1  # uninitialized
         self._state["initialized"] = False
 
     def update_params(self, ):
-        super(RegularTrainer, self).update_params()
+        super(DistributedRegularTrainer, self).update_params()
         self._hyper_params["num_iterations"] = self._hyper_params["nr_image_per_epoch"] // self._hyper_params["minibatch"]
         self._state["devices"] = [
             torch.device(dev) for dev in self._hyper_params["devices"]
@@ -86,11 +88,11 @@ class RegularTrainer(TrainerBase):
             self._losses[k].to(devs[0])
         # load from self._state["snapshot_file"]
         self.load_snapshot()
-        # parallelism with Data Parallel (DP)
-        if len(self._state["devices"]) > 1:
-            self._model = nn.DataParallel(self._model, device_ids=devs)
-            logger.info("Use nn.DataParallel for data parallelism")
-        super(RegularTrainer, self).init_train()
+        # parallelism with Distributed Data Parallel (DDP)
+        self._model = nn.parallel.DistributedDataParallel(self._model, device_ids=devs,
+                                                          find_unused_parameters=True)  # TODO: devs should be calculated based on rank & num_workers
+        logger.info("Use nn.parallel.DistributedDataParallel for parallelism")
+        super(DistributedRegularTrainer, self).init_train()
         logger.info("%s initialized", type(self).__name__)
 
     def train(self):
@@ -108,7 +110,9 @@ class RegularTrainer(TrainerBase):
         self._state["max_iteration"] = num_iterations
 
         self._optimizer.modify_grad(epoch)
+        # TODO: build stats gathering code and reorganize tqdm
         pbar = tqdm(range(num_iterations))
+        # pbar = range(num_iterations)
         self._state["pbar"] = pbar
         self._state["print_str"] = ""
 
@@ -149,7 +153,10 @@ class RegularTrainer(TrainerBase):
             # backward propagation
             with Timer(name="bwd", output_dict=time_dict):
                 total_loss.backward()
-            self._optimizer.modify_grad(epoch, iteration)
+            # TODO: No need for average_gradients() when wrapped model with DDP?
+            # TODO: need to register _optimizer.modify_grad as hook
+            #       see https://discuss.pytorch.org/t/distributeddataparallel-modify-gradient-before-averaging/59291 
+            # self._optimizer.modify_grad(epoch, iteration)
             with Timer(name="optim", output_dict=time_dict):
                 self._optimizer.step()
 
@@ -165,6 +172,7 @@ class RegularTrainer(TrainerBase):
             del training_data
             print_str = self._state["print_str"]
             pbar.set_description(print_str)
+        del pbar  # need to be freed, otherwise spawn would be stucked.
 
     def is_completed(self):
         r"""Return completion status"""
@@ -178,7 +186,7 @@ class RegularTrainer(TrainerBase):
         """
         snapshot_file = self._state["snapshot_file"]
         if osp.exists(snapshot_file):
-            dev = self._state["devices"][0]
+            dev = self._state["devices"][0]  # TODO: device
             snapshot = torch.load(snapshot_file, map_location=dev)
             self._model.load_state_dict(snapshot["model_state_dict"])
             self._optimizer.load_state_dict(snapshot["optimizer_state_dict"])
@@ -242,8 +250,11 @@ class RegularTrainer(TrainerBase):
         elif epoch >= 0:
             _, snapshot_file = self._infer_snapshot_dir_file_from_epoch(epoch)
             self._state["snapshot_file"] = snapshot_file
+    
+    def set_device(self, devs: List[str]):
+        self._state["devices"] = [torch.device(dev) for dev in devs]
 
 
-RegularTrainer.default_hyper_params = copy.deepcopy(
-    RegularTrainer.default_hyper_params)
-RegularTrainer.default_hyper_params.update(RegularTrainer.extra_hyper_params)
+DistributedRegularTrainer.default_hyper_params = copy.deepcopy(
+    DistributedRegularTrainer.default_hyper_params)
+DistributedRegularTrainer.default_hyper_params.update(DistributedRegularTrainer.extra_hyper_params)

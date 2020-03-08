@@ -8,16 +8,23 @@ Current implementation list:
 
 * SOT
   * [SiamFC++: Towards Robust and Accurate Visual Tracking with Target Estimation Guidelines](https://arxiv.org/abs/1911.06188) [[demo]](https://www.youtube.com/watch?v=TCziWahnXT8&list=PL4KqNq8e6fJkfk35zHRaUd21ExV522JK0&index=4&t=0s&app=desktop)
+
 <div align="center">
   <img src="docs/resources/siamfcpp_ice2.gif" width="800px" />
   <p>Example SiamFC++ outputs.</p>
-</div> 
+</div>
 
 ## Quick start
 
 ### Setup
 
 Please refer to [SETUP.md](docs/SETUP.md)
+### Demo
+
+#### SOT video demo
+```Bash
+python3 ./demo/main/video/sot_video.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml' --device cuda --video $video_path$ #default is web camera
+```
 
 ### Test
 
@@ -65,7 +72,7 @@ Please refer to [docs/TRAINING.md](docs/TRAINING.md) for detail.
 │   │   ├── dataloader.py  # data loading procedure
 │   │   └── transformer  # data augmentation
 │   ├── engine  # procedure controller, including traiing control / hp&model loading
-│   │   ├── hook  # hook for tasks during training, including visualization / logging / benchmarking
+│   │   ├── monitor  # monitor for tasks during training, including visualization / logging / benchmarking
 │   │   ├── trainer.py  # train a epoch
 │   │   ├── tester.py  # test a model on a benchmark
 │   ├── model # model builder

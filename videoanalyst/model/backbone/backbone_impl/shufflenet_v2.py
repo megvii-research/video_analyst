@@ -7,6 +7,7 @@ import torch.nn as nn
 
 from ...module_base import ModuleBase
 from ..backbone_base import TRACK_BACKBONES, VOS_BACKBONES
+from videoanalyst.utils import md5sum
 
 # from torchvision.models.utils import load_state_dict_from_url
 
@@ -45,6 +46,8 @@ class ShuffleNetV2_x1_0(ModuleBase):
             self._model.load_state_dict(state_dict, strict=False)
             logger.info("Load pretrained ShuffleNet parameters from: %s" %
                         model_file)
+            logger.info("Check md5sum of pretrained ShuffleNet parameters: %s" %
+                        md5sum(model_file))
 
         # for k in self._model.state_dict():
         #     print(k)
@@ -89,6 +92,9 @@ class ShuffleNetV2_x0_5(ModuleBase):
             self._model.load_state_dict(state_dict, strict=False)
             logger.info("Load pretrained ShuffleNet parameters from: %s" %
                         model_file)
+            logger.info("Check md5sum of pretrained ShuffleNet parameters: %s" %
+                        md5sum(model_file))
+
 
     def forward(self, x):
         x = self._model(x)

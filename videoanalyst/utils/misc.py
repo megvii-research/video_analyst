@@ -1,6 +1,7 @@
 import logging
 import time
 from typing import Dict
+import hashlib
 
 from yacs.config import CfgNode as CN
 
@@ -107,3 +108,20 @@ class Timer():
         if self.verbose:
             print_str = '%s elapsed time: %f' % (self.name, elapsed_time)
             self.logger.info(print_str)
+
+def md5sum(file_path) -> str:
+    """Get md5sum string
+    
+    Parameters
+    ----------
+    file_path : str
+        path to file to calculate md5sum
+    
+    Returns
+    -------
+    str
+        md5 value string in hex
+    """
+    with open(file_path, "rb") as f:
+        md5sum_str = hashlib.md5(f.read()).hexdigest()
+    return md5sum_str

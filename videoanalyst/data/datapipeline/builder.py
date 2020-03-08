@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Dict
+from typing import Dict, List
 
 from yacs.config import CfgNode
 
@@ -47,8 +47,8 @@ def build(task: str, cfg: CfgNode, seed: int = 0) -> DatapipelineBase:
     return module
 
 
-def get_config() -> Dict[str, CfgNode]:
-    cfg_dict = {name: CfgNode() for name in TASK_DATAPIPELINES.keys()}
+def get_config(task_list: List) -> Dict[str, CfgNode]:
+    cfg_dict = {name: CfgNode() for name in task_list}
 
     for cfg_name, modules in TASK_DATAPIPELINES.items():
         cfg = cfg_dict[cfg_name]
@@ -62,7 +62,7 @@ def get_config() -> Dict[str, CfgNode]:
                 cfg[name][hp_name] = hps[hp_name]
 
         cfg["submodules"] = CfgNode()
-        cfg["submodules"] = get_filter_cfg()[cfg_name]
-        cfg["submodules"] = get_dataset_cfg()[cfg_name]
+        cfg["submodules"] = get_filter_cfg(task_list)[cfg_name]
+        cfg["submodules"] = get_dataset_cfg(task_list)[cfg_name]
 
     return cfg_dict

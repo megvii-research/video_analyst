@@ -40,8 +40,8 @@ def build(task: str, cfg: CfgNode) -> List[MonitorBase]:
     return monitors
 
 
-def get_config() -> Dict[str, CfgNode]:
-    cfg_dict = {name: CfgNode() for name in TASK_MONITORS.keys()}
+def get_config(task_list) -> Dict[str, CfgNode]:
+    cfg_dict = {name: CfgNode() for name in task_list}
 
     for cfg_name, modules in TASK_MONITORS.items():
         cfg = cfg_dict[cfg_name]

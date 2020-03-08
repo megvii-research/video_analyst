@@ -39,7 +39,7 @@ class TrackInfo(MonitorBase):
     def update(self, engine_data: Dict):
         r"""
         """
-        # etate
+        # state
         engine_state = self._state["engine_state"]
         # data
         schedule_info = engine_data["schedule_info"]

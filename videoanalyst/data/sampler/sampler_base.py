@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from abc import ABCMeta
-from typing import List
+from typing import List, Dict
 
 import cv2 as cv
 import numpy as np
@@ -48,7 +48,7 @@ class SamplerBase:
         self.datasets = datasets
         self._state["rng"] = np.random.RandomState(seed)
 
-    def get_hps(self) -> dict:
+    def get_hps(self) -> Dict:
         r"""
         Getter function for hyper-parameters
 
@@ -59,7 +59,7 @@ class SamplerBase:
         """
         return self._hyper_params
 
-    def set_hps(self, hps: dict) -> None:
+    def set_hps(self, hps: Dict) -> None:
         r"""
         Set hyper-parameters
 
@@ -77,7 +77,7 @@ class SamplerBase:
         r"""
         an interface for update params
         """
-    def __next__(self) -> dict:
+    def __getitem__(self, item) -> Dict:
         r"""
         An interface to sample data
         """

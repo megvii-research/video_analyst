@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from typing import Dict
+from typing import Dict, List
 
 from yacs.config import CfgNode
 
@@ -31,8 +31,8 @@ def build(task: str, cfg: CfgNode) -> TargetBase:
     return module
 
 
-def get_config() -> Dict[str, CfgNode]:
-    cfg_dict = {name: CfgNode() for name in TASK_TARGETS.keys()}
+def get_config(task_list: List) -> Dict[str, CfgNode]:
+    cfg_dict = {name: CfgNode() for name in task_list}
 
     for cfg_name, modules in TASK_TARGETS.items():
         cfg = cfg_dict[cfg_name]
