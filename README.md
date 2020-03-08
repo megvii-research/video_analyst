@@ -19,6 +19,12 @@ Current implementation list:
 ### Setup
 
 Please refer to [SETUP.md](docs/SETUP.md)
+### Demo
+
+#### SOT video demo
+```Bash
+python3 ./demo/main/video/sot_video.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml' --device cuda --video $video_path$ #default is web camera
+```
 
 ### Test
 
