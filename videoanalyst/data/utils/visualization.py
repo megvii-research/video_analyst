@@ -22,7 +22,9 @@ def show_img_FCOS(cfg,
         training_data["box_gt"]
     ]
     gt_datas = [tensor_to_numpy(t) for t in gt_datas]
-    gt_target = np.concatenate(gt_datas, axis=1)
+    gt_target = np.concatenate(gt_datas, axis=-1)
+    if gt_target.ndim == 3:
+        gt_target = gt_target[0]
 
     total_stride = cfg.total_stride
     score_size = cfg.score_size
