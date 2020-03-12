@@ -176,12 +176,12 @@ train:
             "end_lr": 0.000001,
             "max_epoch": 19
             }
-          lr_multiplier:
+          lr_multiplier: # ration for training from scratch
           - >
             {
             "name": "backbone",
             "regex": "basemodel",
-            "ratio": 0.1
+            "ratio": 1
             }
           - >
             {
