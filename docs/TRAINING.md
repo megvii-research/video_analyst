@@ -48,6 +48,8 @@ Nota: _-W ignore_ neglects warning to ensure the program exits normally so that 
 
 As reported in several issues (e.g. [Training performance degrades with DistributedDataParallel](https://discuss.pytorch.org/t/training-performance-degrades-with-distributeddataparallel/47152) / [DDP on 8 gpu work much worse then on single](https://discuss.pytorch.org/t/ddp-on-8-gpu-work-much-worse-then-on-single/63358) / [Performance degrades with DataParallel](https://discuss.pytorch.org/t/performance-degrades-with-dataparallel/57452)) and based on our observation, using DDP in a plug-in-and-play way may cause performance degradation. Here we report our results with DDP:
 
+1xlr of DP
+
 | Exp | Pipeline | Dataset | AO (DP)(*) | AO (DDP)(+) | Diff. | Hardware |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | alexnet | SiamFCppTracker | GOT-10k-val | 72.2 | 71.9 | -0.3 | 2080ti |
@@ -58,6 +60,19 @@ As reported in several issues (e.g. [Training performance degrades with Distribu
 | shufflenetv2x0_5 | SiamFCppTracker | GOT-10k-test | 53.1 | 53.0 | -0.1 | 2080ti |
 | shufflenetv2x1_0 | SiamFCppTracker | GOT-10k-val | 76.1 | 75.2 | -0.9 | 2080ti |
 | shufflenetv2x1_0 | SiamFCppTracker | GOT-10k-test | 55.6 | 55.7 | +0.1 | 2080ti |
+
+2xlr of DP
+
+| Exp | Pipeline | Dataset | AO (DP)(*) | AO (DDP)(+) | Diff. | Hardware |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| alexnet | SiamFCppTracker | GOT-10k-val | 72.2 | 73.0 | +0.8 | 2080ti |
+| alexnet | SiamFCppTracker | GOT-10k-test | 53.1 | 53.8 | +0.7 | 2080ti |
+| googlenet | SiamFCppTracker | GOT-10k-val | 76.3 | 75.9 | -0.4 | 2080ti |
+| googlenet | SiamFCppTracker | GOT-10k-test | 60.0 | 59.5 | -0.5 | 2080ti |
+| shufflenetv2x0_5 | SiamFCppTracker | GOT-10k-val | 73.1 | 72.3 | -0.8 | 2080ti |
+| shufflenetv2x0_5 | SiamFCppTracker | GOT-10k-test | 53.1 | 53.0 | -0.1 | 2080ti |
+| shufflenetv2x1_0 | SiamFCppTracker | GOT-10k-val | 76.1 | 76.7 | +0.5 | 2080ti |
+| shufflenetv2x1_0 | SiamFCppTracker | GOT-10k-test | 55.6 | 57.1 | +1.5 | 2080ti |
 
 * (*): AO (DP) reported here comes from the average reported in the following _Stability_ section .
 * (+): AO (DDP) reported here are performance of a single training of each experiment. Average level need to be determined with more training trials further.

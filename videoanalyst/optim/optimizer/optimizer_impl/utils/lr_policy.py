@@ -25,7 +25,7 @@ Visulize scheduled LR
     lr_scheduler = ListLR(LinearLR(start_lr=1e-6, end_lr=1e-1, max_epoch=5, max_iter=5000),
                           ExponentialLR(start_lr=1e-1, end_lr=1e-4, max_epoch=15, max_iter=5000))
     plot_LR(lr_scheduler, 'Exponential decay with warmup')
-See the bottom of code for more plot examples.
+See the bottom of code for more plot examples, together with some exmples for .yaml configuration files (commented part).
 """
 
 import json
@@ -121,7 +121,7 @@ class ListLR(BaseLR):
 class MultiStageLR(BaseLR):
     """ Multi-stage learning rate scheduler
     """
-    def __init__(self, lr_stages):
+    def __init__(self, lr_stages, **kwargs):
         """
         :param lr_stages: list, [(milestone1, lr1), (milestone2, lr2), ...]
         """
@@ -246,23 +246,98 @@ if __name__ == '__main__':
         LinearLR(start_lr=1e-6, end_lr=1e-1, max_epoch=5, max_iter=5000),
         LinearLR(start_lr=1e-1, end_lr=1e-4, max_epoch=15, max_iter=5000))
     plot_LR(lr_scheduler, 'Linear decay with warmup')
+    # Example for .yaml configuration file
+    # =========
+    # lr_policy:
+    # - >
+    # {
+    # "name": "LinearLR",
+    # "start_lr": 0.000001,
+    # "end_lr": 0.01,
+    # "max_epoch": 5
+    # }
+    # - >
+    # {
+    # "name": "LinearLR",
+    # "start_lr": 0.01,
+    # "end_lr": 0.0001,
+    # "max_epoch": 15
+    # }
 
     lr_scheduler = ListLR(
         LinearLR(start_lr=1e-6, end_lr=1e-1, max_epoch=5, max_iter=5000),
         ExponentialLR(start_lr=1e-1, end_lr=1e-4, max_epoch=15, max_iter=5000))
     plot_LR(lr_scheduler, 'Exponential decay with warmup')
+    # Example for .yaml configuration file
+    # =========
+    # lr_policy:
+    # - >
+    # {
+    # "name": "LinearLR",
+    # "start_lr": 0.000001,
+    # "end_lr": 0.1,
+    # "max_epoch": 5
+    # }
+    # - >
+    # {
+    # "name": "LinearLR",
+    # "start_lr": 0.1,
+    # "end_lr": 0.0001,
+    # "max_epoch": 15
+    # }
 
     lr_scheduler = ListLR(
         LinearLR(start_lr=1e-6, end_lr=1e-1, max_epoch=5, max_iter=5000),
         CosineLR(start_lr=1e-1, end_lr=1e-4, max_epoch=15, max_iter=5000))
     plot_LR(lr_scheduler, 'Cosine annealing with warmup')
+    # Example for .yaml configuration file
+    # =========
+    # lr_policy:
+    # - >
+    # {
+    # "name": "LinearLR",
+    # "start_lr": 0.000001,
+    # "end_lr": 0.1,
+    # "max_epoch": 5
+    # }
+    # - >
+    # {
+    # "name": "CosineLR",
+    # "start_lr": 0.1,
+    # "end_lr": 0.0001,
+    # "max_epoch": 15
+    # }
 
     lr_scheduler = ListLR(LinearLR(start_lr=1e-6, end_lr=1e-1, max_epoch=5, max_iter=5000)) + \
                    ListLR(ExponentialLR(start_lr=1e-1, end_lr=1e-4, max_epoch=15, max_iter=5000))
     plot_LR(lr_scheduler, 'Exponential decay with warmup')
+    # Example for .yaml configuration file
+    # =========
+    # lr_policy:
+    # - >
+    # {
+    # "name": "LinearLR",
+    # "start_lr": 0.000001,
+    # "end_lr": 0.1,
+    # "max_epoch": 5
+    # }
+    # - >
+    # {
+    # "name": "ExponentialLR",
+    # "start_lr": 0.1,
+    # "end_lr": 0.0001,
+    # "max_epoch": 15
+    # }
 
     lr_scheduler = MultiStageLR([(10, 0.1), (40, 0.01), (70, 0.001),
                                  (120, 0.0001)])
     plot_LR(lr_scheduler, 'Step decay')
-
+    # Example for .yaml configuration file
+    # =========
+    # lr_policy:
+    # ->
+    # {
+    # "name": "MultiStageLR",
+    # "lr_stages": [[10, 0.1], [40, 0.01], [70, 0.001], [120, 0.0001]]
+    # }
     # from IPython import embed;embed()

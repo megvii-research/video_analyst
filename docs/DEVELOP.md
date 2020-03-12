@@ -123,3 +123,28 @@ Names of currently used loggers are listed as below:
 - data
   - built at: videoanalyst/data/builder.py
   - log file by default stored at: snapshots/EXP_NAME/logs/data.log
+
+## Tips for debugging
+
+### Debugging in-tree files
+
+For debugging / unit testing purpose, insert following code at the beginning of the source code.
+
+Note that it requires that the file to debug should not have relative import code. (Thus we always encourage absolute import)
+
+```Python
+import os.path as osp
+
+import sys  # isort:skip
+
+module_name = "videoanalyst"
+p = __file__
+while osp.basename(p) != module_name:
+    p = osp.dirname(p)
+
+ROOT_PATH = osp.dirname(p)
+ROOT_CFG = osp.join(ROOT_PATH, 'config.yaml')
+sys.path.insert(0, ROOT_PATH)  # isort:skip
+```
+
+You can check out this code in many _path.py_ files in this project.
