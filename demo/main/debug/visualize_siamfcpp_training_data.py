@@ -36,7 +36,7 @@ logger = logging.getLogger('global')
 def make_parser():
     parser = argparse.ArgumentParser(description='Test')
     parser.add_argument('--config',
-                        default='',
+                        default='experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml',
                         type=str,
                         help='path to experiment configuration')
     # parser.add_argument('--resume-from-epoch',
