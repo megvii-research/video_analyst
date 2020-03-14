@@ -9,13 +9,12 @@ from yacs.config import CfgNode
 import torch
 from torch import nn
 
-from ..grad_modifier_base import (TRACK_GRAD_MODIFIERS, VOS_GRAD_MODIFIERS,
+from ..grad_modifier_base import (GRAD_MODIFIERS, 
                                   GradModifierBase)
 from .utils.freeze import apply_freeze_schedule
 
 
-@TRACK_GRAD_MODIFIERS.register
-@VOS_GRAD_MODIFIERS.register
+@GRAD_MODIFIERS.register
 class DynamicFreezer(GradModifierBase):
     r"""
     Learning rate scheduler, including:

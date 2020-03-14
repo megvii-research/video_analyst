@@ -15,18 +15,10 @@ from videoanalyst.utils import Registry
 
 from .optimizer_impl.utils.lr_multiply import build as build_lr_multiplier
 from .optimizer_impl.utils.lr_multiply import multiply_lr
-# from ..scheduler.scheduler_base import SchedulerBase
 from .optimizer_impl.utils.lr_policy import build as build_lr_policy
 from .optimizer_impl.utils.lr_policy import schedule_lr
 
-TRACK_OPTIMIZERS = Registry('TRACK_OPTIMIZERS')
-VOS_OPTIMIZERS = Registry('VOS_OPTIMIZERS')
-
-TASK_OPTIMIZERS = dict(
-    track=TRACK_OPTIMIZERS,
-    vos=VOS_OPTIMIZERS,
-)
-
+OPTIMIZERS = Registry('OPTIMIZERS')
 
 class OptimizerBase:
     __metaclass__ = ABCMeta
