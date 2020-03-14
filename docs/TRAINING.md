@@ -48,6 +48,8 @@ Nota: _-W ignore_ neglects warning to ensure the program exits normally so that 
 
 As reported in several issues (e.g. [Training performance degrades with DistributedDataParallel](https://discuss.pytorch.org/t/training-performance-degrades-with-distributeddataparallel/47152) / [DDP on 8 gpu work much worse then on single](https://discuss.pytorch.org/t/ddp-on-8-gpu-work-much-worse-then-on-single/63358) / [Performance degrades with DataParallel](https://discuss.pytorch.org/t/performance-degrades-with-dataparallel/57452)) and based on our observation, using DDP in a plug-in-and-play way may cause performance degradation. Here we report our results with DDP:
 
+1xlr of DP
+
 | Exp | Pipeline | Dataset | AO (DP)(*) | AO (DDP)(+) | Diff. | Hardware |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | alexnet | SiamFCppTracker | GOT-10k-val | 72.2 | 71.9 | -0.3 | 2080ti |
@@ -58,6 +60,19 @@ As reported in several issues (e.g. [Training performance degrades with Distribu
 | shufflenetv2x0_5 | SiamFCppTracker | GOT-10k-test | 53.1 | 53.0 | -0.1 | 2080ti |
 | shufflenetv2x1_0 | SiamFCppTracker | GOT-10k-val | 76.1 | 75.2 | -0.9 | 2080ti |
 | shufflenetv2x1_0 | SiamFCppTracker | GOT-10k-test | 55.6 | 55.7 | +0.1 | 2080ti |
+
+2xlr of DP
+
+| Exp | Pipeline | Dataset | AO (DP)(*) | AO (DDP)(+) | Diff. | Hardware |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| alexnet | SiamFCppTracker | GOT-10k-val | 72.2 | 73.0 | +0.8 | 2080ti |
+| alexnet | SiamFCppTracker | GOT-10k-test | 53.1 | 53.8 | +0.7 | 2080ti |
+| googlenet | SiamFCppTracker | GOT-10k-val | 76.3 | 75.9 | -0.4 | 2080ti |
+| googlenet | SiamFCppTracker | GOT-10k-test | 60.0 | 59.5 | -0.5 | 2080ti |
+| shufflenetv2x0_5 | SiamFCppTracker | GOT-10k-val | 73.1 | 72.3 | -0.8 | 2080ti |
+| shufflenetv2x0_5 | SiamFCppTracker | GOT-10k-test | 53.1 | 53.0 | -0.1 | 2080ti |
+| shufflenetv2x1_0 | SiamFCppTracker | GOT-10k-val | 76.1 | 76.7 | +0.5 | 2080ti |
+| shufflenetv2x1_0 | SiamFCppTracker | GOT-10k-test | 55.6 | 57.1 | +1.5 | 2080ti |
 
 * (*): AO (DP) reported here comes from the average reported in the following _Stability_ section .
 * (+): AO (DDP) reported here are performance of a single training of each experiment. Average level need to be determined with more training trials further.
@@ -94,11 +109,27 @@ Several indexes related to training process have been listed in the table bellow
 |siamfcpp-googlenet| 128 | 64 | 32 | 4 |20min/epoch for epoch 0-9; 24min/epoch for epoch 10-19 | 1.01it/s for epoch 0-9; 1.25s/it for epoch 10-19|
 |siamfcpp-shufflenetv2x1_0| 32 | 32 | 32 | 4 |40min/epoch for epoch 0-19| 5it/s for epoch 0-19 |
 
+## Issues with PyTorch Version
+
+### TL;DR
+
+Enlarging learning rate by 2 times while moving from PyTorch==1.1.0 & CUDA==10.0 to PyTorch==1.4.0 & CUDA==10.1
+
+### Description
+
+We empirically found that the learning rate need to be multiplied by two (0.04->0.08 for SiamFC++ (SOT)) in order to yield the same trainig results (verified on GOT-10k) while moving from PyTorch==1.1.0 & CUDA==10.0 to PyTorch==1.4.0 & CUDA==10.1.
+
+We encourage to use PyTorch==1.4.0 & CUDA==10.1, although the reproduction of some inference results (mainly the VOT results) still require previous version at this point. We plan to update them to be compatible with the latest PyTorch&CUDA.
+
+The default yaml configuration files have been updated for that.
+
 ## Stability
 
 Stability test has been conducted on GOT-10k benchmark for our experiments (alexnet/googlenet/shufflenetv2x0.5/shufflenetv2x1.0). Concretely, for each experiment, we train on four different (virtual) PC and perform benchmarking on _val_ and _test_ subsets.
 
 Results are listed as follows and they shall serve as reference for reproduction of the experiments by users of this code base.
+
+__Environment__: PyTorch==1.1.0 & CUDA==10.0
 
 ### alexnet
 

@@ -19,10 +19,11 @@ def imarray_to_tensor(arr):
 def tensor_to_imarray(t):
     r"""
     Perform naive detach / cpu / numpy process and then transpose
+    cast dtype to np.uint8
     :param t: torch.Tensor, (1, C, H, W)
     :return: numpy.array, (H, W, C)
     """
-    arr = t.detach().cpu().numpy()
+    arr = t.detach().cpu().numpy().astype(np.uint8)
     if arr.ndim == 4:
         arr = arr[0]
     return arr.transpose(1, 2, 0)
