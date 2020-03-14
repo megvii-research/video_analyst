@@ -11,6 +11,8 @@ ____Major changes____
   * Update requirements.txt
 * Add tinyconv training configuration
   * _experiments/siamfcpp/train/siamfcpp_tinyconv-trn.yaml_
+* Add dataloader visualization tools for SiamFC++ (SOT)
+  * _demo/main/debug/visualize_siamfcpp_training_data.py_
 
 ## 2020/03/07
 

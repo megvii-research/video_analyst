@@ -148,3 +148,18 @@ sys.path.insert(0, ROOT_PATH)  # isort:skip
 ```
 
 You can check out this code in many _path.py_ files in this project.
+
+### Visualization tools
+
+Check it out under [visualize_siamfcpp_training_data.py](demo/main/debug/visualize_siamfcpp_training_data.py).
+
+```Bash
+python demo/main/debug/visualize_siamfcpp_training_data.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml'
+```
+
+__Nota__: make sure that X-Server is able to run on your terminal's side.
+
+- Windows: [VcXsrv Windows X Server](http://vcxsrv.sourceforge.net/) or [MobaXterm](https://mobaxterm.mobatek.net/)
+- Linux: just connect to your server with argument "-X": _ssh –X_
+- MacOS: [XQuartz](https://www.xquartz.org/)
+
