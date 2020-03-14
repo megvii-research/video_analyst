@@ -6,8 +6,7 @@ from yacs.config import CfgNode
 
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.pipeline.pipeline_base import PIPELINES
-
-# from videoanalyst.model.module_base import TrackerBase
+from videoanalyst.utils import merge_cfg_into_hps
 
 logger = logging.getLogger(__file__)
 
@@ -35,11 +34,7 @@ def build(task: str, cfg: CfgNode, model: ModuleBase):
     pipeline_name = cfg.name
     pipeline = pipelines[pipeline_name](model)
     hps = pipeline.get_hps()
-
-    for hp_name in hps:
-        if hp_name in cfg[pipeline_name]:
-            new_value = cfg[pipeline_name][hp_name]
-            hps[hp_name] = new_value
+    hps = merge_cfg_into_hps(cfg[pipeline_name], hps)
     pipeline.set_hps(hps)
     pipeline.update_params()
 

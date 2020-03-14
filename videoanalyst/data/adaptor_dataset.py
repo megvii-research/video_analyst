@@ -56,9 +56,5 @@ class AdaptorDataset(Dataset):
 
         return training_data
 
-
-'''
-
     def __len__(self):
         return self.nr_image_per_epoch * self.num_epochs
-'''

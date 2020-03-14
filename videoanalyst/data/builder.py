@@ -59,7 +59,8 @@ def build(task: str, cfg: CfgNode, seed: int = 0) -> DataLoader:
             world_size = 1
         # build real dataset
         logger.info("Build real AdaptorDataset")
-        py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
+        py_dataset = AdaptorDataset(task,
+                                    cfg,
                                     num_epochs=cfg.num_epochs,
                                     nr_image_per_epoch=cfg.nr_image_per_epoch *
                                     world_size)
