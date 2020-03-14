@@ -23,9 +23,13 @@ if __name__ == "__main__":
     cv2.rectangle(im_, search_bbox[:2], search_bbox[2:], color["search"])
     font_size = 0.5
     font_width = 1
-    cv2.putText(im_, "target box", (20, 20), cv2.FONT_HERSHEY_COMPLEX, font_size, color["target"], font_width)
-    cv2.putText(im_, "template patch region", (20, 40), cv2.FONT_HERSHEY_COMPLEX, font_size, color["template"], font_width)
-    cv2.putText(im_, "search patch region", (20, 60), cv2.FONT_HERSHEY_COMPLEX, font_size, color["search"], font_width)
+    cv2.putText(im_, "target box", (20, 20), cv2.FONT_HERSHEY_COMPLEX,
+                font_size, color["target"], font_width)
+    cv2.putText(im_, "template patch region", (20, 40),
+                cv2.FONT_HERSHEY_COMPLEX, font_size, color["template"],
+                font_width)
+    cv2.putText(im_, "search patch region", (20, 60), cv2.FONT_HERSHEY_COMPLEX,
+                font_size, color["search"], font_width)
 
     cv2.imshow("im_", im_)
 
