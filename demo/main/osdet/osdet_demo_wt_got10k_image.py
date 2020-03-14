@@ -36,12 +36,14 @@ font_size = 0.5
 font_width = 1
 resize_factor = 0.3
 
+
 def make_parser():
     parser = argparse.ArgumentParser(description='Test')
-    parser.add_argument('--config',
-                        default="experiments/osdet/test/siamfcpp_googlenet-osdet.yaml",
-                        type=str,
-                        help='experiment configuration')
+    parser.add_argument(
+        '--config',
+        default="experiments/osdet/test/siamfcpp_googlenet-osdet.yaml",
+        type=str,
+        help='experiment configuration')
     parser.add_argument('--sequence-index',
                         default=0,
                         type=int,
@@ -60,6 +62,7 @@ def make_parser():
                         help='torch.device')
     return parser
 
+
 parser = make_parser()
 parsed_args = parser.parse_args()
 
@@ -75,10 +78,10 @@ task_cfg.freeze()
 # build model
 model = model_builder.build(task, task_cfg.model)
 # build pipeline
-pipeline = pipeline_builder.build(task, task_cfg.pipeline,
-                                            model)
+pipeline = pipeline_builder.build(task, task_cfg.pipeline, model)
 # build dataset
-datasets = dataset_buidler.build(task, root_cfg.train.track.data.sampler.submodules.dataset)
+datasets = dataset_buidler.build(
+    task, root_cfg.train.track.data.sampler.submodules.dataset)
 dataset = datasets[0]
 
 dev = torch.device(parsed_args.device)
@@ -100,11 +103,18 @@ if __name__ == "__main__":
     pipeline.init(im, rect)
 
     bbox = tuple(map(int, bbox))
-    cv2.rectangle(im, bbox[:2], bbox[2:], color["target"], thickness=bbox_thickness)
-    cv2.rectangle(im, (0, 0), (im.shape[1]-1, im.shape[0]-1) , color["border"], thickness=10)
+    cv2.rectangle(im,
+                  bbox[:2],
+                  bbox[2:],
+                  color["target"],
+                  thickness=bbox_thickness)
+    cv2.rectangle(im, (0, 0), (im.shape[1] - 1, im.shape[0] - 1),
+                  color["border"],
+                  thickness=10)
 
     im = cv2.resize(im, (0, 0), fx=resize_factor, fy=resize_factor)
-    im = cv2.putText(im, "template frame", (20, 20), cv2.FONT_HERSHEY_COMPLEX, font_size, color["target"], font_width)
+    im = cv2.putText(im, "template frame", (20, 20), cv2.FONT_HERSHEY_COMPLEX,
+                     font_size, color["target"], font_width)
     # cv2.imshow("im", im)
 
     im_search = search_frame['image']
@@ -117,15 +127,29 @@ if __name__ == "__main__":
     bbox_pred = tuple(map(int, bbox_pred))
 
     im_ = im_search
-    cv2.rectangle(im_, bbox_gt[:2], bbox_gt[2:], color["target"], thickness=bbox_thickness)
-    cv2.rectangle(im_, bbox_pred[:2], bbox_pred[2:], color["pred"], thickness=bbox_thickness)
-    cv2.rectangle(im_, (0, 0), (im_.shape[1]-1, im_.shape[0]-1) , color["border"], thickness=10)
+    cv2.rectangle(im_,
+                  bbox_gt[:2],
+                  bbox_gt[2:],
+                  color["target"],
+                  thickness=bbox_thickness)
+    cv2.rectangle(im_,
+                  bbox_pred[:2],
+                  bbox_pred[2:],
+                  color["pred"],
+                  thickness=bbox_thickness)
+    cv2.rectangle(im_, (0, 0), (im_.shape[1] - 1, im_.shape[0] - 1),
+                  color["border"],
+                  thickness=10)
 
     im_ = cv2.resize(im_, (0, 0), fx=resize_factor, fy=resize_factor)
 
-    im_ = cv2.putText(im_, "ground-truth box", (20, 20), cv2.FONT_HERSHEY_COMPLEX, font_size, color["target"], font_width)
-    im_ = cv2.putText(im_, "predicted box", (20, 40), cv2.FONT_HERSHEY_COMPLEX, font_size, color["pred"], font_width)
-    im_ = cv2.putText(im_, "image border", (20, 60), cv2.FONT_HERSHEY_COMPLEX, font_size, color["border"], font_width)
+    im_ = cv2.putText(im_, "ground-truth box", (20, 20),
+                      cv2.FONT_HERSHEY_COMPLEX, font_size, color["target"],
+                      font_width)
+    im_ = cv2.putText(im_, "predicted box", (20, 40), cv2.FONT_HERSHEY_COMPLEX,
+                      font_size, color["pred"], font_width)
+    im_ = cv2.putText(im_, "image border", (20, 60), cv2.FONT_HERSHEY_COMPLEX,
+                      font_size, color["border"], font_width)
     im_pred = im_
     # cv2.imshow("im_pred", im_pred)
 
@@ -133,4 +157,5 @@ if __name__ == "__main__":
     cv2.imshow("im_concat", im_concat)
     cv2.waitKey(0)
 
-    from IPython import embed;embed()
+    from IPython import embed
+    embed()

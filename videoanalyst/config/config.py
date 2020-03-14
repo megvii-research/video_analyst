@@ -37,7 +37,7 @@ for task in task_list:
     train_cfg[task]["pipeline"] = get_pipeline_cfg(task_list)[task]
     train_cfg[task]["tester"] = get_tester_cfg(task_list)[task]
     train_cfg[task]["data"] = get_data_cfg(task_list)[task]
-    train_cfg[task]["optim"] = get_optim_cfg(task_list)[task]
+    train_cfg[task]["optim"] = get_optim_cfg()
     train_cfg[task]["trainer"] = get_trainer_cfg(task_list)[task]
 
 

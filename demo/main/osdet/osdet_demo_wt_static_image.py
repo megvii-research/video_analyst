@@ -32,12 +32,14 @@ color = dict(
 font_size = 0.5
 font_width = 1
 
+
 def make_parser():
     parser = argparse.ArgumentParser(description='Test')
-    parser.add_argument('--config',
-                        default="experiments/osdet/test/siamfcpp_googlenet-osdet.yaml",
-                        type=str,
-                        help='experiment configuration')
+    parser.add_argument(
+        '--config',
+        default="experiments/osdet/test/siamfcpp_googlenet-osdet.yaml",
+        type=str,
+        help='experiment configuration')
     parser.add_argument('--shift-x',
                         default=0.5,
                         type=float,
@@ -51,6 +53,7 @@ def make_parser():
                         type=str,
                         help='torch.device')
     return parser
+
 
 parser = make_parser()
 parsed_args = parser.parse_args()
@@ -67,8 +70,7 @@ task_cfg.freeze()
 # build model
 model = model_builder.build(task, task_cfg.model)
 # build pipeline
-pipeline = pipeline_builder.build(task, task_cfg.pipeline,
-                                            model)
+pipeline = pipeline_builder.build(task, task_cfg.pipeline, model)
 
 dev = torch.device(parsed_args.device)
 pipeline.to_device(dev)
@@ -79,7 +81,7 @@ if __name__ == "__main__":
 
     im_size = np.array((im.shape[1], im.shape[0]), dtype=np.float)
     crop_pos = np.array([parsed_args.shift_x, parsed_args.shift_y])
-    im_shift = get_subwindow(im, im_size*crop_pos, im_size, im_size)
+    im_shift = get_subwindow(im, im_size * crop_pos, im_size, im_size)
 
     rect_pred = pipeline.update(im_shift)
     bbox_pred = xywh2xyxy(rect_pred)
@@ -88,14 +90,20 @@ if __name__ == "__main__":
     im_ = im_shift
     cv2.rectangle(im_, bbox[:2], bbox[2:], color["target"])
     cv2.rectangle(im_, bbox_pred[:2], bbox_pred[2:], color["pred"])
-    cv2.rectangle(im_, (0, 0), (im.shape[1]-1, im.shape[0]-1) , color["border"], thickness=10)
+    cv2.rectangle(im_, (0, 0), (im.shape[1] - 1, im.shape[0] - 1),
+                  color["border"],
+                  thickness=10)
 
-    cv2.putText(im_, "original box", (20, 20), cv2.FONT_HERSHEY_COMPLEX, font_size, color["target"], font_width)
-    cv2.putText(im_, "predicted box", (20, 40), cv2.FONT_HERSHEY_COMPLEX, font_size, color["pred"], font_width)
-    cv2.putText(im_, "image border", (20, 60), cv2.FONT_HERSHEY_COMPLEX, font_size, color["border"], font_width)
+    cv2.putText(im_, "original box", (20, 20), cv2.FONT_HERSHEY_COMPLEX,
+                font_size, color["target"], font_width)
+    cv2.putText(im_, "predicted box", (20, 40), cv2.FONT_HERSHEY_COMPLEX,
+                font_size, color["pred"], font_width)
+    cv2.putText(im_, "image border", (20, 60), cv2.FONT_HERSHEY_COMPLEX,
+                font_size, color["border"], font_width)
 
     im_pred = im_
     cv2.imshow("im_pred", im_pred)
     cv2.waitKey(0)
 
-    from IPython import embed;embed()
+    from IPython import embed
+    embed()

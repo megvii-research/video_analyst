@@ -15,7 +15,9 @@ def move_data_to_device(data_dict: Dict, dev: torch.device):
 
 def unwrap_model(model):
     r""" unwrap nn.dataparallel wrapped module for model serialization """
-    return model.module if isinstance(model, (nn.DataParallel, nn.parallel.DistributedDataParallel)) else model
+    return model.module if isinstance(
+        model,
+        (nn.DataParallel, nn.parallel.DistributedDataParallel)) else model
 
 
 def convert_data_to_dtype(data_dict: Dict[str, torch.Tensor],
@@ -40,6 +42,7 @@ def convert_data_to_dtype(data_dict: Dict[str, torch.Tensor],
 
     return data_dict
 
+
 def average_gradients(model):
     r""" Gradient averaging. 
          from https://pytorch.org/tutorials/intermediate/dist_tuto.html
@@ -49,4 +52,3 @@ def average_gradients(model):
     for param in model.parameters():
         dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM)
         param.grad.data /= size
-

@@ -15,17 +15,10 @@ from videoanalyst.utils import Registry
 
 from .optimizer_impl.utils.lr_multiply import build as build_lr_multiplier
 from .optimizer_impl.utils.lr_multiply import multiply_lr
-# from ..scheduler.scheduler_base import SchedulerBase
 from .optimizer_impl.utils.lr_policy import build as build_lr_policy
 from .optimizer_impl.utils.lr_policy import schedule_lr
 
-TRACK_OPTIMIZERS = Registry('TRACK_OPTIMIZERS')
-VOS_OPTIMIZERS = Registry('VOS_OPTIMIZERS')
-
-TASK_OPTIMIZERS = dict(
-    track=TRACK_OPTIMIZERS,
-    vos=VOS_OPTIMIZERS,
-)
+OPTIMIZERS = Registry('OPTIMIZERS')
 
 
 class OptimizerBase:
@@ -37,7 +30,7 @@ class OptimizerBase:
     """
     default_hyper_params = dict(
         minibatch=1,
-        nr_image_per_epoch=1, 
+        nr_image_per_epoch=1,
         num_iterations=1,
         lr_policy=[],
         lr_multiplier=[],
@@ -103,12 +96,13 @@ class OptimizerBase:
         an interface for update params
         """
         # calculate & update iteration number
-        self._hyper_params["num_iterations"] = self._hyper_params["nr_image_per_epoch"] // self._hyper_params["minibatch"]
+        self._hyper_params["num_iterations"] = self._hyper_params[
+            "nr_image_per_epoch"] // self._hyper_params["minibatch"]
         # lr_policy
         lr_policy_cfg = self._hyper_params["lr_policy"]
         if len(lr_policy_cfg) > 0:
-            lr_policy = build_lr_policy(lr_policy_cfg, 
-                                        max_iter=self._hyper_params["num_iterations"])
+            lr_policy = build_lr_policy(
+                lr_policy_cfg, max_iter=self._hyper_params["num_iterations"])
             self._state["lr_policy"] = lr_policy
         # lr_multiplier
         lr_multiplier_cfg = self._hyper_params["lr_multiplier"]

@@ -35,22 +35,22 @@ torch.backends.cudnn.deterministic = True
 
 logger = logging.getLogger('global')
 
+
 def make_parser():
     parser = argparse.ArgumentParser(description='Test')
-    parser.add_argument('--config',
+    parser.add_argument('-cfg',
+                        '--config',
                         default='',
                         type=str,
                         help='path to experiment configuration')
-    parser.add_argument('--resume-from-epoch',
-                        default=-1,
-                        type=int,
-                        help=r"latest completed epoch's number (from which training resumes)")
-    parser.add_argument('--resume-from-file',
-                        default="",
-                        type=str,
-                        help=r"latest completed epoch's snapshot file (from which training resumes)")
+    parser.add_argument(
+        '-r',
+        '--resume',
+        default="",
+        help=r"completed epoch's number, latest or one model path")
 
     return parser
+
 
 def setup(rank: int, world_size: int):
     """Setting-up method to be called in the distributed function
@@ -63,9 +63,12 @@ def setup(rank: int, world_size: int):
         number of porocesses (of the process group)
     """
     os.environ['MASTER_ADDR'] = 'localhost'
-    os.environ['MASTER_PORT'] = '12355'
-    dist.init_process_group("nccl", rank=rank, world_size=world_size)  # initialize the process group
+    os.environ['MASTER_PORT'] = '12356'
+    dist.init_process_group(
+        "nccl", rank=rank,
+        world_size=world_size)  # initialize the process group
     # torch.manual_seed(42)  # same initialized model for every process
+
 
 def cleanup():
     """Cleanup distributed  
@@ -73,8 +76,9 @@ def cleanup():
     """
     dist.destroy_process_group()
 
-def run_dist_training(rank_id : int, world_size: int,
-                      task: str, task_cfg: CfgNode, parsed_args, model):
+
+def run_dist_training(rank_id: int, world_size: int, task: str,
+                      task_cfg: CfgNode, parsed_args, model):
     """method to run on distributed process
        passed to multiprocessing.spawn
     
@@ -97,15 +101,15 @@ def run_dist_training(rank_id : int, world_size: int,
     # model = model_builder.build(task, task_cfg.model)
     # build optimizer
     optimizer = optim_builder.build(task, task_cfg.optim, model)
-    # build dataloader with trainer 
+    # build dataloader with trainer
     with Timer(name="Dataloader building", verbose=True, logger=logger):
         dataloader = dataloader_builder.build(task, task_cfg.data, seed=rank_id)
     # build trainer
     trainer = engine_builder.build(task, task_cfg.trainer, "trainer", optimizer,
                                    dataloader)
-    devs = ["cuda:%d"%rank_id]
+    devs = ["cuda:%d" % rank_id]
     trainer.set_device(devs)
-    trainer.resume(parsed_args.resume_from_epoch, parsed_args.resume_from_file)
+    trainer.resume(parsed_args.resume)
     # trainer.init_train()
     logger.info("Start training")
     while not trainer.is_completed():
@@ -113,9 +117,10 @@ def run_dist_training(rank_id : int, world_size: int,
         if rank_id == 0:
             trainer.save_snapshot()
         dist.barrier()  # one synchronization per epoch
-    
+
     # clean up distributed
     cleanup()
+
 
 if __name__ == '__main__':
     # parsing
@@ -125,7 +130,8 @@ if __name__ == '__main__':
     exp_cfg_path = osp.realpath(parsed_args.config)
     root_cfg.merge_from_file(exp_cfg_path)
     logger.info("Load experiment configuration at: %s" % exp_cfg_path)
-    logger.info("Merged with root_cfg imported from videoanalyst.config.config.cfg")
+    logger.info(
+        "Merged with root_cfg imported from videoanalyst.config.config.cfg")
     # resolve config
     root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.train
@@ -134,10 +140,10 @@ if __name__ == '__main__':
     # backup config
     cfg_bak_dir = osp.join(task_cfg.exp_save, task_cfg.exp_name, "logs")
     ensure_dir(cfg_bak_dir)
-    cfg_bak_file = osp.join(cfg_bak_dir, "%s_bak.yaml"%task_cfg.exp_name)
+    cfg_bak_file = osp.join(cfg_bak_dir, "%s_bak.yaml" % task_cfg.exp_name)
     with open(cfg_bak_file, "w") as f:
         f.write(task_cfg.dump())
-    logger.info("Task configuration backed up at %s"%cfg_bak_file)
+    logger.info("Task configuration backed up at %s" % cfg_bak_file)
     # build dummy dataloader (for dataset initialization)
     with Timer(name="Dummy dataloader building", verbose=True, logger=logger):
         dataloader = dataloader_builder.build(task, task_cfg.data)
@@ -149,7 +155,7 @@ if __name__ == '__main__':
     world_size = task_cfg.num_processes
     torch.multiprocessing.set_start_method('spawn', force=True)
     # spawn trainer process
-    mp.spawn(run_dist_training, 
+    mp.spawn(run_dist_training,
              args=(world_size, task, task_cfg, parsed_args, model),
              nprocs=world_size,
              join=True)

@@ -5,8 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from videoanalyst.pipeline.pipeline_base import PipelineBase
-from videoanalyst.pipeline.tracker.tracker_base import TRACK_PIPELINES
+from videoanalyst.pipeline.pipeline_base import PipelineBase, TRACK_PIPELINES
 from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
                                          get_subwindow_tracking,
                                          imarray_to_tensor, tensor_to_numpy,
@@ -437,5 +436,6 @@ class SiamFCppOneShotDetector(PipelineBase):
         res_w = target_sz[0] * (1 - lr) + pred_in_crop[..., 2] * lr
         res_h = target_sz[1] * (1 - lr) + pred_in_crop[..., 3] * lr
 
-        bbox_in_frame = cxywh2xyxy(np.stack([res_x, res_y, res_w, res_h], axis=1))
+        bbox_in_frame = cxywh2xyxy(
+            np.stack([res_x, res_y, res_w, res_h], axis=1))
         return bbox_in_frame

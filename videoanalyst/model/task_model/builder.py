@@ -5,16 +5,10 @@ from typing import Dict, List
 from yacs.config import CfgNode
 
 from videoanalyst.model.module_base import ModuleBase
-from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
-                                                          VOS_TASKMODELS)
+from videoanalyst.model.task_model.taskmodel_base import TASK_TASKMODELS
 from videoanalyst.utils import merge_cfg_into_hps
 
 logger = logging.getLogger(__file__)
-
-TASK_TASKMODELS = dict(
-    track=TRACK_TASKMODELS,
-    vos=VOS_TASKMODELS,
-)
 
 
 def build(task: str,
@@ -43,10 +37,8 @@ def build(task: str,
     torch.nn.Module
         task module built by builder
     """
-    if task == "track":
-        task_modules = TRACK_TASKMODELS
-    elif task == "vos":
-        task_modules = VOS_TASKMODELS
+    if task in TASK_TASKMODELS:
+        task_modules = TASK_TASKMODELS[task]
     else:
         logger.error("no task model for task {}".format(task))
         exit(-1)
@@ -74,8 +66,7 @@ def get_config(task_list: List) -> Dict[str, CfgNode]:
         config with list of available components
     """
     cfg_dict = {task: CfgNode() for task in task_list}
-    for cfg_name, task_module in zip(["track", "vos"],
-                                     [TRACK_TASKMODELS, VOS_TASKMODELS]):
+    for cfg_name, task_module in TASK_TASKMODELS.items():
         cfg = cfg_dict[cfg_name]
         cfg["name"] = "unknown"
         for name in task_module:

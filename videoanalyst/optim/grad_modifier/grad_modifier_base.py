@@ -10,13 +10,7 @@ from torch import nn, optim
 
 from videoanalyst.utils import Registry
 
-TRACK_GRAD_MODIFIERS = Registry('TRACK_GRAD_MODIFIER')
-VOS_GRAD_MODIFIERS = Registry('VOS_GRAD_MODIFIER')
-
-TASK_GRAD_MODIFIERS = dict(
-    track=TRACK_GRAD_MODIFIERS,
-    vos=VOS_GRAD_MODIFIERS,
-)
+GRAD_MODIFIERS = Registry('GRAD_MODIFIER')
 
 
 class GradModifierBase:

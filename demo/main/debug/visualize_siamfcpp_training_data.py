@@ -20,6 +20,8 @@ from videoanalyst.optim import builder as optim_builder
 from videoanalyst.pipeline import builder as pipeline_builder
 from videoanalyst.utils import Timer, ensure_dir, complete_path_wt_root_in_cfg
 
+from videoanalyst.data.utils.visualization import show_img_FCOS
+
 cv2.setNumThreads(1)
 
 # torch.backends.cudnn.enabled = False
@@ -34,16 +36,19 @@ logger = logging.getLogger('global')
 
 def make_parser():
     parser = argparse.ArgumentParser(description='Test')
-    parser.add_argument('-cfg',
-                        '--config',
-                        default='',
-                        type=str,
-                        help='path to experiment configuration')
     parser.add_argument(
-        '-r',
-        '--resume',
-        default="",
-        help=r"completed epoch's number, latest or one model path")
+        '--config',
+        default='experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml',
+        type=str,
+        help='path to experiment configuration')
+    # parser.add_argument('--resume-from-epoch',
+    #                     default=-1,
+    #                     type=int,
+    #                     help=r"latest completed epoch's number (from which training resumes)")
+    # parser.add_argument('--resume-from-file',
+    #                     default="",
+    #                     type=str,
+    #                     help=r"latest completed epoch's snapshot file (from which training resumes)")
 
     return parser
 
@@ -62,28 +67,22 @@ if __name__ == '__main__':
     root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.train
     task, task_cfg = specify_task(root_cfg)
+    task_cfg.data.num_workers = 1
+    task_cfg.data.sampler.submodules.dataset.GOT10kDataset.check_integrity = False
     task_cfg.freeze()
-    # backup config
-    cfg_bak_dir = osp.join(task_cfg.exp_save, task_cfg.exp_name, "logs")
-    ensure_dir(cfg_bak_dir)
-    cfg_bak_file = osp.join(cfg_bak_dir, "%s_bak.yaml" % task_cfg.exp_name)
-    with open(cfg_bak_file, "w") as f:
-        f.write(task_cfg.dump())
-    logger.info("Task configuration backed up at %s" % cfg_bak_file)
-    # build model
-    model = model_builder.build(task, task_cfg.model)
+
     # load data
     with Timer(name="Dataloader building", verbose=True, logger=logger):
         dataloader = dataloader_builder.build(task, task_cfg.data)
-    # build optimizer
-    optimizer = optim_builder.build(task, task_cfg.optim, model)
-    # build trainer
-    trainer = engine_builder.build(task, task_cfg.trainer, "trainer", optimizer,
-                                   dataloader)
-    trainer.resume(parsed_args.resume)
-    # trainer.init_train()
-    logger.info("Start training")
-    while not trainer.is_completed():
-        trainer.train()
-        trainer.save_snapshot()
-    logger.info("Training completed.")
+
+    for batch_training_data in dataloader:
+        keys = list(batch_training_data.keys())
+        batch_size = len(batch_training_data[keys[0]])
+        training_samples = [{
+            k: v[[idx]]
+            for k, v in batch_training_data.items()
+        } for idx in range(batch_size)]
+        for training_sample in training_samples:
+            # from IPython import embed;embed()
+            target_cfg = task_cfg.data.target
+            show_img_FCOS(target_cfg[target_cfg.name], training_sample)
