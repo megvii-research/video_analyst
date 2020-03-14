@@ -95,11 +95,12 @@ class SiamFCppMultiTempTracker(SiamFCppTracker):
                         imarray_to_tensor(im_x_crop).to(self.device),
                         *(features[ith]),
                         phase=phase_track)
-                fms_x = extra['c_x'], extra['r_x']
+                fms_x = [extra['c_x'], extra['r_x']]
             else:
                 with torch.no_grad():
                     score, box, cls, ctr, extra = self._model(*(features[ith]),
-                                                              *fms_x,
+                                                              fms_x[0],
+                                                              fms_x[1],
                                                               phase=phase_track)
             box = tensor_to_numpy(box[0])
             score = tensor_to_numpy(score[0])[:, 0]
@@ -151,6 +152,9 @@ class SiamFCppMultiTempTracker(SiamFCppTracker):
 
         return new_target_pos, new_target_sz
 
+
+'''
+
     def update(self, im):
         self._state['frame_cnt'] = self._state['frame_cnt'] + 1
 
@@ -174,3 +178,4 @@ SiamFCppMultiTempTracker.default_hyper_params = copy.deepcopy(
     SiamFCppMultiTempTracker.default_hyper_params)
 SiamFCppMultiTempTracker.default_hyper_params.update(
     SiamFCppMultiTempTracker.extra_hyper_params)
+'''

@@ -436,5 +436,6 @@ class SiamFCppOneShotDetector(PipelineBase):
         res_w = target_sz[0] * (1 - lr) + pred_in_crop[..., 2] * lr
         res_h = target_sz[1] * (1 - lr) + pred_in_crop[..., 3] * lr
 
-        bbox_in_frame = cxywh2xyxy(np.stack([res_x, res_y, res_w, res_h], axis=1))
+        bbox_in_frame = cxywh2xyxy(
+            np.stack([res_x, res_y, res_w, res_h], axis=1))
         return bbox_in_frame
