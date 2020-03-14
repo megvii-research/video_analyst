@@ -2,11 +2,21 @@
 
 Date format: YY/MM/DD
 
+## 2020/03/14
+
+____Major changes____
+
+* Update all training configuration
+  * learning rate multiplied by 2 in order to be compatible with PyTorch==1.4.0 & CUDA==10.1
+  * Update requirements.txt
+* Add tinyconv training configuration
+  * _experiments/siamfcpp/train/siamfcpp_tinyconv-trn.yaml_
+
 ## 2020/03/07
 
 ____Major changes____
 
-* add webcam demo
+* Add webcam demo
   * _demo/main/video/sot_video.py_
 
 ## 2020/03/02

@@ -109,11 +109,27 @@ Several indexes related to training process have been listed in the table bellow
 |siamfcpp-googlenet| 128 | 64 | 32 | 4 |20min/epoch for epoch 0-9; 24min/epoch for epoch 10-19 | 1.01it/s for epoch 0-9; 1.25s/it for epoch 10-19|
 |siamfcpp-shufflenetv2x1_0| 32 | 32 | 32 | 4 |40min/epoch for epoch 0-19| 5it/s for epoch 0-19 |
 
+## Issues with PyTorch Version
+
+### TL;DR
+
+Enlarging learning rate by 2 times while moving from PyTorch==1.1.0 & CUDA==10.0 to PyTorch==1.4.0 & CUDA==10.1
+
+### Description
+
+We empirically found that the learning rate need to be multiplied by two (0.04->0.08 for SiamFC++ (SOT)) in order to yield the same trainig results (verified on GOT-10k) while moving from PyTorch==1.1.0 & CUDA==10.0 to PyTorch==1.4.0 & CUDA==10.1.
+
+We encourage to use PyTorch==1.4.0 & CUDA==10.1, although the reproduction of some inference results (mainly the VOT results) still require previous version at this point. We plan to update them to be compatible with the latest PyTorch&CUDA.
+
+The default yaml configuration files have been updated for that.
+
 ## Stability
 
 Stability test has been conducted on GOT-10k benchmark for our experiments (alexnet/googlenet/shufflenetv2x0.5/shufflenetv2x1.0). Concretely, for each experiment, we train on four different (virtual) PC and perform benchmarking on _val_ and _test_ subsets.
 
 Results are listed as follows and they shall serve as reference for reproduction of the experiments by users of this code base.
+
+__Environment__: PyTorch==1.1.0 & CUDA==10.0
 
 ### alexnet
 
