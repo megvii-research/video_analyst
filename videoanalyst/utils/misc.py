@@ -109,6 +109,7 @@ class Timer():
             print_str = '%s elapsed time: %f' % (self.name, elapsed_time)
             self.logger.info(print_str)
 
+
 def md5sum(file_path) -> str:
     """Get md5sum string
     

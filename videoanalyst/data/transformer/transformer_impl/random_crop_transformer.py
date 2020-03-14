@@ -42,8 +42,10 @@ class RandomCropTransformer(TransformerBase):
         data2 = sampled_data["data2"]
         im_temp, bbox_temp = data1["image"], data1["anno"]
         im_curr, bbox_curr = data2["image"], data2["anno"]
-        im_z, bbox_z, im_x, bbox_x = crop_track_pair(im_temp, bbox_temp,
-                                                     im_curr, bbox_curr,
+        im_z, bbox_z, im_x, bbox_x = crop_track_pair(im_temp,
+                                                     bbox_temp,
+                                                     im_curr,
+                                                     bbox_curr,
                                                      config=self._hyper_params,
                                                      rng=self._state["rng"])
 

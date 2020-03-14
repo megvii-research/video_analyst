@@ -65,7 +65,7 @@ def build(cfg: List[str], **kwargs):
     SingleLRs = []
     for phase_cfg in cfg:
         phase_cfg.update(kwargs)
-        policy = LR_POLICIES[phase_cfg["name"]](**phase_cfg) 
+        policy = LR_POLICIES[phase_cfg["name"]](**phase_cfg)
         SingleLRs.append(policy)
 
     LR = ListLR(*SingleLRs)
@@ -175,8 +175,10 @@ class TransitionLR(BaseLR):
     def max_iter(self):
         return self._max_iter
 
+
 def _IDENTITY(x):
     return x
+
 
 @LR_POLICIES.register
 class LinearLR(TransitionLR):
@@ -203,7 +205,7 @@ class CosineLR(TransitionLR):
         self._pre_func = _IDENTITY
         self._trans_func = self._cosine_curve
         self._post_func = _IDENTITY
-    
+
     def _cosine_curve(self, x):
         return (1 - math.cos(x * math.pi)) / 2
 

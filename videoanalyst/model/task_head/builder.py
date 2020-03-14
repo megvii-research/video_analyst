@@ -11,7 +11,6 @@ from videoanalyst.utils import merge_cfg_into_hps
 logger = logging.getLogger(__file__)
 
 
-
 def build(task: str, cfg: CfgNode):
     r"""
     Builder function.

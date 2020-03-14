@@ -53,7 +53,8 @@ class TensorboardLogger(MonitorBase):
         self._hyper_params["log_dir"] = osp.join(
             self._hyper_params["exp_save"],
             self._hyper_params["exp_name"],
-            "logs/tensorboard",)
+            "logs/tensorboard",
+        )
 
     def init(self, engine_state: Dict):
         super(TensorboardLogger, self).init(engine_state)
@@ -65,13 +66,17 @@ class TensorboardLogger(MonitorBase):
         max_epoch = engine_state["max_epoch"]
         iteration = engine_state["iteration"]
         max_iteration = engine_state["max_iteration"]
-        global_step = iteration + epoch*max_iteration
+        global_step = iteration + epoch * max_iteration
 
         # build at first update
         if self._state["writer"] is None:
             self._build_writer(global_step=global_step)
-            logger.info("Tensorboard writer built, starts recording from global_step=%d"%global_step, )
-            logger.info("epoch=%d, max_epoch=%d, iteration=%d, max_iteration=%d"%(epoch, max_epoch, iteration, max_iteration))
+            logger.info(
+                "Tensorboard writer built, starts recording from global_step=%d"
+                % global_step, )
+            logger.info(
+                "epoch=%d, max_epoch=%d, iteration=%d, max_iteration=%d" %
+                (epoch, max_epoch, iteration, max_iteration))
         writer = self._state["writer"]
 
         # traverse engine_data and put to scalar
@@ -83,9 +88,11 @@ class TensorboardLogger(MonitorBase):
         self._state["writer"] = SummaryWriter(
             log_dir=log_dir,
             purge_step=global_step,
-            filename_suffix="",)
+            filename_suffix="",
+        )
 
-    def _add_scalar_recursively(self, writer: SummaryWriter, o, prefix: str, global_step: int):
+    def _add_scalar_recursively(self, writer: SummaryWriter, o, prefix: str,
+                                global_step: int):
         """Recursively add scalar from mapping-like o: tag1/tag2/tag3/...
         
         Parameters
@@ -102,7 +109,7 @@ class TensorboardLogger(MonitorBase):
         if isinstance(o, Mapping):
             for k in o:
                 if len(prefix) > 0:
-                    tag = "%s/%s"%(prefix, k)
+                    tag = "%s/%s" % (prefix, k)
                 else:
                     tag = k
                 self._add_scalar_recursively(writer, o[k], tag, global_step)

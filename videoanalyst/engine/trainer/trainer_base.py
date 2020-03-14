@@ -125,7 +125,8 @@ class TrainerBase:
         save snapshot for current epoch
         """
         epoch = self._state["epoch"]
-        snapshot_dir, snapshot_file = self._infer_snapshot_dir_file_from_epoch(epoch)
+        snapshot_dir, snapshot_file = self._infer_snapshot_dir_file_from_epoch(
+            epoch)
         snapshot_dict = {
             'epoch': epoch,
             'model_state_dict': unwrap_model(self._model).state_dict(),
@@ -137,8 +138,9 @@ class TrainerBase:
             logger.info("retrying")
             torch.save(snapshot_dict, snapshot_file)
         logger.info("Snapshot saved at: %s" % snapshot_file)
-    
-    def _infer_snapshot_dir_file_from_epoch(self, epoch: int) -> Tuple[str, str]:
+
+    def _infer_snapshot_dir_file_from_epoch(self,
+                                            epoch: int) -> Tuple[str, str]:
         r"""Infer snapshot's directory & file path based on self._state & epoch number pased in
 
         Parameters
@@ -159,13 +161,14 @@ class TrainerBase:
     def _get_latest_model_path(self):
         file_dir = self._state["snapshot_dir"]
         file_list = os.listdir(file_dir)
-        file_list = [file_name for file_name in file_list if file_name.endswith("pkl")]
+        file_list = [
+            file_name for file_name in file_list if file_name.endswith("pkl")
+        ]
         if not file_list:
             return "none"
-        file_list.sort(key=lambda fn: os.path.getmtime(osp.join(file_dir,fn)) if not os.path.isdir(osp.join(file_dir,fn)) else 0)
-        return osp.join(file_dir,file_list[-1])
-
-
+        file_list.sort(key=lambda fn: os.path.getmtime(osp.join(file_dir, fn))
+                       if not os.path.isdir(osp.join(file_dir, fn)) else 0)
+        return osp.join(file_dir, file_list[-1])
 
     def resume(self, resume):
         r"""Apply resuming by setting self._state["snapshot_file"]

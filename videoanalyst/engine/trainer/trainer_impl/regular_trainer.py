@@ -68,13 +68,14 @@ class RegularTrainer(TrainerBase):
 
     def update_params(self, ):
         super(RegularTrainer, self).update_params()
-        self._hyper_params["num_iterations"] = self._hyper_params["nr_image_per_epoch"] // self._hyper_params["minibatch"]
+        self._hyper_params["num_iterations"] = self._hyper_params[
+            "nr_image_per_epoch"] // self._hyper_params["minibatch"]
         self._state["devices"] = [
             torch.device(dev) for dev in self._hyper_params["devices"]
         ]
         self._state["snapshot_dir"] = osp.join(self._hyper_params["exp_save"],
                                                self._hyper_params["exp_name"])
-        
+
         self._state["snapshot_file"] = self._hyper_params["snapshot"]
 
     def init_train(self, ):
@@ -166,7 +167,6 @@ class RegularTrainer(TrainerBase):
             del training_data
             print_str = self._state["print_str"]
             pbar.set_description(print_str)
-
 
 
 RegularTrainer.default_hyper_params = copy.deepcopy(

@@ -21,16 +21,21 @@ if _SHARING_STRATETY in torch.multiprocessing.get_all_sharing_strategies():
 
 
 class AdaptorDataset(Dataset):
-    _EXT_SEED_STEP = 30011 # better to be a prime number
+    _EXT_SEED_STEP = 30011  # better to be a prime number
     _SEED_STEP = 10007  # better to be a prime number
     _SEED_DIVIDER = 1000003  # better to be a prime number
-    def __init__(self,
-                 kwargs: Dict = dict(),
-                 num_epochs=1,
-                 nr_image_per_epoch=1,
-                 seed: int = 0):
+
+    def __init__(
+            self,
+            task,
+            cfg,
+            num_epochs=1,
+            nr_image_per_epoch=1,
+            seed: int = 0,
+    ):
         self.datapipeline = None
-        self.kwargs = kwargs
+        self.task = task
+        self.cfg = cfg
         self.num_epochs = num_epochs
         self.nr_image_per_epoch = nr_image_per_epoch
         self.ext_seed = seed
@@ -39,14 +44,21 @@ class AdaptorDataset(Dataset):
         if self.datapipeline is None:
             # build datapipeline with random seed the first time when __getitem__ is called
             # usually, dataset is already spawned (into subprocess) at this point.
-            seed = (torch.initial_seed() + item*self._SEED_STEP + self.ext_seed*self._EXT_SEED_STEP) % self._SEED_DIVIDER
-            self.datapipeline = datapipeline_builder.build(**self.kwargs,
+            seed = (torch.initial_seed() + item * self._SEED_STEP +
+                    self.ext_seed * self._EXT_SEED_STEP) % self._SEED_DIVIDER
+            self.datapipeline = datapipeline_builder.build(self.task,
+                                                           self.cfg,
                                                            seed=seed)
-            logger.info("AdaptorDataset #%d built datapipeline with seed=%d"%(item, seed))
+            logger.info("AdaptorDataset #%d built datapipeline with seed=%d" %
+                        (item, seed))
 
         training_data = self.datapipeline[item]
 
         return training_data
 
+
+'''
+
     def __len__(self):
         return self.nr_image_per_epoch * self.num_epochs
+'''
