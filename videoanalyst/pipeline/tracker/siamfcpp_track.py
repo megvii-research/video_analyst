@@ -5,8 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from videoanalyst.pipeline.pipeline_base import PipelineBase
-from videoanalyst.pipeline.tracker.tracker_base import TRACK_PIPELINES
+from videoanalyst.pipeline.pipeline_base import PipelineBase, TRACK_PIPELINES
 from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
                                          get_subwindow_tracking,
                                          imarray_to_tensor, tensor_to_numpy,
