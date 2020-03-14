@@ -161,13 +161,13 @@ train:
             {
             "name": "LinearLR",
             "start_lr": 0.000001,
-            "end_lr": 0.04,
+            "end_lr": 0.08,
             "max_epoch": 1
             }
           - >
             {
             "name": "CosineLR",
-            "start_lr": 0.04,
+            "start_lr": 0.08,
             "end_lr": 0.000001,
             "max_epoch": 19
             }
