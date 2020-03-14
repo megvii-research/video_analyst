@@ -17,7 +17,7 @@ logger = logging.getLogger('global')
 
 def make_parser():
     parser = argparse.ArgumentParser(description='Test')
-    parser.add_argument('--config',
+    parser.add_argument('-cfg', '--config',
                         default='',
                         type=str,
                         help='experiment configuration')

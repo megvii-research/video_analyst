@@ -3,6 +3,7 @@ from typing import Tuple
 import copy
 import itertools
 import logging
+import os
 import os.path as osp
 from collections import OrderedDict
 
@@ -226,22 +227,31 @@ class RegularTrainer(TrainerBase):
         snapshot_file = osp.join(snapshot_dir, "epoch-{}.pkl".format(epoch))
         return snapshot_dir, snapshot_file
 
-    def resume(self, epoch: int = -1, snapshot_file: str = ""):
+    def _get_latest_model_path(self):
+        file_dir = self._state["snapshot_dir"]
+        file_list = os.listdir(file_dir)
+        file_list = [file_name for file_name in file_list if file_name.endswith("pkl")]
+        file_list.sort(key=lambda fn: os.path.getmtime(osp.join(file_dir,fn)) if not os.path.isdir(osp.join(file_dir,fn)) else 0)
+        return osp.join(file_dir,file_list[-1])
+
+
+
+    def resume(self, resume):
         r"""Apply resuming by setting self._state["snapshot_file"]
         Priviledge snapshot_file to epoch number
 
         Parameters
         ----------
-        epoch : int, optional
-            latest epoch number, by default -1
-        snapshot_file : str, optional
-            latest snapshot file path, by default ""
+        resume :str
+            latest epoch number, by default -1, "latest" or model path
         """
-        if len(snapshot_file)>0 and osp.exists(snapshot_file):
+        if resume.isdigit():
+            _, snapshot_file = self._infer_snapshot_dir_file_from_epoch(resume)
             self._state["snapshot_file"] = snapshot_file
-        elif epoch >= 0:
-            _, snapshot_file = self._infer_snapshot_dir_file_from_epoch(epoch)
-            self._state["snapshot_file"] = snapshot_file
+        elif resume == "latest":
+            self._state["snapshot_file"] = self._get_latest_model_path()
+        else:
+            self._state["snapshot_file"] = resume
 
 
 RegularTrainer.default_hyper_params = copy.deepcopy(

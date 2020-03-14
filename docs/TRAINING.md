@@ -16,13 +16,18 @@ python3 ./main/test.py --config 'path/to/config.yaml'
 Resuming from epoch number
 
 ```Bash
-python3 ./main/train.py --config 'path/to/config.yaml' --resume-from-epoch=10
+python3 ./main/train.py --config 'path/to/config.yaml' --resume 10
 ```
 
-Resuming from snapshot file
+Resuming from certain snapshot file
 
 ```Bash
-python3 ./main/train.py --config 'path/to/config.yaml' --resume-from-file='snapshots/siamfcpp_alexnet/epoch-10.pkl'
+python3 ./main/train.py --config 'path/to/config.yaml' --resume 'snapshots/siamfcpp_alexnet/epoch-10.pkl'
+```
+Resuming from the latest snapshot file
+
+```Bash
+python3 ./main/train.py --config 'path/to/config.yaml' --resume latest
 ```
 
 ### Training with PyTorch Distributed Data Parallel (DDP)

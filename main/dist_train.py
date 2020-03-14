@@ -37,18 +37,13 @@ logger = logging.getLogger('global')
 
 def make_parser():
     parser = argparse.ArgumentParser(description='Test')
-    parser.add_argument('--config',
+    parser.add_argument('-cfg', '--config',
                         default='',
                         type=str,
                         help='path to experiment configuration')
-    parser.add_argument('--resume-from-epoch',
+    parser.add_argument('-r', '--resume',
                         default=-1,
-                        type=int,
-                        help=r"latest completed epoch's number (from which training resumes)")
-    parser.add_argument('--resume-from-file',
-                        default="",
-                        type=str,
-                        help=r"latest completed epoch's snapshot file (from which training resumes)")
+                        help=r"completed epoch's number, latest or one model path")
 
     return parser
 
@@ -63,7 +58,7 @@ def setup(rank: int, world_size: int):
         number of porocesses (of the process group)
     """
     os.environ['MASTER_ADDR'] = 'localhost'
-    os.environ['MASTER_PORT'] = '12355'
+    os.environ['MASTER_PORT'] = '12356'
     dist.init_process_group("nccl", rank=rank, world_size=world_size)  # initialize the process group
     # torch.manual_seed(42)  # same initialized model for every process
 
@@ -105,7 +100,7 @@ def run_dist_training(rank_id : int, world_size: int,
                                    dataloader)
     devs = ["cuda:%d"%rank_id]
     trainer.set_device(devs)
-    trainer.resume(parsed_args.resume_from_epoch, parsed_args.resume_from_file)
+    trainer.resume(parsed_args.resume)
     # trainer.init_train()
     logger.info("Start training")
     while not trainer.is_completed():
