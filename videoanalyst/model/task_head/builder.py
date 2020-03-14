@@ -5,15 +5,11 @@ from typing import Dict, List
 from yacs.config import CfgNode
 
 from videoanalyst.model.module_base import ModuleBase
-from videoanalyst.model.task_head.taskhead_base import TRACK_HEADS, VOS_HEADS
+from videoanalyst.model.task_head.taskhead_base import TASK_HEADS
 from videoanalyst.utils import merge_cfg_into_hps
 
 logger = logging.getLogger(__file__)
 
-TASK_HEADS = dict(
-    track=TRACK_HEADS,
-    vos=VOS_HEADS,
-)
 
 
 def build(task: str, cfg: CfgNode):
@@ -63,7 +59,7 @@ def get_config(task_list: List) -> Dict[str, CfgNode]:
         config with list of available components
     """
     cfg_dict = {task: CfgNode() for task in task_list}
-    for cfg_name, module in zip(["track", "vos"], [TRACK_HEADS, VOS_HEADS]):
+    for cfg_name, module in TASK_HEADS.items():
         cfg = cfg_dict[cfg_name]
         cfg["name"] = "unknown"
         for name in module:

@@ -59,8 +59,7 @@ def get_config(task_list: List) -> Dict[str, CfgNode]:
         config with list of available components
     """
     cfg_dict = {task: CfgNode() for task in task_list}
-    for cfg_name, module in zip(["track", "vos"],
-                                [TRACK_BACKBONES, VOS_BACKBONES]):
+    for cfg_name, module in TASK_BACKBONES.items():
         cfg = cfg_dict[cfg_name]
         cfg["name"] = "unknown"
         for name in module:
