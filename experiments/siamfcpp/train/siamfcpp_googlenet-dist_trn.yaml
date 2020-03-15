@@ -89,9 +89,9 @@ train:
       exp_name: *TRAIN_NAME
       exp_save: *TRAIN_SAVE
       num_epochs: 20
-      minibatch: &MINIBATCH 32  # single GPU's MINIBATCH(128)/num_processes(4)
-      num_workers: 8  # single GPU's num_workers(32)/num_processes(4)
-      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 37500  # single GPU's NR_IMAGE_PER_EPOCH(1500000)/num_processes(4)
+      minibatch: &MINIBATCH 128
+      num_workers: 8 
+      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 1500000  
       pin_memory: false
       datapipeline:
         name: "RegularDatapipeline"
@@ -140,7 +140,6 @@ train:
         max_epoch: 20
         minibatch: *MINIBATCH
         nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
-        # num_iterations: 1171
         snapshot: ""
       monitors:
         names: ["TrackInfo"]  # "TensorboardLogger"

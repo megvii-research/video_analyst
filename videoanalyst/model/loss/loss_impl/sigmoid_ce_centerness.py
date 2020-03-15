@@ -64,7 +64,8 @@ class SigmoidCrossEntropyCenterness(ModuleBase):
                          ) * mask  # suppress loss residual (original vers.)
         loss = loss - loss_residual.detach()
 
-        loss = loss.sum() / torch.max(mask.sum(), self.t_one)*self._hyper_params["weight"]
+        loss = loss.sum() / torch.max(mask.sum(),
+                                      self.t_one) * self._hyper_params["weight"]
         extra = dict()
 
         return loss, extra

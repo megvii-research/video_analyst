@@ -48,19 +48,17 @@ def make_parser():
         '--resume',
         default="",
         help=r"completed epoch's number, latest or one model path")
-    parser.add_argument(
-        '-ad',
-        '--auto_dist',
-        default=True,
-        help=r"whether use auto distributed training")
-    parser.add_argument(
-        '-du',
-        '--dist_url',
-        default="tcp://127.0.0.1:12345",
-        help=r"the url port of master machine")
-
+    parser.add_argument('-ad',
+                        '--auto_dist',
+                        default=True,
+                        help=r"whether use auto distributed training")
+    parser.add_argument('-du',
+                        '--dist_url',
+                        default="tcp://127.0.0.1:12345",
+                        help=r"the url port of master machine")
 
     return parser
+
 
 def _find_free_port():
     import socket
@@ -73,6 +71,7 @@ def _find_free_port():
     # NOTE: there is still a chance the port could be taken by other processes.
     return port
 
+
 def setup(rank: int, world_size: int, dist_url: str):
     """Setting-up method to be called in the distributed function
        Borrowed from https://pytorch.org/tutorials/intermediate/ddp_tutorial.html
@@ -84,8 +83,7 @@ def setup(rank: int, world_size: int, dist_url: str):
         number of porocesses (of the process group)
     """
     dist.init_process_group(
-        "nccl", rank=rank,
-        world_size=world_size,
+        "nccl", rank=rank, world_size=world_size,
         init_method=dist_url)  # initialize the process group
     # torch.manual_seed(42)  # same initialized model for every process
 
@@ -116,10 +114,7 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
         parsed arguments from command line
     """
     devs = ["cuda:{}".format(rank_id)]
-    print("devs", devs)
-    model.to_device(torch.device(devs[0]))
-    #for key in model.loss:
-    #    model.loss[key].to(torch.device(devs[0]))
+    model.set_device(torch.device(devs[0]))
     # set up distributed
     setup(rank_id, world_size, dist_url)
     dist_utils.synchronize()
@@ -139,7 +134,7 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
         trainer.train()
         if rank_id == 0:
             trainer.save_snapshot()
-        dist.barrier()  # one synchronization per epoch
+        dist_utils.synchronize()  # one synchronization per epoch
 
     # clean up distributed
     cleanup()
@@ -175,7 +170,9 @@ if __name__ == '__main__':
     # device config
     world_size = task_cfg.num_processes
     assert torch.cuda.is_available(), "please check your devices"
-    assert torch.cuda.device_count() >= world_size, "cuda device {} is less than {}".format(torch.cuda.device_count(), world_size)
+    assert torch.cuda.device_count(
+    ) >= world_size, "cuda device {} is less than {}".format(
+        torch.cuda.device_count(), world_size)
     # build model
     model = model_builder.build(task, task_cfg.model)
     # get dist url

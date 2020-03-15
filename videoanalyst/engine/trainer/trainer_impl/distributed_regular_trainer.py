@@ -43,7 +43,6 @@ class DistributedRegularTrainer(TrainerBase):
     extra_hyper_params = dict(
         minibatch=1,
         nr_image_per_epoch=1,
-        num_iterations=1,
         max_epoch=1,
         snapshot="",
     )
@@ -122,7 +121,11 @@ class DistributedRegularTrainer(TrainerBase):
             self._optimizer.zero_grad()
             # forward propagation
             with Timer(name="fwd", output_dict=time_dict):
-                _, training_losses, extras = self._model(training_data)
+                predict_data = self._model(training_data)
+                training_losses, extras = OrderedDict(), OrderedDict()
+                for loss_name, loss in self._losses.items():
+                    training_losses[loss_name], extras[loss_name] = loss(
+                        predict_data, training_data)
                 total_loss = sum(training_losses.values())
             # backward propagation
             with Timer(name="bwd", output_dict=time_dict):

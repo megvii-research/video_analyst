@@ -98,10 +98,7 @@ class SiamTrack(ModuleBase):
                 ctr_pred=fcos_ctr_score_final,
                 box_pred=fcos_bbox_final,
             )
-            training_losses, extras = OrderedDict(), OrderedDict()
-            for loss_name, loss in self.loss.items():
-                training_losses[loss_name], extras[loss_name] = loss(predict_data, training_data)
-            return predict_data, training_losses, extras
+            return predict_data
         # phase: feature
         elif phase == 'feature':
             target_img, = args
@@ -147,6 +144,14 @@ class SiamTrack(ModuleBase):
             raise ValueError("Phase non-implemented.")
 
         return out_list
+
+    def forward_with_loss(self, *args):
+        predict_data = self.forward(args, "train")
+        training_losses, extras = OrderedDict(), OrderedDict()
+        for loss_name, loss in self.loss.items():
+            training_losses[loss_name], extras[loss_name] = loss(
+                predict_data, training_data)
+        return predict_data, training_losses, extras
 
     def update_params(self):
         r"""
@@ -201,9 +206,9 @@ class SiamTrack(ModuleBase):
             conv = conv_list[ith]
             torch.nn.init.normal_(conv.weight,
                                   std=conv_weight_std)  # conv_weight_std=0.01
-    def to_device(self, dev):
+
+    def set_device(self, dev):
         self.to(dev)
         if self.loss is not None:
             for loss_name in self.loss:
                 self.loss[loss_name].to(dev)
-
