@@ -22,7 +22,7 @@ from videoanalyst.model import builder as model_builder
 from videoanalyst.model.loss import builder as losses_builder
 from videoanalyst.optim import builder as optim_builder
 from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.utils import Timer, ensure_dir, complete_path_wt_root_in_cfg
+from videoanalyst.utils import Timer, ensure_dir, complete_path_wt_root_in_cfg, dist_utils
 
 cv2.setNumThreads(1)
 
@@ -48,11 +48,32 @@ def make_parser():
         '--resume',
         default="",
         help=r"completed epoch's number, latest or one model path")
+    parser.add_argument(
+        '-ad',
+        '--auto_dist',
+        default=True,
+        help=r"whether use auto distributed training")
+    parser.add_argument(
+        '-du',
+        '--dist_url',
+        default="tcp://127.0.0.1:12345",
+        help=r"the url port of master machine")
+
 
     return parser
 
+def _find_free_port():
+    import socket
 
-def setup(rank: int, world_size: int):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Binding to port 0 will cause the OS to find an available port for us
+    sock.bind(("", 0))
+    port = sock.getsockname()[1]
+    sock.close()
+    # NOTE: there is still a chance the port could be taken by other processes.
+    return port
+
+def setup(rank: int, world_size: int, dist_url: str):
     """Setting-up method to be called in the distributed function
        Borrowed from https://pytorch.org/tutorials/intermediate/ddp_tutorial.html
     Parameters
@@ -62,11 +83,10 @@ def setup(rank: int, world_size: int):
     world_size : int
         number of porocesses (of the process group)
     """
-    os.environ['MASTER_ADDR'] = 'localhost'
-    os.environ['MASTER_PORT'] = '12356'
     dist.init_process_group(
         "nccl", rank=rank,
-        world_size=world_size)  # initialize the process group
+        world_size=world_size,
+        init_method=dist_url)  # initialize the process group
     # torch.manual_seed(42)  # same initialized model for every process
 
 
@@ -78,7 +98,7 @@ def cleanup():
 
 
 def run_dist_training(rank_id: int, world_size: int, task: str,
-                      task_cfg: CfgNode, parsed_args, model):
+                      task_cfg: CfgNode, parsed_args, model, dist_url):
     """method to run on distributed process
        passed to multiprocessing.spawn
     
@@ -96,7 +116,7 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
         parsed arguments from command line
     """
     # set up distributed
-    setup(rank_id, world_size)
+    setup(rank_id, world_size, dist_url)
     # build model
     # model = model_builder.build(task, task_cfg.model)
     # build optimizer
@@ -151,12 +171,18 @@ if __name__ == '__main__':
     logger.info("Dummy dataloader destroyed.")
     # build model
     model = model_builder.build(task, task_cfg.model)
+    # get dist url
+    if parsed_args.auto_dist:
+        port = _find_free_port()
+        dist_url = "tcp://127.0.0.1:{}".format(port)
+    else:
+        dist_url = parsed_args.dist_url
     # prepare to spawn
     world_size = task_cfg.num_processes
     torch.multiprocessing.set_start_method('spawn', force=True)
     # spawn trainer process
     mp.spawn(run_dist_training,
-             args=(world_size, task, task_cfg, parsed_args, model),
+             args=(world_size, task, task_cfg, parsed_args, model, dist_url),
              nprocs=world_size,
              join=True)
     logger.info("Distributed training completed.")
