@@ -9,14 +9,14 @@ from videoanalyst.utils import complete_path_wt_root_in_cfg
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy, xyxy2xywh
 
 import argparse
-import logging
+from loguru import logger
 
 import cv2
 import numpy as np
 import time
 import torch
 
-logger = logging.getLogger('global')
+
 
 font_size = 0.5
 font_width = 1

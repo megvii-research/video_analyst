@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*
 import itertools
 from collections import Mapping
-import logging
+from loguru import logger
 from typing import Dict
 import os.path as osp
 
@@ -14,8 +14,6 @@ from torch.utils.tensorboard.writer import SummaryWriter
 
 from ..monitor_base import TRACK_MONITORS, VOS_MONITORS, MonitorBase
 from videoanalyst.utils import ensure_dir
-
-logger = logging.getLogger("global")
 
 
 @TRACK_MONITORS.register

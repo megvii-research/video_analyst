@@ -2,7 +2,7 @@
 from typing import Tuple
 import copy
 import itertools
-import logging
+from loguru import logger
 import os
 import os.path as osp
 from collections import OrderedDict
@@ -21,8 +21,6 @@ from videoanalyst.utils import (Timer, ensure_dir, move_data_to_device,
                                 unwrap_model)
 
 from ..trainer_base import TRACK_TRAINERS, TrainerBase
-
-logger = logging.getLogger("global")
 
 
 @TRACK_TRAINERS.register

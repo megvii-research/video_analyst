@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*
-import logging
+from loguru import logger
 from typing import Dict, List
-
 from yacs.config import CfgNode
 
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.pipeline.pipeline_base import PIPELINES
 from videoanalyst.utils import merge_cfg_into_hps
-
-logger = logging.getLogger(__file__)
 
 
 def build(task: str, cfg: CfgNode, model: ModuleBase):

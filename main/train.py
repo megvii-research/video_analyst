@@ -2,7 +2,7 @@
 from paths import ROOT_PATH  # isort:skip
 
 import argparse
-import logging
+from loguru import logger
 import os.path as osp
 import pickle
 
@@ -28,8 +28,6 @@ cv2.setNumThreads(1)
 # https://pytorch.org/docs/stable/notes/randomness.html#cudnn
 torch.backends.cudnn.benchmark = False
 torch.backends.cudnn.deterministic = True
-
-logger = logging.getLogger('global')
 
 
 def make_parser():
@@ -70,6 +68,13 @@ if __name__ == '__main__':
     with open(cfg_bak_file, "w") as f:
         f.write(task_cfg.dump())
     logger.info("Task configuration backed up at %s" % cfg_bak_file)
+    # log config
+    logger.configure(handlers=[{"sink": sys.stderr, "level": 'INFO'}])
+    logger.add(osp.join(cfg_bak_dir, "train_log.txt"),
+               enqueue=True,
+               backtrace=True,
+               diagnose=True)
+    logger.info("Task configuration backed up at %s" % cfg_bak_file)
     # device config
     if task_cfg.device == "cuda":
         world_size = task_cfg.num_processes
@@ -84,7 +89,7 @@ if __name__ == '__main__':
     model = model_builder.build(task, task_cfg.model)
     model.set_device(devs[0])
     # load data
-    with Timer(name="Dataloader building", verbose=True, logger=logger):
+    with Timer(name="Dataloader building", verbose=True):
         dataloader = dataloader_builder.build(task, task_cfg.data)
     # build optimizer
     optimizer = optim_builder.build(task, task_cfg.optim, model)

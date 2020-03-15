@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-import logging
+from loguru import logger
 from typing import Dict, List
 
 from yacs.config import CfgNode
@@ -7,8 +7,6 @@ from yacs.config import CfgNode
 from videoanalyst.utils import merge_cfg_into_hps
 
 from .backbone_base import TRACK_BACKBONES, VOS_BACKBONES
-
-logger = logging.getLogger(__file__)
 
 TASK_BACKBONES = dict(
     track=TRACK_BACKBONES,

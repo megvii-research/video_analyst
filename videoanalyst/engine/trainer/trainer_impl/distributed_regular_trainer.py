@@ -2,7 +2,7 @@
 from typing import Tuple, List
 import copy
 import itertools
-import logging
+from loguru import logger
 import os.path as osp
 from collections import OrderedDict
 
@@ -21,8 +21,6 @@ from videoanalyst.utils import (Timer, ensure_dir, move_data_to_device,
                                 unwrap_model, average_gradients)
 
 from ..trainer_base import TRACK_TRAINERS, TrainerBase
-
-logger = logging.getLogger("global")
 
 
 @TRACK_TRAINERS.register
@@ -87,7 +85,7 @@ class DistributedRegularTrainer(TrainerBase):
         )  # TODO: devs should be calculated based on rank & num_workers
         logger.info("Use nn.parallel.DistributedDataParallel for parallelism")
         super(DistributedRegularTrainer, self).init_train()
-        logger.info("%s initialized", type(self).__name__)
+        logger.info("{} initialized".format(type(self).__name__))
 
     def train(self):
         if not self._state["initialized"]:

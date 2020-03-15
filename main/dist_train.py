@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from paths import ROOT_PATH  # isort:skip
 
-import os
 import argparse
-import logging
+import os
 import os.path as osp
+import sys
 import pickle
 
 import cv2
+from loguru import logger
 from yacs.config import CfgNode
 
 import torch
@@ -32,8 +33,6 @@ cv2.setNumThreads(1)
 # https://pytorch.org/docs/stable/notes/randomness.html#cudnn
 torch.backends.cudnn.benchmark = False
 torch.backends.cudnn.deterministic = True
-
-logger = logging.getLogger('global')
 
 
 def make_parser():
@@ -122,7 +121,7 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
     # build optimizer
     optimizer = optim_builder.build(task, task_cfg.optim, model)
     # build dataloader with trainer
-    with Timer(name="Dataloader building", verbose=True, logger=logger):
+    with Timer(name="Dataloader building", verbose=True):
         dataloader = dataloader_builder.build(task, task_cfg.data, seed=rank_id)
     # build trainer
     trainer = engine_builder.build(task, task_cfg.trainer, "trainer", optimizer,
@@ -162,9 +161,15 @@ if __name__ == '__main__':
     cfg_bak_file = osp.join(cfg_bak_dir, "%s_bak.yaml" % task_cfg.exp_name)
     with open(cfg_bak_file, "w") as f:
         f.write(task_cfg.dump())
+    # log config
+    logger.configure(handlers=[{"sink": sys.stderr, "level": 'INFO'}])
+    logger.add(osp.join(cfg_bak_dir, "train_log.txt"),
+               enqueue=True,
+               backtrace=True,
+               diagnose=True)
     logger.info("Task configuration backed up at %s" % cfg_bak_file)
     # build dummy dataloader (for dataset initialization)
-    with Timer(name="Dummy dataloader building", verbose=True, logger=logger):
+    with Timer(name="Dummy dataloader building", verbose=True):
         dataloader = dataloader_builder.build(task, task_cfg.data)
     del dataloader
     logger.info("Dummy dataloader destroyed.")

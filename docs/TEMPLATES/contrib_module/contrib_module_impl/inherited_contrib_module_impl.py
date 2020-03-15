@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from copy import deepcopy
 from typing import Dict, List, Tuple
-import logging
+from loguru import logger
 import numpy as np
 import cv2
 

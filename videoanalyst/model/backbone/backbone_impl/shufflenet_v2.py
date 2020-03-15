@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*
-import logging
 from copy import deepcopy
+from loguru import logger
 
 import torch
 import torch.nn as nn
@@ -8,10 +8,6 @@ import torch.nn as nn
 from ...module_base import ModuleBase
 from ..backbone_base import TRACK_BACKBONES, VOS_BACKBONES
 from videoanalyst.utils import md5sum
-
-# from torchvision.models.utils import load_state_dict_from_url
-
-logger = logging.getLogger("global")
 
 
 @TRACK_BACKBONES.register
