@@ -6,7 +6,7 @@ from yacs.config import CfgNode
 
 from videoanalyst.utils import merge_cfg_into_hps
 
-from .grad_modifier_base import TASK_GRAD_MODIFIERS, GradModifierBase
+from .grad_modifier_base import GRAD_MODIFIERS, GradModifierBase
 
 
 def build(task: str, cfg: CfgNode) -> GradModifierBase:
@@ -20,11 +20,9 @@ def build(task: str, cfg: CfgNode) -> GradModifierBase:
     seed: int
         seed for rng initialization
     """
-    assert task in TASK_GRAD_MODIFIERS, "invalid task name"
-    MODULES = TASK_GRAD_MODIFIERS[task]
 
     name = cfg.name
-    module = MODULES[name]()
+    module = GRAD_MODIFIERS[name]()
 
     hps = module.get_hps()
     hps = merge_cfg_into_hps(cfg[name], hps)
@@ -34,18 +32,13 @@ def build(task: str, cfg: CfgNode) -> GradModifierBase:
     return module
 
 
-def get_config(task_list: List) -> Dict[str, CfgNode]:
-    cfg_dict = {name: CfgNode() for name in task_list}
+def get_config() -> CfgNode:
+    cfg = CfgNode()
+    cfg["name"] = ""
 
-    for cfg_name, MODULES in TASK_GRAD_MODIFIERS.items():
-        cfg = cfg_dict[cfg_name]
-        cfg["name"] = ""
-
-        for name in MODULES:
-            cfg[name] = CfgNode()
-            module = MODULES[name]
-            hps = module.default_hyper_params
-            for hp_name in hps:
-                cfg[name][hp_name] = hps[hp_name]
-
-    return cfg_dict
+    for name, module in GRAD_MODIFIERS.items():
+        cfg[name] = CfgNode()
+        hps = module.default_hyper_params
+        for hp_name in hps:
+            cfg[name][hp_name] = hps[hp_name]
+    return cfg

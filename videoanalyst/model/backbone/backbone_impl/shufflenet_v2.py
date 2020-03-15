@@ -95,7 +95,6 @@ class ShuffleNetV2_x0_5(ModuleBase):
             logger.info("Check md5sum of pretrained ShuffleNet parameters: %s" %
                         md5sum(model_file))
 
-
     def forward(self, x):
         x = self._model(x)
 

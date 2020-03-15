@@ -20,7 +20,6 @@ from videoanalyst.optim.optimizer.optimizer_base import OptimizerBase
 from videoanalyst.utils import (Timer, ensure_dir, move_data_to_device,
                                 unwrap_model, average_gradients)
 
-
 from ..trainer_base import TRACK_TRAINERS, TrainerBase
 
 logger = logging.getLogger("global")
@@ -62,20 +61,22 @@ class DistributedRegularTrainer(TrainerBase):
             PyTorch dataloader object. 
             Usage: batch_data = next(dataloader)
         """
-        super(DistributedRegularTrainer, self).__init__(optimizer, dataloader, monitors)
+        super(DistributedRegularTrainer, self).__init__(optimizer, dataloader,
+                                                        monitors)
         # update state
         self._state["epoch"] = -1  # uninitialized
         self._state["initialized"] = False
 
     def update_params(self, ):
         super(DistributedRegularTrainer, self).update_params()
-        self._hyper_params["num_iterations"] = self._hyper_params["nr_image_per_epoch"] // self._hyper_params["minibatch"]
+        self._hyper_params["num_iterations"] = self._hyper_params[
+            "nr_image_per_epoch"] // self._hyper_params["minibatch"]
         self._state["devices"] = [
             torch.device(dev) for dev in self._hyper_params["devices"]
         ]
         self._state["snapshot_dir"] = osp.join(self._hyper_params["exp_save"],
                                                self._hyper_params["exp_name"])
-        
+
         self._state["snapshot_file"] = self._hyper_params["snapshot"]
 
     def init_train(self, ):
@@ -89,8 +90,9 @@ class DistributedRegularTrainer(TrainerBase):
         # load from self._state["snapshot_file"]
         self.load_snapshot()
         # parallelism with Distributed Data Parallel (DDP)
-        self._model = nn.parallel.DistributedDataParallel(self._model, device_ids=devs,
-                                                          find_unused_parameters=True)  # TODO: devs should be calculated based on rank & num_workers
+        self._model = nn.parallel.DistributedDataParallel(
+            self._model, device_ids=devs, find_unused_parameters=True
+        )  # TODO: devs should be calculated based on rank & num_workers
         logger.info("Use nn.parallel.DistributedDataParallel for parallelism")
         super(DistributedRegularTrainer, self).init_train()
         logger.info("%s initialized", type(self).__name__)
@@ -155,7 +157,7 @@ class DistributedRegularTrainer(TrainerBase):
                 total_loss.backward()
             # TODO: No need for average_gradients() when wrapped model with DDP?
             # TODO: need to register _optimizer.modify_grad as hook
-            #       see https://discuss.pytorch.org/t/distributeddataparallel-modify-gradient-before-averaging/59291 
+            #       see https://discuss.pytorch.org/t/distributeddataparallel-modify-gradient-before-averaging/59291
             # self._optimizer.modify_grad(epoch, iteration)
             with Timer(name="optim", output_dict=time_dict):
                 self._optimizer.step()
@@ -174,87 +176,8 @@ class DistributedRegularTrainer(TrainerBase):
             pbar.set_description(print_str)
         del pbar  # need to be freed, otherwise spawn would be stucked.
 
-    def is_completed(self):
-        r"""Return completion status"""
-        is_completed = (self._state["epoch"] + 1 >=
-                        self._hyper_params["max_epoch"])
-        return is_completed
-
-    def load_snapshot(self):
-        r""" 
-        load snapshot based on self._hyper_params["snapshot"] or self._state["epoch"]
-        """
-        snapshot_file = self._state["snapshot_file"]
-        if osp.exists(snapshot_file):
-            dev = self._state["devices"][0]  # TODO: device
-            snapshot = torch.load(snapshot_file, map_location=dev)
-            self._model.load_state_dict(snapshot["model_state_dict"])
-            self._optimizer.load_state_dict(snapshot["optimizer_state_dict"])
-            self._state["epoch"] = snapshot["epoch"]
-            logger.info("Load snapshot from: %s" % osp.realpath(snapshot_file))
-        else:
-            logger.info("%s does not exist, no snapshot loaded." %
-                        snapshot_file)
-
-        logger.info("Train from epoch %d" % (self._state["epoch"] + 1))
-
-    def save_snapshot(self, ):
-        r""" 
-        save snapshot for current epoch
-        """
-        epoch = self._state["epoch"]
-        snapshot_dir, snapshot_file = self._infer_snapshot_dir_file_from_epoch(epoch)
-        snapshot_dict = {
-            'epoch': epoch,
-            'model_state_dict': unwrap_model(self._model).state_dict(),
-            'optimizer_state_dict': self._optimizer.state_dict()
-        }
-        ensure_dir(snapshot_dir)
-        torch.save(snapshot_dict, snapshot_file)
-        while not osp.exists(snapshot_file):
-            logger.info("retrying")
-            torch.save(snapshot_dict, snapshot_file)
-        logger.info("Snapshot saved at: %s" % snapshot_file)
-    
-    def _infer_snapshot_dir_file_from_epoch(self, epoch: int) -> Tuple[str, str]:
-        r"""Infer snapshot's directory & file path based on self._state & epoch number pased in
-
-        Parameters
-        ----------
-        epoch : int
-            epoch number
-        
-        Returns
-        -------
-        Tuple[str, str]
-            directory and snapshot file
-            dir, path
-        """
-        snapshot_dir = self._state["snapshot_dir"]
-        snapshot_file = osp.join(snapshot_dir, "epoch-{}.pkl".format(epoch))
-        return snapshot_dir, snapshot_file
-
-    def resume(self, epoch: int = -1, snapshot_file: str = ""):
-        r"""Apply resuming by setting self._state["snapshot_file"]
-        Priviledge snapshot_file to epoch number
-
-        Parameters
-        ----------
-        epoch : int, optional
-            latest epoch number, by default -1
-        snapshot_file : str, optional
-            latest snapshot file path, by default ""
-        """
-        if len(snapshot_file)>0 and osp.exists(snapshot_file):
-            self._state["snapshot_file"] = snapshot_file
-        elif epoch >= 0:
-            _, snapshot_file = self._infer_snapshot_dir_file_from_epoch(epoch)
-            self._state["snapshot_file"] = snapshot_file
-    
-    def set_device(self, devs: List[str]):
-        self._state["devices"] = [torch.device(dev) for dev in devs]
-
 
 DistributedRegularTrainer.default_hyper_params = copy.deepcopy(
     DistributedRegularTrainer.default_hyper_params)
-DistributedRegularTrainer.default_hyper_params.update(DistributedRegularTrainer.extra_hyper_params)
+DistributedRegularTrainer.default_hyper_params.update(
+    DistributedRegularTrainer.extra_hyper_params)

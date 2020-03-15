@@ -26,7 +26,7 @@ from .transformer import builder as transformer_builder
 logger = logging.getLogger("global")
 
 
-def build(task: str, cfg: CfgNode, seed: int =0) -> DataLoader:
+def build(task: str, cfg: CfgNode, seed: int = 0) -> DataLoader:
     r"""
     Arguments
     ---------
@@ -38,12 +38,15 @@ def build(task: str, cfg: CfgNode, seed: int =0) -> DataLoader:
     data_logger = build_data_logger(cfg)
 
     if task == "track":
-        # build dummy dataset for purpose of dataset setup (e.g. caching path list)  
+        # build dummy dataset for purpose of dataset setup (e.g. caching path list)
         logger.info("Build dummy AdaptorDataset")
-        dummy_py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
-                                          num_epochs=cfg.num_epochs,
-                                          nr_image_per_epoch=cfg.nr_image_per_epoch,
-                                          seed=seed)
+        dummy_py_dataset = AdaptorDataset(
+            task,
+            cfg,
+            num_epochs=cfg.num_epochs,
+            nr_image_per_epoch=cfg.nr_image_per_epoch,
+            seed=seed,
+        )
         logger.info("Read dummy training sample")
         dummy_sample = dummy_py_dataset[0]  # read dummy sample
         del dummy_py_dataset, dummy_sample
@@ -56,13 +59,16 @@ def build(task: str, cfg: CfgNode, seed: int =0) -> DataLoader:
             world_size = 1
         # build real dataset
         logger.info("Build real AdaptorDataset")
-        py_dataset = AdaptorDataset(dict(task=task, cfg=cfg),
+        py_dataset = AdaptorDataset(task,
+                                    cfg,
                                     num_epochs=cfg.num_epochs,
-                                    nr_image_per_epoch=cfg.nr_image_per_epoch*world_size)
+                                    nr_image_per_epoch=cfg.nr_image_per_epoch *
+                                    world_size)
         # use DistributedSampler in case of DDP
         if world_size > 1:
             py_sampler = DistributedSampler(py_dataset)
-            data_logger.info("Use dist.DistributedSampler, world_size=%d"%world_size)
+            data_logger.info("Use dist.DistributedSampler, world_size=%d" %
+                             world_size)
         else:
             py_sampler = None
         # build real dataloader
@@ -79,7 +85,6 @@ def build(task: str, cfg: CfgNode, seed: int =0) -> DataLoader:
 
 
 def get_config(task_list: List) -> Dict[str, CfgNode]:
-
     r"""
     Get available component list config
 
@@ -103,7 +108,6 @@ def get_config(task_list: List) -> Dict[str, CfgNode]:
         cfg["sampler"] = sampler_builder.get_config(task_list)[task]
         cfg["transformer"] = transformer_builder.get_config(task_list)[task]
         cfg["target"] = target_builder.get_config(task_list)[task]
-
 
     return cfg_dict
 

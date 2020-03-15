@@ -9,10 +9,10 @@ from torch import optim
 from videoanalyst.data.dataset.dataset_base import DatasetBase
 from videoanalyst.evaluation.got_benchmark.datasets import got10k
 
-from ..optimizer_base import TRACK_OPTIMIZERS, OptimizerBase
+from ..optimizer_base import OPTIMIZERS, OptimizerBase
 
 
-@TRACK_OPTIMIZERS.register
+@OPTIMIZERS.register
 class SGD(OptimizerBase):
     r"""
     Tracking data sampler

@@ -38,20 +38,17 @@ def build(
     return optimizer
 
 
-def get_config(task_list: List) -> Dict[str, CfgNode]:
+def get_config() -> CfgNode:
     r"""
     Get available component list config
 
     Returns
     -------
-    Dict[str, CfgNode]
+    CfgNode
         config with list of available components
     """
-    cfg_dict = {name: CfgNode() for name in task_list}
+    cfg = CfgNode()
+    cfg["optimizer"] = optimizer_builder.get_config()
+    cfg["grad_modifier"] = grad_modifier_builder.get_config()
 
-    for task in cfg_dict:
-        cfg = cfg_dict[task]
-        cfg["optimizer"] = optimizer_builder.get_config(task_list)[task]
-        cfg["grad_modifier"] = grad_modifier_builder.get_config(task_list)[task]
-
-    return cfg_dict
+    return cfg

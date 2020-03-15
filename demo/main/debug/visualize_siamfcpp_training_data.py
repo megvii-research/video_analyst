@@ -20,7 +20,7 @@ from videoanalyst.optim import builder as optim_builder
 from videoanalyst.pipeline import builder as pipeline_builder
 from videoanalyst.utils import Timer, ensure_dir, complete_path_wt_root_in_cfg
 
-from videoanalyst.data.utils.visualization import show_img_FCOS 
+from videoanalyst.data.utils.visualization import show_img_FCOS
 
 cv2.setNumThreads(1)
 
@@ -33,12 +33,14 @@ torch.backends.cudnn.deterministic = True
 
 logger = logging.getLogger('global')
 
+
 def make_parser():
     parser = argparse.ArgumentParser(description='Test')
-    parser.add_argument('--config',
-                        default='experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml',
-                        type=str,
-                        help='path to experiment configuration')
+    parser.add_argument(
+        '--config',
+        default='experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml',
+        type=str,
+        help='path to experiment configuration')
     # parser.add_argument('--resume-from-epoch',
     #                     default=-1,
     #                     type=int,
@@ -58,7 +60,8 @@ if __name__ == '__main__':
     exp_cfg_path = osp.realpath(parsed_args.config)
     root_cfg.merge_from_file(exp_cfg_path)
     logger.info("Load experiment configuration at: %s" % exp_cfg_path)
-    logger.info("Merged with root_cfg imported from videoanalyst.config.config.cfg")
+    logger.info(
+        "Merged with root_cfg imported from videoanalyst.config.config.cfg")
     # resolve config
     root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.train
@@ -74,9 +77,11 @@ if __name__ == '__main__':
     for batch_training_data in dataloader:
         keys = list(batch_training_data.keys())
         batch_size = len(batch_training_data[keys[0]])
-        training_samples = [{k : v[[idx]] for k, v in batch_training_data.items()} for idx in range(batch_size)]
+        training_samples = [{
+            k: v[[idx]]
+            for k, v in batch_training_data.items()
+        } for idx in range(batch_size)]
         for training_sample in training_samples:
             # from IPython import embed;embed()
             target_cfg = task_cfg.data.target
             show_img_FCOS(target_cfg[target_cfg.name], training_sample)
-
