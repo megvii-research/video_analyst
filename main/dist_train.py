@@ -115,10 +115,14 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
     parsed_args : [type]
         parsed arguments from command line
     """
+    devs = ["cuda:{}".format(rank_id)]
+    print("devs", devs)
+    model.to_device(torch.device(devs[0]))
+    #for key in model.loss:
+    #    model.loss[key].to(torch.device(devs[0]))
     # set up distributed
     setup(rank_id, world_size, dist_url)
-    # build model
-    # model = model_builder.build(task, task_cfg.model)
+    dist_utils.synchronize()
     # build optimizer
     optimizer = optim_builder.build(task, task_cfg.optim, model)
     # build dataloader with trainer
@@ -127,7 +131,6 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
     # build trainer
     trainer = engine_builder.build(task, task_cfg.trainer, "trainer", optimizer,
                                    dataloader)
-    devs = ["cuda:%d" % rank_id]
     trainer.set_device(devs)
     trainer.resume(parsed_args.resume)
     # trainer.init_train()
@@ -169,6 +172,10 @@ if __name__ == '__main__':
         dataloader = dataloader_builder.build(task, task_cfg.data)
     del dataloader
     logger.info("Dummy dataloader destroyed.")
+    # device config
+    world_size = task_cfg.num_processes
+    assert torch.cuda.is_available(), "please check your devices"
+    assert torch.cuda.device_count() >= world_size, "cuda device {} is less than {}".format(torch.cuda.device_count(), world_size)
     # build model
     model = model_builder.build(task, task_cfg.model)
     # get dist url
@@ -178,7 +185,6 @@ if __name__ == '__main__':
     else:
         dist_url = parsed_args.dist_url
     # prepare to spawn
-    world_size = task_cfg.num_processes
     torch.multiprocessing.set_start_method('spawn', force=True)
     # spawn trainer process
     mp.spawn(run_dist_training,

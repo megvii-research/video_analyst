@@ -135,7 +135,6 @@ train:
       DistributedRegularTrainer:
         exp_name: *TRAIN_NAME
         exp_save: *TRAIN_SAVE
-        devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]  # (cpu|cuda|cuda:x)
         max_epoch: 20
         minibatch: *MINIBATCH
         nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
