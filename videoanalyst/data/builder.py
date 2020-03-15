@@ -22,6 +22,7 @@ from .datapipeline import builder as datapipeline_builder
 from .sampler import builder as sampler_builder
 from .target import builder as target_builder
 from .transformer import builder as transformer_builder
+from videoanalyst.utils import dist_utils
 
 logger = logging.getLogger("global")
 
@@ -53,17 +54,13 @@ def build(task: str, cfg: CfgNode, seed: int = 0) -> DataLoader:
         gc.collect(generation=2)
         logger.info("Dummy AdaptorDataset destroyed.")
         # get world size in case of DDP
-        try:
-            world_size = dist.get_world_size()
-        except:
-            world_size = 1
+        world_size = dist_utils.get_world_size()
         # build real dataset
         logger.info("Build real AdaptorDataset")
         py_dataset = AdaptorDataset(task,
                                     cfg,
                                     num_epochs=cfg.num_epochs,
-                                    nr_image_per_epoch=cfg.nr_image_per_epoch *
-                                    world_size)
+                                    nr_image_per_epoch=cfg.nr_image_per_epoch)
         # use DistributedSampler in case of DDP
         if world_size > 1:
             py_sampler = DistributedSampler(py_dataset)
@@ -74,10 +71,10 @@ def build(task: str, cfg: CfgNode, seed: int = 0) -> DataLoader:
         # build real dataloader
         dataloader = DataLoader(
             py_dataset,
-            batch_size=cfg.minibatch,
+            batch_size=cfg.minibatch // world_size,
             shuffle=False,
             pin_memory=cfg.pin_memory,
-            num_workers=cfg.num_workers,
+            num_workers=cfg.num_workers // world_size,
             drop_last=True,
             sampler=py_sampler,
         )

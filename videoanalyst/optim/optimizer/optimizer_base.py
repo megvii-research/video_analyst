@@ -31,7 +31,6 @@ class OptimizerBase:
     default_hyper_params = dict(
         minibatch=1,
         nr_image_per_epoch=1,
-        num_iterations=1,
         lr_policy=[],
         lr_multiplier=[],
     )

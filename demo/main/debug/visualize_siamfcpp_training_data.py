@@ -41,14 +41,6 @@ def make_parser():
         default='experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml',
         type=str,
         help='path to experiment configuration')
-    # parser.add_argument('--resume-from-epoch',
-    #                     default=-1,
-    #                     type=int,
-    #                     help=r"latest completed epoch's number (from which training resumes)")
-    # parser.add_argument('--resume-from-file',
-    #                     default="",
-    #                     type=str,
-    #                     help=r"latest completed epoch's snapshot file (from which training resumes)")
 
     return parser
 
