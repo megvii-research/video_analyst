@@ -7,7 +7,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+from collections import OrderedDict
 from videoanalyst.model.common_opr.common_block import (conv_bn_relu,
                                                         xcorr_depthwise)
 from videoanalyst.model.module_base import ModuleBase
@@ -39,7 +39,7 @@ class SiamTrack(ModuleBase):
         conv_weight_std=0.01,
     )
 
-    def __init__(self, backbone, head, loss):
+    def __init__(self, backbone, head, loss=None):
         super(SiamTrack, self).__init__()
         self.basemodel = backbone
         # head
@@ -93,11 +93,15 @@ class SiamTrack(ModuleBase):
             # fcos_ctr_prob_final = torch.sigmoid(fcos_ctr_score_final)
             # output
             # out_list = fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final
-            out_list = dict(
+            predict_data = dict(
                 cls_pred=fcos_cls_score_final,
                 ctr_pred=fcos_ctr_score_final,
                 box_pred=fcos_bbox_final,
             )
+            training_losses, extras = OrderedDict(), OrderedDict()
+            for loss_name, loss in self.loss.items():
+                training_losses[loss_name], extras[loss_name] = loss(predict_data, training_data)
+            return predict_data, training_losses, extras
         # phase: feature
         elif phase == 'feature':
             target_img, = args
@@ -197,3 +201,9 @@ class SiamTrack(ModuleBase):
             conv = conv_list[ith]
             torch.nn.init.normal_(conv.weight,
                                   std=conv_weight_std)  # conv_weight_std=0.01
+    def to_device(self, dev):
+        self.to(dev)
+        if self.loss is not None:
+            for loss_name in self.loss:
+                self.loss[loss_name].to(dev)
+

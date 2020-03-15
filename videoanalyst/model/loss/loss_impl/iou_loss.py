@@ -62,7 +62,7 @@ class IOULoss(ModuleBase):
         # from IPython import embed;embed()
         loss = (loss * mask).sum() / torch.max(mask.sum(), self.t_one)
         iou = iou.detach()
-        iou = (iou * mask).sum() / torch.max(mask.sum(), self.t_one)
+        iou = (iou * mask).sum() / torch.max(mask.sum(), self.t_one)*self._hyper_params["weight"]
         extra = dict(iou=iou)
 
         return loss, extra
