@@ -37,14 +37,10 @@ class RegularTrainer(TrainerBase):
     ----------------
     devices: List[str]
         list of string
-    num_iterations: int
-        number of iterations
     """
     extra_hyper_params = dict(
-        devices=["cpu"],
         minibatch=1,
         nr_image_per_epoch=1,
-        num_iterations=1,
         max_epoch=1,
         snapshot="",
     )
@@ -65,14 +61,12 @@ class RegularTrainer(TrainerBase):
         # update state
         self._state["epoch"] = -1  # uninitialized
         self._state["initialized"] = False
+        self._state["devices"] = torch.device("cuda:0")
 
     def update_params(self, ):
         super(RegularTrainer, self).update_params()
         self._hyper_params["num_iterations"] = self._hyper_params[
             "nr_image_per_epoch"] // self._hyper_params["minibatch"]
-        self._state["devices"] = [
-            torch.device(dev) for dev in self._hyper_params["devices"]
-        ]
         self._state["snapshot_dir"] = osp.join(self._hyper_params["exp_save"],
                                                self._hyper_params["exp_name"])
 
@@ -83,9 +77,6 @@ class RegularTrainer(TrainerBase):
         # move model & loss to target devices
         devs = self._state["devices"]
         self._model.train()
-        self._model.to(devs[0])
-        for k in self._losses:
-            self._losses[k].to(devs[0])
         # load from self._state["snapshot_file"]
         self.load_snapshot()
         # parallelism with Data Parallel (DP)
@@ -100,7 +91,6 @@ class RegularTrainer(TrainerBase):
             self.init_train()
         self._state["initialized"] = True
 
-        # epoch counter +1
         self._state["epoch"] += 1
         epoch = self._state["epoch"]
         num_iterations = self._hyper_params["num_iterations"]
@@ -127,26 +117,12 @@ class RegularTrainer(TrainerBase):
 
             # forward propagation
             with Timer(name="fwd", output_dict=time_dict):
-                pred_data = self._model(training_data)
-
-            # compute losses
-            loss_extra_dict = OrderedDict()
-            for k in self._losses:
-                loss_extra_dict[k] = self._losses[k](pred_data, training_data)
-
-            # split losses & extras
-            training_losses, extras = OrderedDict(), OrderedDict()
-            for k in self._losses:
-                training_losses[k], extras[k] = loss_extra_dict[k]
-
-            # get loss weights & sum up
-            loss_weights = OrderedDict()
-            for k in self._losses:
-                loss_weights[k] = self._losses[k].get_hps()["weight"]
-            total_loss = [
-                training_losses[k] * loss_weights[k] for k in self._losses
-            ]
-            total_loss = sum(total_loss)
+                predict_data = self._model(training_data)
+                training_losses, extras = OrderedDict(), OrderedDict()
+                for loss_name, loss in self._losses.items():
+                    training_losses[loss_name], extras[loss_name] = loss(
+                        predict_data, training_data)
+                total_loss = sum(training_losses.values())
 
             # backward propagation
             with Timer(name="bwd", output_dict=time_dict):

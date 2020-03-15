@@ -87,9 +87,9 @@ train:
       exp_name: *TRAIN_NAME
       exp_save: *TRAIN_SAVE
       num_epochs: 20
-      minibatch: &MINIBATCH 8  # single GPU's MINIBATCH(32)/num_processes(4)
-      num_workers: 8  # single GPU's num_workers(32)/num_processes(4)
-      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 100000  # single GPU's NR_IMAGE_PER_EPOCH(400000)/num_processes(4)
+      minibatch: &MINIBATCH 32
+      num_workers: 32
+      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 400000  
       pin_memory: false
       datapipeline:
         name: "RegularDatapipeline"
@@ -135,11 +135,9 @@ train:
       DistributedRegularTrainer:
         exp_name: *TRAIN_NAME
         exp_save: *TRAIN_SAVE
-        devices: ["cuda:0", "cuda:1", "cuda:2", "cuda:3"]  # (cpu|cuda|cuda:x)
         max_epoch: 20
         minibatch: *MINIBATCH
         nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
-        # num_iterations: 12500
         snapshot: ""
       monitors:
         names: ["TrackInfo"]  # "TensorboardLogger"

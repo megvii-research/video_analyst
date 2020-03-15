@@ -22,7 +22,7 @@ from videoanalyst.model import builder as model_builder
 from videoanalyst.model.loss import builder as losses_builder
 from videoanalyst.optim import builder as optim_builder
 from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.utils import Timer, ensure_dir, complete_path_wt_root_in_cfg
+from videoanalyst.utils import Timer, ensure_dir, complete_path_wt_root_in_cfg, dist_utils
 
 cv2.setNumThreads(1)
 
@@ -48,11 +48,31 @@ def make_parser():
         '--resume',
         default="",
         help=r"completed epoch's number, latest or one model path")
+    parser.add_argument('-ad',
+                        '--auto_dist',
+                        default=True,
+                        help=r"whether use auto distributed training")
+    parser.add_argument('-du',
+                        '--dist_url',
+                        default="tcp://127.0.0.1:12345",
+                        help=r"the url port of master machine")
 
     return parser
 
 
-def setup(rank: int, world_size: int):
+def _find_free_port():
+    import socket
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Binding to port 0 will cause the OS to find an available port for us
+    sock.bind(("", 0))
+    port = sock.getsockname()[1]
+    sock.close()
+    # NOTE: there is still a chance the port could be taken by other processes.
+    return port
+
+
+def setup(rank: int, world_size: int, dist_url: str):
     """Setting-up method to be called in the distributed function
        Borrowed from https://pytorch.org/tutorials/intermediate/ddp_tutorial.html
     Parameters
@@ -61,13 +81,12 @@ def setup(rank: int, world_size: int):
         process int
     world_size : int
         number of porocesses (of the process group)
+    dist_url: str
+        the url+port of master machine, such as "tcp:127.0.0.1:12345"
     """
-    os.environ['MASTER_ADDR'] = 'localhost'
-    os.environ['MASTER_PORT'] = '12356'
     dist.init_process_group(
-        "nccl", rank=rank,
-        world_size=world_size)  # initialize the process group
-    # torch.manual_seed(42)  # same initialized model for every process
+        "nccl", rank=rank, world_size=world_size,
+        init_method=dist_url)  # initialize the process group
 
 
 def cleanup():
@@ -78,7 +97,7 @@ def cleanup():
 
 
 def run_dist_training(rank_id: int, world_size: int, task: str,
-                      task_cfg: CfgNode, parsed_args, model):
+                      task_cfg: CfgNode, parsed_args, model, dist_url):
     """method to run on distributed process
        passed to multiprocessing.spawn
     
@@ -95,10 +114,11 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
     parsed_args : [type]
         parsed arguments from command line
     """
+    devs = ["cuda:{}".format(rank_id)]
+    model.set_device(torch.device(devs[0]))
     # set up distributed
-    setup(rank_id, world_size)
-    # build model
-    # model = model_builder.build(task, task_cfg.model)
+    setup(rank_id, world_size, dist_url)
+    dist_utils.synchronize()
     # build optimizer
     optimizer = optim_builder.build(task, task_cfg.optim, model)
     # build dataloader with trainer
@@ -107,7 +127,6 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
     # build trainer
     trainer = engine_builder.build(task, task_cfg.trainer, "trainer", optimizer,
                                    dataloader)
-    devs = ["cuda:%d" % rank_id]
     trainer.set_device(devs)
     trainer.resume(parsed_args.resume)
     # trainer.init_train()
@@ -116,7 +135,7 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
         trainer.train()
         if rank_id == 0:
             trainer.save_snapshot()
-        dist.barrier()  # one synchronization per epoch
+        dist_utils.synchronize()  # one synchronization per epoch
 
     # clean up distributed
     cleanup()
@@ -149,14 +168,25 @@ if __name__ == '__main__':
         dataloader = dataloader_builder.build(task, task_cfg.data)
     del dataloader
     logger.info("Dummy dataloader destroyed.")
+    # device config
+    world_size = task_cfg.num_processes
+    assert torch.cuda.is_available(), "please check your devices"
+    assert torch.cuda.device_count(
+    ) >= world_size, "cuda device {} is less than {}".format(
+        torch.cuda.device_count(), world_size)
     # build model
     model = model_builder.build(task, task_cfg.model)
+    # get dist url
+    if parsed_args.auto_dist:
+        port = _find_free_port()
+        dist_url = "tcp://127.0.0.1:{}".format(port)
+    else:
+        dist_url = parsed_args.dist_url
     # prepare to spawn
-    world_size = task_cfg.num_processes
     torch.multiprocessing.set_start_method('spawn', force=True)
     # spawn trainer process
     mp.spawn(run_dist_training,
-             args=(world_size, task, task_cfg, parsed_args, model),
+             args=(world_size, task, task_cfg, parsed_args, model, dist_url),
              nprocs=world_size,
              join=True)
     logger.info("Distributed training completed.")
