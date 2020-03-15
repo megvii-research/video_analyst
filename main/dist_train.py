@@ -81,11 +81,12 @@ def setup(rank: int, world_size: int, dist_url: str):
         process int
     world_size : int
         number of porocesses (of the process group)
+    dist_url: str
+        the url+port of master machine, such as "tcp:127.0.0.1:12345"
     """
     dist.init_process_group(
         "nccl", rank=rank, world_size=world_size,
         init_method=dist_url)  # initialize the process group
-    # torch.manual_seed(42)  # same initialized model for every process
 
 
 def cleanup():
