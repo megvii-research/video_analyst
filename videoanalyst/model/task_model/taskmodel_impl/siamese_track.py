@@ -89,10 +89,6 @@ class SiamTrack(ModuleBase):
             # head
             fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final = self.head(
                 c_out, r_out)
-            # fcos_cls_prob_final = torch.sigmoid(fcos_cls_score_final)
-            # fcos_ctr_prob_final = torch.sigmoid(fcos_ctr_score_final)
-            # output
-            # out_list = fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final
             predict_data = dict(
                 cls_pred=fcos_cls_score_final,
                 ctr_pred=fcos_ctr_score_final,
@@ -144,14 +140,6 @@ class SiamTrack(ModuleBase):
             raise ValueError("Phase non-implemented.")
 
         return out_list
-
-    def forward_with_loss(self, *args):
-        predict_data = self.forward(args, "train")
-        training_losses, extras = OrderedDict(), OrderedDict()
-        for loss_name, loss in self.loss.items():
-            training_losses[loss_name], extras[loss_name] = loss(
-                predict_data, training_data)
-        return predict_data, training_losses, extras
 
     def update_params(self):
         r"""

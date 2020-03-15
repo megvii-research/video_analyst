@@ -90,7 +90,7 @@ train:
       exp_save: *TRAIN_SAVE
       num_epochs: 20
       minibatch: &MINIBATCH 128
-      num_workers: 8 
+      num_workers: 32
       nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 1500000  
       pin_memory: false
       datapipeline:
