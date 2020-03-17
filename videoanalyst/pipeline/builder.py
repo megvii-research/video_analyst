@@ -37,14 +37,9 @@ def build(task: str, cfg: CfgNode, model: ModuleBase):
 
     return pipeline
 
-<<<<<<< HEAD
 
 def get_config(task_list: List) -> Dict[str, CfgNode]:
     r"""
-=======
-def get_config(task_list: List) -> Dict[str, CfgNode]:
-    """
->>>>>>> github/master
     Get available component list config
 
     Returns
@@ -52,18 +47,8 @@ def get_config(task_list: List) -> Dict[str, CfgNode]:
     Dict[str, CfgNode]
         config with list of available components
     """
-<<<<<<< HEAD
     cfg_dict = {name: CfgNode() for name in task_list}
     for cfg_name, task_module in PIPELINES.items():
-=======
-    cfg_dict = {task: CfgNode() for task in task_list}
-
-    for cfg_name, module in zip([
-            "track",
-    ], [
-            TRACK_PIPELINES,
-    ]):
->>>>>>> github/master
         cfg = cfg_dict[cfg_name]
         cfg["name"] = "unknown"
         for name in task_module:
