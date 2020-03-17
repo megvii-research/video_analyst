@@ -36,7 +36,7 @@ def build(
                                         losses)
         return task_model
     else:
-        logger.error("model for task {} is not complted".format(task))
+        logger.error("model for task {} has not been implemented".format(task))
         exit(-1)
 
 
