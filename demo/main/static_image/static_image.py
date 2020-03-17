@@ -5,9 +5,7 @@ from demo.resources.static_img_example.getImage import im, bbox, im_z, im_x, tar
 
 from copy import deepcopy
 import cv2
-import logging
-
-logger = logging.getLogger('global')
+from loguru import logger
 
 color = dict(
     target=(0, 255, 0),

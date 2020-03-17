@@ -2,6 +2,7 @@
 
 import re
 from collections import OrderedDict
+from loguru import logger
 from typing import Dict, List
 
 from yacs.config import CfgNode
@@ -36,8 +37,8 @@ class FreezeStateMonitor:
             for k in self.new_freeze_state.keys():
                 change = (self.old_freeze_state[k] != self.new_freeze_state[k])
                 if change:
-                    print(k, "changed:", self.old_freeze_state[k], "->",
-                          self.new_freeze_state[k])
+                    logger.info(k, "changed:", self.old_freeze_state[k], "->",
+                                self.new_freeze_state[k])
                 any_change = any_change or change
 
 

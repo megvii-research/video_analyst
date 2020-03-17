@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-import logging
+from loguru import logger
 import os
 import os.path as osp
 import torch
@@ -13,8 +13,6 @@ from torch.utils.data import DataLoader
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.optim.optimizer.optimizer_base import OptimizerBase
 from videoanalyst.utils import (Registry, ensure_dir, unwrap_model)
-
-logger = logging.getLogger("global")
 
 TRACK_TRAINERS = Registry('TRACK_TRAINERS')
 VOS_TRAINERS = Registry('VOS_TRAINERS')

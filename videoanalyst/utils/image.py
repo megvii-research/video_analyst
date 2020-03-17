@@ -1,26 +1,21 @@
 # -*- coding: utf-8 -*-
-import logging
 import os.path as osp
 
 import cv2
 import numpy as np
+from loguru import logger
 from PIL import Image
-
-logger = logging.getLogger("global")
 
 _RETRY_NUM = 3
 
 
-def load_image(img_file: str, logger=logger) -> np.array:
+def load_image(img_file: str) -> np.array:
     """Image loader used by data module (e.g. image sampler)
     
     Parameters
     ----------
     img_file: str
         path to image file
-    logger: str
-        logger used to output exception information
-
     Returns
     -------
     np.array

@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
-import logging
+from loguru import logger
 from typing import Dict, List, Tuple
 
 import numpy as np
 from yacs.config import CfgNode
 
-from videoanalyst.data import _DATA_LOGGER_NAME
 from videoanalyst.data.dataset.dataset_base import DatasetBase
 from videoanalyst.evaluation.got_benchmark.datasets import got10k
 from videoanalyst.utils import load_image
 
 from ..sampler_base import TRACK_SAMPLERS, SamplerBase
-
-data_logger = logging.getLogger(_DATA_LOGGER_NAME)
 
 
 @TRACK_SAMPLERS.register
@@ -53,8 +50,8 @@ class TrackPairSampler(SamplerBase):
                 data2 = self._sample_track_frame()
             else:
                 data1, data2 = self._sample_track_pair()
-            data1["image"] = load_image(data1["image"], logger=data_logger)
-            data2["image"] = load_image(data2["image"], logger=data_logger)
+            data1["image"] = load_image(data1["image"])
+            data2["image"] = load_image(data2["image"])
 
         sampled_data = dict(
             data1=data1,

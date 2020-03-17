@@ -2,6 +2,16 @@
 
 Date format: YY/MM/DD
 
+## 2020/03/17
+  
+____Major changes____
+* Update all training configuration
+  * the cuda device number is defined by num_processes rather than devices in training phase
+  * the settings between DP and DDP are unified now
+* Adopt loguru to replace logging for better logger
+* Update code for distributed training
+* Update code for model/pipeline/trainer
+
 ## 2020/03/14
 
 ____Major changes____

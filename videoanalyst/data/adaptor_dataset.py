@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*
 from itertools import chain
 from typing import Dict
-import logging
+from loguru import logger
 
 import torch
 import torch.multiprocessing
@@ -10,8 +10,6 @@ from torch.utils.data import DataLoader, Dataset
 from videoanalyst.utils.misc import Timer
 
 from .datapipeline import builder as datapipeline_builder
-
-logger = logging.getLogger("global")
 
 # pytorch wrapper for multiprocessing
 # https://pytorch.org/docs/stable/multiprocessing.html#strategy-management

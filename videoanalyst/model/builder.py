@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*
 from typing import Dict, List
-
+from loguru import logger
 from yacs.config import CfgNode
 
 from .backbone import builder as backbone_builder
@@ -36,7 +36,7 @@ def build(
                                         losses)
         return task_model
     else:
-        print("model for task {} is not complted".format(task))
+        logger.error("model for task {} has not been implemented".format(task))
         exit(-1)
 
 

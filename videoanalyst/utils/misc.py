@@ -1,11 +1,9 @@
-import logging
 import time
 from typing import Dict
 import hashlib
 
+from loguru import logger
 from yacs.config import CfgNode as CN
-
-logger = logging.getLogger("global")
 
 
 def _register_generic(module_dict, module_name, module):
@@ -30,9 +28,6 @@ class Registry(dict):
     Access of module is just like using a dictionary, eg:
         f = some_registry["foo_module"]
     """
-    TAG = 'global'
-    logger = logging.getLogger(TAG)
-
     def __init__(self, *args, **kwargs):
         self.name = 'Registry'
         if len(args) > 0 and isinstance(args[0], str):
@@ -43,7 +38,7 @@ class Registry(dict):
     def register(self, module):
         name = module.__name__
         _register_generic(self, name, module)
-        self.logger.info('%s: %s registered' % (self.name, name))
+        logger.info('%s: %s registered' % (self.name, name))
         return module
 
 
@@ -77,8 +72,7 @@ class Timer():
     def __init__(self,
                  name: str = "",
                  output_dict: Dict = None,
-                 verbose: bool = False,
-                 logger: logging.Logger = logger):
+                 verbose: bool = False):
         """Timing usage
         
         Parameters
@@ -89,13 +83,10 @@ class Timer():
             dict-like object to receive elapsed time in output_dict[name], by default None
         verbose : bool, optional
             verbose or not via logger, by default False
-        logger : logging.Logger, optional
-            logger to verbose (info level), by default logger
         """
         self.name = name
         self.output_dict = output_dict
         self.verbose = verbose
-        self.logger = logger
 
     def __enter__(self, ):
         self.tic = time.time()
@@ -107,7 +98,7 @@ class Timer():
             self.output_dict[self.name] = elapsed_time
         if self.verbose:
             print_str = '%s elapsed time: %f' % (self.name, elapsed_time)
-            self.logger.info(print_str)
+            logger.info(print_str)
 
 
 def md5sum(file_path) -> str:

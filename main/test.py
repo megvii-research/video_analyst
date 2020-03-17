@@ -2,7 +2,7 @@
 from paths import ROOT_PATH  # isort:skip
 
 import argparse
-import logging
+from loguru import logger
 import os.path as osp
 
 from videoanalyst.config.config import cfg as root_cfg
@@ -11,8 +11,6 @@ from videoanalyst.engine.builder import build as tester_builder
 from videoanalyst.model import builder as model_builder
 from videoanalyst.pipeline import builder as pipeline_builder
 from videoanalyst.utils import complete_path_wt_root_in_cfg
-
-logger = logging.getLogger('global')
 
 
 def make_parser():

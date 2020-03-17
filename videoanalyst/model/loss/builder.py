@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-import logging
+from loguru import logger
 from collections import OrderedDict
 from typing import Dict, List
 
@@ -7,8 +7,6 @@ from yacs.config import CfgNode
 
 from videoanalyst.model.loss.loss_base import TASK_LOSSES
 from videoanalyst.utils.misc import merge_cfg_into_hps
-
-logger = logging.getLogger(__file__)
 
 
 def build(task: str, cfg: CfgNode):
