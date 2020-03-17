@@ -147,26 +147,33 @@ if __name__ == '__main__':
     # experiment config
     exp_cfg_path = osp.realpath(parsed_args.config)
     root_cfg.merge_from_file(exp_cfg_path)
-    logger.info("Load experiment configuration at: %s" % exp_cfg_path)
-    logger.info(
-        "Merged with root_cfg imported from videoanalyst.config.config.cfg")
     # resolve config
     root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.train
     task, task_cfg = specify_task(root_cfg)
     task_cfg.freeze()
+    # log config
+    log_dir = osp.join(task_cfg.exp_save, task_cfg.exp_name, "logs")
+    ensure_dir(log_dir)
+    logger.configure(
+        handlers=[
+            dict(sink=sys.stderr, format="[{time}] {message}", level="INFO"),
+            dict(sink=osp.join(log_dir, "train_log.txt"),
+                 enqueue=True,
+                 serialize=True,
+                 diagnose=True,
+                 backtrace=True,
+                 level="INFO")
+        ],
+        extra={"common_to_all": "default"},
+    )
     # backup config
-    cfg_bak_dir = osp.join(task_cfg.exp_save, task_cfg.exp_name, "logs")
-    ensure_dir(cfg_bak_dir)
-    cfg_bak_file = osp.join(cfg_bak_dir, "%s_bak.yaml" % task_cfg.exp_name)
+    logger.info("Load experiment configuration at: %s" % exp_cfg_path)
+    logger.info(
+        "Merged with root_cfg imported from videoanalyst.config.config.cfg")
+    cfg_bak_file = osp.join(log_dir, "%s_bak.yaml" % task_cfg.exp_name)
     with open(cfg_bak_file, "w") as f:
         f.write(task_cfg.dump())
-    # log config
-    logger.configure(handlers=[{"sink": sys.stderr, "level": 'INFO'}])
-    logger.add(osp.join(cfg_bak_dir, "train_log.txt"),
-               enqueue=True,
-               backtrace=True,
-               diagnose=True)
     logger.info("Task configuration backed up at %s" % cfg_bak_file)
     # build dummy dataloader (for dataset initialization)
     with Timer(name="Dummy dataloader building", verbose=True):
