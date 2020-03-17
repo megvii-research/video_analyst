@@ -32,8 +32,6 @@ torch.backends.cudnn.benchmark = False
 torch.backends.cudnn.deterministic = True
 
 
-
-
 def make_parser():
     parser = argparse.ArgumentParser(description='Test')
     parser.add_argument(

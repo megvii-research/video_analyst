@@ -16,8 +16,6 @@ import numpy as np
 import time
 import torch
 
-
-
 font_size = 0.5
 font_width = 1
 

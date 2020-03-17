@@ -7,8 +7,6 @@ from copy import deepcopy
 import cv2
 from loguru import logger
 
-
-
 color = dict(
     target=(0, 255, 0),
     pred=(0, 255, 255),

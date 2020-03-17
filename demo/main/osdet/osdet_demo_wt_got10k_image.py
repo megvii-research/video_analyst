@@ -22,8 +22,6 @@ import cv2
 import numpy as np
 import torch
 
-
-
 color = dict(
     target=(0, 255, 0),
     pred=(0, 255, 255),
