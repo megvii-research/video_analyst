@@ -8,10 +8,16 @@ Current implementation list:
 
 * SOT
   * [SiamFC++: Towards Robust and Accurate Visual Tracking with Target Estimation Guidelines](https://arxiv.org/abs/1911.06188) [[demo]](https://www.youtube.com/watch?v=TCziWahnXT8&list=PL4KqNq8e6fJkfk35zHRaUd21ExV522JK0&index=4&t=0s&app=desktop)
-
 <div align="center">
   <img src="docs/resources/siamfcpp_ice2.gif" width="800px" />
   <p>Example SiamFC++ outputs.</p>
+</div>
+
+* VOS
+  * [State-Aware Tracker for Real-Time Video Object Segmentation](https://arxiv.org/abs/2003.00482) comming soon
+<div align="center">
+  <img src="docs/resources/sat_runman.gif" width="800px" />
+  <p>Example SAT outputs.</p>
 </div>
 
 ## Quick start
@@ -28,33 +34,9 @@ python3 ./demo/main/video/sot_video.py --config 'experiments/siamfcpp/test/vot/s
 
 ### Test
 
-#### Test on VOT
-
-```Bash
-python3 ./main/test.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml'
-```
-
-#### Test on GOT-10k
-
-```Bash
-python3 ./main/test.py --config 'experiments/siamfcpp/test/got10k/siamfcpp_alexnet-got.yaml'
-```
-
 Please refer to [docs/TEST.md](docs/TEST.md) for detail.
 
 ### Training
-
-#### From epoch 0
-
-```Bash
-python3 ./main/train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml'
-```
-
-#### Resuming (e.g. from epoch 10)
-
-```Bash
-python3 ./main/train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml' --resume-from-epoch=10
-```
 
 Please refer to [docs/TRAINING.md](docs/TRAINING.md) for detail.
 
@@ -100,7 +82,7 @@ Please refer to [docs/TRAINING.md](docs/TRAINING.md) for detail.
 For detail, please refer to markdown files under _docs_.
 
 * [SETUP.md](docs/SETUP.md): instructions for setting-up
-* [MODEL_ZOO.md](docs/MODEL_ZOO.md): description of released models
+* [SOT_MODEL_ZOO.md](docs/SOT_MODEL_ZOO.md): description of released sot models
 * [TRAINING.md](docs/TRAINING.md): details related to training
 * [DEVELOP.md](docs/DEVELOP.md): description of project design (registry, configuration tree, etc.)
 * [PIPELINE_API.md](docs/PIPELINE_API.md): description for pipeline API
