@@ -38,7 +38,7 @@ def make_parser():
     parser = argparse.ArgumentParser(description='Test')
     parser.add_argument(
         '--config',
-        default='experiments/siamfcpp/train/siamfcpp_alexnet-trn.yaml',
+        default='experiments/siamfcpp/data/siamfcpp_data-trn.yaml',
         type=str,
         help='path to experiment configuration')
 
