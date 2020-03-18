@@ -5,7 +5,7 @@ URL: https://github.com/pytorch/vision/blob/master/torchvision/models/inception.
 Pretrained weights downloaded from:
     https://download.pytorch.org/models/inception_v3_google-1a9a5a14.pth
 """
-import logging
+from loguru import logger
 
 import torch
 import torch.nn as nn
@@ -17,7 +17,6 @@ from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.utils import md5sum
 
 # from videoanalyst.model.common_opr.common_block import conv_bn_relu
-logger = logging.getLogger("global")
 
 
 @VOS_BACKBONES.register

@@ -2,7 +2,7 @@
 from paths import ROOT_PATH  # isort:skip
 
 import argparse
-import logging
+from loguru import logger
 import os.path as osp
 import pickle
 
@@ -30,8 +30,6 @@ cv2.setNumThreads(1)
 # https://pytorch.org/docs/stable/notes/randomness.html#cudnn
 torch.backends.cudnn.benchmark = False
 torch.backends.cudnn.deterministic = True
-
-logger = logging.getLogger('global')
 
 
 def make_parser():
@@ -63,7 +61,7 @@ if __name__ == '__main__':
     task_cfg.freeze()
 
     # load data
-    with Timer(name="Dataloader building", verbose=True, logger=logger):
+    with Timer(name="Dataloader building", verbose=True):
         dataloader = dataloader_builder.build(task, task_cfg.data)
 
     for batch_training_data in dataloader:

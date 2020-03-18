@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*
 import itertools
-import logging
+from loguru import logger
 from typing import Dict
 
 import cv2
@@ -10,8 +10,6 @@ from tqdm import tqdm
 import torch
 
 from ..monitor_base import TRACK_MONITORS, MonitorBase
-
-logger = logging.getLogger("global")
 
 
 @TRACK_MONITORS.register

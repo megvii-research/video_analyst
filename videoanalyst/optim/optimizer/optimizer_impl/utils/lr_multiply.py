@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*
 import json
 import re
+from loguru import logger
 from typing import List
 
 from yacs.config import CfgNode
@@ -98,6 +99,6 @@ def multiply_lr(optimizer, lr_ratios, verbose=False):
               lr_ratio) in enumerate(zip(optimizer.param_groups, lr_ratios)):
         param_group['lr'] *= lr_ratio
         if verbose:
-            print("%d params in param_group %d multiplied by ratio %.2g" %
-                  (len(param_group['params']), ith, lr_ratio))
+            logger.info("%d params in param_group %d multiplied by ratio %.2g" %
+                        (len(param_group['params']), ith, lr_ratio))
     return optimizer

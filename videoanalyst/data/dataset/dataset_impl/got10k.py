@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import copy
-import logging
+from loguru import logger
 import os.path as osp
 from typing import Dict, List
 
@@ -8,12 +8,9 @@ import cv2
 import numpy as np
 from yacs.config import CfgNode
 
-from videoanalyst.data import _DATA_LOGGER_NAME
 from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, DatasetBase
 from videoanalyst.evaluation.got_benchmark.datasets import GOT10k
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
-
-logger = logging.getLogger(_DATA_LOGGER_NAME)
 
 _current_dir = osp.dirname(osp.realpath(__file__))
 

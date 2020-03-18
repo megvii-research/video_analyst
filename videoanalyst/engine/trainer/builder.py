@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-import logging
+from loguru import logger
 from typing import Dict, List
 
 from yacs.config import CfgNode
@@ -13,8 +13,6 @@ from videoanalyst.utils.misc import merge_cfg_into_hps
 from ..monitor import builder as monitor_builder
 from ..monitor.monitor_base import TASK_MONITORS
 from .trainer_base import TASK_TRAINERS, TrainerBase
-
-logger = logging.getLogger(__file__)
 
 
 def build(task: str, cfg: CfgNode, optimizer, dataloader) -> TrainerBase:

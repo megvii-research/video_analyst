@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import logging
+from loguru import logger
 from typing import Dict, List, Tuple
 
 import cv2

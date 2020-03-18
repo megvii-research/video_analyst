@@ -14,13 +14,11 @@ from videoanalyst.pipeline.utils.crop import get_subwindow
 
 from copy import deepcopy
 import argparse
-import logging
+from loguru import logger
 
 import cv2
 import numpy as np
 import torch
-
-logger = logging.getLogger('global')
 
 color = dict(
     target=(0, 255, 0),

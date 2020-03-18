@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*
-import logging
+from loguru import logger
 
 import torch
 
-logger = logging.getLogger('global')
+
 
 
 def check_keys(model, pretrained_state_dict):

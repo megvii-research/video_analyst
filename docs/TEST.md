@@ -1,4 +1,4 @@
-# TEST
+# SOT TEST 
 
 A collection of test scripts are located under _tools/_:
 

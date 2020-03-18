@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-import logging
+from loguru import logger
 import os.path as osp
 
 from typing import Dict, List
@@ -16,15 +16,12 @@ from torch.utils.data.distributed import DistributedSampler
 
 from videoanalyst.utils import Timer, ensure_dir
 
-from . import _DATA_LOGGER_NAME
 from .adaptor_dataset import AdaptorDataset
 from .datapipeline import builder as datapipeline_builder
 from .sampler import builder as sampler_builder
 from .target import builder as target_builder
 from .transformer import builder as transformer_builder
 from videoanalyst.utils import dist_utils
-
-logger = logging.getLogger("global")
 
 
 def build(task: str, cfg: CfgNode, seed: int = 0) -> DataLoader:
@@ -36,7 +33,6 @@ def build(task: str, cfg: CfgNode, seed: int = 0) -> DataLoader:
     cfg: CfgNode
         node name: data
     """
-    data_logger = build_data_logger(cfg)
 
     if task == "track":
         # build dummy dataset for purpose of dataset setup (e.g. caching path list)
@@ -64,8 +60,8 @@ def build(task: str, cfg: CfgNode, seed: int = 0) -> DataLoader:
         # use DistributedSampler in case of DDP
         if world_size > 1:
             py_sampler = DistributedSampler(py_dataset)
-            data_logger.info("Use dist.DistributedSampler, world_size=%d" %
-                             world_size)
+            logger.info("Use dist.DistributedSampler, world_size=%d" %
+                        world_size)
         else:
             py_sampler = None
         # build real dataloader
@@ -107,34 +103,3 @@ def get_config(task_list: List) -> Dict[str, CfgNode]:
         cfg["target"] = target_builder.get_config(task_list)[task]
 
     return cfg_dict
-
-
-def build_data_logger(cfg: CfgNode) -> logging.Logger:
-    r"""Build logger for data module
-    
-    Parameters
-    ----------
-    cfg : CfgNode
-        cfg, node name: data
-    
-    Returns
-    -------
-    logging.Logger
-        logger built with file handler at "exp_save/exp_name/logs/data.log"
-    """
-    log_dir = osp.join(cfg.exp_save, cfg.exp_name, "logs")
-    ensure_dir(log_dir)
-    log_file = osp.join(log_dir, "data.log")
-    data_logger = logging.getLogger(_DATA_LOGGER_NAME)
-    data_logger.setLevel(logging.INFO)
-    # file handler
-    fh = logging.FileHandler(log_file)
-    format_str = "[%(asctime)s - %(filename)s] - %(message)s"
-    formatter = logging.Formatter(format_str)
-    fh.setFormatter(formatter)
-    # add file handler
-    data_logger.addHandler(fh)
-    logger.info("Data log file registered at: %s" % log_file)
-    data_logger.info("Data logger built.")
-
-    return data_logger
