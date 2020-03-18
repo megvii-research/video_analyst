@@ -13,6 +13,8 @@ import torch
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.config.config import specify_task
 from videoanalyst.data import builder as dataloader_builder
+from videoanalyst.data.dataset import builder as dataset_buidler
+from videoanalyst.data.datapipeline import builder as datapipeline_builder
 from videoanalyst.engine import builder as engine_builder
 from videoanalyst.model import builder as model_builder
 from videoanalyst.model.loss import builder as losses_builder
@@ -40,7 +42,14 @@ def make_parser():
         type=str,
         help='path to experiment configuration')
 
+    parser.add_argument(
+        '--target',
+        default='dataloader',
+        type=str,
+        help='targeted debugging module (dataloder|datasampler|dataset))')
+
     return parser
+
 
 if __name__ == '__main__':
     # parsing
@@ -60,18 +69,49 @@ if __name__ == '__main__':
     task_cfg.data.sampler.submodules.dataset.GOT10kDataset.check_integrity = False
     task_cfg.freeze()
 
-    # load data
-    with Timer(name="Dataloader building", verbose=True):
-        dataloader = dataloader_builder.build(task, task_cfg.data)
+    if parsed_args.target == "dataloader":
+        with Timer(name="Dataloader building", verbose=True):
+            dataloader = dataloader_builder.build(task, task_cfg.data)
 
-    for batch_training_data in dataloader:
-        keys = list(batch_training_data.keys())
-        batch_size = len(batch_training_data[keys[0]])
-        training_samples = [{
-            k: v[[idx]]
-            for k, v in batch_training_data.items()
-        } for idx in range(batch_size)]
-        for training_sample in training_samples:
-            # from IPython import embed;embed()
-            target_cfg = task_cfg.data.target
-            show_img_FCOS(target_cfg[target_cfg.name], training_sample)
+        for batch_training_data in dataloader:
+            keys = list(batch_training_data.keys())
+            batch_size = len(batch_training_data[keys[0]])
+            training_samples = [{
+                k: v[[idx]]
+                for k, v in batch_training_data.items()
+            } for idx in range(batch_size)]
+            for training_sample in training_samples:
+                target_cfg = task_cfg.data.target
+                show_img_FCOS(target_cfg[target_cfg.name], training_sample)
+    elif parsed_args.target == "dataset":
+        from videoanalyst.utils import load_image
+        import numpy as np
+        datasets = dataset_buidler.build(
+            task, task_cfg.data.sampler.submodules.dataset)
+        dataset = datasets[0]
+        while True:
+            # pick a frame randomly
+            seq_idx = np.random.choice(range(len(dataset)))
+            seq_idx = int(seq_idx)
+            seq = dataset[seq_idx]
+            frame_idx = np.random.choice(range(len(seq['image'])))
+            frame = {k: seq[k][frame_idx] for k in seq}
+            # fetch & visualize data
+            im = load_image(frame['image'])
+            cv2.rectangle(im,
+                          tuple(map(int, frame['anno'][:2])),
+                          tuple(map(int, frame['anno'][2:])), (0, 255, 0),
+                          thickness=3)
+            im = cv2.resize(im, (0, 0), fx=0.33, fy=0.33)
+            cv2.imshow("im", im)
+            cv2.waitKey(0)
+    elif parsed_args.target == "datapipeline":
+        datapipeline = datapipeline_builder.build(task, task_cfg.data, seed=1)
+        target_cfg = task_cfg.data.target
+        while True:
+            sampled_data = datapipeline[0]
+            print(sampled_data.keys())
+            show_img_FCOS(
+                target_cfg[target_cfg.name],
+                sampled_data,
+            )
