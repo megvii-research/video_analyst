@@ -21,7 +21,8 @@ class LaSOT(object):
         subset (string, optional): Specify ``train`` or ``test``
             subset of LaSOT.
     """
-    def __init__(self, root_dir, subset='test', return_meta=False):
+    def __init__(self, root_dir, subset='test', return_meta=False,
+                 check_integrity=True):
         super(LaSOT, self).__init__()
         subset = subset.split('_')
         assert set(subset).issubset({'train', 'test'}), 'Unknown subset.'
@@ -29,7 +30,8 @@ class LaSOT(object):
         self.root_dir = root_dir
         self.subset = subset
         self.return_meta = return_meta
-        self._check_integrity(root_dir)
+        if check_integrity:
+            self._check_integrity(root_dir)
 
         self.anno_files = sorted(glob.glob(
             os.path.join(root_dir, '*/*/groundtruth.txt')))

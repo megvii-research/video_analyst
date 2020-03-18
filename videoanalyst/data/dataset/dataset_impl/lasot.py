@@ -21,12 +21,19 @@ class LaSOTDataset(DatasetBase):
         path to root of the dataset
     subset: str
         dataset split name (train|val|test)
+    ratio: float
+        dataset ratio. used by sampler (data.sampler).
+    max_diff: int
+        maximum difference in index of a pair of sampled frames 
+    check_integrity: bool
+        if check integrity of dataset or not
     """
     default_hyper_params = dict(
         dataset_root="datasets/LaSOT",
         subset="train",
-        ratio=1,
+        ratio=1.0,
         max_diff=100,
+        check_integrity=True,
     )
 
     def __init__(self) -> None:
@@ -47,7 +54,8 @@ class LaSOTDataset(DatasetBase):
         """
         dataset_root = osp.realpath(self._hyper_params["dataset_root"])
         subset = self._hyper_params["subset"]
-        self._state["dataset"] = LaSOT(dataset_root, subset=subset)
+        check_integrity = self._hyper_params["check_integrity"]
+        self._state["dataset"] = LaSOT(dataset_root, subset=subset, check_integrity=check_integrity)
 
     def __getitem__(self, item: int) -> Dict:
         img_files, anno = self._state["dataset"][item]
