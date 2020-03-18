@@ -99,13 +99,13 @@ train:
           dataset:
             names: ["GOT10kDataset",]  # (GOT10kDataset|LaSOTDataset)
             GOT10kDataset: &GOT10KDATASET_CFG
-              ratio: 1
+              ratio: 1.0
               max_diff: 100
               dataset_root: "datasets/GOT-10k"
               subset: "train"
             GOT10kDatasetFixed: *GOT10KDATASET_CFG  # got10k dataset with exclusion of unfixed sequences
             LaSOTDataset:
-              ratio: 1
+              ratio: 1.0
               max_diff: 100
               dataset_root: "datasets/LaSOT"
               subset: "train"
