@@ -91,7 +91,7 @@ train:
       num_epochs: 20
       minibatch: &MINIBATCH 128
       num_workers: 32
-      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 1500000  
+      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 150000
       pin_memory: false
       datapipeline:
         name: "RegularDatapipeline"
