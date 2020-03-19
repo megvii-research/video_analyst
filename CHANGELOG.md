@@ -2,9 +2,19 @@
 
 Date format: YY/MM/DD
 
+## 2020/03/18
+
+____Major changes____
+
+* Add caching in LaSOT dataset
+* Add multi-mode in siamfcpp visualization debugging tools
+  * demo/main/debug/visualize_siamfcpp_training_data.py
+  * Seperate config file for debugging: experiments/siamfcpp/data/siamfcpp_data-trn.yaml
+
 ## 2020/03/17
   
 ____Major changes____
+
 * Update all training configuration
   * the cuda device number is defined by num_processes rather than devices in training phase
   * the settings between DP and DDP are unified now
