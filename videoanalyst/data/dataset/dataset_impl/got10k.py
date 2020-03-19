@@ -26,11 +26,17 @@ class GOT10kDataset(DatasetBase):
         path to root of the dataset
     subset: str
         dataset split name (train|val|test)
+    ratio: float
+        dataset ratio. used by sampler (data.sampler).
+    max_diff: int
+        maximum difference in index of a pair of sampled frames 
+    check_integrity: bool
+        if check integrity of dataset or not
     """
     default_hyper_params = dict(
         dataset_root="datasets/GOT-10k",
         subset="train",
-        ratio=1,
+        ratio=1.0,
         max_diff=100,
         check_integrity=True,
     )

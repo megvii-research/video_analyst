@@ -193,6 +193,8 @@ class SiamTrack(ModuleBase):
                                   std=conv_weight_std)  # conv_weight_std=0.01
 
     def set_device(self, dev):
+        if not isinstance(dev, torch.device):
+            dev = torch.device(dev)
         self.to(dev)
         if self.loss is not None:
             for loss_name in self.loss:

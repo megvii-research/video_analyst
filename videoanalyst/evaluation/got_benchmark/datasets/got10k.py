@@ -172,7 +172,7 @@ class GOT10k(object):
         """
         root_dir = self.root_dir
         subset = self.subset
-        logger.info("{}: start loading got-10k {}".format(GOT10k.__name__, subset))
+        logger.info("{}: start loading subset {}".format(GOT10k.__name__, subset))
         for seq_name in tqdm(self.seq_names):
             seq_dir = os.path.join(root_dir, subset, seq_name)
             img_files, anno, meta = self.load_single_sequence(seq_dir)
