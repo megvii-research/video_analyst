@@ -114,7 +114,6 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
         parsed arguments from command line
     """
     devs = ["cuda:{}".format(rank_id)]
-    model.set_device(torch.device(devs[0]))
     # set up distributed
     setup(rank_id, world_size, dist_url)
     dist_utils.synchronize()

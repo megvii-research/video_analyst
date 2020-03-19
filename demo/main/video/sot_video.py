@@ -65,7 +65,7 @@ def main(args):
     # build pipeline
     pipeline = pipeline_builder.build(task, task_cfg.pipeline, model)
     dev = torch.device(args.device)
-    pipeline.to_device(dev)
+    pipeline.set_device(dev)
     init_box = None
     template = None
     vw = None

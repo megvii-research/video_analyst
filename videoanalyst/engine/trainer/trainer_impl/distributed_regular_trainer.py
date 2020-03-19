@@ -80,6 +80,7 @@ class DistributedRegularTrainer(TrainerBase):
         # load from self._state["snapshot_file"]
         self.load_snapshot()
         # parallelism with Distributed Data Parallel (DDP)
+        self._model.set_device(devs[0])
         self._model = nn.parallel.DistributedDataParallel(
             self._model, device_ids=devs, find_unused_parameters=True
         )  # TODO: devs should be calculated based on rank & num_workers

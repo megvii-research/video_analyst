@@ -37,7 +37,7 @@ logger.info("Load experiment configuration at: %s" % exp_cfg_path)
 model = model_builder.build_model(task, task_cfg.model)
 # build pipeline
 pipeline = pipeline_builder.build('track', task_cfg.pipeline, model)
-pipeline.to_device(torch.device("cuda:0"))
+pipeline.set_device(torch.device("cuda:0"))
 # register your template
 im_template = cv2.imread("test file")
 state_template = ...

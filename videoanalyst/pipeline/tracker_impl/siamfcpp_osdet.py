@@ -93,7 +93,7 @@ class SiamFCppOneShotDetector(PipelineBase):
         self._model = model.to(self.device)
         self._model.eval()
 
-    def to_device(self, device):
+    def set_device(self, device):
         self.device = device
         self._model = self._model.to(device)
 
