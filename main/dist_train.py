@@ -114,12 +114,12 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
         parsed arguments from command line
     """
     devs = ["cuda:{}".format(rank_id)]
-    model.set_device(torch.device(devs[0]))
     # set up distributed
     setup(rank_id, world_size, dist_url)
     dist_utils.synchronize()
     # build optimizer
     optimizer = optim_builder.build(task, task_cfg.optim, model)
+    model.set_device(torch.device(devs[0]))  # need to be placed after optimizer built (potential pytorch issue)
     # build dataloader with trainer
     with Timer(name="Dataloader building", verbose=True):
         dataloader = dataloader_builder.build(task, task_cfg.data, seed=rank_id)
