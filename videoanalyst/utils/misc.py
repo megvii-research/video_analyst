@@ -38,7 +38,7 @@ class Registry(dict):
     def register(self, module):
         name = module.__name__
         _register_generic(self, name, module)
-        logger.info('%s: %s registered' % (self.name, name))
+        logger.debug('%s: %s registered' % (self.name, name))
         return module
 
 

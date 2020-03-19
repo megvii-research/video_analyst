@@ -161,7 +161,7 @@ class VOTTester(TesterBase):
             queue for fps measurement collecting
         """
         tracker = copy.deepcopy(self._pipeline)
-        tracker.to_device(dev)
+        tracker.set_device(dev)
         for v_id, video in enumerate(records):
             lost, speed = self.track_single_video(tracker, video, v_id=v_id)
             if result_queue is not None:

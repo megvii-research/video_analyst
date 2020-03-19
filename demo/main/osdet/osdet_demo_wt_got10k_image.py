@@ -83,7 +83,7 @@ datasets = dataset_buidler.build(
 dataset = datasets[0]
 
 dev = torch.device(parsed_args.device)
-pipeline.to_device(dev)
+pipeline.set_device(dev)
 
 if __name__ == "__main__":
 

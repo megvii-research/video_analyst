@@ -50,7 +50,7 @@ class LaSOTTester(TesterBase):
         tracker_name = self._hyper_params["exp_name"]
         all_devs = self._state["all_devs"]
         dev = all_devs[0]
-        self._pipeline.to_device(dev)
+        self._pipeline.set_device(dev)
         pipeline_tracker = PipelineTracker(tracker_name, self._pipeline)
 
         for subset in self._hyper_params["subsets"]:
