@@ -14,7 +14,7 @@ Current implementation list:
 </div>
 
 * VOS
-  * [State-Aware Tracker for Real-Time Video Object Segmentation](https://arxiv.org/abs/2003.00482) comming soon
+  * [State-Aware Tracker for Real-Time Video Object Segmentation](https://arxiv.org/abs/2003.00482) coming soon
 <div align="center">
   <img src="docs/resources/sat_runman.gif" width="800px" />
   <p>Example SAT outputs.</p>
