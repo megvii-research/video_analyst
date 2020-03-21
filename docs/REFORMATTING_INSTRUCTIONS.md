@@ -13,9 +13,9 @@ Reformatting processes that must be perform before push, otherwise CI will fail.
 
 ```Bash
 # check
-yapf -p -r -d --style='{COLUMN_LIMIT:80}' -e "videoanalyst/evaluation/*" ./
+yapf -p -r -d --style='{COLUMN_LIMIT:80}' -e "videoanalyst/evaluation/*" -e "debug/*" ./
 # apply
-yapf -p -r -i --style='{COLUMN_LIMIT:80}' -e "videoanalyst/evaluation/*" ./
+yapf -p -r -i --style='{COLUMN_LIMIT:80}' -e "videoanalyst/evaluation/*" -e "debug/*" ./
 ```
 
 ## Currently not in use
