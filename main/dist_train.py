@@ -125,7 +125,9 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
     # build trainer
     trainer = engine_builder.build(task, task_cfg.trainer, "trainer", optimizer,
                                    dataloader)
-    trainer.set_device(devs)  # need to be placed after optimizer built (potential pytorch issue)
+    trainer.set_device(
+        devs
+    )  # need to be placed after optimizer built (potential pytorch issue)
     trainer.resume(parsed_args.resume)
     # trainer.init_train()
     logger.info("Start training")
