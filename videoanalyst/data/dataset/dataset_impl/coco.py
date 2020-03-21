@@ -40,18 +40,7 @@ class COCODataset(DatasetBase):
         maximum difference in index of a pair of sampled frames 
     """
     data_dict = {subset : dict() for subset in _VALID_SUBSETS}
-    # def __init__(self, root_dir, subset, data_dir=None,
-    #              decode_data=None, decode_anno=None, intern_json=True):
-    #     if data_dir is None:
-    #         data_dir = root_dir
 
-    #     self.root_dir = root_dir
-    #     self.subset = subset
-    #     self.decode_data = decode_data
-    #     self.decode_anno = decode_anno
-    #     self.data_dir = osp.join(data_dir, subset)
-
-    #     self.data_anno_list = self._load_list(intern_json)
     default_hyper_params = dict(
         dataset_root="datasets/COCO",
         subset="train", 
@@ -89,11 +78,8 @@ class COCODataset(DatasetBase):
         """
         # frame_name = 
         subset = self._hyper_params["subset"]
-        # data_fname, anno = COCODataset.data_dict[subset][item]
-        # data_file = osp.join(self.data_dir, data_fname)
         image_file, anno = COCODataset.data_dict[subset][item]
         anno = xywh2xyxy(anno)
-        # from IPython import embed;embed()
         sequence_data = dict(image=[image_file], anno=anno)
 
         return sequence_data
@@ -102,12 +88,10 @@ class COCODataset(DatasetBase):
         subset = self._hyper_params["subset"]
         return len(COCODataset.data_dict[subset])
 
-    # def _ensure_cache(self, intern_json):
     def _ensure_cache(self):
         # current_dir = osp.dirname(osp.realpath(__file__))
         dataset_root = self._hyper_params["dataset_root"]
         subset = self._hyper_params["subset"]
-        # intern_json_file = osp.join(current_dir, "meta_data/coco/coco_%s.json" % self.subset)
         cache_file = osp.join(dataset_root, "cache/coco_%s.json" % subset)
 
         # dataset_name = type(self).__name__
