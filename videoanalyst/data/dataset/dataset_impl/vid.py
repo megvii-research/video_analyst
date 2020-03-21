@@ -58,7 +58,6 @@ class VIDDataset(DatasetBase):
 
     def __getitem__(self, item: int) -> Dict:
         img_files, anno = self._state["dataset"][item]
-
         anno = xywh2xyxy(anno)
         sequence_data = dict(image=img_files, anno=anno)
 

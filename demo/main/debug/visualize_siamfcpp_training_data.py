@@ -96,12 +96,14 @@ if __name__ == '__main__':
             seq_idx = np.random.choice(range(len(dataset)))
             seq_idx = int(seq_idx)
             seq = dataset[seq_idx]
+            # video dataset
             if len(seq['image']) > 1:
                 frame_idx = np.random.choice(range(len(seq['image'])))
                 frame = {k: seq[k][frame_idx] for k in seq}
                 # fetch & visualize data
                 im = load_image(frame['image'])
                 anno = frame['anno']
+            # static image dataset
             else:
                 im = load_image(seq['image'][0])
                 num_anno = len(seq['anno'])

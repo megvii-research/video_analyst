@@ -20,12 +20,19 @@ train:
         submodules:
           dataset:
             # (GOT10kDataset|LaSOTDataset)
-            names: ["DETDataset", "COCODataset", "VIDDataset", "LaSOTDataset", "GOT10kDataset"]
+            names: [
+              "COCODataset", 
+              "GOT10kDataset", 
+              "DETDataset", 
+              "VIDDataset", 
+              "LaSOTDataset", 
+              ]
             GOT10kDataset: &GOT10KDATASET_CFG
               ratio: 1.0
               max_diff: 100
               dataset_root: "datasets/GOT-10k"
               subset: "train"
+              check_integrity: false  # no need to check integrity for visualization purpose
             GOT10kDatasetFixed: *GOT10KDATASET_CFG  # got10k dataset with exclusion of unfixed sequences
             LaSOTDataset:
               ratio: 1.0
