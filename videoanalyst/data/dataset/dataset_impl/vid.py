@@ -51,7 +51,7 @@ class VIDDataset(DatasetBase):
         dataset_root = osp.realpath(self._hyper_params["dataset_root"])
         subset = self._hyper_params["subset"]
         subset = [s.strip() for s in subset.split("_")]
-        cache_dir = osp.join(dataset_root, "cache")
+        cache_dir = osp.join(dataset_root, "cache/vid")
         self._state["dataset"] = ImageNetVID(dataset_root,
                                              subset=subset,
                                              cache_dir=cache_dir)

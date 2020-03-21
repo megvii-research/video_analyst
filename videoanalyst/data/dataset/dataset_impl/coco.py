@@ -19,7 +19,6 @@ from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, DatasetBase
 from videoanalyst.evaluation.got_benchmark.datasets import ImageNetVID
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
-_current_dir = osp.dirname(osp.realpath(__file__))
 
 _VALID_SUBSETS = ['train', 'val']
 
@@ -70,12 +69,6 @@ class COCODataset(DatasetBase):
         """
         super(COCODataset, self).__init__()
         self._state["dataset"] = None
-
-        # self.root_dir = root_dir
-        # self.subset = subset
-        # self.data_dir = osp.join(data_dir, subset)
-
-        # self._ensure_cache(intern_json)
 
     def update_params(self):
         r"""
