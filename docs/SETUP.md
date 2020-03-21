@@ -31,6 +31,11 @@ Please install python3-tk by running:
 sudo apt-get install python3-tk
 ```
 
+## Download models & raw results
+
+- [Google Drive](https://drive.google.com/open?id=1XhWIU1KIt9wvFpzZqEDaX-GrgZ9AVcOC)
+- [Tencent Weiyun](https://share.weiyun.com/56C92l4), code: wg47g7
+
 ## Compile evaluation toolkit
 
 ```Bash

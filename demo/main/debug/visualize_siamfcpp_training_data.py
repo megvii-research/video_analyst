@@ -70,6 +70,7 @@ if __name__ == '__main__':
     task_cfg.freeze()
 
     if parsed_args.target == "dataloader":
+        logger.info("visualize for dataloader")
         with Timer(name="Dataloader building", verbose=True):
             dataloader = dataloader_builder.build(task, task_cfg.data)
 
@@ -84,6 +85,7 @@ if __name__ == '__main__':
                 target_cfg = task_cfg.data.target
                 show_img_FCOS(target_cfg[target_cfg.name], training_sample)
     elif parsed_args.target == "dataset":
+        logger.info("visualize for dataset")
         from videoanalyst.utils import load_image
         import numpy as np
         datasets = dataset_buidler.build(
@@ -106,6 +108,7 @@ if __name__ == '__main__':
             cv2.imshow("im", im)
             cv2.waitKey(0)
     elif parsed_args.target == "datapipeline":
+        logger.info("visualize for datapipeline")
         datapipeline = datapipeline_builder.build(task, task_cfg.data, seed=1)
         target_cfg = task_cfg.data.target
         while True:
