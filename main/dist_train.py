@@ -119,16 +119,13 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
     dist_utils.synchronize()
     # build optimizer
     optimizer = optim_builder.build(task, task_cfg.optim, model)
-    model.set_device(
-        torch.device(devs[0])
-    )  # need to be placed after optimizer built (potential pytorch issue)
     # build dataloader with trainer
     with Timer(name="Dataloader building", verbose=True):
         dataloader = dataloader_builder.build(task, task_cfg.data, seed=rank_id)
     # build trainer
     trainer = engine_builder.build(task, task_cfg.trainer, "trainer", optimizer,
                                    dataloader)
-    trainer.set_device(devs)
+    trainer.set_device(devs)  # need to be placed after optimizer built (potential pytorch issue)
     trainer.resume(parsed_args.resume)
     # trainer.init_train()
     logger.info("Start training")
