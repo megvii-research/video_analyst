@@ -96,13 +96,23 @@ if __name__ == '__main__':
             seq_idx = np.random.choice(range(len(dataset)))
             seq_idx = int(seq_idx)
             seq = dataset[seq_idx]
-            frame_idx = np.random.choice(range(len(seq['image'])))
-            frame = {k: seq[k][frame_idx] for k in seq}
-            # fetch & visualize data
-            im = load_image(frame['image'])
+            if len(seq['image']) > 1:
+                frame_idx = np.random.choice(range(len(seq['image'])))
+                frame = {k: seq[k][frame_idx] for k in seq}
+                # fetch & visualize data
+                im = load_image(frame['image'])
+                anno = frame['anno']
+            else:
+                im = load_image(seq['image'][0])
+                num_anno = len(seq['anno'])
+                if num_anno <=0:
+                    logger.info("no annotation")
+                    continue
+                anno_idx = np.random.choice(num_anno)
+                anno = seq['anno'][anno_idx]
             cv2.rectangle(im,
-                          tuple(map(int, frame['anno'][:2])),
-                          tuple(map(int, frame['anno'][2:])), (0, 255, 0),
+                          tuple(map(int, anno[:2])),
+                          tuple(map(int, anno[2:])), (0, 255, 0),
                           thickness=3)
             im = cv2.resize(im, (0, 0), fx=0.33, fy=0.33)
             cv2.imshow("im", im)
