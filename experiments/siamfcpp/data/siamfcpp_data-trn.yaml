@@ -19,7 +19,6 @@ train:
           negative_pair_ratio: 0.1
         submodules:
           dataset:
-            # (GOT10kDataset|LaSOTDataset)
             names: [
               "TrackingNetDataset",
               # "COCODataset", 
