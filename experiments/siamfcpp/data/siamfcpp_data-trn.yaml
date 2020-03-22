@@ -21,11 +21,11 @@ train:
           dataset:
             names: [
               "TrackingNetDataset",
-              # "COCODataset", 
-              # "GOT10kDataset", 
-              # "DETDataset", 
-              # "VIDDataset", 
-              # "LaSOTDataset", 
+              "COCODataset", 
+              "GOT10kDataset", 
+              "DETDataset", 
+              "VIDDataset", 
+              "LaSOTDataset", 
               ]
             GOT10kDataset: &GOT10KDATASET_CFG
               ratio: 1.0
