@@ -21,11 +21,12 @@ train:
           dataset:
             # (GOT10kDataset|LaSOTDataset)
             names: [
-              "COCODataset", 
-              "GOT10kDataset", 
-              "DETDataset", 
-              "VIDDataset", 
-              "LaSOTDataset", 
+              "TrackingNetDataset",
+              # "COCODataset", 
+              # "GOT10kDataset", 
+              # "DETDataset", 
+              # "VIDDataset", 
+              # "LaSOTDataset", 
               ]
             GOT10kDataset: &GOT10KDATASET_CFG
               ratio: 1.0
@@ -53,6 +54,12 @@ train:
               ratio: 1.0
               dataset_root: "datasets/ILSVRC2015"
               subset: "train"
+            TrackingNetDataset:
+              ratio: 1.0
+              max_diff: 100
+              dataset_root: "datasets/TrackingNet"
+              subset: "train0" # "train"
+              check_integrity: false  # no need to check integrity for visualization purpose
           filter:
             name: "TrackPairFilter"
             TrackPairFilter:

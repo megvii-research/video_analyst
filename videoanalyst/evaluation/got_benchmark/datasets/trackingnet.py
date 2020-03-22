@@ -16,12 +16,12 @@ class TrackingNet(object):
     Args:
         root_dir (string): Root directory of dataset where sequence
             folders exist.
-        subset (string, optional): Specify ``train`` or ``test`` or ``0,1,...``
+        subset (string, optional): Specify ``train`` or ``test`` or ``train0,1,...``
             subset of TrackingNet.
     """
-    def __init__(self, root_dir, subset='test', *args, **kwargs):
+    def __init__(self, root_dir, subset='test', *args, check_integrity=True, **kwargs):
         super(TrackingNet, self).__init__()
-        assert subset in ['train', 'test'], 'Unknown subset.'
+        assert subset.startswith(('train', 'test')), 'Unknown subset.'
 
         self.root_dir = root_dir
         self.subset = subset
@@ -30,6 +30,7 @@ class TrackingNet(object):
         elif subset == 'train':
             self.subset_dirs = ['TRAIN_%d' % c for c in range(12)]
         else:
+            subset = subset[len('train'):]
             chunk_ids = [int(s) for s in subset.split(",")]
             self.subset_dirs = ['TRAIN_%d' % c for c in chunk_ids]
         self._check_integrity(root_dir, self.subset_dirs)
