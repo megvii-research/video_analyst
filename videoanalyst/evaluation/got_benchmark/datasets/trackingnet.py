@@ -117,11 +117,11 @@ class TrackingNet(object):
         self.cache_path_dict = self._get_cache_path_dict(cache_dir=self.cache_dir)
 
         for subset in self.subset_dirs:
+            cache_path = self.cache_path_dict[subset]
             # check if subset cache already exists in TrackingNet.data_dict and is valid w.r.t. list.txt
             if self._check_cache_for_specific_subset(subset):
                 logger.info("{}: record check has been processed and validity is confirmed for cache file: {} ".format(TrackingNet.__name__, cache_path))
                 continue
-            cache_path = self.cache_path_dict[subset]
             if os.path.isfile(cache_path) and not self.ignore_cache:
                 logger.info("{}: cache file exists: {} ".format(TrackingNet.__name__, cache_path))
                 self._load_cache_for_specific_subset(cache_path, subset)
