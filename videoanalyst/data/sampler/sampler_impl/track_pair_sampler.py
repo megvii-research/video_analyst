@@ -199,7 +199,7 @@ class TrackPairSampler(SamplerBase):
             idx = rng.choice(num_anno)
             anno = sequence_data["anno"][idx]
         else:
-            # no valid 
+            # no anno, assign a dummy one
             anno = [-1, -1, -1, -1]
         data = dict(
             image=sequence_data["image"][0],

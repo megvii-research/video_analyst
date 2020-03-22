@@ -40,6 +40,7 @@ class COCODataset(DatasetBase):
         maximum difference in index of a pair of sampled frames 
     """
     data_dict = {subset : dict() for subset in _VALID_SUBSETS}
+    _DUMMY_ANNO = [[-1, -1, 0, 0]]
 
     default_hyper_params = dict(
         dataset_root="datasets/COCO",
@@ -79,6 +80,8 @@ class COCODataset(DatasetBase):
         # frame_name = 
         subset = self._hyper_params["subset"]
         image_file, anno = COCODataset.data_dict[subset][item]
+        if len(anno)<=0:
+            anno = self._DUMMY_ANNO
         anno = xywh2xyxy(anno)
         sequence_data = dict(image=[image_file], anno=anno)
 

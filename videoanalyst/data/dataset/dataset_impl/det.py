@@ -24,6 +24,7 @@ _VALID_SUBSETS = ['train', 'val']
 @TRACK_DATASETS.register
 class DETDataset(DatasetBase):
     data_dict = {subset : dict() for subset in _VALID_SUBSETS}
+    _DUMMY_ANNO = [[-1, -1, 0, 0]]
 
     # data_dirname = "Data"
     # anno_dirname = "Annotations"
@@ -63,6 +64,8 @@ class DETDataset(DatasetBase):
 
         image_file = DETDataset.data_dict[subset][im_name]["image_file"]
         anno = DETDataset.data_dict[subset][im_name]["anno"]
+        if len(anno)<=0:
+            anno = self._DUMMY_ANNO
         anno = xywh2xyxy(anno)
 
         sequence_data = dict(image=[image_file], anno=anno)
