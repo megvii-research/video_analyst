@@ -71,7 +71,7 @@ model = model_builder.build(task, task_cfg.model)
 pipeline = pipeline_builder.build(task, task_cfg.pipeline, model)
 
 dev = torch.device(parsed_args.device)
-pipeline.to_device(dev)
+pipeline.set_device(dev)
 
 if __name__ == "__main__":
     rect = xyxy2xywh(bbox)

@@ -33,12 +33,8 @@ class ShuffleNetV2_x1_0(ModuleBase):
                                     **kwargs)
         model_file = self._hyper_params["pretrain_model_path"]
         if model_file != "":
-            try:
-                state_dict = torch.load(model_file,
-                                        map_location=torch.device("gpu"))
-            except:
-                state_dict = torch.load(model_file,
-                                        map_location=torch.device("cpu"))
+            state_dict = torch.load(model_file,
+                                    map_location=torch.device("cpu"))
             self._model.load_state_dict(state_dict, strict=False)
             logger.info("Load pretrained ShuffleNet parameters from: %s" %
                         model_file)
