@@ -45,7 +45,7 @@ if __name__ == '__main__':
     # build pipeline
     pipeline = pipeline_builder.build(task, task_cfg.pipeline, model)
     # build tester
-    testers = tester_builder(task, task_cfg, "tester", pipeline)
+    testers = tester_builder(task, task_cfg.tester, "tester", pipeline)
     # start engine
     for tester in testers:
         tester.test()
