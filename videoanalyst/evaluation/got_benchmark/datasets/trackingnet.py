@@ -138,7 +138,6 @@ class TrackingNet(object):
         """
         is_subset_valid = all([ (subset in TrackingNet.data_dict) for subset in self.subset_dirs ])
         cached_seq_names = [seq_name
-            for subset in TrackingNet.data_dict 
             for seq_name in TrackingNet.data_dict[subset] 
         ]
         seq_names = self._get_seq_names_for_specific_subset(subset)
