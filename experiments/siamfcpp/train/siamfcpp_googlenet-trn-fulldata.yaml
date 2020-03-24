@@ -135,10 +135,10 @@ train:
               dataset_root: "datasets/ILSVRC2015"
               subset: "train"
             TrackingNetDataset:
-              ratio: 0.2 # set to 0.65 if all chunks are available
+              ratio: 0.65 # set to 0.65 if all chunks are available
               max_diff: 100
               dataset_root: "datasets/TrackingNet"
-              subset: "train0" # "train"
+              subset: "train" # "train"
               check_integrity: false  # no need to check integrity for visualization purpose
           filter:
             name: "TrackPairFilter"
