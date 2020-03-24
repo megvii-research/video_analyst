@@ -172,10 +172,9 @@ class SiamFCppMultiTempTracker(SiamFCppTracker):
             self._state['features'].append(features_curr)
 
         return track_rect
-
+'''
 
 SiamFCppMultiTempTracker.default_hyper_params = copy.deepcopy(
     SiamFCppMultiTempTracker.default_hyper_params)
 SiamFCppMultiTempTracker.default_hyper_params.update(
     SiamFCppMultiTempTracker.extra_hyper_params)
-'''

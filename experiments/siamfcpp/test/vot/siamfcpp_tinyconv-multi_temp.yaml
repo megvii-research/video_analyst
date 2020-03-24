@@ -5,7 +5,7 @@ test:
     model:
       backbone:
         name: "TinyConv"
-        AlexNet:
+        TinyConv:
           pretrain_model_path: ""
       losses:
         names: []
