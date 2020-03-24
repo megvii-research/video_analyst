@@ -53,6 +53,6 @@ def specify_task(cfg: CfgNode) -> (str, CfgNode):
         short task name, task-specified cfg
     """
     for task in task_list:
-        if cfg[task].exp_name != default_str:
+        if cfg[task]['exp_name'] != default_str:
             return task, cfg[task]
     assert False, "unknown task!"
