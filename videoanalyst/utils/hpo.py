@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 from yacs.config import CfgNode
 
+from .path import ensure_dir
+
 _HPO_RANGE_POSTFIX = "_hpo_range"
 _DELIMITER = ","
 
@@ -129,6 +131,7 @@ def dump_result_dict(csv_file : str, result_dict) -> pd.DataFrame:
     if osp.exists(csv_file):
         df = pd.read_csv(csv_file, sep=_DELIMITER, index_col=0, squeeze=True)
     else:
+        ensure_dir(osp.dirname(csv_file))
         df = pd.DataFrame(columns=list(result_dict.keys()))
     merged_results = merge_result_dict(result_dict)
     df_new = pd.DataFrame(merged_results)

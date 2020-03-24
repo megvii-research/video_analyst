@@ -22,17 +22,17 @@ def make_parser():
     parser = argparse.ArgumentParser(description='Test')
     parser.add_argument('-cfg',
                         '--config',
-                        default='debug/hpo_config/siamfcpp_googlenet-got.yaml',
+                        default='',
                         type=str,
                         help='experiment configuration')
     parser.add_argument('-hpocfg',
                         '--hpo-config',
-                        default='debug/hpo_config/siamfcpp_googlenet-got-hpo.yaml',
+                        default='experiments/siamfcpp/hpo/siamfcpp_hpo.yaml',
                         type=str,
                         help='experiment configuration')
     parser.add_argument('-hpocsv',
                         '--hpo-csv',
-                        default='debug/hpo.csv',
+                        default='logs/hpo/hpo.csv',
                         type=str,
                         help='dumped hpo result')
 
