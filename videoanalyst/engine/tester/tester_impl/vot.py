@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*
+from typing improt Dict 
 import copy
 import itertools
 import logging
@@ -70,12 +71,13 @@ class VOTTester(TesterBase):
     def update_params(self):
         pass
 
-    def test(self):
+    def test(self) -> Dict:
         r"""
         Run test
         """
         # set dir
         self.tracker_name = self._hyper_params["exp_name"]
+        test_result_dict = None
         for dataset_name in self._hyper_params["dataset_names"]:
             self.dataset_name = dataset_name
             # self.tracker_dir = os.path.join(self._cfg.auto.log_dir, self._hyper_params["dataset_name"])
@@ -87,7 +89,8 @@ class VOTTester(TesterBase):
             # track videos
             self.run_tracker()
             # evaluation
-            self.evaluation()
+            test_result_dict = self.evaluation()
+        return test_result_dict
 
     def run_tracker(self):
         """
