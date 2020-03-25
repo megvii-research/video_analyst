@@ -90,7 +90,7 @@ train:
       exp_save: *TRAIN_SAVE
       num_epochs: 20
       minibatch: &MINIBATCH 128  # 256
-      num_workers: 32
+      num_workers: 16 # 32
       nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 150000
       pin_memory: false
       datapipeline:
@@ -135,10 +135,10 @@ train:
               dataset_root: "datasets/ILSVRC2015"
               subset: "train"
             TrackingNetDataset:
-              ratio: 0.65 # set to 0.65 if all chunks are available
+              ratio: 0.2 # set to 0.65 if all chunks are available
               max_diff: 100
               dataset_root: "datasets/TrackingNet"
-              subset: "train" # "train"
+              subset: "train0" # "train"
               check_integrity: false  # no need to check integrity for visualization purpose
           filter:
             name: "TrackPairFilter"
