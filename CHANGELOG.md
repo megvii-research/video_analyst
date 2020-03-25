@@ -2,6 +2,15 @@
 
 Date format: YY/MM/DD
 
+## 2020/03/25
+
+____Major changes____
+
+* Add hyper-parameter search script
+  * _main/hpo.py_
+  * _experiment_
+  * _videoanalyst/utils/hpo.py_
+
 ## 2020/03/23
 
 ____Major changes____
