@@ -44,7 +44,7 @@ def make_parser():
 
     parser.add_argument(
         '--target',
-        default='dataloader',
+        default='',
         type=str,
         help='targeted debugging module (dataloder|datasampler|dataset))')
 
@@ -130,3 +130,5 @@ if __name__ == '__main__':
                 target_cfg[target_cfg.name],
                 sampled_data,
             )
+    else:
+        logger.info("--target {} has not been implemented. ".format(parsed_args.target))
