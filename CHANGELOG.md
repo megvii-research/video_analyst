@@ -2,6 +2,14 @@
 
 Date format: YY/MM/DD
 
+## 2020/03/23
+
+____Major changes____
+
+* Add full training data
+  * coco / det / vid / trackingnet
+  * with caching mechanism (reducing storage I/O by caching indexes into memory)
+
 ## 2020/03/18
 
 ____Major changes____
