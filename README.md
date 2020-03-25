@@ -99,6 +99,7 @@ For detail, please refer to markdown files under _docs_.
 
 * video_analyst/evaluation/vot_benchmark and other related code have been borrowed from [PySOT](https://github.com/STVIR/pysot)
 * video_analyst/evaluation/got_benchmark and other related code have been borrowed from [got-toolkit](https://github.com/got-10k/toolkit.git)
+* video_analyst/utils/dist_utils.py from [detectron2](https://github.com/facebookresearch/detectron2)
 
 ## Contact
 
