@@ -31,7 +31,7 @@ def parse_hp_path_and_range(hpo_cfg: CfgNode, ) -> List[Tuple[List[str], Tuple[f
     """
     parsed_results = []
     for k, v in hpo_cfg.items():
-        if k.endswith(_HPO_RANGE_POSTFIX) and (len(v) == 2):
+        if k.endswith(_HPO_RANGE_POSTFIX) and (len(v) > 0):
             node_name = k[:-len(_HPO_RANGE_POSTFIX)]
             hpo_range = v
             parsed_results.append(([node_name], hpo_range))
@@ -56,7 +56,7 @@ def set_cfg_value_wt_path(target_cfg, node_name_path, value):
         target_cfg = target_cfg[n]
     target_cfg[last_node_name] = value
 
-def sample_and_update_single_hp(target_cfg: CfgNode, node_name_path: List[str], hpo_range: Tuple[float, float]) -> float:
+def sample_and_update_single_hp(target_cfg: CfgNode, node_name_path: List[str], hpo_range) -> float:
     """Sample random value from uniform distribution & 
        update the node value at the given path to hyper-parameter node
     
@@ -66,16 +66,27 @@ def sample_and_update_single_hp(target_cfg: CfgNode, node_name_path: List[str], 
         yacs CfgNode that to be sampled
     node_name_path : List[str]
         path to the hyper-parameter node whose value is to be updated
-    hpo_range : Tuple[float, float]
-        range of uniform distribution
+    hpo_range
+        range of , behavior infered from data type
+        - Tuple[float, float]: uniform distribution
+        - Tuple[int, int]: random choice of in integer from given range
+        - List[v1, v2, ...]: random choice of  an element from given list        
     
     Returns
     -------
-    float
+    int / float
         the sampled random value for hyper-parameter
     """
-    hpo_lb, hpo_ub = hpo_range
-    random_hpo_value = np.random.uniform(hpo_lb, hpo_ub)
+    assert len(hpo_range) > 0, "empty hpo range in {}".format(node_name_path)
+    if (len(hpo_range) > 2) or (len(hpo_range) == 1):
+        random_hpo_value = np.random.choice(hpo_range)
+    elif isinstance(hpo_range[0], int) and isinstance(hpo_range[1], int):
+        hpo_lb, hpo_ub = hpo_range
+        random_hpo_value = np.random.randint(hpo_lb, hpo_ub)
+    else:
+        hpo_lb, hpo_ub = float(hpo_range[0]), float(hpo_range[1])
+        random_hpo_value = np.random.uniform(hpo_lb, hpo_ub)
+
     set_cfg_value_wt_path(target_cfg, node_name_path, random_hpo_value)
     return random_hpo_value
 
