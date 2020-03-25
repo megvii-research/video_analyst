@@ -27,14 +27,14 @@ def make_parser():
                         help='experiment configuration')
     parser.add_argument('-hpocfg',
                         '--hpo-config',
-                        default='experiments/siamfcpp/hpo/siamfcpp_hpo.yaml',
+                        default='experiments/siamfcpp/hpo/siamfcpp_SiamFCppTracker-hpo.yaml',
                         type=str,
                         help='experiment configuration')
-    parser.add_argument('-hpocsv',
-                        '--hpo-csv',
-                        default='logs/hpo/hpo.csv',
-                        type=str,
-                        help='dumped hpo result')
+    # parser.add_argument('-hpocsv',
+    #                     '--hpo-csv',
+    #                     default='logs/hpo/hpo.csv',
+    #                     type=str,
+    #                     help='dumped hpo result')
 
     return parser
 
@@ -65,8 +65,7 @@ if __name__ == '__main__':
     # results = [hpo.sample_and_update_hps(task_cfg, hpo_schedules) for _ in range(5)]
     # merged_result = hpo.merge_result_dict(results)
 
-
-    csv_file = parsed_args.hpo_csv
+    csv_file = osp.join(hpo_cfg["exp_save"], "hpo_{}.csv".format(task_cfg_origin["exp_name"]))
 
     # from IPython import embed;embed();exit(0)
     while True:
