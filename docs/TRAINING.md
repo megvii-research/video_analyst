@@ -30,6 +30,22 @@ Resuming from the latest snapshot file
 python3 ./main/train.py --config 'path/to/config.yaml' --resume latest
 ```
 
+### Training with full data
+
+Full data list:
+
+* ILSVRC-VID
+* TrackingNet
+* COCO
+* ILSVRC-DET
+* LaSOT
+* GOT10k
+
+```Bash
+python3 ./main/train.py --confg 'experiments/siamfcpp/train/siamfcpp_googlenet-trn-fulldata.yaml'
+```
+
+
 ### Training with PyTorch Distributed Data Parallel (DDP)
 
 ```Bash
