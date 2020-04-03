@@ -1,6 +1,6 @@
 test:
   track:
-    exp_name: &TEST_NAME "siamfcpp_googlenet-fulldata"
+    exp_name: &TEST_NAME "siamfcpp_googlenet-fulldata-dist"
     exp_save: &TEST_SAVE "logs"
     model:
       backbone:
@@ -22,7 +22,7 @@ test:
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          pretrain_model_path: "snapshots/siamfcpp_googlenet-fulldata/epoch-19.pkl"
+          pretrain_model_path: "snapshots/siamfcpp_googlenet-fulldata-dist/epoch-19.pkl"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
@@ -47,7 +47,7 @@ test:
         subsets: ["test"]  # (train_test|test)
 train:
   track:
-    exp_name: &TRAIN_NAME "siamfcpp_googlenet-fulldata"
+    exp_name: &TRAIN_NAME "siamfcpp_googlenet-fulldata-dist"
     exp_save: &TRAIN_SAVE "snapshots"
     num_processes: 4
     model:
@@ -160,8 +160,8 @@ train:
           x_size: 289
           num_conv3x3: 2
     trainer:
-      name: "RegularTrainer"
-      RegularTrainer:
+      name: "DistributedRegularTrainer"
+      DistributedRegularTrainer:
         exp_name: *TRAIN_NAME
         exp_save: *TRAIN_SAVE
         max_epoch: 20
@@ -169,7 +169,7 @@ train:
         nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
         snapshot: ""
       monitors:
-        names: ["TrackInfo", "TensorboardLogger"]
+        names: ["TrackInfo"]  # "TensorboardLogger"
         TrackInfo:
           {}
         TensorboardLogger:
