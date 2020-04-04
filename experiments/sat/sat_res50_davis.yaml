@@ -50,39 +50,26 @@ train:
         name: "TrackPairSampler"
         TrackPairSampler:
           negative_pair_ratio: 0.1
+          target_type: "mask"
         submodules:
           dataset:
-            names: ["COCODataset",]  # (GOT10kDataset|LaSOTDataset)
-            GOT10kDataset: &GOT10KDATASET_CFG
-              ratio: 1.0
-              max_diff: 100
-              dataset_root: "datasets/GOT-10k"
-              subset: "train"
-            GOT10kDatasetFixed: *GOT10KDATASET_CFG  # got10k dataset with exclusion of unfixed sequences
-            LaSOTDataset:
-              ratio: 1.0
-              max_diff: 100
-              dataset_root: "datasets/LaSOT"
-              subset: "train"
+            #names: ["COCODataset",]  # (GOT10kDataset|LaSOTDataset)
+            names: ["YoutubeVOSDataset",]  # (GOT10kDataset|LaSOTDataset)
           filter:
             name: "TrackPairFilter"
             TrackPairFilter:
               max_area_rate: 0.6
               min_area_rate: 0.001
               max_ratio: 10
+              target_type: "mask"
       transformer:
         names: ["RandomCropTransformerWithMask", ]
-        RandomCropTransformer:
+        RandomCropTransformerWithMask:
           max_scale: 0.3
           max_shift: 0.4
           x_size: 303
       target:
-        name: "DenseboxTarget"
-        DenseboxTarget:
-          total_stride: 8
-          score_size: 17
-          x_size: 303
-          num_conv3x3: 3
+        name: "IdentityTarget"
     trainer:
       name: "DistributedRegularTrainer"
       DistributedRegularTrainer:

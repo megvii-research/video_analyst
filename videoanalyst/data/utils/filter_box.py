@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Dict
-
+import cv2
 import numpy as np
 
 
@@ -46,6 +46,7 @@ def filter_unreasonable_training_masks(im: np.array, mask,
     """
     eps = 1e-6
     im_area = im.shape[0] * im.shape[1]
+    print("mask", mask)
     x, y, w, h = cv2.boundingRect(mask)
     bbox_area = w * h
     bbox_area_rate = bbox_area / im_area

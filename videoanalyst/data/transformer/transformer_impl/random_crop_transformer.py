@@ -2,6 +2,7 @@ from typing import Dict
 
 import cv2
 import numpy as np
+import torch
 from yacs.config import CfgNode
 
 from videoanalyst.data.utils.crop_track_pair import crop_track_pair
@@ -9,6 +10,15 @@ from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
 from ..transformer_base import TRACK_TRANSFORMERS, TransformerBase
 
+@TRACK_TRANSFORMERS.register
+class ToTensor(TransformerBase):
+    default_hyper_params = dict(
+    )
+    def __init__(self, seed: int = 0) -> None:
+        super(ToTensor, self).__init__(seed=seed)
+
+    def __call__(self, sampled_data: Dict) -> Dict:
+        return sampled_data
 
 @TRACK_TRANSFORMERS.register
 class RandomCropTransformer(TransformerBase):

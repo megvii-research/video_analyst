@@ -136,7 +136,12 @@ if __name__ == '__main__':
         while True:
             sampled_data = datapipeline[0]
             print(sampled_data.keys())
-            show_img_FCOS(
-                target_cfg[target_cfg.name],
-                sampled_data,
-            )
+            cv2.imwrite('data1.png', sampled_data['data1']['image'])
+            cv2.imwrite('data1mask.png', sampled_data['data1']['anno']*250)
+            cv2.imwrite('data2.png', sampled_data['data2']['image'])
+            cv2.imwrite('data2mask.png', sampled_data['data2']['anno']*250)
+            exit()
+            #show_img_FCOS(
+            #    target_cfg[target_cfg.name],
+            #    sampled_data,
+            #)

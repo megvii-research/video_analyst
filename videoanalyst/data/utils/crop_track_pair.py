@@ -128,7 +128,7 @@ def crop_track_pair(im_temp,
                                   s_temp,
                                   avg_chans=avg_chans,
                                   mask=mask_tmp)
-    im_x, mask_z = get_subwindow_tracking(im_curr,
+    im_x, mask_x = get_subwindow_tracking(im_curr,
                                   box_crop_curr[:2],
                                   x_size,
                                   s_curr,
@@ -150,4 +150,4 @@ def crop_track_pair(im_temp,
         # cv2.waitKey()
         # from IPython import embed;embed()
 
-    return im_z, bbox_z, im_x, bbox_x, mask_tmp, mask_curr
+    return im_z, bbox_z, im_x, bbox_x, mask_z, mask_x

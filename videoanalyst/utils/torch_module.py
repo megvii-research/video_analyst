@@ -38,7 +38,10 @@ def convert_data_to_dtype(data_dict: Dict[str, torch.Tensor],
         converted data dict
     """
     for k in data_dict:
-        data_dict[k] = data_dict[k].type(dtype)
+        if isinstance(data_dict[k], dict):
+            data_dict[k] = convert_data_to_dtype(data_dict[k], dtype)
+        else:
+            data_dict[k] = data_dict[k].type(dtype)
 
     return data_dict
 

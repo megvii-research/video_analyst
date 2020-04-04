@@ -6,7 +6,7 @@ import cv2
 
 import numpy as np
 from yacs.config import CfgNode
-
+from PIL import Image
 from videoanalyst.data.dataset.dataset_base import DatasetBase
 from videoanalyst.evaluation.got_benchmark.datasets import got10k
 from videoanalyst.utils import load_image
@@ -137,16 +137,23 @@ class TrackPairSampler(SamplerBase):
         sequence_data = dataset[idx]
 
         return sequence_data
+    def _generate_mask_for_ytbvos(self, anno):
+        mask = Image.open(anno[0])
+        obj_id = anno[1]
+        mask = np.array(mask, dtype=np.uint8)
+        mask[mask!=obj_id] = 0
+        mask[mask==obj_id] = 1
+        return mask
 
     def _sample_track_frame_from_sequence(self, sequence_data) -> Dict:
         rng = self._state["rng"]
         len_seq = self._get_len_seq(sequence_data)
         idx = rng.choice(len_seq)
         data_frame = {k: v[idx] for k, v in sequence_data.items()}
-        # convert mask path to mask
+        # convert mask path to mask, specical for youtubevos
         if self._hyper_params["target_type"] == "mask":
-            if isinstance(data_frame["anno"], str):
-                mask = load_image(data_frame["anno"])
+            if isinstance(data_frame["anno"], list):
+                mask = self._generate_mask_for_ytbvos(data_frame["anno"])
                 data_frame["anno"] = mask
         return data_frame
 
@@ -172,7 +179,9 @@ class TrackPairSampler(SamplerBase):
             len_seq, max_diff)
         data1 = {k: v[idx1] for k, v in sequence_data.items()}
         data2 = {k: v[idx2] for k, v in sequence_data.items()}
-
+        # convert mask path to mask, specical for youtubevos
+        data1["anno"] = self._generate_mask_for_ytbvos(data1["anno"])
+        data2["anno"] = self._generate_mask_for_ytbvos(data2["anno"])
         return data1, data2
 
     def _sample_pair_idx_pair_within_max_diff(self, L, max_diff):
@@ -196,6 +205,8 @@ class TrackPairSampler(SamplerBase):
     def _sample_track_frame_from_static_image(self, sequence_data):
         rng = self._state["rng"]
         num_anno = len(sequence_data['anno'])
+        print('sampler anno')
+        print(sequence_data['anno'])
         if num_anno > 0:
             idx = rng.choice(num_anno)
             anno = sequence_data["anno"][idx]

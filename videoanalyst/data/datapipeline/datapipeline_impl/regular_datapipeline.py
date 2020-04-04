@@ -38,7 +38,7 @@ class RegularDatapipeline(DatapipelineBase):
 
         for proc in self.pipeline:
             sampled_data = proc(sampled_data)
-
-        sampled_data = convert_data_to_dtype(sampled_data)
+        print(sampled_data)
+        #sampled_data = convert_data_to_dtype(sampled_data)
 
         return sampled_data

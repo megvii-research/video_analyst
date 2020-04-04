@@ -82,7 +82,7 @@ class COCODataset(DatasetBase):
                 target_mask = target_mask | jth_mask[:, :, iter_chl]
         else:
             target_mask = jth_mask
-        target_mask = target_mask.astype(np.int32)  # 全部是0或者1
+        target_mask = target_mask.astype(np.uint8)  # 全部是0或者1
         return target_mask
 
 
@@ -220,7 +220,7 @@ class COCODataset(DatasetBase):
                             continue
                     objs.append(obj)
                 # filter out image without any targets
-                if len(objs) == 0 and 'train' in subset:
+                if len(objs) == 0:
                     continue
                 record["annotations"] = objs
                 data_anno_list.append(record)

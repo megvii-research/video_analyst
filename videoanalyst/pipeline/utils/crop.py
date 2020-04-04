@@ -90,15 +90,14 @@ def get_subwindow_tracking(im, pos, model_sz, original_sz, avg_chans=(0, 0, 0), 
                               mat2x3, (model_sz, model_sz),
                               flags=(cv2.INTER_LINEAR | cv2.WARP_INVERSE_MAP),
                               borderMode=cv2.BORDER_CONSTANT,
-                              borderValue=tuple(map(int, avg_chans)))
+                              borderValue=tuple(map(int, avg_chans))
+                              )
+    mask_patch = mask
     if mask is not None:
         mask_patch = cv2.warpAffine(mask,
                                   mat2x3, (model_sz, model_sz),
-                                  flags=(cv2.INTER_NEAREST),
-                                  borderMode=cv2.BORDER_CONSTANT,
-                                  borderValue=(0))
-        return im_patch, mask_patch
-    return im_patch
+                                  flags=(cv2.INTER_NEAREST | cv2.WARP_INVERSE_MAP))
+    return im_patch, mask_patch
 
 
 def get_crop(im,
