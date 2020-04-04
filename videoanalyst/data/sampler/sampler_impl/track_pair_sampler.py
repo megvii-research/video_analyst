@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from loguru import logger
 from typing import Dict, List, Tuple
+from copy import deepcopy
+import cv2
 
 import numpy as np
 from yacs.config import CfgNode
@@ -16,11 +18,25 @@ from ..sampler_base import TRACK_SAMPLERS, SamplerBase
 class TrackPairSampler(SamplerBase):
     r"""
     Tracking data sampler
-
+    Sample procedure:
+    __getitem__
+    │
+    ├── _sample_track_pair
+    │   ├── _sample_dataset
+    │   ├── _sample_sequence_from_dataset
+    │   ├── _sample_track_frame_from_static_image
+    │   └── _sample_track_frame_from_sequence
+    │
+    └── _sample_track_frame
+        ├── _sample_dataset
+        ├── _sample_sequence_from_dataset
+        ├── _sample_track_frame_from_static_image (x2)
+        └── _sample_track_pair_from_sequence
+            └── _sample_pair_idx_pair_within_max_diff
     Hyper-parameters
     ----------------
     """
-    default_hyper_params = dict(negative_pair_ratio=0.0, )
+    default_hyper_params = dict(negative_pair_ratio=0.0, target_type="bbox")
 
     def __init__(self,
                  datasets: List[DatasetBase] = [],
@@ -35,8 +51,11 @@ class TrackPairSampler(SamplerBase):
         self._state["ratios"] = [
             d._hyper_params["ratio"] for d in self.datasets
         ]
+        sum_ratios = sum(self._state["ratios"])
+        self._state["ratios"] = [d/sum_ratios for d in self._state["ratios"]]
         self._state["max_diffs"] = [
-            d._hyper_params["max_diff"] for d in self.datasets
+            # max_diffs, or -1 (invalid value for video, but not used for static image dataset)
+            d._hyper_params.get("max_diff", -1) for d in self.datasets
         ]
 
     def __getitem__(self, item) -> dict:
@@ -60,19 +79,35 @@ class TrackPairSampler(SamplerBase):
         )
 
         return sampled_data
+    
+    def _get_len_seq(self, seq_data) -> int:
+        return len(seq_data["image"])
 
     def _sample_track_pair(self) -> Tuple[Dict, Dict]:
         dataset_idx, dataset = self._sample_dataset()
         sequence_data = self._sample_sequence_from_dataset(dataset)
-        data1, data2 = self._sample_track_pair_from_sequence(
-            sequence_data, self._state["max_diffs"][dataset_idx])
+        len_seq = self._get_len_seq(sequence_data)
+        if len_seq == 1:
+            # static image dataset
+            data1 = self._sample_track_frame_from_static_image(sequence_data)
+            data2 = deepcopy(data1)
+        else:
+            # video dataset
+            data1, data2 = self._sample_track_pair_from_sequence(
+                sequence_data, self._state["max_diffs"][dataset_idx])
 
         return data1, data2
 
     def _sample_track_frame(self) -> Dict:
         dataset_idx, dataset = self._sample_dataset()
         sequence_data = self._sample_sequence_from_dataset(dataset)
-        data_frame = self._sample_track_frame_from_sequence(sequence_data)
+        len_seq = self._get_len_seq(sequence_data)
+        if len_seq == 1:
+            # static image dataset
+            data_frame = self._sample_track_frame_from_static_image(sequence_data)
+        else:
+            # video dataset
+            data_frame = self._sample_track_frame_from_sequence(sequence_data)
 
         return data_frame
 
@@ -97,7 +132,7 @@ class TrackPairSampler(SamplerBase):
         """
         rng = self._state["rng"]
         len_dataset = len(dataset)
-        idx = rng.choice(len(dataset))
+        idx = rng.choice(len_dataset)
 
         sequence_data = dataset[idx]
 
@@ -105,10 +140,14 @@ class TrackPairSampler(SamplerBase):
 
     def _sample_track_frame_from_sequence(self, sequence_data) -> Dict:
         rng = self._state["rng"]
-        len_seq = len(list(sequence_data.values())[0])
+        len_seq = self._get_len_seq(sequence_data)
         idx = rng.choice(len_seq)
         data_frame = {k: v[idx] for k, v in sequence_data.items()}
-
+        # convert mask path to mask
+        if self._hyper_params["target_type"] == "mask":
+            if isinstance(data_frame["anno"], str):
+                mask = load_image(data_frame["anno"])
+                data_frame["anno"] = mask
         return data_frame
 
     def _sample_track_pair_from_sequence(self, sequence_data: Dict,
@@ -128,7 +167,7 @@ class TrackPairSampler(SamplerBase):
             track pair data
             data: image= , anno=
         """
-        len_seq = len(list(sequence_data.values())[0])
+        len_seq = self._get_len_seq(sequence_data)
         idx1, idx2 = self._sample_pair_idx_pair_within_max_diff(
             len_seq, max_diff)
         data1 = {k: v[idx1] for k, v in sequence_data.items()}
@@ -139,7 +178,6 @@ class TrackPairSampler(SamplerBase):
     def _sample_pair_idx_pair_within_max_diff(self, L, max_diff):
         r"""
         Draw a pair of index in range(L) within a given maximum difference
-
         Arguments
         ---------
         L: int
@@ -154,3 +192,19 @@ class TrackPairSampler(SamplerBase):
         idx2_choices = list(set(idx2_choices).intersection(set(range(L))))
         idx2 = rng.choice(idx2_choices)
         return int(idx1), int(idx2)
+    
+    def _sample_track_frame_from_static_image(self, sequence_data):
+        rng = self._state["rng"]
+        num_anno = len(sequence_data['anno'])
+        if num_anno > 0:
+            idx = rng.choice(num_anno)
+            anno = sequence_data["anno"][idx]
+        else:
+            # no anno, assign a dummy one
+            anno = [-1, -1, -1, -1]
+        data = dict(
+            image=sequence_data["image"][0],
+            anno=anno,
+        )
+
+        return data

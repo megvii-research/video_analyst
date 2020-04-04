@@ -34,7 +34,9 @@ def crop_track_pair(im_temp,
                     config=None,
                     avg_chans=None,
                     rng=np.random,
-                    DEBUG=False):
+                    DEBUG=False,
+                    mask_tmp=None,
+                    mask_curr=None,):
     context_amount = config["context_amount"]
     z_size = config["z_size"]
     x_size = config["x_size"]
@@ -120,16 +122,18 @@ def crop_track_pair(im_temp,
             break
 
     # crop & resize via warpAffine
-    im_z = get_subwindow_tracking(im_temp,
+    im_z, mask_z = get_subwindow_tracking(im_temp,
                                   box_crop_temp[:2],
                                   z_size,
                                   s_temp,
-                                  avg_chans=avg_chans)
-    im_x = get_subwindow_tracking(im_curr,
+                                  avg_chans=avg_chans,
+                                  mask=mask_tmp)
+    im_x, mask_z = get_subwindow_tracking(im_curr,
                                   box_crop_curr[:2],
                                   x_size,
                                   s_curr,
-                                  avg_chans=avg_chans)
+                                  avg_chans=avg_chans,
+                                  mask=mask_curr)
 
     # DEBUG
     if DEBUG:
@@ -146,4 +150,4 @@ def crop_track_pair(im_temp,
         # cv2.waitKey()
         # from IPython import embed;embed()
 
-    return im_z, bbox_z, im_x, bbox_x
+    return im_z, bbox_z, im_x, bbox_x, mask_tmp, mask_curr
