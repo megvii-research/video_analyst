@@ -102,12 +102,10 @@ class COCODataset(DatasetBase):
         anno = record['annotations']
         if self._hyper_params["with_mask"]:
             mask_anno = []
-            print("data size", len(anno), img_h, img_w)
             for obj in anno:
                 raw_mask = obj['segmentation']
                 mask = self._generate_mask_from_anno(raw_mask, img_h, img_w)
                 mask_anno.append(mask)
-            print("data size", len(mask_anno))
             
             sequence_data = dict(image=[image_file], anno=mask_anno)
         else:

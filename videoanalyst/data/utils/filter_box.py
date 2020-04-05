@@ -46,11 +46,10 @@ def filter_unreasonable_training_masks(im: np.array, mask,
     """
     eps = 1e-6
     im_area = im.shape[0] * im.shape[1]
-    print("mask", mask)
     x, y, w, h = cv2.boundingRect(mask)
     bbox_area = w * h
     bbox_area_rate = bbox_area / im_area
-    bbox_ratio = h / w
+    bbox_ratio = h / (w + eps)
     # valid trainng box condition
     conds = [(config["min_area_rate"] < bbox_area_rate,
               bbox_area_rate < config["max_area_rate"]),

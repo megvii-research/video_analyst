@@ -49,12 +49,16 @@ train:
       sampler:
         name: "TrackPairSampler"
         TrackPairSampler:
-          negative_pair_ratio: 0.1
+          negative_pair_ratio: 1.0
           target_type: "mask"
         submodules:
           dataset:
             #names: ["COCODataset",]  # (GOT10kDataset|LaSOTDataset)
-            names: ["YoutubeVOSDataset",]  # (GOT10kDataset|LaSOTDataset)
+            names: ["YoutubeVOSDataset", "COCODataset"]  # (GOT10kDataset|LaSOTDataset)
+            YoutubeVOSDataset:
+              ratio: 0.0
+            COCODataset:
+              ratio: 1.0
           filter:
             name: "TrackPairFilter"
             TrackPairFilter:
@@ -69,7 +73,7 @@ train:
           max_shift: 0.4
           x_size: 303
       target:
-        name: "IdentityTarget"
+        name: "SATMaskTarget"
     trainer:
       name: "DistributedRegularTrainer"
       DistributedRegularTrainer:

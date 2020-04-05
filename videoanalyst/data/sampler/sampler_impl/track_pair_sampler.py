@@ -71,7 +71,6 @@ class TrackPairSampler(SamplerBase):
                 data1, data2 = self._sample_track_pair()
             data1["image"] = load_image(data1["image"])
             data2["image"] = load_image(data2["image"])
-
         sampled_data = dict(
             data1=data1,
             data2=data2,
@@ -205,8 +204,6 @@ class TrackPairSampler(SamplerBase):
     def _sample_track_frame_from_static_image(self, sequence_data):
         rng = self._state["rng"]
         num_anno = len(sequence_data['anno'])
-        print('sampler anno')
-        print(sequence_data['anno'])
         if num_anno > 0:
             idx = rng.choice(num_anno)
             anno = sequence_data["anno"][idx]

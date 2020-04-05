@@ -20,7 +20,7 @@ from videoanalyst.model import builder as model_builder
 from videoanalyst.model.loss import builder as losses_builder
 from videoanalyst.optim import builder as optim_builder
 from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.utils import Timer, ensure_dir, complete_path_wt_root_in_cfg
+from videoanalyst.utils import Timer, ensure_dir, complete_path_wt_root_in_cfg, convert_tensor_to_numpy
 
 from videoanalyst.data.utils.visualization import show_img_FCOS
 
@@ -136,6 +136,8 @@ if __name__ == '__main__':
         while True:
             sampled_data = datapipeline[0]
             print(sampled_data.keys())
+            sampled_data['data1'] = convert_tensor_to_numpy(sampled_data['data1'])
+            sampled_data['data2'] = convert_tensor_to_numpy(sampled_data['data2'])
             cv2.imwrite('data1.png', sampled_data['data1']['image'])
             cv2.imwrite('data1mask.png', sampled_data['data1']['anno']*250)
             cv2.imwrite('data2.png', sampled_data['data2']['image'])

@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 from yacs.config import CfgNode
 
-from videoanalyst.utils import convert_data_to_dtype
+from videoanalyst.utils import convert_numpy_to_tensor
 
 from ...sampler.sampler_base import SamplerBase
 from ..datapipeline_base import TRACK_DATAPIPELINES, DatapipelineBase
@@ -38,7 +38,6 @@ class RegularDatapipeline(DatapipelineBase):
 
         for proc in self.pipeline:
             sampled_data = proc(sampled_data)
-        print(sampled_data)
-        #sampled_data = convert_data_to_dtype(sampled_data)
+        sampled_data = convert_numpy_to_tensor(sampled_data)
 
         return sampled_data

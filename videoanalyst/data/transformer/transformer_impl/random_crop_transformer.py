@@ -11,16 +11,6 @@ from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 from ..transformer_base import TRACK_TRANSFORMERS, TransformerBase
 
 @TRACK_TRANSFORMERS.register
-class ToTensor(TransformerBase):
-    default_hyper_params = dict(
-    )
-    def __init__(self, seed: int = 0) -> None:
-        super(ToTensor, self).__init__(seed=seed)
-
-    def __call__(self, sampled_data: Dict) -> Dict:
-        return sampled_data
-
-@TRACK_TRANSFORMERS.register
 class RandomCropTransformer(TransformerBase):
     r"""
     Cropping training pair with data augmentation (random shift / random scaling)
@@ -108,7 +98,6 @@ class RandomCropTransformerWithMask(TransformerBase):
                                                      rng=self._state["rng"],
                                                      mask_tmp=mask_temp,
                                                      mask_curr=mask_curr)
-
         sampled_data["data1"] = dict(image=im_z, anno=mask_z)
         sampled_data["data2"] = dict(image=im_x, anno=mask_x)
 
