@@ -23,8 +23,6 @@ from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, VOS_DATASETS,
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
 
-_VALID_SUBSETS = ['train', 'val']
-
 
 @TRACK_DATASETS.register
 class COCODataset(DatasetBase):
@@ -41,12 +39,12 @@ class COCODataset(DatasetBase):
     max_diff: int
         maximum difference in index of a pair of sampled frames 
     """
-    data_dict = {subset : dict() for subset in _VALID_SUBSETS}
+    data_items = []
     _DUMMY_ANNO = [[-1, -1, 0, 0]]
 
     default_hyper_params = dict(
         dataset_root="datasets/coco2017",
-        subset="val2017", 
+        subsets=["val2017",], 
         ratio=1.0,
         with_mask=True,
     )
@@ -68,7 +66,8 @@ class COCODataset(DatasetBase):
         """
         dataset_root = self._hyper_params["dataset_root"]
         self._hyper_params["dataset_root"] = osp.realpath(dataset_root)
-        self._ensure_cache()
+        if len(COCODataset.data_items) == 0:
+            self._ensure_cache()
     
     def _generate_mask_from_anno(self, raw_mask, img_h, img_w):
         jth_mask_raw = MaskApi.frPyObjects(
@@ -94,8 +93,7 @@ class COCODataset(DatasetBase):
             annos
             meta (optional)
         """
-        subset = self._hyper_params["subset"]
-        record = COCODataset.data_dict[subset][item]
+        record = COCODataset.data_items[item]
         image_file = record["file_name"]
         img_h = record["height"]
         img_w = record["width"]
@@ -120,114 +118,114 @@ class COCODataset(DatasetBase):
         return sequence_data
 
     def __len__(self):
-        subset = self._hyper_params["subset"]
-        return len(COCODataset.data_dict[subset])
+        return len(COCODataset.data_items)
 
     def _ensure_cache(self):
         # current_dir = osp.dirname(osp.realpath(__file__))
         dataset_root = self._hyper_params["dataset_root"]
-        subset = self._hyper_params["subset"]
-        image_root = osp.join(dataset_root, subset)
-        data_anno_list = []
-        if self._hyper_params["with_mask"]:
-            cache_file = osp.join(dataset_root, "cache/coco_mask_%s.pkl" % subset)
-        else:
-            cache_file = osp.join(dataset_root, "cache/coco_%s.pkl" % subset)
-        # dataset_name = type(self).__name__
-        if osp.exists(cache_file):
-            with open(cache_file, 'rb') as f:
-                COCODataset.data_dict[subset] = pickle.load(f)
-            logger.info("{}: loaded cache file {}".format(COCODataset.__name__, cache_file))
-        else:
-            anno_file = osp.join(dataset_root, "annotations/instances_{}.json".format(subset))
-            with contextlib.redirect_stdout(io.StringIO()):
-                coco_api = COCO(anno_file)
-                # sort indices for reproducible results
-                img_ids = sorted(coco_api.imgs.keys())
-                # imgs is a list of dicts, each looks something like:
-                # {'license': 4,
-                #  'url': 'http://farm6.staticflickr.com/5454/9413846304_881d5e5c3b_z.jpg',
-                #  'file_name': 'COCO_val2014_000000001268.jpg',
-                #  'height': 427,
-                #  'width': 640,
-                #  'date_captured': '2013-11-17 05:57:24',
-                #  'id': 1268}
-                imgs = coco_api.loadImgs(img_ids)
-                # anns is a list[list[dict]], where each dict is an annotation
-                # record for an object. The inner list enumerates the objects in an image
-                # and the outer list enumerates over images. Example of anns[0]:
-                # [{'segmentation': [[192.81,
-                #     247.09,
-                #     ...
-                #     219.03,
-                #     249.06]],
-                #   'area': 1035.749,
-                #   'iscrowd': 0,
-                #   'image_id': 1268,
-                #   'bbox': [192.81, 224.8, 74.73, 33.43],
-                #   'category_id': 16,
-                #   'id': 42986},
-                #  ...]
-                anns = [coco_api.imgToAnns[img_id] for img_id in img_ids]
+        subsets = self._hyper_params["subsets"]
+        for subset in subsets:
+            data_anno_list = []
+            image_root = osp.join(dataset_root, subset)
+            if self._hyper_params["with_mask"]:
+                cache_file = osp.join(dataset_root, "cache/coco_mask_%s.pkl" % subset)
+            else:
+                cache_file = osp.join(dataset_root, "cache/coco_%s.pkl" % subset)
+            # dataset_name = type(self).__name__
+            if osp.exists(cache_file):
+                with open(cache_file, 'rb') as f:
+                    COCODataset.data_items += pickle.load(f)
+                logger.info("{}: loaded cache file {}".format(COCODataset.__name__, cache_file))
+            else:
+                anno_file = osp.join(dataset_root, "annotations/instances_{}.json".format(subset))
+                with contextlib.redirect_stdout(io.StringIO()):
+                    coco_api = COCO(anno_file)
+                    # sort indices for reproducible results
+                    img_ids = sorted(coco_api.imgs.keys())
+                    # imgs is a list of dicts, each looks something like:
+                    # {'license': 4,
+                    #  'url': 'http://farm6.staticflickr.com/5454/9413846304_881d5e5c3b_z.jpg',
+                    #  'file_name': 'COCO_val2014_000000001268.jpg',
+                    #  'height': 427,
+                    #  'width': 640,
+                    #  'date_captured': '2013-11-17 05:57:24',
+                    #  'id': 1268}
+                    imgs = coco_api.loadImgs(img_ids)
+                    # anns is a list[list[dict]], where each dict is an annotation
+                    # record for an object. The inner list enumerates the objects in an image
+                    # and the outer list enumerates over images. Example of anns[0]:
+                    # [{'segmentation': [[192.81,
+                    #     247.09,
+                    #     ...
+                    #     219.03,
+                    #     249.06]],
+                    #   'area': 1035.749,
+                    #   'iscrowd': 0,
+                    #   'image_id': 1268,
+                    #   'bbox': [192.81, 224.8, 74.73, 33.43],
+                    #   'category_id': 16,
+                    #   'id': 42986},
+                    #  ...]
+                    anns = [coco_api.imgToAnns[img_id] for img_id in img_ids]
 
-            if "minival" not in anno_file:
-                # The popular valminusminival & minival annotations for COCO2014 contain this bug.
-                # However the ratio of buggy annotations there is tiny and does not affect accuracy.
-                # Therefore we explicitly white-list them.
-                ann_ids = [ann["id"] for anns_per_image in anns for ann in anns_per_image]
-                assert len(set(ann_ids)) == len(ann_ids), "Annotation ids in '{}' are not unique!".format(
-                    anno_file
-                )
+                if "minival" not in anno_file:
+                    # The popular valminusminival & minival annotations for COCO2014 contain this bug.
+                    # However the ratio of buggy annotations there is tiny and does not affect accuracy.
+                    # Therefore we explicitly white-list them.
+                    ann_ids = [ann["id"] for anns_per_image in anns for ann in anns_per_image]
+                    assert len(set(ann_ids)) == len(ann_ids), "Annotation ids in '{}' are not unique!".format(
+                        anno_file
+                    )
 
-            imgs_anns = list(zip(imgs, anns))
-            ann_keys = ["iscrowd", "bbox", "keypoints", "category_id"]
-            # iterate over annotation
-            for (img_dict, anno_dict_list) in imgs_anns:
-                record = {}
-                record["file_name"] = os.path.join(image_root, img_dict["file_name"])
-                record["height"] = img_dict["height"]
-                record["width"] = img_dict["width"]
-                image_id = record["image_id"] = img_dict["id"]
+                imgs_anns = list(zip(imgs, anns))
+                ann_keys = ["iscrowd", "bbox", "keypoints", "category_id"]
+                # iterate over annotation
+                for (img_dict, anno_dict_list) in imgs_anns:
+                    record = {}
+                    record["file_name"] = os.path.join(image_root, img_dict["file_name"])
+                    record["height"] = img_dict["height"]
+                    record["width"] = img_dict["width"]
+                    image_id = record["image_id"] = img_dict["id"]
 
-                objs = []
-                for anno in anno_dict_list:
-                    # Check that the image_id in this annotation is the same as
-                    # the image_id we're looking at.
-                    # This fails only when the data parsing logic or the annotation file is buggy.
+                    objs = []
+                    for anno in anno_dict_list:
+                        # Check that the image_id in this annotation is the same as
+                        # the image_id we're looking at.
+                        # This fails only when the data parsing logic or the annotation file is buggy.
 
-                    # The original COCO valminusminival2014 & minival2014 annotation files
-                    # actually contains bugs that, together with certain ways of using COCO API,
-                    # can trigger this assertion.
-                    assert anno["image_id"] == image_id, logger.error("{} vs {}".format(anno["image_id"], image_id))
+                        # The original COCO valminusminival2014 & minival2014 annotation files
+                        # actually contains bugs that, together with certain ways of using COCO API,
+                        # can trigger this assertion.
+                        assert anno["image_id"] == image_id, logger.error("{} vs {}".format(anno["image_id"], image_id))
 
-                    assert anno.get("ignore", 0) == 0, '"ignore" in COCO json file is not supported.'
+                        assert anno.get("ignore", 0) == 0, '"ignore" in COCO json file is not supported.'
 
-                    obj = {key: anno[key] for key in ann_keys if key in anno}
+                        obj = {key: anno[key] for key in ann_keys if key in anno}
 
-                    segm = anno.get("segmentation", None)
-                    if segm:  # either list[list[float]] or dict(RLE)
-                        if not isinstance(segm, dict):
-                            # filter out invalid polygons (< 3 points)
-                            segm = [poly for poly in segm if len(poly) % 2 == 0 and len(poly) >= 6]
-                            if len(segm) == 0:
-                                num_instances_without_valid_segmentation += 1
-                                continue  # ignore this instance
-                        obj["segmentation"] = segm
-                    else:
-                        if self._hyper_params["with_mask"]:
-                            continue
-                    objs.append(obj)
-                # filter out image without any targets
-                if len(objs) == 0:
-                    continue
-                record["annotations"] = objs
-                data_anno_list.append(record)
+                        segm = anno.get("segmentation", None)
+                        if segm:  # either list[list[float]] or dict(RLE)
+                            if not isinstance(segm, dict):
+                                # filter out invalid polygons (< 3 points)
+                                segm = [poly for poly in segm if len(poly) % 2 == 0 and len(poly) >= 6]
+                                if len(segm) == 0:
+                                    num_instances_without_valid_segmentation += 1
+                                    continue  # ignore this instance
+                            obj["segmentation"] = segm
+                        else:
+                            if self._hyper_params["with_mask"]:
+                                continue
+                        objs.append(obj)
+                    # filter out image without any targets
+                    if len(objs) == 0:
+                        continue
+                    record["annotations"] = objs
+                    data_anno_list.append(record)
 
-            # save internal .json file
-            cache_dir = osp.dirname(cache_file)
-            if not osp.exists(cache_dir):
-                os.makedirs(cache_dir)
-            with open(cache_file, 'wb') as f:
-                pickle.dump(data_anno_list, f)
-            print("COCO dataset: cache dumped at: {}".format(cache_file))
-            COCODataset.data_dict[subset] = data_anno_list
+                # save internal .json file
+                cache_dir = osp.dirname(cache_file)
+                if not osp.exists(cache_dir):
+                    os.makedirs(cache_dir)
+                with open(cache_file, 'wb') as f:
+                    pickle.dump(data_anno_list, f)
+                logger.info("COCO dataset: cache dumped at: {}".format(cache_file))
+                COCODataset.data_items += data_anno_list

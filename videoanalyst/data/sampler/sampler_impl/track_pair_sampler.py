@@ -138,8 +138,8 @@ class TrackPairSampler(SamplerBase):
         return sequence_data
     def _generate_mask_for_ytbvos(self, anno):
         mask = Image.open(anno[0])
-        obj_id = anno[1]
         mask = np.array(mask, dtype=np.uint8)
+        obj_id = anno[1]
         mask[mask!=obj_id] = 0
         mask[mask==obj_id] = 1
         return mask
@@ -178,9 +178,10 @@ class TrackPairSampler(SamplerBase):
             len_seq, max_diff)
         data1 = {k: v[idx1] for k, v in sequence_data.items()}
         data2 = {k: v[idx2] for k, v in sequence_data.items()}
-        # convert mask path to mask, specical for youtubevos
-        data1["anno"] = self._generate_mask_for_ytbvos(data1["anno"])
-        data2["anno"] = self._generate_mask_for_ytbvos(data2["anno"])
+        if isinstance(data1["anno"], list) and self._hyper_params["target_type"] == "mask":
+            # convert mask path to mask, specical for youtubevos
+            data1["anno"] = self._generate_mask_for_ytbvos(data1["anno"])
+            data2["anno"] = self._generate_mask_for_ytbvos(data2["anno"])
         return data1, data2
 
     def _sample_pair_idx_pair_within_max_diff(self, L, max_diff):

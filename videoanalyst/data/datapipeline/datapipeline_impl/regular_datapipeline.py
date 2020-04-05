@@ -39,5 +39,4 @@ class RegularDatapipeline(DatapipelineBase):
         for proc in self.pipeline:
             sampled_data = proc(sampled_data)
         sampled_data = convert_numpy_to_tensor(sampled_data)
-
         return sampled_data

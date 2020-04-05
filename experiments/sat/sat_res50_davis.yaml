@@ -49,12 +49,12 @@ train:
       sampler:
         name: "TrackPairSampler"
         TrackPairSampler:
-          negative_pair_ratio: 1.0
+          negative_pair_ratio: 0.1
           target_type: "mask"
         submodules:
           dataset:
-            #names: ["COCODataset",]  # (GOT10kDataset|LaSOTDataset)
-            names: ["YoutubeVOSDataset", "COCODataset"]  # (GOT10kDataset|LaSOTDataset)
+            #names: ["YoutubeVOSDataset", "COCODataset"]  
+            names: ["DavisDataset"]  
             YoutubeVOSDataset:
               ratio: 0.0
             COCODataset:
@@ -67,7 +67,7 @@ train:
               max_ratio: 10
               target_type: "mask"
       transformer:
-        names: ["RandomCropTransformerWithMask", ]
+        names: ["RandomCropTransformerWithMask", "ImageAug"]
         RandomCropTransformerWithMask:
           max_scale: 0.3
           max_shift: 0.4

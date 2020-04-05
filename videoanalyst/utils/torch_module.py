@@ -39,10 +39,7 @@ def convert_numpy_to_tensor(raw_data):
         and elem_type.__name__ != "str_"
         and elem_type.__name__ != "string_"
     ):
-        if elem_type.__name__ == "ndarray":
-            if np_str_obj_array_pattern.search(raw_data.dtype.str) is not None:
-                raise TypeError(default_collate_err_msg_format.format(raw_data.dtype))
-            return torch.from_numpy(raw_data)
+        return torch.from_numpy(raw_data).float()
     elif isinstance(raw_data, collections.abc.Mapping):
         data =  {key: convert_numpy_to_tensor(raw_data[key]) for key in raw_data}
         if 'image' in data:
@@ -50,6 +47,8 @@ def convert_numpy_to_tensor(raw_data):
         return data
     elif isinstance(raw_data, collections.abc.Sequence):
         return [convert_numpy_to_tensor(data) for data in raw_data]
+    else:
+        return raw_data
 
 def convert_tensor_to_numpy(raw_data):
     r"""
