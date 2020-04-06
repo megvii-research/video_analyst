@@ -14,7 +14,7 @@ TASK_BACKBONES = dict(
 )
 
 
-def build(task: str, cfg: CfgNode):
+def build(task: str, cfg: CfgNode, basemodel=None):
     r"""
     Builder function.
 
@@ -24,6 +24,9 @@ def build(task: str, cfg: CfgNode):
         builder task name (track|vos)
     cfg: CfgNode
         buidler configuration
+
+    basemodel:
+        warp backbone into encoder if not None
 
     Returns
     -------
@@ -39,7 +42,12 @@ def build(task: str, cfg: CfgNode):
     name = cfg.name
     assert name in modules, "backbone {} not registered for {}!".format(
         name, task)
-    module = modules[name]()
+
+    if basemodel:
+        module = modules[name](basemodel)
+    else:
+        module = modules[name]()
+
     hps = module.get_hps()
     hps = merge_cfg_into_hps(cfg[name], hps)
     module.set_hps(hps)
