@@ -33,8 +33,8 @@ sudo apt-get install python3-tk
 
 ## Download models & raw results
 
-- [Google Drive](https://drive.google.com/open?id=1XhWIU1KIt9wvFpzZqEDaX-GrgZ9AVcOC)
-- [Tencent Weiyun](https://share.weiyun.com/56C92l4), code: wg47g7
+* [Google Drive](https://drive.google.com/open?id=1UXshq4k9WKx4hNkdpOagJLXPR57ZkBkg)
+* [baidu yun](https://pan.baidu.com/s/1uZ26iZyVJm50dJ3GoLCQ9w), code: rcsn
 
 ## Compile evaluation toolkit
 
