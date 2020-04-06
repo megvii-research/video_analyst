@@ -65,10 +65,14 @@ path_to_datasets
 │        │    ├── ...
 │        │    └── list.txt
 │        └── VOT2019.json
-└── GOT-10k  # same structure as full_data.zip
-    ├── train
-    ├── val
-    └── test
+├── GOT-10k  # same structure as full_data.zip
+│   ├── train
+│   ├── val
+│   └── test
+└── DAVIS
+    ├── Annotations
+    ├── ImageSets
+    └── ...
 ```
 
 ### Auxilary files for VOT

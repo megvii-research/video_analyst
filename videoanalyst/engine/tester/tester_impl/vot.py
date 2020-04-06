@@ -94,7 +94,7 @@ class VOTTester(TesterBase):
         """
         num_gpu = self._hyper_params["device_num"]
         all_devs = [torch.device("cuda:%d" % i) for i in range(num_gpu)]
-        logging.info('runing test on devices {}'.format(all_devs))
+        logger.info('runing test on devices {}'.format(all_devs))
         vot_root = self._hyper_params["data_root"][self.dataset_name]
         logger.info('Using dataset %s at: %s' % (self.dataset_name, vot_root))
         # setup dataset

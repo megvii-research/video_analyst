@@ -2,6 +2,10 @@
 
 Date format: YY/MM/DD
 
+## 2020/04/06
+* add model/pipeline/tester for SAT on DAVIS
+* add transferred models for SAT
+
 ## 2020/03/18
 
 ____Major changes____

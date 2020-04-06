@@ -142,6 +142,39 @@ def get_crop(im,
     return im_crop, scale
 
 
+def get_crop_pp(im,
+                target_pos,
+                target_sz,
+                z_size=127,
+                x_size=None,
+                x_scale=None,
+                avg_chans=(0, 0, 0),
+                context_amount=0.5,
+                func_get_subwindow=get_subwindow_tracking):
+    r"""
+    modified cropping function
+
+    Arguments
+    ---------
+    x_scale: int
+        search patch output size
+
+    Returns
+    -------
+        cropped & resized image, (x_scale, x_scale, 3)
+    """
+    wc = target_sz[0] + context_amount * sum(target_sz)
+    hc = target_sz[1] + context_amount * sum(target_sz)
+    s_crop = np.sqrt(wc * hc)
+    scale = z_size / s_crop
+    s_crop = x_size / scale
+
+    # extract scaled crops for search region x at previous target position
+    im_crop = func_get_subwindow(im, target_pos, x_scale, s_crop, avg_chans)
+
+    return im_crop, scale
+
+
 def _make_valid_int_pair(sz) -> Tuple[int, int]:
     """Cast size to int pair
     
