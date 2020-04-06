@@ -69,10 +69,6 @@ path_to_datasets
 │   ├── train
 │   ├── val
 │   └── test
-└── DAVIS
-    ├── Annotations
-    ├── ImageSets
-    └── ...
 ```
 
 ### Auxilary files for VOT
