@@ -34,7 +34,7 @@ class TrackingNetDataset(DatasetBase):
         if check integrity of dataset or not
     """
     default_hyper_params = dict(
-        dataset_root="datasets/ILSVRC2015",
+        dataset_root="datasets/TrackingNet",
         subset="train",
         ratio=1.0,
         max_diff=100,

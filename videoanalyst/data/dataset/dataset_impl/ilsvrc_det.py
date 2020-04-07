@@ -22,6 +22,20 @@ _VALID_SUBSETS = ['train', 'val']
 
 @TRACK_DATASETS.register
 class DETDataset(DatasetBase):
+    r"""
+    ILSVRC2015-DET dataset helper
+
+    Hyper-parameters
+    ----------------
+    dataset_root: str
+        path to root of the dataset
+    subset: str
+        dataset split name (train|val)
+    ratio: float
+        dataset ratio. used by sampler (data.sampler).
+    max_diff: int
+        maximum difference in index of a pair of sampled frames 
+    """
     data_dict = {subset: dict() for subset in _VALID_SUBSETS}
     _DUMMY_ANNO = [[-1, -1, 0, 0]]
 
