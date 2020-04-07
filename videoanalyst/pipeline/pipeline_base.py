@@ -7,7 +7,8 @@ from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.utils import Registry
 
 TRACK_PIPELINES = Registry('TRACK_PIPELINES')
-PIPELINES = dict(track=TRACK_PIPELINES)
+VOS_PIPELINES = Registry('VOS_PIPELINES')
+PIPELINES = dict(track=TRACK_PIPELINES, vos=VOS_PIPELINES)
 
 
 class PipelineBase:

@@ -8,7 +8,13 @@ from videoanalyst.pipeline.pipeline_base import PIPELINES
 from videoanalyst.utils import merge_cfg_into_hps
 
 
-def build(task: str, cfg: CfgNode, model: ModuleBase):
+def build(
+        task: str,
+        cfg: CfgNode,
+        model: ModuleBase = None,
+        segmenter: ModuleBase = None,
+        tracker: ModuleBase = None,
+):
     r"""
     Builder function.
 
@@ -19,7 +25,11 @@ def build(task: str, cfg: CfgNode, model: ModuleBase):
     cfg: CfgNode
         buidler configuration
     model: ModuleBase
-        model instance
+        model instance for siamfcpp
+    segmenter: ModuleBase
+        segmenter instance for tracker
+    tracker: ModuleBase
+        model instance for tracker
 
     Returns
     -------
@@ -29,7 +39,12 @@ def build(task: str, cfg: CfgNode, model: ModuleBase):
     assert task in PIPELINES, "no pipeline for task {}".format(task)
     pipelines = PIPELINES[task]
     pipeline_name = cfg.name
-    pipeline = pipelines[pipeline_name](model)
+
+    if task == 'track':
+        pipeline = pipelines[pipeline_name](model)
+    elif task == 'vos':
+        pipeline = pipelines[pipeline_name](segmenter, tracker)
+
     hps = pipeline.get_hps()
     hps = merge_cfg_into_hps(cfg[pipeline_name], hps)
     pipeline.set_hps(hps)
@@ -48,6 +63,7 @@ def get_config(task_list: List) -> Dict[str, CfgNode]:
         config with list of available components
     """
     cfg_dict = {name: CfgNode() for name in task_list}
+    #print(PIPELINES)
     for cfg_name, task_module in PIPELINES.items():
         cfg = cfg_dict[cfg_name]
         cfg["name"] = "unknown"
