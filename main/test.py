@@ -49,7 +49,7 @@ if __name__ == '__main__':
                                           task_cfg.pipeline,
                                           model=model)
         # build tester
-        testers = tester_builder(task, task_cfg, "tester", pipeline)
+        testers = tester_builder(task, task_cfg.tester, "tester", pipeline)
 
     elif task == 'vos':
         # build model
@@ -61,7 +61,7 @@ if __name__ == '__main__':
                                           segmenter=segmenter,
                                           tracker=tracker)
         # build tester
-        testers = tester_builder(task, task_cfg, "tester", pipeline)
+        testers = tester_builder(task, task_cfg.tester, "tester", pipeline)
 
     for tester in testers:
         tester.test()

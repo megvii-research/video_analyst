@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Dict
+from loguru import logger
 
 import numpy as np
 
@@ -22,6 +23,10 @@ def filter_unreasonable_training_boxes(im: np.array, bbox,
     bbox_area = (bbox[2] - bbox[0]) * (bbox[3] - bbox[1])
     bbox_area_rate = bbox_area / im_area
     bbox_ratio = (bbox[3] - bbox[1] + 1) / max(bbox[2] - bbox[0] + 1, eps)
+    # logging info for debugging
+    # logger.debug("im_area: {}".format(im_area))
+    # logger.debug("bbox_area: {}".format(bbox_area))
+
     # valid trainng box condition
     conds = [(config["min_area_rate"] < bbox_area_rate,
               bbox_area_rate < config["max_area_rate"]),

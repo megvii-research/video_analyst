@@ -66,7 +66,13 @@ class LaSOTTester(TesterBase):
                                          result_dir=result_dir,
                                          report_dir=report_dir)
             experiment.run(pipeline_tracker)
-            experiment.report([tracker_name], plot_curves=False)
+            performance = experiment.report([tracker_name], plot_curves=False)
+        test_result_dict = dict()
+        if performance is not None:
+            test_result_dict["main_performance"] = performance["overall"]["ao"]
+        else:
+            test_result_dict["main_performance"] = -1
+        return test_result_dict
 
 
 LaSOTTester.default_hyper_params = copy.deepcopy(

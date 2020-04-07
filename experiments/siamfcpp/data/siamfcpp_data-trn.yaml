@@ -19,12 +19,20 @@ train:
           negative_pair_ratio: 0.1
         submodules:
           dataset:
-            names: ["LaSOTDataset", "GOT10kDataset"]  # (GOT10kDataset|LaSOTDataset)
+            names: [
+              "TrackingNetDataset",
+              "COCODataset", 
+              "GOT10kDataset", 
+              "DETDataset", 
+              "VIDDataset", 
+              "LaSOTDataset", 
+              ]
             GOT10kDataset: &GOT10KDATASET_CFG
               ratio: 1.0
               max_diff: 100
               dataset_root: "datasets/GOT-10k"
               subset: "train"
+              check_integrity: false  # no need to check integrity for visualization purpose
             GOT10kDatasetFixed: *GOT10KDATASET_CFG  # got10k dataset with exclusion of unfixed sequences
             LaSOTDataset:
               ratio: 1.0
@@ -32,6 +40,25 @@ train:
               dataset_root: "datasets/LaSOT"
               subset: "train_test"
               check_integrity: false
+            VIDDataset:
+              ratio: 1.0
+              max_diff: 100
+              dataset_root: "datasets/ILSVRC2015"
+              subset: "train_val"
+            COCODataset:
+              ratio: 1.0
+              dataset_root: "datasets/COCO"
+              subset: "train2017" # train_val
+            DETDataset:
+              ratio: 1.0
+              dataset_root: "datasets/ILSVRC2015"
+              subset: "train"
+            TrackingNetDataset:
+              ratio: 1.0
+              max_diff: 100
+              dataset_root: "datasets/TrackingNet"
+              subset: "train0" # "train"
+              check_integrity: false  # no need to check integrity for visualization purpose
           filter:
             name: "TrackPairFilter"
             TrackPairFilter:
