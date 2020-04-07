@@ -503,7 +503,7 @@ class StateAwareTracker(PipelineBase):
         conf_score = self._state['conf_score']
 
         if conf_score > self._hyper_params['state_score_thresh']:
-            _, contours, _ = cv2.findContours(p_mask_b, cv2.RETR_EXTERNAL,
+            contours, _ = cv2.findContours(p_mask_b, cv2.RETR_EXTERNAL,
                                               cv2.CHAIN_APPROX_NONE)
             cnt_area = [cv2.contourArea(cnt) for cnt in contours]
 
