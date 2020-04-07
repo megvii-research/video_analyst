@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*
+from typing import Dict
 from copy import deepcopy
 
 from yacs.config import CfgNode
@@ -76,7 +77,11 @@ class TesterBase:
         r"""
         an interface for update params
         """
-    def test(self):
+    def test(self) -> Dict:
         r"""
         an interface to start testing
+        Returns
+        -------
+        Dict
+            result object which need to contain the key "main_performance" in case of hyper-parameter optimization
         """

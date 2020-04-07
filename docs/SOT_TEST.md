@@ -1,9 +1,9 @@
 # SOT TEST 
 
-A collection of test scripts are located under _tools/_:
+A collection of test scripts are located under _tools/test/_:
 
-- [tools/test_VOT.sh](../tools/test_VOT.sh)
-- [tools/test_GOT.sh](../tools/test_GOT.sh)
+- [tools/test/test_VOT.sh](../tools/test/test_VOT.sh)
+- [tools/test/test_GOT.sh](../tools/test/test_GOT.sh)
 
 ## Check test results
 

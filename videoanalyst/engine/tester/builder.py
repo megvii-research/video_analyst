@@ -19,7 +19,8 @@ def build(task: str, cfg: CfgNode, pipeline: PipelineBase):
     task: str
         builder task name (track|vos)
     cfg: CfgNode
-        buidler configuration
+        buidler configuration, 
+        node nams: tester
 
     Returns
     -------
@@ -29,13 +30,13 @@ def build(task: str, cfg: CfgNode, pipeline: PipelineBase):
     assert task in TASK_TESTERS, "no tester for task {}".format(task)
     MODULES = TASK_TESTERS[task]
 
-    names = cfg.tester.names
+    names = cfg.names
     testers = []
     # tester for multiple experiments
     for name in names:
         tester = MODULES[name](pipeline)
         hps = tester.get_hps()
-        hps = merge_cfg_into_hps(cfg.tester[name], hps)
+        hps = merge_cfg_into_hps(cfg[name], hps)
         tester.set_hps(hps)
         tester.update_params()
         testers.append(tester)

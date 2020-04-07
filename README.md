@@ -14,17 +14,17 @@ Current implementation list:
 </div>
 
 * VOS
-  * [State-Aware Tracker for Real-Time Video Object Segmentation](https://arxiv.org/abs/2003.00482) coming soon
+  * [State-Aware Tracker for Real-Time Video Object Segmentation](https://arxiv.org/abs/2003.00482) 
 <div align="center">
   <img src="docs/resources/sat_runman.gif" width="800px" />
   <p>Example SAT outputs.</p>
 </div>
 
-## Quick start
+## SOT Quick start
 
 ### Setup
 
-Please refer to [SETUP.md](docs/SETUP.md)
+Please refer to [SOT_SETUP.md](docs/SOT_SETUP.md)
 ### Demo
 
 #### SOT video demo
@@ -34,15 +34,16 @@ python3 ./demo/main/video/sot_video.py --config 'experiments/siamfcpp/test/vot/s
 
 ### Test
 
-Please refer to [docs/TEST.md](docs/TEST.md) for detail.
+Please refer to [docs/SOT_TEST.md](docs/SOT_TEST.md) for detail.
 
 ### Training
 
-Please refer to [docs/TRAINING.md](docs/TRAINING.md) for detail.
+Please refer to [docs/SOT_TRAINING.md](docs/SOT_TRAINING.md) for detail.
 
 ## Repository structure (in progress)
 
 ```File Tree
+project_root/
 ├── experiments  # experiment configurations, in yaml format
 ├── main
 │   ├── train.py  # trainng entry point
@@ -81,9 +82,16 @@ Please refer to [docs/TRAINING.md](docs/TRAINING.md) for detail.
 
 For detail, please refer to markdown files under _docs_.
 
-* [SETUP.md](docs/SETUP.md): instructions for setting-up
+### SOT 
+* [SOT_SETUP.md](docs/SOT_SETUP.md): instructions for setting-up
 * [SOT_MODEL_ZOO.md](docs/SOT_MODEL_ZOO.md): description of released sot models
-* [TRAINING.md](docs/TRAINING.md): details related to training
+* [SOT_TRAINING.md](docs/SOT_TRAINING.md): details related to training
+* [SOT_TEST.md](docs/SOT_TEST.md): details related to training
+### VOS 
+* [VOS_SETUP.md](docs/VOS_SETUP.md): instructions for setting-up
+* [VOS_MODEL_ZOO.md](docs/VOS_MODEL_ZOO.md): description of released sot models
+* [VOS_TEST.md](docs/VOS_TEST.md): details related to training
+### DEVELOP
 * [DEVELOP.md](docs/DEVELOP.md): description of project design (registry, configuration tree, etc.)
 * [PIPELINE_API.md](docs/PIPELINE_API.md): description for pipeline API
 * [FORMATTING_INSTRUCTION](docs/FORMATTING_INSTRUCTIONS.md): instruction for code formatting (yapf/isort/flake/etc.)
@@ -94,6 +102,7 @@ For detail, please refer to markdown files under _docs_.
   * [] LaSOT
   * [] COCO
 * [] Test code for OTB, LaSOT, TrackingNet
+* [] Training code for SAT
 
 ## Acknowledgement
 

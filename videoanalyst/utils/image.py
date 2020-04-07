@@ -6,7 +6,7 @@ import numpy as np
 from loguru import logger
 from PIL import Image
 
-_RETRY_NUM = 3
+_RETRY_NUM = 10
 
 
 def load_image(img_file: str) -> np.array:

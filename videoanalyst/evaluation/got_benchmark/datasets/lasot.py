@@ -70,6 +70,11 @@ class LaSOT(object):
         #     os.path.dirname(d), 'groundtruth.txt')
         #     for d in self.seq_dirs]
         self._ensure_cache()
+        self.seq_names = [k for subset in self.subset
+                            for k, _ in LaSOT.data_dict[subset].items()]
+        self.seq_names = sorted(self.seq_names)
+        self.seq_datas = {k : v for subset in self.subset
+                               for k, v in LaSOT.data_dict[subset].items()}
 
     def __getitem__(self, index):
         r"""        
@@ -82,14 +87,21 @@ class LaSOT(object):
                 file names, ``anno`` is a N x 4 (rectangles) numpy array, while
                 ``meta`` is a dict contains meta information about the sequence.
         """
-        if isinstance(index, six.string_types):
-            if not index in self.seq_names:
-                raise Exception('Sequence {} not found.'.format(index))
-            index = self.seq_names.index(index)
+        # if isinstance(index, six.string_types):
+        #     if not index in self.seq_names:
+        #         raise Exception('Sequence {} not found.'.format(index))
+        #     index = self.seq_names.index(index)
+        if isinstance(index, int):
+            index = self.seq_names[index]
+        
+        seq_data = self.seq_datas[index]
+        img_files = seq_data["img_files"]
+        anno = seq_data["anno"]
+        meta = seq_data["meta"]
 
-        img_files = sorted(glob.glob(os.path.join(
-            self.seq_dirs[index], '*.jpg')))
-        anno = np.loadtxt(self.anno_files[index], delimiter=',')
+        # img_files = sorted(glob.glob(os.path.join(
+        #     self.seq_dirs[index], '*.jpg')))
+        # anno = np.loadtxt(self.anno_files[index], delimiter=',')
 
         if self.return_meta:
             meta = self._fetch_meta(self.seq_dirs[index])

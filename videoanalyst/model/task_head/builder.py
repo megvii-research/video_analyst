@@ -32,7 +32,7 @@ def build(task: str, cfg: CfgNode):
         exit(-1)
 
     name = cfg.name
-    if task == "track":
+    if task == "track" or 'vos':
         # head settings
         head_module = head_modules[name]()
         hps = head_module.get_hps()
@@ -41,6 +41,7 @@ def build(task: str, cfg: CfgNode):
         head_module.update_params()
 
         return head_module
+
     else:
         logger.error("task model {} is not completed".format(task))
         exit(-1)

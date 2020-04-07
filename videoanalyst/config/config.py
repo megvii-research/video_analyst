@@ -20,7 +20,13 @@ for task in task_list:
     test_cfg[task] = CfgNode()
     test_cfg[task]["exp_name"] = default_str
     test_cfg[task]["exp_save"] = default_str
-    test_cfg[task]["model"] = get_model_cfg(task_list)[task]
+
+    if task == "track":
+        test_cfg[task]["model"] = get_model_cfg(task_list)[task]
+    elif task == "vos":
+        test_cfg[task]["tracker"] = get_model_cfg(task_list)['vos']
+        test_cfg[task]["segmenter"] = get_model_cfg(task_list)['vos']
+
     test_cfg[task]["pipeline"] = get_pipeline_cfg(task_list)[task]
     test_cfg[task]["tester"] = get_tester_cfg(task_list)[task]
     test_cfg[task]["data"] = get_data_cfg(task_list)[task]
@@ -53,6 +59,6 @@ def specify_task(cfg: CfgNode) -> (str, CfgNode):
         short task name, task-specified cfg
     """
     for task in task_list:
-        if cfg[task].exp_name != default_str:
+        if cfg[task]['exp_name'] != default_str:
             return task, cfg[task]
     assert False, "unknown task!"
