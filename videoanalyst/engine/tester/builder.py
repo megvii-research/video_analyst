@@ -19,7 +19,8 @@ def build(task: str, cfg: CfgNode, pipeline: PipelineBase):
     task: str
         builder task name (track|vos)
     cfg: CfgNode
-        buidler configuration
+        buidler configuration, 
+        node nams: tester
 
     Returns
     -------
