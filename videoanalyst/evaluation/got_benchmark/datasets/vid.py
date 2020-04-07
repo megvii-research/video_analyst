@@ -7,6 +7,7 @@ import numpy as np
 import xml.etree.ElementTree as ET
 import json
 from collections import OrderedDict
+import pickle
 
 
 class ImageNetVID(object):
@@ -55,10 +56,14 @@ class ImageNetVID(object):
         else:
             seq_name = self.seq_names[index]
 
-        seq_dir, frames, anno_file = self.seq_dict[seq_name]
+        # seq_dir, frames, anno_file = self.seq_dict[seq_name]
+        # img_files = [os.path.join(
+        #     seq_dir, '%06d.JPEG' % f) for f in frames]
+        # anno = np.loadtxt(anno_file, delimiter=',')
+
+        seq_dir, frames, anno = self.seq_dict[seq_name]
         img_files = [os.path.join(
             seq_dir, '%06d.JPEG' % f) for f in frames]
-        anno = np.loadtxt(anno_file, delimiter=',')
 
         return img_files, anno
 
@@ -66,11 +71,14 @@ class ImageNetVID(object):
         return len(self.seq_dict)
 
     def _cache_meta(self):
-        cache_file = os.path.join(self.cache_dir, 'seq_dict.json')
+        # cache_file = os.path.join(self.cache_dir, 'seq_dict.json')
+        cache_file = os.path.join(self.cache_dir, 'seq_dict.pkl')
         if os.path.isfile(cache_file):
-            print('Dataset already cached.')
-            with open(cache_file) as f:
-                seq_dict = json.load(f, object_pairs_hook=OrderedDict)
+            print('ILSVRC-VID: Dataset already cached.')
+            # with open(cache_file) as f:
+            #     seq_dict = json.load(f, object_pairs_hook=OrderedDict)
+            with open(cache_file, 'rb') as f:
+                seq_dict = pickle.load(f)
             return seq_dict
         
         # image and annotation paths
@@ -138,15 +146,22 @@ class ImageNetVID(object):
 
                 # store annotations
                 key = '%s.%d' % (seq_name, int(track_id))
-                cache_anno_file = os.path.join(cache_anno_dir, key + '.txt')
-                np.savetxt(cache_anno_file, anno, fmt='%d', delimiter=',')
+                    # store directly into cache pickle
+                # cache_anno_file = os.path.join(cache_anno_dir, key + '.txt')
+                # np.savetxt(cache_anno_file, anno, fmt='%d', delimiter=',')
 
                 # store paths
+                # seq_dict.update([(key, [
+                #     seq_dirs[s], frames, cache_anno_file])])
+                    # directly store anno instead of seperate nptxt (avoid I/O conflict)
                 seq_dict.update([(key, [
-                    seq_dirs[s], frames, cache_anno_file])])
+                    seq_dirs[s], frames, anno])])
         
         # store seq_dict
-        with open(cache_file, 'w') as f:
-            json.dump(seq_dict, f)
+        # with open(cache_file, 'w') as f:
+        #     json.dump(seq_dict, f)
+            # serialize with pickle
+        with open(cache_file, 'wb') as f:
+            pickle.dump(seq_dict, f)        
 
         return seq_dict

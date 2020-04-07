@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*
+from typing import Dict
 import copy
 import itertools
 import logging
 import math
 import os
+import os.path as osp
 from collections import OrderedDict
 from multiprocessing import Process, Queue
 from os.path import join
@@ -69,12 +71,13 @@ class VOTTester(TesterBase):
     def update_params(self):
         pass
 
-    def test(self):
+    def test(self) -> Dict:
         r"""
         Run test
         """
         # set dir
         self.tracker_name = self._hyper_params["exp_name"]
+        test_result_dict = None
         for dataset_name in self._hyper_params["dataset_names"]:
             self.dataset_name = dataset_name
             # self.tracker_dir = os.path.join(self._cfg.auto.log_dir, self._hyper_params["dataset_name"])
@@ -86,7 +89,8 @@ class VOTTester(TesterBase):
             # track videos
             self.run_tracker()
             # evaluation
-            self.evaluation()
+            test_result_dict = self.evaluation()
+        return test_result_dict
 
     def run_tracker(self):
         """
@@ -200,6 +204,10 @@ class VOTTester(TesterBase):
             result_csv=csv_to_write,
         )
         csv_to_write.close()
+        eao = eao_result[self.tracker_name]['all']
+        test_result_dict = dict()
+        test_result_dict["main_performance"] = eao
+        return test_result_dict
 
     def track_single_video(self, tracker, video, v_id=0):
         r"""
@@ -283,6 +291,7 @@ class VOTTester(TesterBase):
                             speed=-1,
                             param=None,
                             result_csv=None):
+        write_header = (osp.getsize(result_csv.name) == 0)
         row_dict = OrderedDict()
         row_dict['tracker'] = self.tracker_name
         row_dict['speed'] = speed
@@ -302,8 +311,9 @@ class VOTTester(TesterBase):
         row_dict['lost'] = lost_number
         row_dict['eao'] = eao
 
-        header = ','.join([str(k) for k in row_dict.keys()])
-        result_csv.write('%s\n' % header)
+        if write_header:
+            header = ','.join([str(k) for k in row_dict.keys()])
+            result_csv.write('%s\n' % header)
         row_data = ','.join([str(v) for v in row_dict.values()])
         result_csv.write('%s\n' % row_data)
 

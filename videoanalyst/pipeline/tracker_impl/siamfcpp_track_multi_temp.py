@@ -30,16 +30,16 @@ class SiamFCppMultiTempTracker(SiamFCppTracker):
         short-time template sampling frequency (e.g. one sampling every mem_step frames )
     mem_len: int
         template memory length
-    st_mem_coef: str
+    mem_coef: str
         short-time memory coefficient
-        e.g. final_score = st_mem_coef * init_score + (1-st_mem_coef) * mean(st_mem_score[])
+        e.g. final_score = (1-mem_coef * init_score + mem_coef * mean(st_mem_score[])
     mem_sink_idx: str
         template index to dequeue
     """
     extra_hyper_params = dict(
         mem_step=5,
         mem_len=5,
-        st_mem_coef=0.7,
+        mem_coef=0.7,
         mem_sink_idx=1,
     )
 
@@ -114,9 +114,8 @@ class SiamFCppMultiTempTracker(SiamFCppTracker):
 
         # fusion
         if self._hyper_params['mem_len'] > 1:
-            fuse_func = lambda x: x[0] * self._hyper_params['st_mem_coef'] + \
-                                  np.stack(x[1:], axis=0).mean(axis=0) * (1-self._hyper_params['st_mem_coef'])
-            score = fuse_func(score_list)
+            score = score_list[0] * (1-self._hyper_params['mem_coef']) + \
+                    np.stack(score_list[1:], axis=0).mean(axis=0) * self._hyper_params['mem_coef']
         else:
             # single template
             score = score_list[0]
@@ -172,10 +171,9 @@ class SiamFCppMultiTempTracker(SiamFCppTracker):
             self._state['features'].append(features_curr)
 
         return track_rect
-
+'''
 
 SiamFCppMultiTempTracker.default_hyper_params = copy.deepcopy(
     SiamFCppMultiTempTracker.default_hyper_params)
 SiamFCppMultiTempTracker.default_hyper_params.update(
     SiamFCppMultiTempTracker.extra_hyper_params)
-'''

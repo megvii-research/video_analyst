@@ -150,6 +150,12 @@ class GOT10k(object):
         logger.info("{}: need to clean this cache file if you move dataset directory".format(GOT10k.__name__))
         logger.info("{}: consider cleaning this cache file in case of erros such as FileNotFoundError or IOError".format(GOT10k.__name__))
 
+    def _check_cache_for_current_subset(self) -> bool:
+        r""" check if GOT10k.data_dict[subset] exists and contains all record in seq_names
+        """
+        is_valid_data_dict = (self.subset in GOT10k.data_dict) and \
+                             (set(GOT10k.data_dict[self.subset].keys()) == set(self.seq_names))
+        return is_valid_data_dict
 
     def _get_cache_path(self, cache_path : str=None):
         r"""Ensure cache_path.
@@ -160,12 +166,11 @@ class GOT10k(object):
             cache_path = os.path.join(self.root_dir, self.subset+".pkl")
         return cache_path
 
-    def _check_cache_for_current_subset(self) -> bool:
-        r""" check if GOT10k.data_dict[subset] exists and contains all record in seq_names
-        """
-        is_valid_data_dict = (self.subset in GOT10k.data_dict) and \
-                             (set(GOT10k.data_dict[self.subset].keys()) == set(self.seq_names))
-        return is_valid_data_dict
+    def _load_cache_for_current_subset(self, cache_path: str):
+        assert os.path.exists(cache_path), "cache_path does not exist: %s "%cache_path
+        with open(cache_path, "rb") as f:
+            GOT10k.data_dict[self.subset] = pickle.load(f)
+        logger.info("{}: loaded cache file {}".format(GOT10k.__name__, cache_path))
 
     def _build_cache_for_current_subset(self):
         r"""Build cache for current subset (self.subset)
@@ -180,12 +185,6 @@ class GOT10k(object):
         with open(self.cache_path, "wb") as f:
             pickle.dump(GOT10k.data_dict[self.subset], f)
         logger.info("{}: dump cache file to {}".format(GOT10k.__name__, self.cache_path))
-
-    def _load_cache_for_current_subset(self, cache_path: str):
-        assert os.path.exists(cache_path), "cache_path does not exist: %s "%cache_path
-        with open(cache_path, "rb") as f:
-            GOT10k.data_dict[self.subset] = pickle.load(f)
-        logger.info("{}: loaded cache file {}".format(GOT10k.__name__, cache_path))
 
     def load_single_sequence(self, seq_dir):
         img_files = sorted(glob.glob(os.path.join(
