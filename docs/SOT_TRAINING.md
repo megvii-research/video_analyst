@@ -2,7 +2,7 @@
 
 ## Training
 
-By running [tools/train_test-alexnet.sh](../tools/train_test-alexnet.sh) or [tools/train_test-googlent.sh](../tools/train_test-googlenet.sh), a training process succeeded by a benchmarking process will be lauched.
+By running [tools/train_test/got10k/train_test-alexnet.sh](../tools/train_test/got10k/train_test-alexnet.sh) or [tools/train_test/got10k/train_test-googlent.sh](../tools/train_test/got10k/train_test-googlenet.sh), a training process succeeded by a benchmarking process will be lauched.
 
 Usage of Python script:
 
@@ -42,14 +42,14 @@ Full data list:
 * GOT10k
 
 ```Bash
-python3 ./main/train.py --confg 'experiments/siamfcpp/train/siamfcpp_googlenet-trn-fulldata.yaml'
+python3 ./main/train.py --confg 'experiments/siamfcpp/train/fulldata/siamfcpp_googlenet-trn-fulldata.yaml'
 ```
 
 
 ### Training with PyTorch Distributed Data Parallel (DDP)
 
 ```Bash
-python3 -W ignore ./main/dist_train.py --config 'experiments/siamfcpp/train/siamfcpp_alexnet-dist_trn.yaml'
+python3 -W ignore ./main/dist_train.py --config 'experiments/siamfcpp/train/fulldata/siamfcpp_alexnet-dist_trn.yaml'
 ```
 
 Nota: _-W ignore_ neglects warning to ensure the program exits normally so that _test.py_ can run after it.
