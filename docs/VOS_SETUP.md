@@ -78,5 +78,5 @@ models
 ├── sat
     |── transferred-model
        ├── siamfcpp_brain2torch-md5_abfe30e8531e001d83e9f0a6482da444.pkl
-       ├── siamfcpp-googlenet-vot-md5_f2680ba074213ee39d82fcb84533a1a6.pkl
+       ├── sat_res50_brain2torch-davis17-md5_1170502f6b4062399b19658aeafa9474.pkl
 ```
