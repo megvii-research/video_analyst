@@ -86,11 +86,11 @@ For detail, please refer to markdown files under _docs_.
 * [SOT_SETUP.md](docs/SOT_SETUP.md): instructions for setting-up
 * [SOT_MODEL_ZOO.md](docs/SOT_MODEL_ZOO.md): description of released sot models
 * [SOT_TRAINING.md](docs/SOT_TRAINING.md): details related to training
-* [SOT_TEST.md](docs/SOT_TEST.md): details related to training
+* [SOT_TEST.md](docs/SOT_TEST.md): details related to test
 ### VOS 
 * [VOS_SETUP.md](docs/VOS_SETUP.md): instructions for setting-up
 * [VOS_MODEL_ZOO.md](docs/VOS_MODEL_ZOO.md): description of released sot models
-* [VOS_TEST.md](docs/VOS_TEST.md): details related to training
+* [VOS_TEST.md](docs/VOS_TEST.md): details related to test
 ### DEVELOP
 * [DEVELOP.md](docs/DEVELOP.md): description of project design (registry, configuration tree, etc.)
 * [PIPELINE_API.md](docs/PIPELINE_API.md): description for pipeline API
