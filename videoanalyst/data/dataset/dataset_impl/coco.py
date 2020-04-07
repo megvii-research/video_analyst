@@ -19,7 +19,6 @@ from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, DatasetBase
 from videoanalyst.evaluation.got_benchmark.datasets import ImageNetVID
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
-
 _VALID_SUBSETS = ['train', 'val']
 
 
@@ -39,12 +38,12 @@ class COCODataset(DatasetBase):
     max_diff: int
         maximum difference in index of a pair of sampled frames 
     """
-    data_dict = {subset : dict() for subset in _VALID_SUBSETS}
+    data_dict = {subset: dict() for subset in _VALID_SUBSETS}
     _DUMMY_ANNO = [[-1, -1, 0, 0]]
 
     default_hyper_params = dict(
         dataset_root="datasets/COCO",
-        subset="train", 
+        subset="train",
         ratio=1.0,
     )
 
@@ -77,10 +76,10 @@ class COCODataset(DatasetBase):
             annos
             meta (optional)
         """
-        # frame_name = 
+        # frame_name =
         subset = self._hyper_params["subset"]
         image_file, anno = COCODataset.data_dict[subset][item]
-        if len(anno)<=0:
+        if len(anno) <= 0:
             anno = self._DUMMY_ANNO
         anno = xywh2xyxy(anno)
         sequence_data = dict(image=[image_file], anno=anno)
@@ -101,10 +100,12 @@ class COCODataset(DatasetBase):
         if osp.exists(cache_file):
             with open(cache_file, 'r') as f:
                 COCODataset.data_dict[subset] = json.load(f)
-            logger.info("{}: loaded cache file {}".format(COCODataset.__name__, cache_file))
+            logger.info("{}: loaded cache file {}".format(
+                COCODataset.__name__, cache_file))
         else:
             print("cache coco dataset")
-            anno_file = osp.join(dataset_root, "annotations/instances_{}.json".format(subset))
+            anno_file = osp.join(dataset_root,
+                                 "annotations/instances_{}.json".format(subset))
             with open(anno_file, 'r') as f:
                 annotations = json.load(f)
 
@@ -126,7 +127,7 @@ class COCODataset(DatasetBase):
                 rect = anno['bbox']
                 # filter crowd obejct
                 if not anno['iscrowd']:
-                    data_anno_dict[image_id][1].append(rect) 
+                    data_anno_dict[image_id][1].append(rect)
             data_anno_list = list(data_anno_dict.values())
 
             # save internal .json file
@@ -137,4 +138,3 @@ class COCODataset(DatasetBase):
                 json.dump(data_anno_list, f)
             print("COCO dataset: cache dumped at: {}".format(cache_file))
             COCODataset.data_dict[subset] = data_anno_list
-

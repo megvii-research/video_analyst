@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-from typing import Dict 
+from typing import Dict
 import copy
 import itertools
 import logging

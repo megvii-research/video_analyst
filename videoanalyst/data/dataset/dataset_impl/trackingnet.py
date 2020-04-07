@@ -53,10 +53,11 @@ class TrackingNetDataset(DatasetBase):
         subset = self._hyper_params["subset"]
         check_integrity = self._hyper_params["check_integrity"]
         cache_dir = osp.join(dataset_root, "cache/vid")
-        self._state["dataset"] = TrackingNet(dataset_root,
-                                             subset=subset,
-                                            #  cache_dir=cache_dir,
-                                             )
+        self._state["dataset"] = TrackingNet(
+            dataset_root,
+            subset=subset,
+            #  cache_dir=cache_dir,
+        )
 
     def __getitem__(self, item: int) -> Dict:
         img_files, anno = self._state["dataset"][item]

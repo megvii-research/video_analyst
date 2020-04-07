@@ -13,17 +13,16 @@ import cv2
 import numpy as np
 from yacs.config import CfgNode
 
-
 from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, DatasetBase
 from videoanalyst.evaluation.got_benchmark.datasets import ImageNetVID
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
-
 _VALID_SUBSETS = ['train', 'val']
+
 
 @TRACK_DATASETS.register
 class DETDataset(DatasetBase):
-    data_dict = {subset : dict() for subset in _VALID_SUBSETS}
+    data_dict = {subset: dict() for subset in _VALID_SUBSETS}
     _DUMMY_ANNO = [[-1, -1, 0, 0]]
 
     # data_dirname = "Data"
@@ -32,7 +31,7 @@ class DETDataset(DatasetBase):
 
     default_hyper_params = dict(
         dataset_root="datasets/ILSVRC2015",
-        subset="train", 
+        subset="train",
         ratio=1.0,
     )
 
@@ -64,7 +63,7 @@ class DETDataset(DatasetBase):
 
         image_file = DETDataset.data_dict[subset][im_name]["image_file"]
         anno = DETDataset.data_dict[subset][im_name]["anno"]
-        if len(anno)<=0:
+        if len(anno) <= 0:
             anno = self._DUMMY_ANNO
         anno = xywh2xyxy(anno)
 
@@ -104,8 +103,10 @@ class DETDataset(DatasetBase):
 
             # check integrity
             assert len(anno_files) == len(data_files)
-            assert set([osp.splitext(osp.basename(p))[0] for p in anno_files]) == set([osp.splitext(osp.basename(p))[0] for p in data_files])
-            
+            assert set([
+                osp.splitext(osp.basename(p))[0] for p in anno_files
+            ]) == set([osp.splitext(osp.basename(p))[0] for p in data_files])
+
             for data_file, anno_file in tqdm(list(zip(data_files, anno_files))):
                 im_name = osp.splitext(osp.basename(data_file))[0]
                 assert im_name == osp.splitext(osp.basename(anno_file))[0]
@@ -134,6 +135,8 @@ class DETDataset(DatasetBase):
                 float(obj.find("bndbox/xmax").text),
                 float(obj.find("bndbox/ymax").text),
             ]
-            rect = [bbox[0], bbox[1], bbox[2]-bbox[0]+1, bbox[3]-bbox[1]+1]
+            rect = [
+                bbox[0], bbox[1], bbox[2] - bbox[0] + 1, bbox[3] - bbox[1] + 1
+            ]
             anno.append(rect)
         return anno

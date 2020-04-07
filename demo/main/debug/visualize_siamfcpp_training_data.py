@@ -107,7 +107,7 @@ if __name__ == '__main__':
             else:
                 im = load_image(seq['image'][0])
                 num_anno = len(seq['anno'])
-                if num_anno <=0:
+                if num_anno <= 0:
                     logger.info("no annotation")
                     continue
                 anno_idx = np.random.choice(num_anno)
@@ -131,4 +131,5 @@ if __name__ == '__main__':
                 sampled_data,
             )
     else:
-        logger.info("--target {} has not been implemented. ".format(parsed_args.target))
+        logger.info("--target {} has not been implemented. ".format(
+            parsed_args.target))

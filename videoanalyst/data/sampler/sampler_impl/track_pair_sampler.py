@@ -54,7 +54,7 @@ class TrackPairSampler(SamplerBase):
             d._hyper_params["ratio"] for d in self.datasets
         ]
         sum_ratios = sum(self._state["ratios"])
-        self._state["ratios"] = [d/sum_ratios for d in self._state["ratios"]]
+        self._state["ratios"] = [d / sum_ratios for d in self._state["ratios"]]
         self._state["max_diffs"] = [
             # max_diffs, or -1 (invalid value for video, but not used for static image dataset)
             d._hyper_params.get("max_diff", -1) for d in self.datasets
@@ -81,7 +81,7 @@ class TrackPairSampler(SamplerBase):
         )
 
         return sampled_data
-    
+
     def _get_len_seq(self, seq_data) -> int:
         return len(seq_data["image"])
 
@@ -106,7 +106,8 @@ class TrackPairSampler(SamplerBase):
         len_seq = self._get_len_seq(sequence_data)
         if len_seq == 1:
             # static image dataset
-            data_frame = self._sample_track_frame_from_static_image(sequence_data)
+            data_frame = self._sample_track_frame_from_static_image(
+                sequence_data)
         else:
             # video dataset
             data_frame = self._sample_track_frame_from_sequence(sequence_data)
@@ -191,7 +192,7 @@ class TrackPairSampler(SamplerBase):
         idx2_choices = list(set(idx2_choices).intersection(set(range(L))))
         idx2 = rng.choice(idx2_choices)
         return int(idx1), int(idx2)
-    
+
     def _sample_track_frame_from_static_image(self, sequence_data):
         rng = self._state["rng"]
         num_anno = len(sequence_data['anno'])

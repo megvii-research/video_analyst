@@ -12,7 +12,9 @@ from .path import ensure_dir
 _HPO_RANGE_POSTFIX = "_hpo_range"
 _DELIMITER = ","
 
-def parse_hp_path_and_range(hpo_cfg: CfgNode, ) -> List[Tuple[List[str], Tuple[float, float]]]:
+
+def parse_hp_path_and_range(hpo_cfg: CfgNode,
+                            ) -> List[Tuple[List[str], Tuple[float, float]]]:
     """Parse hyper-parameter ranges from hp config via recursive method
     
     Parameters
@@ -45,10 +47,12 @@ def parse_hp_path_and_range(hpo_cfg: CfgNode, ) -> List[Tuple[List[str], Tuple[f
             parsed_results.extend(child_results)
     return parsed_results
 
+
 def get_cfg_value_wt_path(target_cfg, node_name_path):
     for n in node_name_path:
         target_cfg = target_cfg[n]
     return target_cfg
+
 
 def set_cfg_value_wt_path(target_cfg, node_name_path, value):
     last_node_name = node_name_path[-1]
@@ -56,7 +60,9 @@ def set_cfg_value_wt_path(target_cfg, node_name_path, value):
         target_cfg = target_cfg[n]
     target_cfg[last_node_name] = value
 
-def sample_and_update_single_hp(target_cfg: CfgNode, node_name_path: List[str], hpo_range) -> float:
+
+def sample_and_update_single_hp(target_cfg: CfgNode, node_name_path: List[str],
+                                hpo_range) -> float:
     """Sample random value from uniform distribution & 
        update the node value at the given path to hyper-parameter node
     
@@ -90,14 +96,17 @@ def sample_and_update_single_hp(target_cfg: CfgNode, node_name_path: List[str], 
     set_cfg_value_wt_path(target_cfg, node_name_path, random_hpo_value)
     return random_hpo_value
 
+
 def sample_and_update_hps(target_cfg, hpo_schedules):
     sample_results = OrderedDict()
     for schedule in hpo_schedules:
         node_name_path, hpo_range = schedule
         hp_name = "/".join(node_name_path)
-        random_value = sample_and_update_single_hp(target_cfg, node_name_path, hpo_range)
+        random_value = sample_and_update_single_hp(target_cfg, node_name_path,
+                                                   hpo_range)
         sample_results[hp_name] = random_value
     return sample_results
+
 
 def merge_result_dict(result_dicts):
     """Merge results stored in dict
@@ -115,7 +124,7 @@ def merge_result_dict(result_dicts):
     if not isinstance(result_dicts, list):
         result_dicts = [result_dicts]
     keys = list(result_dicts[0].keys())
-    merged_result = {k : [] for k in keys}
+    merged_result = {k: [] for k in keys}
     for result_dict in result_dicts:
         for k in keys:
             if isinstance(result_dict[k], list):
@@ -124,7 +133,8 @@ def merge_result_dict(result_dicts):
                 merged_result[k].append(result_dict[k])
     return merged_result
 
-def dump_result_dict(csv_file : str, result_dict) -> pd.DataFrame:
+
+def dump_result_dict(csv_file: str, result_dict) -> pd.DataFrame:
     """Dump result_dict into csv_file
     
     Parameters
@@ -149,6 +159,10 @@ def dump_result_dict(csv_file : str, result_dict) -> pd.DataFrame:
     df = pd.concat([df, df_new])
 
     df.reset_index(drop=True, inplace=True)
-    df.to_csv(csv_file, sep=_DELIMITER, header=True, index=True, index_label='hpo_id')
+    df.to_csv(csv_file,
+              sep=_DELIMITER,
+              header=True,
+              index=True,
+              index_label='hpo_id')
 
     return df

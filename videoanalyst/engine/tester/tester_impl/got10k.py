@@ -69,10 +69,12 @@ class GOT10kTester(TesterBase):
             performance = experiment.report([tracker_name], plot_curves=False)
         test_result_dict = dict()
         if performance is not None:
-            test_result_dict["main_performance"] = performance[tracker_name]["overall"]["ao"]
+            test_result_dict["main_performance"] = performance[tracker_name][
+                "overall"]["ao"]
         else:
             test_result_dict["main_performance"] = -1
         return test_result_dict
+
 
 GOT10kTester.default_hyper_params = copy.deepcopy(
     GOT10kTester.default_hyper_params)

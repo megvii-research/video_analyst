@@ -25,11 +25,12 @@ def make_parser():
                         default='',
                         type=str,
                         help='experiment configuration')
-    parser.add_argument('-hpocfg',
-                        '--hpo-config',
-                        default='experiments/siamfcpp/hpo/siamfcpp_SiamFCppTracker-hpo.yaml',
-                        type=str,
-                        help='experiment configuration')
+    parser.add_argument(
+        '-hpocfg',
+        '--hpo-config',
+        default='experiments/siamfcpp/hpo/siamfcpp_SiamFCppTracker-hpo.yaml',
+        type=str,
+        help='experiment configuration')
     # parser.add_argument('-hpocsv',
     #                     '--hpo-csv',
     #                     default='logs/hpo/hpo.csv',
@@ -61,18 +62,19 @@ if __name__ == '__main__':
     hpo_cfg = hpo_cfg["test"]
     _, hpo_cfg = specify_task(hpo_cfg)
     hpo_schedules = hpo.parse_hp_path_and_range(hpo_cfg)
-    
+
     # results = [hpo.sample_and_update_hps(task_cfg, hpo_schedules) for _ in range(5)]
     # merged_result = hpo.merge_result_dict(results)
 
-    csv_file = osp.join(hpo_cfg["exp_save"], "hpo_{}.csv".format(task_cfg_origin["exp_name"]))
+    csv_file = osp.join(hpo_cfg["exp_save"],
+                        "hpo_{}.csv".format(task_cfg_origin["exp_name"]))
 
     # from IPython import embed;embed();exit(0)
     while True:
         task_cfg = deepcopy(task_cfg_origin)
         hpo_exp_dict = hpo.sample_and_update_hps(task_cfg, hpo_schedules)
         # print(pd.DataFrame(hpo.merge_result_dict(hpo_exp_dict)))
-        
+
         task_cfg.freeze()
         # build model
         model = model_builder.build(task, task_cfg.model)
