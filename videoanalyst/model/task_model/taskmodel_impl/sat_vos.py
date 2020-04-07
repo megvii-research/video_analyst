@@ -57,12 +57,17 @@ class SatVOS(ModuleBase):
         """
         # phase: train
         if phase == 'train':
-            pass
+            saliency_image, corr_feature, filtered_image = args
+            global_feature = self.GML_extractor(filtered_image)
+            enc_features = self.joint_encoder(saliency_image, corr_feature)
+            decoder_features = [global_feature] + enc_features
+            outputs = self.decoder(decoder_features, phase="train")
+            return outputs
 
         # phase: feature
         elif phase == 'global_feature':
-            filterd_image, = args
-            f_g = self.GML_extractor(filterd_image)
+            filtered_image, = args
+            f_g = self.GML_extractor(filtered_image)
             out_list = [f_g]
             return out_list
 
@@ -71,8 +76,8 @@ class SatVOS(ModuleBase):
             enc_features = self.joint_encoder(saliency_image, corr_feature)
             decoder_features = [global_feature] + enc_features
 
-            outputs = self.decoder(decoder_features)
-            pred_mask = outputs[0]
+            outputs = self.decoder(decoder_features, phase="test")
+            pred_mask = outputs
             out_list = [pred_mask]
             return out_list
 

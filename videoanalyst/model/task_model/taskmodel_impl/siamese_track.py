@@ -33,7 +33,8 @@ class SiamTrack(ModuleBase):
     default_hyper_params = dict(pretrain_model_path="",
                                 head_width=256,
                                 conv_weight_std=0.01,
-                                neck_conv_bias=[True, True, True, True])
+                                neck_conv_bias=[True, True, True, True],
+                                corr_fea_output=False)
 
     def __init__(self, backbone, head, loss=None):
         super(SiamTrack, self).__init__()
@@ -83,13 +84,15 @@ class SiamTrack(ModuleBase):
             r_out = xcorr_depthwise(r_x, r_z_k)
             c_out = xcorr_depthwise(c_x, c_z_k)
             # head
-            fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final = self.head(
+            fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final, corr_fea = self.head(
                 c_out, r_out)
             predict_data = dict(
                 cls_pred=fcos_cls_score_final,
                 ctr_pred=fcos_ctr_score_final,
                 box_pred=fcos_bbox_final,
             )
+            if self._hyper_params["corr_fea_output"]:
+                predict_data["corr_fea"] = corr_fea
             return predict_data
         # phase: feature
         elif phase == 'feature':
@@ -121,7 +124,7 @@ class SiamTrack(ModuleBase):
             r_out = xcorr_depthwise(r_x, r_z_k)
             c_out = xcorr_depthwise(c_x, c_z_k)
             # head
-            fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final = self.head(
+            fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final, corr_fea = self.head(
                 c_out, r_out)
             # apply sigmoid
             fcos_cls_prob_final = torch.sigmoid(fcos_cls_score_final)
@@ -129,7 +132,7 @@ class SiamTrack(ModuleBase):
             # apply centerness correction
             fcos_score_final = fcos_cls_prob_final * fcos_ctr_prob_final
             # register extra output
-            extra = dict(c_x=c_x, r_x=r_x)
+            extra = dict(c_x=c_x, r_x=r_x, corr_fea=corr_fea)
             # output
             out_list = fcos_score_final, fcos_bbox_final, fcos_cls_prob_final, fcos_ctr_prob_final, extra
         else:

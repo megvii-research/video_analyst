@@ -105,7 +105,7 @@ class DenseboxHead(ModuleBase):
         self.fm_ctr = self.fm_ctr.to(offsets.device)
         bbox = get_box(self.fm_ctr, offsets)
 
-        return [cls_score, ctr_score, bbox]
+        return [cls_score, ctr_score, bbox, cls]
 
     def update_params(self):
         x_size = self._hyper_params["x_size"]

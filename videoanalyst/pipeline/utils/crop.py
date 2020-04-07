@@ -92,12 +92,12 @@ def get_subwindow_tracking(im, pos, model_sz, original_sz, avg_chans=(0, 0, 0), 
                               borderMode=cv2.BORDER_CONSTANT,
                               borderValue=tuple(map(int, avg_chans))
                               )
-    mask_patch = mask
     if mask is not None:
         mask_patch = cv2.warpAffine(mask,
                                   mat2x3, (model_sz, model_sz),
                                   flags=(cv2.INTER_NEAREST | cv2.WARP_INVERSE_MAP))
-    return im_patch, mask_patch
+        return im_patch, mask_patch
+    return im_patch
 
 
 def get_crop(im,
@@ -147,39 +147,6 @@ def get_crop(im,
     # extract scaled crops for search region x at previous target position
     im_crop = func_get_subwindow(im, target_pos, x_size, round(s_crop),
                                  avg_chans)
-
-    return im_crop, scale
-
-
-def get_crop_pp(im,
-                target_pos,
-                target_sz,
-                z_size=127,
-                x_size=None,
-                x_scale=None,
-                avg_chans=(0, 0, 0),
-                context_amount=0.5,
-                func_get_subwindow=get_subwindow_tracking):
-    r"""
-    modified cropping function
-
-    Arguments
-    ---------
-    x_scale: int
-        search patch output size
-
-    Returns
-    -------
-        cropped & resized image, (x_scale, x_scale, 3)
-    """
-    wc = target_sz[0] + context_amount * sum(target_sz)
-    hc = target_sz[1] + context_amount * sum(target_sz)
-    s_crop = np.sqrt(wc * hc)
-    scale = z_size / s_crop
-    s_crop = x_size / scale
-
-    # extract scaled crops for search region x at previous target position
-    im_crop = func_get_subwindow(im, target_pos, x_scale, s_crop, avg_chans)
 
     return im_crop, scale
 
