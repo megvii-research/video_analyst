@@ -8,7 +8,7 @@ import torch.nn as nn
 from copy import deepcopy
 from videoanalyst.pipeline.pipeline_base import PipelineBase
 from videoanalyst.pipeline.pipeline_base import VOS_PIPELINES
-from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop_pp, get_crop,
+from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
                                          get_subwindow_tracking,
                                          imarray_to_tensor, tensor_to_numpy,
                                          xywh2cxywh, xyxy2cxywh)
@@ -242,13 +242,12 @@ class StateAwareTracker(PipelineBase):
         # ========== Global Modeling Loop init ==============
         init_mask_c3 = np.stack([init_mask, init_mask, init_mask],
                                 -1).astype(np.uint8)
-        init_mask_crop_c3, _ = get_crop_pp(
+        init_mask_crop_c3, _ = get_crop(
             init_mask_c3,
             target_pos,
             target_sz,
-            z_size=127,
-            x_size=129,
-            x_scale=129,
+            z_size=self._hyper_params["z_size"],
+            x_size=self._hyper_params["GMP_image_size"],
             avg_chans=avg_chans * 0,
             context_amount=0.5,
             func_get_subwindow=get_subwindow_tracking,
@@ -260,13 +259,12 @@ class StateAwareTracker(PipelineBase):
         init_mask_crop = np.expand_dims(init_mask_crop,
                                         axis=-1)  #shape: (129,129,1)
 
-        init_image, _ = get_crop_pp(
+        init_image, _ = get_crop(
             im,
             target_pos,
             target_sz,
             z_size=127,
             x_size=129,
-            x_scale=129,
             avg_chans=avg_chans,
             context_amount=0.5,
             func_get_subwindow=get_subwindow_tracking,
@@ -438,13 +436,12 @@ class StateAwareTracker(PipelineBase):
             avg_chans = self._state['avg_chans']
 
         # crop image for saliency encoder
-        saliency_image, _ = get_crop_pp(
+        saliency_image, _ = get_crop(
             im_x,
             target_pos,
             target_sz,
             z_size=127,
-            x_size=129,
-            x_scale=257,
+            x_size=257,
             avg_chans=avg_chans,
             context_amount=0.5,
             func_get_subwindow=get_subwindow_tracking,
