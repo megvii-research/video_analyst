@@ -40,12 +40,28 @@ if __name__ == '__main__':
     root_cfg = root_cfg.test
     task, task_cfg = specify_task(root_cfg)
     task_cfg.freeze()
-    # build model
-    model = model_builder.build(task, task_cfg.model)
-    # build pipeline
-    pipeline = pipeline_builder.build(task, task_cfg.pipeline, model)
-    # build tester
-    testers = tester_builder(task, task_cfg.tester, "tester", pipeline)
-    # start engine
+
+    if task == 'track':
+        # build model
+        model = model_builder.build(task, task_cfg.model)
+        # build pipeline
+        pipeline = pipeline_builder.build('track',
+                                          task_cfg.pipeline,
+                                          model=model)
+        # build tester
+        testers = tester_builder(task, task_cfg, "tester", pipeline)
+
+    elif task == 'vos':
+        # build model
+        tracker = model_builder.build("track_vos", task_cfg.tracker)
+        segmenter = model_builder.build('vos', task_cfg.segmenter)
+        # build pipeline
+        pipeline = pipeline_builder.build('vos',
+                                          task_cfg.pipeline,
+                                          segmenter=segmenter,
+                                          tracker=tracker)
+        # build tester
+        testers = tester_builder(task, task_cfg, "tester", pipeline)
+
     for tester in testers:
         tester.test()

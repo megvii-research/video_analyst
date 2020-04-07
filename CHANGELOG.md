@@ -2,6 +2,10 @@
 
 Date format: YY/MM/DD
 
+## 2020/04/06
+* add model/pipeline/tester for SAT on DAVIS
+* add transferred models for SAT
+
 ## 2020/03/25
 
 ____Major changes____
@@ -16,8 +20,9 @@ ____Major changes____
 ____Major changes____
 
 * Add full training data
-  * coco / det / vid / trackingnet
+  * coco / det / vid / trackingnet / lasot / got10k
   * with caching mechanism (reducing storage I/O by caching indexes into memory)
+  * TODO: perform verification with full data (under batchsize=256)
 
 ## 2020/03/18
 

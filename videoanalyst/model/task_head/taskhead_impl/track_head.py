@@ -8,7 +8,7 @@ import torch.nn.functional as F
 
 from videoanalyst.model.common_opr.common_block import conv_bn_relu
 from videoanalyst.model.module_base import ModuleBase
-from videoanalyst.model.task_head.taskhead_base import TRACK_HEADS
+from videoanalyst.model.task_head.taskhead_base import TRACK_HEADS, VOS_HEADS
 
 torch.set_printoptions(precision=8)
 
@@ -205,3 +205,61 @@ class DenseboxHead(ModuleBase):
                 fan_in, _ = nn.init._calculate_fan_in_and_fan_out(conv.weight)
                 bound = 1 / np.sqrt(fan_in)
                 nn.init.uniform_(conv.bias, -bound, bound)
+
+
+@TRACK_HEADS.register
+@VOS_HEADS.register
+class DenseboxHead_M(DenseboxHead):
+    r"""
+    Densebox Head for siamfcpp
+    Modification : with correlation feature as one more output
+
+    """
+    default_hyper_params = dict(
+        total_stride=8,
+        score_size=17,
+        x_size=303,
+        num_conv3x3=3,
+        head_conv_bn=[False, False, True],
+        output_conv_bn=[True, True, True],
+        head_width=256,
+        conv_weight_std=0.0001,
+    )
+
+    def __init__(self):
+        super(DenseboxHead_M, self).__init__()
+
+        self.bi = torch.nn.Parameter(torch.tensor(0.).type(torch.Tensor))
+        self.si = torch.nn.Parameter(torch.tensor(1.).type(torch.Tensor))
+
+        self.cls_convs = []
+        self.bbox_convs = []
+
+    def forward(self, c_out, r_out):
+        # classification head
+        num_conv3x3 = self._hyper_params['num_conv3x3']
+        cls = c_out
+        bbox = r_out
+
+        for i in range(0, num_conv3x3):
+            # cls = self.cls_conv3x3_list[i](cls)
+            # bbox = self.bbox_conv3x3_list[i](bbox)
+            cls = getattr(self, 'cls_p5_conv%d' % (i + 1))(cls)
+            bbox = getattr(self, 'bbox_p5_conv%d' % (i + 1))(bbox)
+
+        # classification score
+        cls_score = self.cls_score_p5(cls)
+        cls_score = cls_score.permute(0, 2, 3, 1)
+        cls_score = cls_score.reshape(cls_score.shape[0], -1, 1)
+        # center-ness score
+        ctr_score = self.ctr_score_p5(cls)
+        ctr_score = ctr_score.permute(0, 2, 3, 1)
+        ctr_score = ctr_score.reshape(ctr_score.shape[0], -1, 1)
+        # regression
+        offsets = self.bbox_offsets_p5(bbox)
+        offsets = torch.exp(self.si * offsets + self.bi) * self.total_stride
+        # bbox decoding
+        self.fm_ctr = self.fm_ctr.to(offsets.device)
+        bbox = get_box(self.fm_ctr, offsets)
+
+        return [cls_score, ctr_score, bbox, cls]
