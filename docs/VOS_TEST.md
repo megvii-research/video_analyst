@@ -1,8 +1,8 @@
 # VOS TEST 
 
-A collection of test scripts are located under _tools/_:
+A collection of test scripts are located under _tools/test/_:
 
-- [tools/test_DAVIS2017.sh](../tools/test_DAVIS2017.sh)
+- [tools/test/test_DAVIS2017.sh](../tools/test/test_DAVIS2017.sh)
 
 
 ## Check test results

@@ -160,7 +160,7 @@ def calculate_f1(overlaps, score, bound, thresholds, N):
     return f1, precision, recall
 
 
-@jit(nopython=True)
+# @jit(nopython=True)
 def calculate_expected_overlap(fragments, fweights):
     max_len = fragments.shape[1]
     expected_overlaps = np.zeros((max_len), np.float32)

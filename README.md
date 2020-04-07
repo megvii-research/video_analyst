@@ -43,6 +43,7 @@ Please refer to [docs/SOT_TRAINING.md](docs/SOT_TRAINING.md) for detail.
 ## Repository structure (in progress)
 
 ```File Tree
+project_root/
 ├── experiments  # experiment configurations, in yaml format
 ├── main
 │   ├── train.py  # trainng entry point

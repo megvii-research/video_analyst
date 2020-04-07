@@ -50,7 +50,7 @@ class GOT10kDataset(DatasetBase):
         cfg: CfgNode
             dataset config
         """
-        super().__init__()
+        super(GOT10kDataset, self).__init__()
         self._state["dataset"] = None
 
     def update_params(self):

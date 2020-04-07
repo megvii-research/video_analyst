@@ -5,7 +5,7 @@ test:
     model:
       backbone:
         name: "TinyConv"
-        AlexNet:
+        TinyConv:
           pretrain_model_path: ""
       losses:
         names: []
@@ -32,7 +32,7 @@ test:
         num_conv3x3: 3
         mem_step: 5
         mem_len: 5
-        st_mem_coef: 0.5
+        mem_coef: 0.5
     tester:
       names: ["VOTTester",]
       VOTTester:

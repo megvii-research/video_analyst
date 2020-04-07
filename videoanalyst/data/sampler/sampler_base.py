@@ -6,6 +6,7 @@ from typing import List, Dict
 import cv2 as cv
 import numpy as np
 from yacs.config import CfgNode
+from loguru import logger
 
 from videoanalyst.utils import Registry
 
@@ -45,8 +46,13 @@ class SamplerBase:
         """
         self._hyper_params = self.default_hyper_params
         self._state = dict()
-        self.datasets = datasets
         self._state["rng"] = np.random.RandomState(seed)
+        self.datasets = datasets
+        # logging info for underlying datasets
+        for d in datasets:
+            dataset_name = type(d).__name__
+            logger.info(
+                "Sampler's underlying datasets: {}".format(dataset_name))
 
     def get_hps(self) -> Dict:
         r"""
