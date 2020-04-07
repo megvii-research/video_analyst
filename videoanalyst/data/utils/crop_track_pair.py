@@ -50,13 +50,13 @@ def crop_track_pair(im_temp,
 
     # crop size, st for tamplate & sc for current
     wt, ht = box_temp[2:]
-    wt_ = wt + context_amount * (wt + ht) / 2
-    ht_ = ht + context_amount * (wt + ht) / 2
+    wt_ = wt + context_amount * (wt + ht)
+    ht_ = ht + context_amount * (wt + ht)
     st_ = np.sqrt(wt_ * ht_)
 
     wc, hc = box_curr[2:]
-    wc_ = wc + context_amount * (wc + hc) / 2
-    hc_ = hc + context_amount * (wc + hc) / 2
+    wc_ = wc + context_amount * (wc + hc)
+    hc_ = hc + context_amount * (wc + hc)
     sc_ = np.sqrt(wc_ * hc_)
 
     assert (st_ > 0) and (
