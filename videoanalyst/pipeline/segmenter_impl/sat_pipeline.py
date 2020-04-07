@@ -468,7 +468,9 @@ class StateAwareTracker(PipelineBase):
             self._state['patch_prediction'] = masked_image
 
         filtered_image = saliency_image * mask_filter
-        filtered_image = cv2.resize(filtered_image, (self._hyper_params["GMP_image_size"], self._hyper_params["GMP_image_size"]))
+        filtered_image = cv2.resize(filtered_image,
+                                    (self._hyper_params["GMP_image_size"],
+                                     self._hyper_params["GMP_image_size"]))
         self._state['filtered_image'] = filtered_image
 
         try:
@@ -477,8 +479,10 @@ class StateAwareTracker(PipelineBase):
             conf_score = 0
         self._state['conf_score'] = conf_score
 
-        mask_in_full_image = self._mask_back(pred_mask, size=self._hyper_params["saliency_image_size"], 
-        region=self._hyper_params["saliency_image_field"])
+        mask_in_full_image = self._mask_back(
+            pred_mask,
+            size=self._hyper_params["saliency_image_size"],
+            region=self._hyper_params["saliency_image_field"])
         self._state['mask_in_full_image'] = mask_in_full_image  # > 0.5
 
         return pred_mask, pred_mask_b
@@ -506,8 +510,10 @@ class StateAwareTracker(PipelineBase):
                 contour = contours[np.argmax(cnt_area)]  # use max area polygon
                 polygon = contour.reshape(-1, 2)
                 pbox = cv2.boundingRect(polygon)  # Min Max Rectangle  x1,y1,w,h
-                rect_full, cxywh_full = self._coord_back(pbox,size=self._hyper_params["saliency_image_size"], 
-        region=self._hyper_params["saliency_image_field"])
+                rect_full, cxywh_full = self._coord_back(
+                    pbox,
+                    size=self._hyper_params["saliency_image_size"],
+                    region=self._hyper_params["saliency_image_field"])
                 mask_pos, mask_sz = cxywh_full[:2], cxywh_full[2:]
 
                 conc_score = np.max(cnt_area) / sum(cnt_area)
