@@ -50,6 +50,7 @@ class DAVISTester(TesterBase):
     extra_hyper_params = dict(device_num=1,
                               data_root={
                                   "DAVIS2017": "datasets/DAVIS",
+                                  "DAVIS2016": "datasets/DAVIS",
                               },
                               dataset_names=[
                                   "DAVIS2017",
