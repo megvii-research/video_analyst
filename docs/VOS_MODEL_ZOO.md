@@ -15,7 +15,7 @@ VOS test configuration directory: _experiments/sat/test/
 
 | MODEL | Pipeline | Dataset | J&F-Mean | J-Mean | J-Recall| J-Decay| F-Mean | F-Recall| F-Decaly | FPS@GTX2080Ti |Config. Filename|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| SAT-Res50-transfer-param[1]|StateAwareTracker| DAVIS2017_val | 0.695548  |0.664442  |0.766905 | 0.182729  |0.726654 | 0.820361  |0.205859|~35|sat_res50-davis17.yaml 
+| SAT-Res50-transfer-param[1]|StateAwareTracker| DAVIS2017_val | 0.699069  |0.667666  |0.773786 | 0.174652 | 0.730471  | 0.82405 | 0.199258|~35|sat_res50-davis17.yaml 
 
 __Nota__:
 

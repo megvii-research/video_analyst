@@ -107,7 +107,8 @@ def get_crop(im,
              x_size=None,
              avg_chans=(0, 0, 0),
              context_amount=0.5,
-             func_get_subwindow=get_subwindow_tracking):
+             func_get_subwindow=get_subwindow_tracking,
+             output_size=None):
     r"""
     Get cropped patch for tracking
 
@@ -129,10 +130,13 @@ def get_crop(im,
         context to be includede in template, set to 0.5 by convention
     func_get_subwindow: function object
         function used to perform cropping & resizing
+    output_size: int
+        the size of output if it is not None
 
     Returns
     -------
-        cropped & resized image, (x_size, x_size, 3) if x_size provided, (z_size, z_size, 3) otherwise
+        cropped & resized image, (output_size, output_size) if output_size provied,
+        otherwise, (x_size, x_size, 3) if x_size provided, (z_size, z_size, 3) otherwise
     """
     wc = target_sz[0] + context_amount * sum(target_sz)
     hc = target_sz[1] + context_amount * sum(target_sz)
@@ -144,42 +148,11 @@ def get_crop(im,
         x_size = z_size
     s_crop = x_size / scale
 
+    if output_size is None:
+        output_size = x_size
     # extract scaled crops for search region x at previous target position
-    im_crop = func_get_subwindow(im, target_pos, x_size, round(s_crop),
+    im_crop = func_get_subwindow(im, target_pos, output_size, round(s_crop),
                                  avg_chans)
-
-    return im_crop, scale
-
-
-def get_crop_pp(im,
-                target_pos,
-                target_sz,
-                z_size=127,
-                x_size=None,
-                x_scale=None,
-                avg_chans=(0, 0, 0),
-                context_amount=0.5,
-                func_get_subwindow=get_subwindow_tracking):
-    r"""
-    modified cropping function
-
-    Arguments
-    ---------
-    x_scale: int
-        search patch output size
-
-    Returns
-    -------
-        cropped & resized image, (x_scale, x_scale, 3)
-    """
-    wc = target_sz[0] + context_amount * sum(target_sz)
-    hc = target_sz[1] + context_amount * sum(target_sz)
-    s_crop = np.sqrt(wc * hc)
-    scale = z_size / s_crop
-    s_crop = x_size / scale
-
-    # extract scaled crops for search region x at previous target position
-    im_crop = func_get_subwindow(im, target_pos, x_scale, s_crop, avg_chans)
 
     return im_crop, scale
 
