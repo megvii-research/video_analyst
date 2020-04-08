@@ -23,7 +23,7 @@ from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, VOS_DATASETS,
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
 
-@TRACK_DATASETS.register
+@VOS_DATASETS.register
 class DavisDataset(DatasetBase):
     r"""
     COCO dataset helper
@@ -44,6 +44,7 @@ class DavisDataset(DatasetBase):
         dataset_root="datasets/DAVIS",
         subsets=["train",], 
         ratio=1.0,
+        max_diff=50,
     )
 
     def __init__(self) -> None:

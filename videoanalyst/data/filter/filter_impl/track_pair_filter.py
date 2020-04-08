@@ -8,10 +8,11 @@ from loguru import logger
 from videoanalyst.data.utils.filter_box import \
     filter_unreasonable_training_boxes, filter_unreasonable_training_masks
 
-from ..filter_base import TRACK_FILTERS, FilterBase
+from ..filter_base import TRACK_FILTERS, VOS_FILTERS, FilterBase
 
 
 @TRACK_FILTERS.register
+@VOS_FILTERS.register
 class TrackPairFilter(FilterBase):
     r"""
     Tracking data filter

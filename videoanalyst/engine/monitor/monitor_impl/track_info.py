@@ -9,11 +9,12 @@ from tqdm import tqdm
 
 import torch
 
-from ..monitor_base import TRACK_MONITORS, MonitorBase
+from ..monitor_base import TRACK_MONITORS, VOS_MONITORS, MonitorBase
 from videoanalyst.utils import dist_utils
 
 
 @TRACK_MONITORS.register
+@VOS_MONITORS.register
 class TrackInfo(MonitorBase):
     r"""
     Print tracking information during training.

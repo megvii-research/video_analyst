@@ -122,33 +122,35 @@ def crop_track_pair(im_temp,
             break
 
     # crop & resize via warpAffine
-    im_z, mask_z = get_subwindow_tracking(im_temp,
-                                  box_crop_temp[:2],
-                                  z_size,
-                                  s_temp,
-                                  avg_chans=avg_chans,
-                                  mask=mask_tmp)
-    im_x, mask_x = get_subwindow_tracking(im_curr,
-                                  box_crop_curr[:2],
-                                  x_size,
-                                  s_curr,
-                                  avg_chans=avg_chans,
-                                  mask=mask_curr)
+    mask_z = None
+    mask_x = None
+    if mask_tmp is not None:
+        im_z, mask_z = get_subwindow_tracking(im_temp,
+                                    box_crop_temp[:2],
+                                    z_size,
+                                    s_temp,
+                                    avg_chans=avg_chans,
+                                    mask=mask_tmp)
+    else:
+        im_z = get_subwindow_tracking(im_temp,
+                                    box_crop_temp[:2],
+                                    z_size,
+                                    s_temp,
+                                    avg_chans=avg_chans)
 
-    # DEBUG
-    if DEBUG:
-        # print('scale_rand', scale_rand)
-        color_bbox = (0, 255, 255)
-        # for suffix in ['temp', 'curr', 'z', 'x']:
-        for suffix in ['z', 'x']:
-            im = locals()['im_' + suffix]
-            bbox = locals()['bbox_' + suffix]
-            bbox = tuple(map(int, bbox))
-            cv2.imshow('im_' + suffix,
-                       cv2.rectangle(im.copy(), bbox[:2], bbox[2:], color_bbox))
-            print('bbox_' + suffix, bbox)
-        # cv2.waitKey()
-        # from IPython import embed;embed()
+    if mask_curr is not None:
+        im_x, mask_x = get_subwindow_tracking(im_curr,
+                                    box_crop_curr[:2],
+                                    x_size,
+                                    s_curr,
+                                    avg_chans=avg_chans,
+                                    mask=mask_curr)
+    else:
+        im_x = get_subwindow_tracking(im_curr,
+                                    box_crop_curr[:2],
+                                    x_size,
+                                    s_curr,
+                                    avg_chans=avg_chans)
 
     return im_z, bbox_z, im_x, bbox_x, mask_z, mask_x
 
@@ -164,8 +166,8 @@ def crop_track_pair_for_sat(im_temp,
                     mask_curr=None,
                     ):
     context_amount = config["context_amount"]
-    z_size = config["z_size"]
-    x_size = config["x_size"]
+    z_size = config["track_z_size"]
+    x_size = config["track_x_size"]
     max_scale = config["max_scale"]
     max_shift = config["max_shift"]
     max_scale_temp = config["max_scale_temp"]
@@ -247,33 +249,46 @@ def crop_track_pair_for_sat(im_temp,
         else:
             break
 
-    # crop & resize via warpAffine
-    im_z, mask_z = get_subwindow_tracking(im_temp,
+
+    
+    # sot track input z
+    im_z = get_subwindow_tracking(im_temp,
                                   box_crop_temp[:2],
                                   z_size,
                                   s_temp,
                                   avg_chans=avg_chans,
-                                  mask=mask_tmp)
-    im_x, mask_x = get_subwindow_tracking(im_curr,
+                                  mask=None)
+    # sot track input x
+    im_x = get_subwindow_tracking(im_curr,
                                   box_crop_curr[:2],
                                   x_size,
                                   s_curr,
                                   avg_chans=avg_chans,
+                                  mask=None)
+    # global feature input
+    
+    global_fea_input_size = config["global_fea_input_size"]
+    s_global = global_fea_input_size / scale_temp
+    global_img, global_mask = get_subwindow_tracking(im_temp,
+                                  box_crop_temp[:2],
+                                  global_fea_input_size,
+                                  s_global,
+                                  avg_chans=avg_chans,
+                                  mask=mask_tmp)
+    # saliency input
+    seg_x_size = config["seg_x_size"]
+    seg_x_resize = config["seg_x_resize"]
+    s_seg_x = seg_x_size / scale_curr
+    seg_img, seg_mask = get_subwindow_tracking(im_curr,
+                                  box_crop_curr[:2],
+                                  seg_x_resize,
+                                  s_seg_x,
+                                  avg_chans=avg_chans,
                                   mask=mask_curr)
 
-    # DEBUG
-    if DEBUG:
-        # print('scale_rand', scale_rand)
-        color_bbox = (0, 255, 255)
-        # for suffix in ['temp', 'curr', 'z', 'x']:
-        for suffix in ['z', 'x']:
-            im = locals()['im_' + suffix]
-            bbox = locals()['bbox_' + suffix]
-            bbox = tuple(map(int, bbox))
-            cv2.imshow('im_' + suffix,
-                       cv2.rectangle(im.copy(), bbox[:2], bbox[2:], color_bbox))
-            print('bbox_' + suffix, bbox)
-        # cv2.waitKey()
-        # from IPython import embed;embed()
-
-    return im_z, bbox_z, im_x, bbox_x, mask_z, mask_x
+    filtered_global_img = global_img * global_mask[:, :, np.newaxis]
+    im_z = im_z.transpose(2,0,1)
+    im_x = im_x.transpose(2,0,1)
+    seg_img = seg_img.transpose(2, 0, 1)
+    filtered_global_img = filtered_global_img.transpose(2, 0, 1)
+    return dict(im_z=im_z, im_x=im_x,  seg_img=seg_img, seg_mask=seg_mask, filtered_global_img=filtered_global_img)

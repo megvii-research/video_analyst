@@ -22,7 +22,7 @@ from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
 
 
-@TRACK_DATASETS.register
+@VOS_DATASETS.register
 class YoutubeVOSDataset(DatasetBase):
     r"""
     COCO dataset helper
@@ -43,6 +43,7 @@ class YoutubeVOSDataset(DatasetBase):
         dataset_root="datasets/youtubevos",
         subsets=["train",], 
         ratio=1.0,
+        max_diff=50,
     )
 
     def __init__(self) -> None:

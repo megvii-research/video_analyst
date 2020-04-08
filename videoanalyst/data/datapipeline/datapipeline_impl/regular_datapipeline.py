@@ -8,10 +8,11 @@ from yacs.config import CfgNode
 from videoanalyst.utils import convert_numpy_to_tensor
 
 from ...sampler.sampler_base import SamplerBase
-from ..datapipeline_base import TRACK_DATAPIPELINES, DatapipelineBase
+from ..datapipeline_base import TRACK_DATAPIPELINES, VOS_DATAPIPELINES, DatapipelineBase
 
 
 @TRACK_DATAPIPELINES.register
+@VOS_DATAPIPELINES.register
 class RegularDatapipeline(DatapipelineBase):
     r"""
     Tracking datapipeline. Integrate sampler togethor with a list of processes

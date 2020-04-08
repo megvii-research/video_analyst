@@ -10,7 +10,7 @@ from yacs.config import CfgNode
 from videoanalyst.data.utils.crop_track_pair import crop_track_pair
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
-from ..transformer_base import TRACK_TRANSFORMERS, TransformerBase
+from ..transformer_base import TRACK_TRANSFORMERS, VOS_TRANSFORMERS, TransformerBase
 
 class RandomBlur(object):
     def __init__(self, ratio=0.25):
@@ -97,6 +97,7 @@ def fb_lighting(img, std):
     return img
 
 @TRACK_TRANSFORMERS.register
+@VOS_TRANSFORMERS.register
 class ImageAug(TransformerBase):
     default_hyper_params = dict(
         color_jitter_brightness = 0.1,

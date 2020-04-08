@@ -87,9 +87,7 @@ def get_config(task_list: List) -> Dict[str, CfgNode]:
     for task in cfg_dict:
         cfg = cfg_dict[task]
 
-        if task == "track":
-            cfg["backbone"] = backbone_builder.get_config(task_list)[task]
-        elif task == "vos":
+        if task == "vos":
             cfg["basemodel_target"] = backbone_builder.get_config(
                 task_list)[task]
             cfg["basemodel_search"] = backbone_builder.get_config(
@@ -98,6 +96,7 @@ def get_config(task_list: List) -> Dict[str, CfgNode]:
                 task_list)[task]
             cfg["encoder"] = backbone_builder.get_config(task_list)[task]
             cfg["gml_extractor"] = backbone_builder.get_config(task_list)[task]
+        cfg["backbone"] = backbone_builder.get_config(task_list)[task]
         cfg["task_head"] = head_builder.get_config(task_list)[task]
         cfg["losses"] = loss_builder.get_config(task_list)[task]
         cfg["task_model"] = task_builder.get_config(task_list)[task]

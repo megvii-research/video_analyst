@@ -42,6 +42,7 @@ def get_box(xy_ctr, offsets):
 
 
 @TRACK_HEADS.register
+@VOS_HEADS.register
 class DenseboxHead(ModuleBase):
     r"""
     Densebox Head for siamfcpp

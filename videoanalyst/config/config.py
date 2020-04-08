@@ -40,7 +40,11 @@ for task in task_list:
     train_cfg[task]["exp_save"] = default_str
     train_cfg[task]["num_processes"] = 1  #number of devices
     train_cfg[task]["device"] = "cuda"  #[cuda|cpu]
-    train_cfg[task]["model"] = get_model_cfg(task_list)[task]
+    if task == "track":
+        train_cfg[task]["model"] = get_model_cfg(task_list)[task]
+    elif task == "vos":
+        train_cfg[task]["tracker"] = get_model_cfg(task_list)[task]
+        train_cfg[task]["segmenter"] = get_model_cfg(task_list)[task]
     train_cfg[task]["pipeline"] = get_pipeline_cfg(task_list)[task]
     train_cfg[task]["tester"] = get_tester_cfg(task_list)[task]
     train_cfg[task]["data"] = get_data_cfg(task_list)[task]

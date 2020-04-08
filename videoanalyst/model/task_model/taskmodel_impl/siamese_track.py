@@ -18,6 +18,7 @@ torch.set_printoptions(precision=8)
 
 
 @TRACK_TASKMODELS.register
+@VOS_TASKMODELS.register
 class SiamTrack(ModuleBase):
     r"""
     SiamTrack model for tracking

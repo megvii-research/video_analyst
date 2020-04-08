@@ -16,7 +16,7 @@ class MultiBCELoss(ModuleBase):
 
     default_hyper_params = dict(
         name="multi_bceloss",
-        sub_loss_weights=[1.0],
+        sub_loss_weights=[1.0, 1.0, 1.0],
         weight=1.0,
     )
 
@@ -29,7 +29,9 @@ class MultiBCELoss(ModuleBase):
 
     def forward(self, pred_data_list, target_data):
         total_loss = 0
-        assert (len(pred_data_list) == len(self.sub_loss_weights))
+        target_data = target_data.unsqueeze(1)
+        assert len(pred_data_list) == len(self.sub_loss_weights)
         for  pred_data, sub_loss_weight in zip(pred_data_list, self.sub_loss_weights):
             total_loss += F.binary_cross_entropy_with_logits(pred_data, target_data, reduction="mean") * sub_loss_weight
-        return total_loss * self.weight
+        extra = dict()
+        return total_loss * self.weight, extra

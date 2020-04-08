@@ -9,10 +9,11 @@ from tqdm import tqdm
 
 import torch
 
-from ..monitor_base import TRACK_MONITORS, MonitorBase
+from ..monitor_base import TRACK_MONITORS, VOS_MONITORS, MonitorBase
 
 
 @TRACK_MONITORS.register
+@VOS_MONITORS.register
 class Monitor(MonitorBase):
     r"""
 

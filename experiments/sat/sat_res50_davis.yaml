@@ -1,28 +1,47 @@
 train:
-  track:
+  vos:
     exp_name: &TRAIN_NAME "sat_res50_davis"
     exp_save: &TRAIN_SAVE "snapshots"
-    num_processes: 2
-    model:
+    num_processes: 1
+    data:
+      exp_name: *TRAIN_NAME
+      exp_save: *TRAIN_SAVE
+      num_epochs: 20
+      minibatch: &MINIBATCH 1
+      num_workers: 1
+      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 1250
+      pin_memory: false
+      datapipeline:
+        name: "RegularDatapipeline"
+      sampler:
+        name: "TrackPairSampler"
+        TrackPairSampler:
+          negative_pair_ratio: 0.1
+          target_type: "mask"
+        submodules:
+          dataset:
+            names: ["COCODataset", "DavisDataset", "YoutubeVOSDataset"]  
+            YoutubeVOSDataset:
+              ratio: 1.0
+            COCODataset:
+              ratio: 1.0
+            DavisDataset:
+              ratio: 1.0
+          filter:
+            name: "TrackPairFilter"
+            TrackPairFilter:
+              max_area_rate: 0.6
+              min_area_rate: 0.001
+              max_ratio: 10
+              target_type: "mask"
+      transformer:
+        names: ["ImageAug"]
+      target:
+        name: "SATMaskTarget"
+
+    tracker:
       backbone:
         name: "AlexNet"
-        AlexNet:
-          pretrain_model_path: "models/alexnet/alexnet-nopad-bn-md5_fa7cdefb48f41978cf35e8c4f1159cdc.pkl"
-      losses:
-        names: ["SigmoidCrossEntropyRetina",
-                "SigmoidCrossEntropyCenterness",
-                "IOULoss",]
-        SigmoidCrossEntropyRetina:
-          name: "cls"
-          weight: 1.0
-          alpha: 0.25
-          gamma: 2.0
-        SigmoidCrossEntropyCenterness:
-          name: "ctr"
-          weight: 1.0
-        IOULoss:
-          name: "reg"
-          weight: 3.0
       task_head:
         name: "DenseboxHead"
         DenseboxHead:
@@ -34,64 +53,46 @@ train:
       task_model:
         name: "SiamTrack"
         SiamTrack:
+          pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl"
+          corr_fea_output: True
+
+    segmenter:
+      encoder_basemodel:
+        name: "ResNet50_M"
+        ResNet50_M:
+          pretrain_model_path: "models/resnet/res-50-imagenet.pkl"
+      encoder:
+        name: "JointEncoder"
+        JointEncoder:
           pretrain_model_path: ""
-# ==================================================
-    data:
-      exp_name: *TRAIN_NAME
-      exp_save: *TRAIN_SAVE
-      num_epochs: 20
-      minibatch: &MINIBATCH 1
-      num_workers: 1
-      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 400000 
-      pin_memory: false
-      datapipeline:
-        name: "RegularDatapipeline"
-      sampler:
-        name: "TrackPairSampler"
-        TrackPairSampler:
-          negative_pair_ratio: 0.1
-          target_type: "mask"
-        submodules:
-          dataset:
-            #names: ["YoutubeVOSDataset", "COCODataset"]  
-            names: ["DavisDataset"]  
-            YoutubeVOSDataset:
-              ratio: 0.0
-            COCODataset:
-              ratio: 1.0
-          filter:
-            name: "TrackPairFilter"
-            TrackPairFilter:
-              max_area_rate: 0.6
-              min_area_rate: 0.001
-              max_ratio: 10
-              target_type: "mask"
-      transformer:
-        names: ["RandomCropTransformerWithMask", "ImageAug"]
-        RandomCropTransformerWithMask:
-          max_scale: 0.3
-          max_shift: 0.4
-          x_size: 303
-      target:
-        name: "SATMaskTarget"
+      gml_extractor:
+        name: "ResNet50_M"
+        ResNet50_M:
+          pretrain_model_path: "models/resnet/res-50-imagenet.pkl"
+      task_head:
+        name: "DecoderHead"
+      losses:
+        names: ["MultiBCELoss"]
+      task_model:
+        name: "SatVOS"
     trainer:
-      name: "DistributedRegularTrainer"
-      DistributedRegularTrainer:
+      name: "SATTrainer"
+      SATTrainer:
         exp_name: *TRAIN_NAME
         exp_save: *TRAIN_SAVE
         max_epoch: 20
         minibatch: *MINIBATCH
         nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
+        # num_iterations: 12500
         snapshot: ""
       monitors:
-        names: ["TrackInfo"]  # "TensorboardLogger"
+        names: ["TrackInfo"]
         TrackInfo:
           {}
         TensorboardLogger:
           exp_name: *TRAIN_NAME
           exp_save: *TRAIN_SAVE
 
-# ==================================================
     optim:
       optimizer:
         name: "SGD"

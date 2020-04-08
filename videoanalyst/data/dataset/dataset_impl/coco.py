@@ -25,6 +25,7 @@ from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
 
 @TRACK_DATASETS.register
+@VOS_DATASETS.register
 class COCODataset(DatasetBase):
     r"""
     COCO dataset helper

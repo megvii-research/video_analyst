@@ -5,7 +5,7 @@ import argparse
 from loguru import logger
 import os.path as osp
 import pickle
-
+import numpy as np
 import cv2
 
 import torch
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     root_cfg = root_cfg.train
     task, task_cfg = specify_task(root_cfg)
     task_cfg.data.num_workers = 1
-    task_cfg.data.sampler.submodules.dataset.GOT10kDataset.check_integrity = False
+    #task_cfg.data.sampler.submodules.dataset.GOT10kDataset.check_integrity = False
     task_cfg.freeze()
 
     if parsed_args.target == "dataloader":
@@ -133,16 +133,24 @@ if __name__ == '__main__':
         logger.info("visualize for datapipeline")
         datapipeline = datapipeline_builder.build(task, task_cfg.data, seed=1)
         target_cfg = task_cfg.data.target
-        while True:
+        for i in range(5):
             sampled_data = datapipeline[0]
-            print(sampled_data.keys())
-            sampled_data['data1'] = convert_tensor_to_numpy(sampled_data['data1'])
-            sampled_data['data2'] = convert_tensor_to_numpy(sampled_data['data2'])
-            cv2.imwrite('data1.png', sampled_data['data1']['image'])
-            cv2.imwrite('data1mask.png', sampled_data['data1']['anno']*250)
-            cv2.imwrite('data2.png', sampled_data['data2']['image'])
-            cv2.imwrite('data2mask.png', sampled_data['data2']['anno']*250)
-            exit()
+            print(sampled_data)
+            #print(sampled_data.keys())
+            #sampled_data['data1'] = convert_tensor_to_numpy(sampled_data['data1'])
+            #sampled_data['data2'] = convert_tensor_to_numpy(sampled_data['data2'])
+            #cv2.imwrite('data1.png', sampled_data['data1']['image'])
+            #cv2.imwrite('data1mask.png', sampled_data['data1']['anno']*250)
+            #cv2.imwrite('data2.png', sampled_data['data2']['image'])
+            #cv2.imwrite('data2mask.png', sampled_data['data2']['anno']*250)
+            data = convert_tensor_to_numpy(sampled_data)
+            cv2.imwrite("z.png", data["im_z"].astype(np.uint8))
+            cv2.imwrite("x.png", data["im_x"].astype(np.uint8))
+            cv2.imwrite("g_img.png", data["global_img"].astype(np.uint8))
+            cv2.imwrite("g_mask.png", data["global_mask"].astype(np.uint8)*250)
+            cv2.imwrite("seg_img.png", data["seg_img"].astype(np.uint8))
+            cv2.imwrite("filtered_g.png", data["filtered_global_img"].astype(np.uint8))
+            cv2.imwrite("seg_mask.png", data["seg_mask"].astype(np.uint8)*250)
             #show_img_FCOS(
             #    target_cfg[target_cfg.name],
             #    sampled_data,

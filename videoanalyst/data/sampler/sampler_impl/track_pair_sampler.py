@@ -11,10 +11,11 @@ from videoanalyst.data.dataset.dataset_base import DatasetBase
 from videoanalyst.evaluation.got_benchmark.datasets import got10k
 from videoanalyst.utils import load_image
 
-from ..sampler_base import TRACK_SAMPLERS, SamplerBase
+from ..sampler_base import TRACK_SAMPLERS, VOS_SAMPLERS, SamplerBase
 
 
 @TRACK_SAMPLERS.register
+@VOS_SAMPLERS.register
 class TrackPairSampler(SamplerBase):
     r"""
     Tracking data sampler
