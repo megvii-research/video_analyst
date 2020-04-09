@@ -21,8 +21,8 @@ class SATMaskTarget(TargetBase):
         context_amount = 1,
         max_scale = 0.3,
         max_shift = 0.4,
-        max_scale_temp = 0,
-        max_shift_temp = 0,
+        max_scale_temp = 0.1,
+        max_shift_temp = 0.1,
 
     )
     def __init__(self):
@@ -40,4 +40,7 @@ class SATMaskTarget(TargetBase):
         data_dict = crop_track_pair_for_sat(im_temp, bbox_temp, im_curr,
         bbox_curr, config=self._hyper_params,
         mask_tmp=mask_temp, mask_curr=mask_curr)
+        if sampled_data["is_negative_pair"]:
+            data_dict["seg_mask"] *= 0
+
         return data_dict

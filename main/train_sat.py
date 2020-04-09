@@ -79,9 +79,9 @@ if __name__ == '__main__':
     logger.info(
         "Merged with root_cfg imported from videoanalyst.config.config.cfg")
     cfg_bak_file = osp.join(log_dir, "%s_bak.yaml" % task_cfg.exp_name)
-    #with open(cfg_bak_file, "w") as f:
-    #    f.write(task_cfg.dump())
-    #logger.info("Task configuration backed up at %s" % cfg_bak_file)
+    with open(cfg_bak_file, "w") as f:
+        f.write(task_cfg.dump())
+    logger.info("Task configuration backed up at %s" % cfg_bak_file)
     # device config
     if task_cfg.device == "cuda":
         world_size = task_cfg.num_processes

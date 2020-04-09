@@ -50,7 +50,13 @@ def filter_unreasonable_training_masks(im: np.array, mask,
     """
     eps = 1e-6
     im_area = im.shape[0] * im.shape[1]
-    x, y, w, h = cv2.boundingRect(mask)
+    try:
+        x, y, w, h = cv2.boundingRect(mask)
+    except:
+        print(mask)
+        print("mask filter error")
+        exit()
+
     bbox_area = w * h
     bbox_area_rate = bbox_area / im_area
     bbox_ratio = h / (w + eps)

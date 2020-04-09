@@ -7,10 +7,10 @@ train:
       exp_name: *TRAIN_NAME
       exp_save: *TRAIN_SAVE
       num_epochs: 20
-      minibatch: &MINIBATCH 1
-      num_workers: 1
-      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 1250
-      pin_memory: false
+      minibatch: &MINIBATCH 8
+      num_workers: 8
+      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 160000
+      pin_memory: true
       datapipeline:
         name: "RegularDatapipeline"
       sampler:
@@ -22,15 +22,17 @@ train:
           dataset:
             names: ["COCODataset", "DavisDataset", "YoutubeVOSDataset"]  
             YoutubeVOSDataset:
-              ratio: 1.0
+              ratio: 5.0
+              max_diff: 5
             COCODataset:
-              ratio: 1.0
+              ratio: 2.0
             DavisDataset:
               ratio: 1.0
+              max_diff: 5
           filter:
             name: "TrackPairFilter"
             TrackPairFilter:
-              max_area_rate: 0.6
+              max_area_rate: 0.75
               min_area_rate: 0.001
               max_ratio: 10
               target_type: "mask"
@@ -83,12 +85,13 @@ train:
         max_epoch: 20
         minibatch: *MINIBATCH
         nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
-        # num_iterations: 12500
         snapshot: ""
       monitors:
-        names: ["TrackInfo"]
+        names: ["SegMetric", "TrackInfo"]
         TrackInfo:
           {}
+        SegMetric:
+          interval: 10
         TensorboardLogger:
           exp_name: *TRAIN_NAME
           exp_save: *TRAIN_SAVE
@@ -107,58 +110,13 @@ train:
             {
             "name": "LinearLR",
             "start_lr": 0.000001,
-            "end_lr": 0.08,
+            "end_lr": 0.01,
             "max_epoch": 1
             }
           - >
             {
             "name": "CosineLR",
-            "start_lr": 0.08,
+            "start_lr": 0.01,
             "end_lr": 0.000001,
             "max_epoch": 19
-            }
-          lr_multiplier:
-          - >
-            {
-            "name": "backbone",
-            "regex": "basemodel",
-            "ratio": 0.1
-            }
-          - >
-            {
-            "name": "other",
-            "regex": "^((?!basemodel).)*$",
-            "ratio": 1
-            }
-      grad_modifier:
-        name: "DynamicFreezer"
-        DynamicFreezer:
-          schedule:
-          - >
-            {
-            "name": "isConv",
-            "regex": "basemodel\\.conv.\\.conv.*",
-            "epoch": 0,
-            "freezed": true
-            }
-          - >
-            {
-            "name": "isConv5",
-            "regex": "basemodel\\.conv5\\.conv.*",
-            "epoch": 5,
-            "freezed": false
-            }
-          - >
-            {
-            "name": "isConv4",
-            "regex": "basemodel\\.conv4\\.conv.*",
-            "epoch": 10,
-            "freezed": false
-            }
-          - >
-            {
-            "name": "isConv3",
-            "regex": "basemodel\\.conv3\\.conv.*",
-            "epoch": 15,
-            "freezed": false
             }

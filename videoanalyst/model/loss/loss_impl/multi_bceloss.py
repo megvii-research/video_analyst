@@ -16,7 +16,7 @@ class MultiBCELoss(ModuleBase):
 
     default_hyper_params = dict(
         name="multi_bceloss",
-        sub_loss_weights=[1.0, 1.0, 1.0],
+        sub_loss_weights=[0.1, 0.3, 1.0],
         weight=1.0,
     )
 

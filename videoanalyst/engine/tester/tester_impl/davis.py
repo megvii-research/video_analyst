@@ -48,16 +48,12 @@ class DAVISTester(TesterBase):
     """
 
     extra_hyper_params = dict(device_num=1,
-                              data_root={
-                                  "DAVIS2017": "datasets/DAVIS",
-                                  "DAVIS2016": "datasets/DAVIS",
-                              },
+                              data_root="datasets/DAVIS",
                               dataset_names=[
                                   "DAVIS2017",
                               ],
                               save_video=False,
-                              save_patch=False,
-                              iou_eval_thres=np.arange(0.3, 0.5, 0.05))
+                              save_patch=False)
 
     def __init__(self, *args, **kwargs):
         r"""
@@ -72,6 +68,7 @@ class DAVISTester(TesterBase):
         """
         super(DAVISTester, self).__init__(*args, **kwargs)
         self._state['speed'] = -1
+        self.iou_eval_thres=np.arange(0.3, 0.5, 0.05)
 
     def update_params(self):
         pass
@@ -101,7 +98,7 @@ class DAVISTester(TesterBase):
         num_gpu = self._hyper_params["device_num"]
         all_devs = [torch.device("cuda:%d" % i) for i in range(num_gpu)]
         logger.info('runing test on devices {}'.format(all_devs))
-        davis_root = self._hyper_params["data_root"][self.dataset_name]
+        davis_root = self._hyper_params["data_root"]
         logger.info('Using dataset %s at: %s' % (self.dataset_name, davis_root))
         # setup dataset
         dataset = davis_benchmark.load_dataset(davis_root, self.dataset_name)
@@ -160,7 +157,7 @@ class DAVISTester(TesterBase):
         """
 
         results_path = join(self.save_root_dir, 'results_multi')
-        davis_data_path = self._hyper_params["data_root"][self.dataset_name]
+        davis_data_path = self._hyper_params["data_root"]
 
         eval_dump_path = join(self.save_root_dir, 'dump')
         if not isdir(eval_dump_path): makedirs(eval_dump_path)
@@ -261,14 +258,14 @@ class DAVISTester(TesterBase):
 
         if len(annos) == len(image_files):
             multi_mean_iou = davis_benchmark.MultiBatchIouMeter(
-                self._hyper_params['iou_eval_thres'],
+                self.iou_eval_thres,
                 pred_masks,
                 annos,
                 start=video['start_frame'] if 'start_frame' in video else None,
                 end=video['end_frame'] if 'end_frame' in video else None)
 
         for i in range(object_num):
-            for j, thr in enumerate(self._hyper_params['iou_eval_thres']):
+            for j, thr in enumerate(self.iou_eval_thres):
                 logger.info(
                     'Fusion Multi Object{:20s} IOU at {:.2f}: {:.4f}'.format(
                         video['name'] + '_' + str(i + 1), thr,

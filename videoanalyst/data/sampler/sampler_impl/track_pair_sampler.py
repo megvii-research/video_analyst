@@ -63,7 +63,7 @@ class TrackPairSampler(SamplerBase):
         is_negative_pair = (self._state["rng"].rand() <
                             self._hyper_params["negative_pair_ratio"])
         data1 = data2 = None
-
+        sample_try_num = 0
         while self.filt(data1) or self.filt(data2):
             if is_negative_pair:
                 data1 = self._sample_track_frame()
@@ -72,6 +72,7 @@ class TrackPairSampler(SamplerBase):
                 data1, data2 = self._sample_track_pair()
             data1["image"] = load_image(data1["image"])
             data2["image"] = load_image(data2["image"])
+            sample_try_num += 1
         sampled_data = dict(
             data1=data1,
             data2=data2,
@@ -90,7 +91,7 @@ class TrackPairSampler(SamplerBase):
         dataset_idx, dataset = self._sample_dataset()
         sequence_data = self._sample_sequence_from_dataset(dataset)
         len_seq = self._get_len_seq(sequence_data)
-        if len_seq == 1:
+        if len_seq == 1 and not isinstance(sequence_data["anno"][0], list):
             # static image dataset
             data1 = self._sample_track_frame_from_static_image(sequence_data)
             data2 = deepcopy(data1)

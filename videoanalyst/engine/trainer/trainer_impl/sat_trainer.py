@@ -84,7 +84,7 @@ class SATTrainer(TrainerBase):
             self._model = nn.DataParallel(self._model, device_ids=devs)
             logger.info("Use nn.DataParallel for data parallelism")
         super(SATTrainer, self).init_train()
-        logger.info("%s initialized", type(self).__name__)
+        logger.info("{} initialized".format(type(self).__name__))
 
     def train(self):
         if not self._state["initialized"]:
@@ -137,8 +137,11 @@ class SATTrainer(TrainerBase):
             trainer_data = dict(
                 schedule_info=schedule_info,
                 training_losses=training_losses,
+                training_data=training_data,
                 extras=extras,
                 time_dict=time_dict,
+                predict_data=predict_data,
+                iter=iteration,
             )
 
             for monitor in self._monitors:
