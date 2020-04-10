@@ -2,6 +2,7 @@
 from typing import Dict
 import cv2
 import numpy as np
+from loguru import logger
 
 
 def filter_unreasonable_training_boxes(im: np.array, bbox,
@@ -53,9 +54,8 @@ def filter_unreasonable_training_masks(im: np.array, mask,
     try:
         x, y, w, h = cv2.boundingRect(mask)
     except:
-        print(mask)
-        print("mask filter error")
-        exit()
+        logger.error("error while loading mask")
+        return True
 
     bbox_area = w * h
     bbox_area_rate = bbox_area / im_area

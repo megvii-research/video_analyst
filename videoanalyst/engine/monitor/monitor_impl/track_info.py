@@ -57,8 +57,8 @@ class TrackInfo(MonitorBase):
             print_str += '%s: %.3f, ' % (k, l.detach().cpu().numpy())
         # extra info
         for extra in extras.values():
-            if extra:
-                extra = dist_utils.reduce_dict(extra)
+            #if extra:
+            #    extra = dist_utils.reduce_dict(extra)
             for k in extra:
                 l = extra[k]
                 print_str += '%s: %.3f, ' % (k, l)

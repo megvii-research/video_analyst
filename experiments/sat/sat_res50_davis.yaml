@@ -2,13 +2,13 @@ train:
   vos:
     exp_name: &TRAIN_NAME "sat_res50_davis"
     exp_save: &TRAIN_SAVE "snapshots"
-    num_processes: 1
+    num_processes: 8
     data:
       exp_name: *TRAIN_NAME
       exp_save: *TRAIN_SAVE
       num_epochs: 20
-      minibatch: &MINIBATCH 8
-      num_workers: 8
+      minibatch: &MINIBATCH 64
+      num_workers: 32
       nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 160000
       pin_memory: true
       datapipeline:
@@ -78,8 +78,8 @@ train:
       task_model:
         name: "SatVOS"
     trainer:
-      name: "SATTrainer"
-      SATTrainer:
+      name: "DistributedSATTrainer"
+      DistributedSATTrainer:
         exp_name: *TRAIN_NAME
         exp_save: *TRAIN_SAVE
         max_epoch: 20
@@ -91,7 +91,7 @@ train:
         TrackInfo:
           {}
         SegMetric:
-          interval: 10
+          interval: 100
         TensorboardLogger:
           exp_name: *TRAIN_NAME
           exp_save: *TRAIN_SAVE
@@ -100,7 +100,7 @@ train:
       optimizer:
         name: "SGD"
         SGD:
-          lr: 0.01
+          lr: 0.08
           momentum: 0.9
           weight_decay: 0.00005
           minibatch: *MINIBATCH

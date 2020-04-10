@@ -96,7 +96,7 @@ def cleanup():
 
 
 def run_dist_training(rank_id: int, world_size: int, task: str,
-                      task_cfg: CfgNode, parsed_args, model, dist_url):
+                      task_cfg: CfgNode, parsed_args, model, tracker, dist_url):
     """method to run on distributed process
        passed to multiprocessing.spawn
     
@@ -124,7 +124,7 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
         dataloader = dataloader_builder.build(task, task_cfg.data, seed=rank_id)
     # build trainer
     trainer = engine_builder.build(task, task_cfg.trainer, "trainer", optimizer,
-                                   dataloader)
+                                   dataloader, tracker)
     trainer.set_device(
         devs
     )  # need to be placed after optimizer built (potential pytorch issue)
@@ -187,8 +187,10 @@ if __name__ == '__main__':
     assert torch.cuda.device_count(
     ) >= world_size, "cuda device {} is less than {}".format(
         torch.cuda.device_count(), world_size)
+    # build tracker model
+    tracker = model_builder.build("track", task_cfg.tracker)
     # build model
-    model = model_builder.build(task, task_cfg.model)
+    segmenter = model_builder.build("vos", task_cfg.segmenter)
     # get dist url
     if parsed_args.auto_dist:
         port = _find_free_port()
@@ -199,7 +201,7 @@ if __name__ == '__main__':
     torch.multiprocessing.set_start_method('spawn', force=True)
     # spawn trainer process
     mp.spawn(run_dist_training,
-             args=(world_size, task, task_cfg, parsed_args, model, dist_url),
+             args=(world_size, task, task_cfg, parsed_args, segmenter, tracker, dist_url),
              nprocs=world_size,
              join=True)
     logger.info("Distributed training completed.")
