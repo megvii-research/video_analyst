@@ -2,8 +2,8 @@
 
 A collection of test scripts are located under _tools/test/_:
 
-- [tools/test/test_VOT.sh](../tools/test/test_VOT.sh)
-- [tools/test/test_GOT.sh](../tools/test/test_GOT.sh)
+- [tools/test/test_VOT.sh](../../tools/test/test_VOT.sh)
+- [tools/test/test_GOT.sh](../../tools/test/test_GOT.sh)
 
 ## Check test results
 
@@ -12,7 +12,7 @@ _EXP_NAME_ is the string value of key _test.track.exp_name_ in the corresponding
 ### Check VOT results
 
 ```Bash
-cat logs/VOT2018/*.csv
+view logs/VOT2018/*.csv
 ```
 
 ### Check GOT results
