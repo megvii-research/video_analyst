@@ -146,12 +146,8 @@ class SiamTrack(ModuleBase):
 
         if self._hyper_params["pretrain_model_path"] != "":
             model_path = self._hyper_params["pretrain_model_path"]
-            try:
-                state_dict = torch.load(model_path,
-                                        map_location=torch.device("gpu"))
-            except:
-                state_dict = torch.load(model_path,
-                                        map_location=torch.device("cpu"))
+            state_dict = torch.load(model_path,
+                                    map_location=torch.device("cpu"))
             if "model_state_dict" in state_dict:
                 state_dict = state_dict["model_state_dict"]
             try:
@@ -301,12 +297,8 @@ class SiamTrack_VOS(ModuleBase):
 
         if self._hyper_params["pretrain_model_path"] != "":
             model_path = self._hyper_params["pretrain_model_path"]
-            try:
-                state_dict = torch.load(model_path,
-                                        map_location=torch.device("gpu"))
-            except:
-                state_dict = torch.load(model_path,
-                                        map_location=torch.device("cpu"))
+            state_dict = torch.load(model_path,
+                                    map_location=torch.device("cpu"))
             if "model_state_dict" in state_dict:
                 state_dict = state_dict["model_state_dict"]
             try:
