@@ -99,7 +99,7 @@ train:
           negative_pair_ratio: 0.2
         submodules:
           dataset:
-            names: ["GOT10kDataset",]  # (GOT10kDataset|LaSOTDataset)
+            names: ["LaSOTDataset",]  # (GOT10kDataset|LaSOTDataset)
             GOT10kDataset: &GOT10KDATASET_CFG
               ratio: 1.0
               max_diff: 100
