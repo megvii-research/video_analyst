@@ -81,6 +81,6 @@ class TargetBase:
             data whose training target will be made
         """
         for k in sampled_data:
-            sampled_data[k] = torch.from_numpy(sampled_data[k])
+            sampled_data[k] = torch.from_numpy(np.array(sampled_data[k]))
 
         return sampled_data
