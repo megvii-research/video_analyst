@@ -155,7 +155,7 @@ class DistributedSATTrainer(TrainerBase):
                 )
                 for monitor in self._monitors:
                     monitor.update(trainer_data)
-                print_str = "{}/{} epoch {} eta ({} h {} m {} s) ".format(iteration, num_iterations, epoch, int(cost_time//(3600)), int(cost_time%3600//60), int(cost_time%60))+self._state["print_str"]
+                print_str = "{}/{} epoch {} eta ({}h {}m {}s) bs: {} ".format(iteration, num_iterations, epoch, int(cost_time//(3600)), int(cost_time%3600//60), int(cost_time%60), training_data["im_x"].size(0))+self._state["print_str"]
                 logger.info(print_str)
             del training_data 
 

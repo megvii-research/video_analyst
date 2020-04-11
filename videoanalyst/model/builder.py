@@ -2,7 +2,7 @@
 from typing import Dict, List
 from loguru import logger
 from yacs.config import CfgNode
-
+from torch import nn
 from .backbone import builder as backbone_builder
 from .loss import builder as loss_builder
 from .task_head import builder as head_builder
@@ -34,7 +34,6 @@ def build(
         losses = loss_builder.build(task, cfg.losses)
         task_model = task_builder.build(task, cfg.task_model, backbone, head,
                                         losses)
-        return task_model
 
     elif task == "track_vos":
 
@@ -51,7 +50,6 @@ def build(
             basemodel_search=basemodel_search,
             head=head,
             loss=losses)
-        return task_model
 
     elif task == "vos":
         gml_extractor = backbone_builder.build(task, cfg.gml_extractor)
@@ -66,11 +64,13 @@ def build(
                                                   joint_encoder=joint_encoder,
                                                   decoder=decoder,
                                                   loss=losses)
-        return task_model
 
     else:
         logger.error("model for task {} has not been implemented".format(task))
         exit(-1)
+    if cfg.use_sync_bn:
+        task_model = nn.SyncBatchNorm.convert_sync_batchnorm(task_model)
+    return task_model
 
 
 def get_config(task_list: List) -> Dict[str, CfgNode]:
@@ -100,5 +100,6 @@ def get_config(task_list: List) -> Dict[str, CfgNode]:
         cfg["task_head"] = head_builder.get_config(task_list)[task]
         cfg["losses"] = loss_builder.get_config(task_list)[task]
         cfg["task_model"] = task_builder.get_config(task_list)[task]
+        cfg["use_sync_bn"] = False
 
     return cfg_dict
