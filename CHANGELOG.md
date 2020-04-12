@@ -2,9 +2,20 @@
 
 Date format: YY/MM/DD
 
+## 2020/04/12
+* Add iterable dataset in
+  * dataset_type under config node: data
+    * regular: former dataset
+    * iterable: newly added dataset
+  * data/adaptor_dataset.py: _AdaptorIterableDataset_ / _MultiStreamDataloader_
+  * data/builder.py: the branch with _cfg.dataset_type_
+* Fix seed issue
+  * pass builder's seed to dataset as ext_seed
+
+
 ## 2020/04/06
-* add model/pipeline/tester for SAT on DAVIS
-* add transferred models for SAT
+* Add model/pipeline/tester for SAT on DAVIS
+* Add transferred models for SAT
 
 ## 2020/03/25
 
