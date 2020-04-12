@@ -142,12 +142,22 @@ class MultiStageLR(BaseLR):
 
 class TransitionLR(BaseLR):
     """
-    Transition scheduler, to be inheritated for different usate
-    Formula
-    lr = post_func( pre_func(start_lr) + (pre_func(end_lr)-pre_func(start_lr))
-                    * trans_func( (epoch*max_iter+iter) / (max_epoch*max_iter+iter) ))
-    See LinearLR, ExponentialLR, and CosineLR for examples
-        w.r.t. meaning of pre_func, trans_func, and post_func.
+    Transition scheduler, to be inheritated for different usage
+    Idea: the majority of lr scheduling curve becomes linear function after a inversible mapping
+
+    Formula:
+    lr = post_func( 
+                                                                               (epoch*max_iter+iter)
+    pre_func(start_lr) + (pre_func(end_lr)-pre_func(start_lr)) * trans_func( --------------------------- )
+                  )                                                           (max_epoch*max_iter+iter)
+
+    Current descendants: 
+    - LinearLR
+    - ExponentialLR, 
+    - CosineLR
+
+    To create new lr scheduling curve:
+        please override pre_func, trans_func, and post_func
     """
     def __init__(self, start_lr=0, end_lr=0, max_epoch=1, max_iter=1, **kwargs):
         self._start_lr = start_lr
