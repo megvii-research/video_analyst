@@ -65,7 +65,7 @@ if __name__ == '__main__':
     root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.train
     task, task_cfg = specify_task(root_cfg)
-    task_cfg.data.num_workers = 1
+    task_cfg.data.num_workers = 2
     task_cfg.data.sampler.submodules.dataset.GOT10kDataset.check_integrity = False
     task_cfg.freeze()
 

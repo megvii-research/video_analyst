@@ -113,6 +113,9 @@ class AdaptorIterableDataset(IterableDataset):
                 num_workers = n
                 break
         split_size = batch_size // num_workers  # real batch size for each worker
+        logger.debug("batch_size: {}".format(batch_size))
+        logger.debug("max_workers: {}".format(max_workers))
+        logger.debug("batch size of splitted dataset: {:d}".format(split_size))
         return [
             cls(task,
                 cfg,
