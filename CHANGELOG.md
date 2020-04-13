@@ -2,6 +2,10 @@
 
 Date format: YY/MM/DD
 
+## 2020/04/13
+* Add OTB test
+
+
 ## 2020/04/12
 * Add iterable dataset in
   * dataset_type under config node: data
