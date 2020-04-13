@@ -35,7 +35,7 @@ class ExperimentOTB(object):
         self.nbins_iou = 21
         self.nbins_ce = 51
 
-    def run(self, tracker, visualize=False):
+    def run(self, tracker, visualize=False, overwrite_result=True):
         print('Running tracker %s on %s...' % (
             tracker.name, type(self.dataset).__name__))
 
@@ -47,7 +47,7 @@ class ExperimentOTB(object):
             # skip if results exist
             record_file = os.path.join(
                 self.result_dir, tracker.name, '%s.txt' % seq_name)
-            if os.path.exists(record_file):
+            if os.path.exists(record_file) and not overwrite_result:
                 print('  Found results, skipping', seq_name)
                 continue
 
