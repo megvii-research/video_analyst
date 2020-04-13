@@ -83,14 +83,17 @@ class AdaptorIterableDataset(IterableDataset):
         self.num_epochs = num_epochs
         self.nr_image_per_epoch = nr_image_per_epoch
         self.batch_size = batch_size
-        seed = (torch.initial_seed() + seed * self._SEED_STEP +
-                ext_seed * self._EXT_SEED_STEP) % self._SEED_DIVIDER
-        self.datapipeline = datapipeline_builder.build(task, cfg, seed=seed)
-        logger.info("Datapipeline built with seed={}" .format(seed))
-        self.batch_size = batch_size
+        self.seed = (torch.initial_seed() + seed * self._SEED_STEP +
+                     ext_seed * self._EXT_SEED_STEP) % self._SEED_DIVIDER
+
+    def _build_datapipeline(self,):
+        self.datapipeline = datapipeline_builder.build(self.task, self.cfg, seed=self.seed)
+        logger.info("Datapipeline built with seed={}" .format(self.seed))
 
     def get_streams(self):
         """Stream fetcher"""
+        # build datapipeline
+        self._build_datapipeline()
         # from each stream, fetch batch_size samples via datapipeline 
         return zip(*[iter(self.datapipeline) for _ in range(self.batch_size)])
 
