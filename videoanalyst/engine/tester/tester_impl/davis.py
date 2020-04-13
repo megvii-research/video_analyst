@@ -11,6 +11,8 @@ from loguru import logger
 from os import makedirs
 from os.path import join, isdir
 from collections import OrderedDict
+import torch.multiprocessing as mp
+from torch.multiprocessing import Pool, Manager
 from multiprocessing import Process, Queue
 from tqdm import tqdm
 
@@ -89,7 +91,9 @@ class DAVISTester(TesterBase):
             # track videos
             self.run_tracker()
             # evaluation
-            self.evaluation('default_hp')
+            eval_result=self.evaluation('default_hp')
+        return dict(main_performance=eval_result["JF"])
+
 
     def run_tracker(self):
         """
@@ -109,9 +113,10 @@ class DAVISTester(TesterBase):
         pbar = tqdm(total=nr_records)
         mean_speed = -1
         speed_list = []
-        speed_queue = Queue(500)
+        manager = Manager()
+        speed_queue = manager.Queue(500)
         # set worker
-        if num_gpu == 1:
+        if num_gpu == 0:
             self.worker(keys, all_devs[0], self.dataset, speed_queue)
             for i in range(nr_records):
                 s = speed_queue.get()
@@ -124,7 +129,7 @@ class DAVISTester(TesterBase):
                 start = i * nr_video
                 end = min(start + nr_video, nr_records)
                 split_records = keys[start:end]
-                proc = Process(target=self.worker,
+                proc = mp.Process(target=self.worker,
                                args=(split_records, all_devs[i], self.dataset,
                                      speed_queue))
                 logger.info('process:%d, start:%d, end:%d' % (i, start, end))
@@ -142,7 +147,7 @@ class DAVISTester(TesterBase):
         self._state['speed'] = mean_speed
 
     def worker(self, records, dev, dataset, speed_queue=None):
-        tracker = copy.deepcopy(self._pipeline)
+        tracker = self._pipeline
         tracker.set_device(dev)
         for v_id, video in enumerate(records):
             speed = self.track_single_video_vos(tracker,
@@ -170,7 +175,7 @@ class DAVISTester(TesterBase):
         version = self.dataset_name[-4:]
         # results_path = '/data/project/davis2017-evaluation-master/results/semi-supervised/ranet'
         hp_dict = {}
-        davis_benchmark.davis2017_eval(davis_data_path,
+        return davis_benchmark.davis2017_eval(davis_data_path,
                                        results_path,
                                        csv_name_global_path,
                                        csv_name_per_sequence_path,

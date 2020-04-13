@@ -1,6 +1,6 @@
 train:
   vos:
-    exp_name: &TRAIN_NAME "sat_res50_davis_0410_syncbn"
+    exp_name: &TRAIN_NAME "sat_res50_davis_0410_syncbn_coslr"
     exp_save: &TRAIN_SAVE "snapshots"
     num_processes: 8
     data:
@@ -113,7 +113,7 @@ train:
       optimizer:
         name: "SGD"
         SGD:
-          lr: 0.08
+          lr: 0.004
           momentum: 0.9
           weight_decay: 0.00005
           minibatch: *MINIBATCH
@@ -128,8 +128,8 @@ train:
             }
           - >
             {
-            "name": "CosineLR",
+            "name": "CosineLRV2",
             "start_lr": 0.08,
-            "end_lr": 0.0000001,
-            "max_epoch": 20
+            "min_lr": 0.00001,
+            "max_epoch": 40
             }

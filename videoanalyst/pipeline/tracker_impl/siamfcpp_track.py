@@ -2,7 +2,7 @@
 
 import numpy as np
 from copy import deepcopy
-
+from loguru import logger
 import torch
 import torch.nn as nn
 
@@ -146,7 +146,8 @@ class SiamFCppTracker(PipelineBase):
         )
         phase = self._hyper_params['phase_init']
         with torch.no_grad():
-            features = self._model(imarray_to_tensor(im_z_crop).to(self.device),
+            data = imarray_to_tensor(im_z_crop).to(self.device)
+            features = self._model(data,
                                    phase=phase)
 
         return features, im_z_crop, avg_chans
