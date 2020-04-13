@@ -1,5 +1,6 @@
 import numpy as np
 import os
+from loguru import logger
 from os import makedirs
 from os.path import join, isdir
 from collections import OrderedDict
@@ -40,7 +41,6 @@ def label2color(cv2_gt, num = 8 ):
 
 
 
-
 def load_dataset(davis_path, dataset):
     info = OrderedDict()
 
@@ -54,8 +54,13 @@ def load_dataset(davis_path, dataset):
             info[video] = {}
             if dataset[-4:] == '2017':
                 info[video]['anno_files'] = sorted(glob.glob(join(davis_path, 'Annotations/480p', video, '*.png')))
-            else:
+            elif dataset[-4:] == '2016':
                 info[video]['anno_files'] = sorted(glob.glob(join(davis_path, 'Annotations/480p_2016', video, '*.png')))
+            else:
+                logger.error("{} is not supported".format(dataset))
+                exit(-1)
+            assert len(info[video]['anno_files']) > 0, logger.error("no anno in path {}".format(join(davis_path, 'Annotations/480p_2016', video)))
+
             info[video]['image_files'] = sorted(glob.glob(join(davis_path, 'JPEGImages/480p', video, '*.jpg')))
             info[video]['name'] = video
 

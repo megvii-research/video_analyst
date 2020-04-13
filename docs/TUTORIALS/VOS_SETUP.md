@@ -56,6 +56,8 @@ At _path_to_datasets_:
 datasets
 └── DAVIS
     ├── Annotations
+    |        ├── 480p # annotation for davis2017
+    |        └── 480p_2016 # annotation for davis2016
     ├── ImageSets
     └── ...
 ```
