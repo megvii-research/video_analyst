@@ -156,7 +156,7 @@ def dump_result_dict(csv_file: str, result_dict) -> pd.DataFrame:
         df = pd.DataFrame(columns=list(result_dict.keys()))
     merged_results = merge_result_dict(result_dict)
     df_new = pd.DataFrame(merged_results)
-    df = pd.concat([df, df_new])
+    df = pd.concat([df, df_new], axis=0, ignore_index=True)
 
     df.reset_index(drop=True, inplace=True)
     df.to_csv(csv_file,
