@@ -24,9 +24,11 @@ test:
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
-        test_lr: 0.58
+        # 0.5592655074813784,0.21930032605361827,0.04584244564619333
+        # test_lr: 0.5692655074813784
+        test_lr: 0.52
         window_influence: 0.21
-        penalty_k: 0.08
+        penalty_k: 0.04
         num_conv3x3: 3
     tester:
       names: ["OTBTester",]
