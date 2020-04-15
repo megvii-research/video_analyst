@@ -194,24 +194,24 @@ train:
             "epoch": 0,
             "freezed": true
             }
-          # - >
-          #   {
-          #   "name": "isConv5",
-          #   "regex": "basemodel\\.conv5\\.conv.*",
-          #   "epoch": 5,
-          #   "freezed": false
-          #   }
-          # - >
-          #   {
-          #   "name": "isConv4",
-          #   "regex": "basemodel\\.conv4\\.conv.*",
-          #   "epoch": 10,
-          #   "freezed": false
-          #   }
-          # - >
-          #   {
-          #   "name": "isConv3",
-          #   "regex": "basemodel\\.conv3\\.conv.*",
-          #   "epoch": 15,
-          #   "freezed": false
-          #   }
+          - >
+            {
+            "name": "isConv5",
+            "regex": "basemodel\\.conv5\\.conv.*",
+            "epoch": 5,
+            "freezed": false
+            }
+          - >
+            {
+            "name": "isConv4",
+            "regex": "basemodel\\.conv4\\.conv.*",
+            "epoch": 10,
+            "freezed": false
+            }
+          - >
+            {
+            "name": "isConv3",
+            "regex": "basemodel\\.conv3\\.conv.*",
+            "epoch": 15,
+            "freezed": false
+            }
