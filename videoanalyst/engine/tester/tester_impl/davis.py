@@ -220,10 +220,11 @@ class DAVISTester(TesterBase):
             track_boxes = np.zeros((object_num, len(image_files), 4))
             track_mask_boxes = np.zeros((object_num, len(image_files), 4))
             track_mask_score = np.zeros((object_num, len(image_files)))
-        if self._hyper_params['save_video']:
+        if self._hyper_params['save_patch']:
             patch_list = []
 
         for obj_id, o_id in enumerate(object_ids):
+            obj_patch_list = []
             logger.info('{} th object in video {}'.format(o_id, video['name']))
             if 'start_frame' in video:
                 start_frame = video['start_frame'][str(o_id)]
@@ -253,12 +254,13 @@ class DAVISTester(TesterBase):
 
                     if self._hyper_params['save_patch']:
                         patch = tracker._state['patch_prediction']
-                        patch_list.append(patch)
+                        obj_patch_list.append(patch)
 
                 toc += cv2.getTickCount() - tic
                 if end_frame >= f >= start_frame:
                     pred_masks[obj_id, f, :, :] = mask
-
+            if self._hyper_params['save_patch']:
+                patch_list.append(obj_patch_list)
         toc /= cv2.getTickFrequency()
 
         if len(annos) == len(image_files):
@@ -281,8 +283,9 @@ class DAVISTester(TesterBase):
             logger.info('save patches path: {}'.format(video_path))
             if not isdir(video_path): makedirs(video_path)
             for i in range(len(patch_list)):
-                patch_image = patch_list[i]
-                cv2.imwrite(join(video_path, str(i) + '.png'), patch_image)
+                patch_images = patch_list[i]
+                for frame_id, patch_image in enumerate(patch_images):
+                    cv2.imwrite(join(video_path, 'obj_{}_{}.png'.format(i, frame_id)), patch_image)
 
         video_path = join(self.save_root_dir, 'results_multi', video['name'])
         logger.info('save mask path:{}'.format(video_path))

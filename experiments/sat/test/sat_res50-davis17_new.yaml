@@ -22,9 +22,13 @@ test:
         SiamTrack:
           corr_fea_output: True
           pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl"
+          #pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_88e4e9ee476545b952b04ae80c480f08.pkl"
     tracker_pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
+        #test_lr: 0.58
+        #window_influence: 0.21
+        #penalty_k: 0.08
         test_lr: 0.512
         window_influence: 0.254
         penalty_k: 0.064
@@ -52,11 +56,12 @@ test:
       task_model:
         name: "SatVOS"
         SatVOS:
-          pretrain_model_path: "snapshots/sat_res50_davis_0410_syncbn/epoch-19.pkl"
+          #pretrain_model_path: "snapshots/sat_res50_davis_0410_syncbn_coslr/epoch-17.pkl"
+          pretrain_model_path: "snapshots/sat_res50_davis_0414_syncbn_coslr_fulldata/epoch-17.pkl"
     pipeline:
       name: "StateAwareTrackerNew"
       StateAwareTrackerNew:
-        save_patch: False
+        save_patch: True
         mask_pred_thresh: 0.4
         mask_filter_thresh: 0.45
         state_score_thresh: 0.8
@@ -68,5 +73,5 @@ test:
           device_num: 4
           dataset_names: ["DAVIS2017"]
           save_video: False
-          save_patch: False
+          save_patch: True
 
