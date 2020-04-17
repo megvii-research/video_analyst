@@ -1,6 +1,6 @@
 test:
   vos:
-    exp_name: &TEST_NAME "sat_res50_new"
+    exp_name: &TEST_NAME "sat_res50_new_glf"
     exp_save: &TEST_SAVE "logs"
     tracker_model:
       backbone:
@@ -58,10 +58,12 @@ test:
         SatVOS:
           #pretrain_model_path: "snapshots/sat_res50_davis_0410_syncbn_coslr/epoch-17.pkl"
           pretrain_model_path: "snapshots/sat_res50_davis_0414_syncbn_coslr_fulldata/epoch-17.pkl"
+          #pretrain_model_path: "snapshots/sat_res50_davis_0410_syncbn_coslr_aug/epoch-18.pkl"
+          #pretrain_model_path: "snapshots/sat_res50_davis_0414_syncbn_coslr_fulldata_laug/epoch-15.pkl"
     pipeline:
       name: "StateAwareTrackerNew"
       StateAwareTrackerNew:
-        save_patch: True
+        save_patch: &save_patch False
         mask_pred_thresh: 0.4
         mask_filter_thresh: 0.45
         state_score_thresh: 0.8
@@ -73,5 +75,5 @@ test:
           device_num: 4
           dataset_names: ["DAVIS2017"]
           save_video: False
-          save_patch: True
+          save_patch: *save_patch
 

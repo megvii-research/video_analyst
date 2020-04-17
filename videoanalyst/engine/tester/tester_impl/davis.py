@@ -220,6 +220,8 @@ class DAVISTester(TesterBase):
             track_boxes = np.zeros((object_num, len(image_files), 4))
             track_mask_boxes = np.zeros((object_num, len(image_files), 4))
             track_mask_score = np.zeros((object_num, len(image_files)))
+            track_score = np.zeros((object_num, len(image_files)))
+            state_score = np.zeros((object_num, len(image_files)))
         if self._hyper_params['save_patch']:
             patch_list = []
 
@@ -251,6 +253,8 @@ class DAVISTester(TesterBase):
                         track_boxes[obj_id, f, :] = location
                         track_mask_boxes[obj_id, f, :] = rect_mask
                         track_mask_score[obj_id, f] = mask_score
+                        track_score[obj_id, f] = tracker._state["track_score"]
+                        state_score[obj_id, f] = tracker._state["state_score"]
 
                     if self._hyper_params['save_patch']:
                         patch = tracker._state['patch_prediction']
@@ -316,14 +320,17 @@ class DAVISTester(TesterBase):
             VideoOut = cv2.VideoWriter(
                 video_path + '/' + video['name'] + '.avi',
                 cv2.VideoWriter_fourcc(*'MJPG'), 10.0, (img_w, img_h))
-            pred_mask_final = np.array(pred_masks)
-            pred_mask_final = (
-                np.argmax(pred_mask_final, axis=0).astype('uint8') +
-                1) * (np.max(pred_mask_final, axis=0) >
-                      tracker._hyper_params['mask_pred_thresh']).astype('uint8')
+            #pred_mask_final = np.array(pred_masks)
+            #pred_mask_final = (
+            #    np.argmax(pred_mask_final, axis=0).astype('uint8') +
+            #    1) * (np.max(pred_mask_final, axis=0) >
+            #          tracker._hyper_params['mask_pred_thresh']).astype('uint8')
 
             for f, image_file in enumerate(image_files):
                 img = cv2.imread(image_file)
+                mask_f = pred_mask_final[f, :, :]
+                img = davis_benchmark.overlay_semantic_mask(
+                    img, mask_f, alpha=0.3, contour_thickness=1)
                 for i in range(object_num):
                     rect = track_boxes[i, f]
                     rect = [int(l) for l in rect]
@@ -331,17 +338,11 @@ class DAVISTester(TesterBase):
                     rect_mask = track_mask_boxes[i, f]
                     rect_mask = [int(l) for l in rect_mask]
 
-                    score = round(track_mask_score[i, f], 2)
+                    mask_score = round(track_mask_score[i, f], 2)
+                    track_score_ = round(track_score[i, f], 2)
+                    state_score_ = round(state_score[i, f], 2)
                     color = davis_benchmark.labelcolormap(object_num + 1)[i + 1]
                     color_tuple = (int(color[0]), int(color[1]), int(color[2]))
-                    if f > 0:
-                        cv2.putText(img,
-                                    'State Score : ' + str(score),
-                                    (rect[0], max(rect[1], 5) + 10),
-                                    cv2.FONT_HERSHEY_SIMPLEX,
-                                    0.5,
-                                    color=color_tuple,
-                                    thickness=2)
                     cv2.putText(img,
                                 'Frame : ' + str(f), (10, 20),
                                 cv2.FONT_HERSHEY_SIMPLEX,
@@ -351,7 +352,7 @@ class DAVISTester(TesterBase):
                     cv2.rectangle(img, (rect[0], rect[1]),
                                   (rect[0] + rect[2], rect[1] + rect[3]),
                                   color=color_tuple,
-                                  thickness=2)
+                                  thickness=4)
 
                     if rect_mask[0] > 0:
                         cv2.rectangle(img, (rect_mask[0], rect_mask[1]),
@@ -359,12 +360,16 @@ class DAVISTester(TesterBase):
                                        rect_mask[1] + rect_mask[3]),
                                       color=(255, 255, 255),
                                       thickness=2)
+                    if f > 0:
+                        cv2.putText(img,
+                                    'M {} T{} S {}'.format(mask_score, track_score_, state_score_),
+                                    (rect[0], max(rect[1], 5) + 10),
+                                    cv2.FONT_HERSHEY_SIMPLEX,
+                                    1.0,
+                                    color=(0,0,255),
+                                    thickness=2)
 
-                mask_f = pred_mask_final[f, :, :]
-                output_frame = davis_benchmark.overlay_semantic_mask(
-                    img, mask_f, alpha=0.3, contour_thickness=1)
-
-                VideoOut.write(output_frame)
+                VideoOut.write(img)
             VideoOut.release()
         return speed
 

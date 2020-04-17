@@ -103,6 +103,7 @@ class StateAwareTrackerNew(PipelineBase):
         seg_ema_u=0.5,
         seg_ema_s=0.5,
         context_amount = 0.5,
+        mask_rect_lr = 1.0,
     )
 
     def __init__(self, segmenter, tracker):
@@ -294,19 +295,35 @@ class StateAwareTrackerNew(PipelineBase):
                                      self._hyper_params["GMP_image_size"]))
         self._state['filtered_image'] = filtered_image
 
-        try:
+        if pred_mask_b.sum() > 0:
             conf_score = (pred_mask * pred_mask_b).sum() / pred_mask_b.sum()
-        except:
+        else:
             conf_score = 0
         self._state['conf_score'] = conf_score
-
         mask_in_full_image = self._mask_back(
             pred_mask,
             size=self._hyper_params["saliency_image_size"],
             region=self._hyper_params["saliency_image_field"])
-        self._state['mask_in_full_image'] = mask_in_full_image  # > 0.5
+        #mask_in_full_image[mask_in_full_image > self._hyper_params["mask_pred_thresh"]] = conf_score
+        self._state['mask_in_full_image'] = mask_in_full_image 
+        if self._tracker.get_track_score() < 0:
+            self._state['mask_in_full_image'] *= 0
+
 
         return pred_mask, pred_mask_b
+
+    def get_global_box_from_masks(self, cnts):
+        boxes = np.zeros((len(cnts), 4))
+        for i, cnt in enumerate(cnts):
+            rect = cv2.boundingRect(cnt.reshape(-1, 2))
+            boxes[i] = rect
+        boxes[:, 2:] = boxes[:, :2] + boxes[:, 2:]
+        global_box = [np.amin(boxes[:, 0]), np.amin(boxes[:, 1]), np.amax(boxes[:, 2]), np.amax(boxes[:, 3])]
+        global_box = np.array(global_box)
+        global_box[2:] = global_box[2:] - global_box[:2]
+        return global_box
+
+
 
     def cropping_strategy(self, p_mask_b, track_pos=None, track_size=None):
         r"""
@@ -319,18 +336,22 @@ class StateAwareTrackerNew(PipelineBase):
         :return: new_target_pos, new_target_sz
         """
 
-        new_target_pos, new_target_sz = track_pos, track_size
+        new_target_pos, new_target_sz = self._state["state"]
         conf_score = self._state['conf_score']
+        self._state["track_score"] = self._tracker.get_track_score()
+        new_target_pos, new_target_sz = track_pos, track_size
 
         if conf_score > self._hyper_params['state_score_thresh']:
             contours, _ = cv2.findContours(p_mask_b, cv2.RETR_EXTERNAL,
                                            cv2.CHAIN_APPROX_NONE)
             cnt_area = [cv2.contourArea(cnt) for cnt in contours]
 
+            #if len(contours) != 0 and np.max(cnt_area) > 10  and track_score > 0.3:
             if len(contours) != 0 and np.max(cnt_area) > 10:
-                contour = contours[np.argmax(cnt_area)]  # use max area polygon
-                polygon = contour.reshape(-1, 2)
-                pbox = cv2.boundingRect(polygon)  # Min Max Rectangle  x1,y1,w,h
+                #contour = contours[np.argmax(cnt_area)]  # use max area polygon
+                #polygon = contour.reshape(-1, 2)
+                #pbox = cv2.boundingRect(polygon)  # Min Max Rectangle  x1,y1,w,h
+                pbox = self.get_global_box_from_masks(contours)
                 rect_full, cxywh_full = self._coord_back(
                     pbox,
                     size=self._hyper_params["saliency_image_size"],
@@ -343,7 +364,12 @@ class StateAwareTrackerNew(PipelineBase):
                 self._state['state_score'] = state_score
 
                 if state_score > self._hyper_params['state_score_thresh']:
-                    new_target_pos, new_target_sz = mask_pos, mask_sz
+                    new_target_pos = mask_pos
+                    lr = self._hyper_params["mask_rect_lr"]
+                    new_target_sz = self._state["state"][1]*(1-lr) + mask_sz*lr
+                else:
+                    if self._state["track_score"] > 0.35:
+                        new_target_pos, new_target_sz = track_pos, track_size
 
                 self._state['mask_rect'] = rect_full
 
@@ -354,6 +380,7 @@ class StateAwareTrackerNew(PipelineBase):
         else:  # empty mask
             self._state['mask_rect'] = [-1, -1, -1, -1]
             self._state['state_score'] = 0
+
         return new_target_pos, new_target_sz
 
     def update(self, im):
@@ -374,9 +401,6 @@ class StateAwareTrackerNew(PipelineBase):
         pred_mask, pred_mask_b = self.joint_segmentation(
             im, target_pos_prior, target_sz_prior, corr_feature, gml_feature)
 
-        # global modeling loop updates global feature for next frame's segmentation
-        if self._hyper_params['global_modeling']:
-            self.global_modeling()
 
         # cropping strategy loop swtiches the coordinate prediction method
         if self._hyper_params['cropping_strategy']:
@@ -385,6 +409,10 @@ class StateAwareTrackerNew(PipelineBase):
         else:
             target_pos, target_sz = target_pos_track, target_sz_track
 
+        # global modeling loop updates global feature for next frame's segmentation
+        if self._hyper_params['global_modeling']:
+            if self._state["conf_score"] > 0.4: 
+                self.global_modeling()
         # save underlying state
         self._state['state'] = target_pos, target_sz
 
@@ -392,7 +420,7 @@ class StateAwareTrackerNew(PipelineBase):
         #track_rect = cxywh2xywh(
         #    np.concatenate([target_pos_track, target_sz_track], axis=-1))
         track_rect = cxywh2xywh(
-            np.concatenate([target_pos, target_sz], axis=-1))
+            np.concatenate([target_pos_track, target_sz_track], axis=-1))
         return track_rect
 
     # ======== vos processes ======== #

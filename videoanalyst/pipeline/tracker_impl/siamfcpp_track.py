@@ -256,7 +256,7 @@ class SiamFCppTracker(PipelineBase):
         # record optional mid-level info
         if update_state:
             self._state['score'] = score
-            self._state['pscore'] = pscore
+            self._state['pscore'] = pscore[best_pscore_id]
             self._state['all_box'] = box
             self._state['cls'] = cls
             self._state['ctr'] = ctr
@@ -264,6 +264,9 @@ class SiamFCppTracker(PipelineBase):
         return new_target_pos, new_target_sz
     def set_state(self, state):
         self._state["state"] = state
+    
+    def get_track_score(self):
+        return float(self._state["pscore"])
 
     def update(self, im):
 
