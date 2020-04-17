@@ -1,6 +1,6 @@
 train:
   vos:
-    exp_name: &TRAIN_NAME "sat_res50_davis_0414_syncbn_coslr_fulldata"
+    exp_name: &TRAIN_NAME "sat_res50_davis_0417_syncbn_coslr_fulldata"
     exp_save: &TRAIN_SAVE "snapshots"
     num_processes: 8
     data:

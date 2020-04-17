@@ -57,9 +57,9 @@ test:
         name: "SatVOS"
         SatVOS:
           #pretrain_model_path: "snapshots/sat_res50_davis_0410_syncbn_coslr/epoch-17.pkl"
-          pretrain_model_path: "snapshots/sat_res50_davis_0414_syncbn_coslr_fulldata/epoch-17.pkl"
+          #pretrain_model_path: "snapshots/sat_res50_davis_0414_syncbn_coslr_fulldata/epoch-17.pkl"
           #pretrain_model_path: "snapshots/sat_res50_davis_0410_syncbn_coslr_aug/epoch-18.pkl"
-          #pretrain_model_path: "snapshots/sat_res50_davis_0414_syncbn_coslr_fulldata_laug/epoch-15.pkl"
+          pretrain_model_path: "snapshots/sat_res50_davis_0414_syncbn_coslr_fulldata_laug/epoch-16.pkl"
     pipeline:
       name: "StateAwareTrackerNew"
       StateAwareTrackerNew:

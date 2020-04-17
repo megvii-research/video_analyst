@@ -411,7 +411,7 @@ class StateAwareTrackerNew(PipelineBase):
 
         # global modeling loop updates global feature for next frame's segmentation
         if self._hyper_params['global_modeling']:
-            if self._state["conf_score"] > 0.4: 
+            if self._state["state_score"] > 0.4: 
                 self.global_modeling()
         # save underlying state
         self._state['state'] = target_pos, target_sz
