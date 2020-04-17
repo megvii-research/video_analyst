@@ -29,7 +29,14 @@ Please refer to [SOT_SETUP.md](docs/SOT_SETUP.md)
 
 #### SOT video demo
 ```Bash
-python3 ./demo/main/video/sot_video.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml' --device cuda --video $video_path$ #default is web camera
+# demo with web camera
+python3 ./demo/main/video/sot_video.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml' --device cuda --video "webcam" 
+
+# demo with video file, and dump result into video file (optional)
+python3 ./demo/main/video/sot_video.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml' --device cuda --video $video_dir/demo.mp4 --output $dump_path/result.mp4
+
+# demo with extracted image files, and dump result into image files (optional)
+python3 ./demo/main/video/sot_video.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml' --device cuda --video $video_dir/*.jpg --output $dump_dir
 ```
 
 ### Test
