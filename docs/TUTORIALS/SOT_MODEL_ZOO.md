@@ -67,6 +67,10 @@ Following issues would influence the reproducibility of the results of existing 
 * PyTorch version
   * e.g. Type Promotion between 1.2.0 and 1.3.0, see Type Promotion on [PyTorch release notes](https://github.com/pytorch/pytorch/releases).
 * CUDA/CUDNN version
+  * 10.0 / 10.1
+  * should be matched with the PyTorch (rebuilding may be needed)
+* OpenCV version
+  * Slight performance drop has been observed with the following change: 3.2.0.6 -> 4.1.0.25
 
 Nevertheless, reproducibility of training under GOT-10k has been confirmed with repetition. Thus, there are no need to change software version (package/CUDA/CUDNN) unless you are obligated to verify the VOT result.
 
