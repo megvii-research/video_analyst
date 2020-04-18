@@ -2,9 +2,13 @@
 
 Date format: YY/MM/DD
 
+## 2020/04/18
+* New features in SOT demo (sot_video.py)
+  * Add image file video reader (reading from image files)
+  * Add image file video dumping (dump result as frame-level image files)
+
 ## 2020/04/13
 * Add OTB test
-
 
 ## 2020/04/12
 * Add iterable dataset in
@@ -15,7 +19,6 @@ Date format: YY/MM/DD
   * data/builder.py: the branch with _cfg.dataset_type_
 * Fix seed issue
   * pass builder's seed to dataset as ext_seed
-
 
 ## 2020/04/06
 * Add model/pipeline/tester for SAT on DAVIS
