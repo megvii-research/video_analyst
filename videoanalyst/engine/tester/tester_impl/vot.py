@@ -7,7 +7,8 @@ import math
 import os
 import os.path as osp
 from collections import OrderedDict
-from multiprocessing import Process, Queue
+import torch.multiprocessing as mp
+
 from os.path import join
 
 from yacs.config import CfgNode
@@ -80,7 +81,6 @@ class VOTTester(TesterBase):
         test_result_dict = None
         for dataset_name in self._hyper_params["dataset_names"]:
             self.dataset_name = dataset_name
-            # self.tracker_dir = os.path.join(self._cfg.auto.log_dir, self._hyper_params["dataset_name"])
             self.tracker_dir = os.path.join(self._hyper_params["exp_save"],
                                             self.dataset_name)
             self.save_root_dir = os.path.join(self.tracker_dir,
@@ -111,8 +111,8 @@ class VOTTester(TesterBase):
         mean_speed = -1
         total_lost = 0
         speed_list = []
-        result_queue = Queue(500)
-        speed_queue = Queue(500)
+        result_queue = mp.Queue(500)
+        speed_queue = mp.Queue(500)
         # set worker
         if num_gpu == 1:
             self.worker(keys, all_devs[0], result_queue, speed_queue)
@@ -129,9 +129,10 @@ class VOTTester(TesterBase):
                 start = i * nr_video
                 end = min(start + nr_video, nr_records)
                 split_records = keys[start:end]
-                proc = Process(target=self.worker,
-                               args=(split_records, all_devs[i], result_queue,
-                                     speed_queue))
+                proc = mp.Process(target=self.worker,
+                                  args=(split_records, all_devs[i], 
+                                   result_queue, speed_queue
+                                  ))
                 print('process:%d, start:%d, end:%d' % (i, start, end))
                 proc.start()
                 procs.append(proc)
@@ -164,7 +165,8 @@ class VOTTester(TesterBase):
         speed_queue:
             queue for fps measurement collecting
         """
-        tracker = copy.deepcopy(self._pipeline)
+        # tracker = copy.deepcopy(self._pipeline)
+        tracker = self._pipeline
         tracker.set_device(dev)
         for v_id, video in enumerate(records):
             lost, speed = self.track_single_video(tracker, video, v_id=v_id)
