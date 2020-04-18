@@ -9,8 +9,6 @@ from collections import OrderedDict
 
 import cv2
 import numpy as np
-from tqdm import tqdm
-
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
@@ -90,16 +88,13 @@ class DistributedSATTrainer(TrainerBase):
             self.init_train()
         self._state["initialized"] = True
 
-        # epoch counter +1
         self._state["epoch"] += 1
         epoch = self._state["epoch"]
         num_iterations = self._hyper_params["num_iterations"]
 
         # udpate engine_state
         self._state["max_iteration"] = num_iterations
-
         self._optimizer.modify_grad(epoch)
-        # TODO: build stats gathering code and reorganize tqdm
         self._state["print_str"] = ""
 
         time_dict = OrderedDict()
