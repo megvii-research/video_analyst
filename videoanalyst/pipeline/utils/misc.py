@@ -13,7 +13,8 @@ def imarray_to_tensor(arr):
     """
     arr = np.ascontiguousarray(
         arr.transpose(2, 0, 1)[np.newaxis, ...], np.float32)
-    return torch.tensor(arr).type(torch.Tensor)
+    # return torch.tensor(arr).type(torch.Tensor)
+    return torch.from_numpy(arr)
 
 
 def tensor_to_imarray(t):

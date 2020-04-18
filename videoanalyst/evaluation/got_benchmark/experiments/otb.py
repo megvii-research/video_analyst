@@ -28,14 +28,15 @@ class ExperimentOTB(object):
                  result_dir='results', report_dir='reports'):
         super(ExperimentOTB, self).__init__()
         self.dataset = OTB(root_dir, version, download=True)
-        self.result_dir = os.path.join(result_dir, 'OTB' + str(version))
-        self.report_dir = os.path.join(report_dir, 'OTB' + str(version))
+        dump_dirname = ('OTB' + str(version)) if isinstance(version, int) else version
+        self.result_dir = os.path.join(result_dir, dump_dirname)
+        self.report_dir = os.path.join(report_dir, dump_dirname)
         # as nbins_iou increases, the success score
         # converges to the average overlap (AO)
         self.nbins_iou = 21
         self.nbins_ce = 51
 
-    def run(self, tracker, visualize=False):
+    def run(self, tracker, visualize=False, overwrite_result=True):
         print('Running tracker %s on %s...' % (
             tracker.name, type(self.dataset).__name__))
 
@@ -47,7 +48,7 @@ class ExperimentOTB(object):
             # skip if results exist
             record_file = os.path.join(
                 self.result_dir, tracker.name, '%s.txt' % seq_name)
-            if os.path.exists(record_file):
+            if os.path.exists(record_file) and not overwrite_result:
                 print('  Found results, skipping', seq_name)
                 continue
 

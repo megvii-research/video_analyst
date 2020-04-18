@@ -51,6 +51,14 @@ def make_parser():
     return parser
 
 
+def scan_key():
+    logger.info("Key usage prompt: press ESC for exit")
+    key = cv2.waitKey(0) & 0xFF
+    if key == 27:
+        logger.info("ESC pressed, debugging terminated.")
+        exit(0)
+
+
 if __name__ == '__main__':
     # parsing
     parser = make_parser()
@@ -65,7 +73,7 @@ if __name__ == '__main__':
     root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.train
     task, task_cfg = specify_task(root_cfg)
-    task_cfg.data.num_workers = 1
+    task_cfg.data.num_workers = 2
     task_cfg.data.sampler.submodules.dataset.GOT10kDataset.check_integrity = False
     task_cfg.freeze()
 
@@ -84,6 +92,7 @@ if __name__ == '__main__':
             for training_sample in training_samples:
                 target_cfg = task_cfg.data.target
                 show_img_FCOS(target_cfg[target_cfg.name], training_sample)
+                scan_key()
     elif parsed_args.target == "dataset":
         logger.info("visualize for dataset")
         from videoanalyst.utils import load_image
@@ -118,7 +127,7 @@ if __name__ == '__main__':
                           thickness=3)
             im = cv2.resize(im, (0, 0), fx=0.33, fy=0.33)
             cv2.imshow("im", im)
-            cv2.waitKey(0)
+            scan_key()
     elif parsed_args.target == "datapipeline":
         logger.info("visualize for datapipeline")
         datapipeline = datapipeline_builder.build(task, task_cfg.data, seed=1)
@@ -130,6 +139,7 @@ if __name__ == '__main__':
                 target_cfg[target_cfg.name],
                 sampled_data,
             )
+            scan_key()
     else:
         logger.info("--target {} has not been implemented. ".format(
             parsed_args.target))

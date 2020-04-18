@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os.path as osp
+import glob
 
 import cv2
 import numpy as np
@@ -50,3 +51,49 @@ def load_image(img_file: str) -> np.array:
         logger.info("Fail to load Image file %s" % img_file)
 
     return img
+
+
+class ImageFileVideoStream:
+    r"""Adaptor class to be compatible with VideoStream object
+        Accept seperate video frames
+    """
+    def __init__(self, video_dir, init_counter=0):
+        self._state = dict()
+        self._state["video_dir"] = video_dir
+        self._state["frame_files"] = sorted(glob.glob(video_dir))
+        self._state["video_length"] = len(self._state["frame_files"])
+        self._state["counter"] = init_counter  # 0
+
+    def isOpened(self, ):
+        return (self._state["counter"] < self._state["video_length"])
+
+    def read(self, ):
+        frame_idx = self._state["counter"]
+        frame_file = self._state["frame_files"][frame_idx]
+        frame_img = load_image(frame_file)
+        self._state["counter"] += 1
+        return frame_idx, frame_img
+
+    def release(self, ):
+        self._state["counter"] = 0
+
+
+class ImageFileVideoWriter:
+    r"""Adaptor class to be compatible with VideoWriter object
+        Accept seperate video frames
+    """
+    def __init__(self, video_dir):
+        self._state = dict()
+        self._state["video_dir"] = video_dir
+        self._state["counter"] = 0
+        logger.info("Frame results will be dumped at: {}".format(video_dir))
+
+    def write(self, im):
+        frame_idx = self._state["counter"]
+        frame_file = osp.join(self._state["video_dir"],
+                              "{:06d}.jpg".format(frame_idx))
+        cv2.imwrite(frame_file, im)
+        self._state["counter"] += 1
+
+    def release(self, ):
+        self._state["counter"] = 0

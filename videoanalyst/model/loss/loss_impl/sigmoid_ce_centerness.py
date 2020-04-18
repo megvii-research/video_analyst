@@ -36,6 +36,9 @@ class SigmoidCrossEntropyCenterness(ModuleBase):
     def forward(self, pred_data, target_data):
         r"""
         Center-ness loss
+        Computation technique originated from this implementation:
+            https://www.tensorflow.org/api_docs/python/tf/nn/sigmoid_cross_entropy_with_logits
+
         Arguments
         ---------
         pred: torch.Tensor

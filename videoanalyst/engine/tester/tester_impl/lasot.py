@@ -69,7 +69,8 @@ class LaSOTTester(TesterBase):
             performance = experiment.report([tracker_name], plot_curves=False)
         test_result_dict = dict()
         if performance is not None:
-            test_result_dict["main_performance"] = performance["overall"]["ao"]
+            test_result_dict["main_performance"] = performance[tracker_name][
+                "overall"]["success_score"]
         else:
             test_result_dict["main_performance"] = -1
         return test_result_dict
