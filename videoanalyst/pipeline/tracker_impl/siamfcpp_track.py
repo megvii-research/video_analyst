@@ -190,9 +190,6 @@ class SiamFCppTracker(PipelineBase):
     def get_avg_chans(self):
         return self._state['avg_chans']
 
-    def get_scale_x(self):
-        return self._state['scale_x']
-
     def track(self,
               im_x,
               target_pos,

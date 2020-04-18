@@ -230,17 +230,15 @@ class DAVISTester(TesterBase):
 
                 tic = cv2.getTickCount()
                 if f == start_frame:  # init
-                    mask = annos_init[obj_id] == o_id
+                    mask = (annos_init[obj_id] == o_id).astype(np.uint8)
                     x, y, w, h = cv2.boundingRect((mask).astype(np.uint8))
                     tracker.init(im, np.array([x, y, w, h]), mask)
                 elif end_frame >= f > start_frame:  # tracking
-                    location = tracker.update(im)
-                    mask = tracker._state['mask_in_full_image']
-
+                    mask = tracker.update(im)
                     if self._hyper_params['save_video']:
                         rect_mask = tracker._state['mask_rect']
                         mask_score = tracker._state['conf_score']
-                        track_boxes[obj_id, f, :] = location
+                        track_boxes[obj_id, f, :]  = tracker._state['track_box']
                         track_mask_boxes[obj_id, f, :] = rect_mask
                         track_mask_score[obj_id, f] = mask_score
                         track_score[obj_id, f] = tracker._state["track_score"]
