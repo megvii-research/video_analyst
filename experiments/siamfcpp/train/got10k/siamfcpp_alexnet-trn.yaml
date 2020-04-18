@@ -151,7 +151,7 @@ train:
       optimizer:
         name: "SGD"
         SGD:
-          lr: 0.01  # just a place holder, please adjust the one in lr_policy
+          # to adjust learning rate, please modify "start_lr" and "end_lr" in lr_policy module bellow
           momentum: 0.9
           weight_decay: 0.00005
           minibatch: *MINIBATCH
