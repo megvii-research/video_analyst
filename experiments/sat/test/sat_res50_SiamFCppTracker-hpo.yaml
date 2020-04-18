@@ -4,9 +4,13 @@ test:
     exp_save: &TEST_SAVE "logs/hpo"
     pipeline:
       StateAwareTrackerNew:
-        mask_pred_thresh_hpo_range: [0.4, 0.35, 0.45]
-        mask_filter_thresh_hpo_range: [0.4, 0.45, 0.5]
-        state_score_thresh_hpo_range: [0.8, 0.85, 0.75]
+        mask_pred_thresh_hpo_range: [0.3, 0.35, 0.4]
+        mask_filter_thresh_hpo_range: [0.45]
+        state_score_thresh_hpo_range: [0.8]
+        seg_ema_u_hpo_range: [0.55, 0.65, 0.6]
+        seg_ema_s_hpo_range: [0.55, 0.65, 0.6]
+        track_failed_score_th_hpo_range: [0, 0.1, 0.2]
+        update_global_fea_th_hpo_range: [0.2, 0.1, 0.15]
 
     #tracker_pipeline:
     #  SiamFCppTracker:

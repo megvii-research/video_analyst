@@ -1,6 +1,6 @@
 train:
   vos:
-    exp_name: &TRAIN_NAME "sat_res50_davis_0417_syncbn_coslr_fulldata"
+    exp_name: &TRAIN_NAME "sat_res50_davis_0417_syncbn_coslr_nococo"
     exp_save: &TRAIN_SAVE "snapshots"
     num_processes: 8
     data:
@@ -20,9 +20,9 @@ train:
           target_type: "mask"
         submodules:
           dataset:
-            names: ["COCODataset", "DavisDataset", "YoutubeVOSDataset"]  
+            names: ["DavisDataset", "YoutubeVOSDataset"]  
             YoutubeVOSDataset:
-              ratio: 5.0
+              ratio: 6.0
               max_diff: 10
               subsets: ["train"]
             COCODataset:

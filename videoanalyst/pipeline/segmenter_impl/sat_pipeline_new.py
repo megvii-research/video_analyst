@@ -104,6 +104,8 @@ class StateAwareTrackerNew(PipelineBase):
         seg_ema_s=0.5,
         context_amount = 0.5,
         mask_rect_lr = 1.0,
+        track_failed_score_th=0.0,
+        update_global_fea_th=0.0,
     )
 
     def __init__(self, segmenter, tracker):
@@ -306,7 +308,7 @@ class StateAwareTrackerNew(PipelineBase):
             region=self._hyper_params["saliency_image_field"])
         #mask_in_full_image[mask_in_full_image > self._hyper_params["mask_pred_thresh"]] = conf_score
         self._state['mask_in_full_image'] = mask_in_full_image 
-        if self._tracker.get_track_score() < 0:
+        if self._tracker.get_track_score() < self._hyper_params["track_failed_score_th"]:
             self._state['mask_in_full_image'] *= 0
 
 
@@ -368,7 +370,7 @@ class StateAwareTrackerNew(PipelineBase):
                     lr = self._hyper_params["mask_rect_lr"]
                     new_target_sz = self._state["state"][1]*(1-lr) + mask_sz*lr
                 else:
-                    if self._state["track_score"] > 0.35:
+                    if self._state["track_score"] > self._hyper_params["track_failed_score_th"]:
                         new_target_pos, new_target_sz = track_pos, track_size
 
                 self._state['mask_rect'] = rect_full
@@ -411,7 +413,7 @@ class StateAwareTrackerNew(PipelineBase):
 
         # global modeling loop updates global feature for next frame's segmentation
         if self._hyper_params['global_modeling']:
-            if self._state["state_score"] > 0.4: 
+            if self._state["state_score"] > self._hyper_params["update_global_fea_th"]: 
                 self.global_modeling()
         # save underlying state
         self._state['state'] = target_pos, target_sz
