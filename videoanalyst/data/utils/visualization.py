@@ -109,4 +109,3 @@ def show_img_FCOS(cfg,
                           (int(box[2]), int(box[3])), color['neg'])
     cv2.imshow('search', show_img)
     cv2.imshow('target', target_img)
-    cv2.waitKey()
