@@ -30,11 +30,8 @@ class MultiBCELoss(ModuleBase):
 
     def forward(self, pred_data_list, target_data):
         total_loss = 0
-        #target_data = target_data.unsqueeze(1)
         assert len(pred_data_list) == len(self.sub_loss_weights)
         for  pred_data, sub_loss_weight in zip(pred_data_list, self.sub_loss_weights):
-            #total_loss += F.binary_cross_entropy_with_logits(pred_data, target_data, reduction="mean") * sub_loss_weight
-            
             loss = F.binary_cross_entropy_with_logits(pred_data.flatten(), target_data.flatten(), reduction="none")
             if self._hyper_params["top_ratio"] > 0 and self._hyper_params["top_ratio"] < 1.0:
                 loss, _ = loss.topk(int(loss.numel()*self._hyper_params["top_ratio"]))

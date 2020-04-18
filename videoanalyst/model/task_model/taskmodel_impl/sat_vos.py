@@ -27,7 +27,6 @@ class SatVOS(ModuleBase):
         self.GML_extractor = GML_extractor
         self.joint_encoder = joint_encoder
         self.decoder = decoder
-        # loss
         self.loss = loss
 
     def forward(self, *args, phase="train"):
@@ -60,15 +59,13 @@ class SatVOS(ModuleBase):
             global_feature = self.GML_extractor(filtered_image)
             enc_features = self.joint_encoder(saliency_image, corr_feature)
             decoder_features = [global_feature] + enc_features
-            outputs = self.decoder(decoder_features, phase="train")
-            return outputs
+            out_list = self.decoder(decoder_features, phase="train")
 
         # phase: feature
         elif phase == 'global_feature':
             filtered_image, = args
             f_g = self.GML_extractor(filtered_image)
             out_list = [f_g]
-            return out_list
 
         elif phase == 'segment':
             saliency_image, corr_feature, global_feature = args
@@ -78,10 +75,10 @@ class SatVOS(ModuleBase):
             outputs = self.decoder(decoder_features, phase="test")
             pred_mask = outputs
             out_list = [pred_mask]
-            return out_list
 
         else:
             raise ValueError("Phase non-implemented.")
+        return out_list
 
 
     def set_device(self, dev):

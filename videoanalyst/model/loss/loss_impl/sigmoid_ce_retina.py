@@ -43,7 +43,6 @@ class SigmoidCrossEntropyRetina(ModuleBase):
             torch.tensor(float(self._hyper_params["gamma"]),
                          requires_grad=False))
 
-    # def forward(self, pred, label):
     def forward(self, pred_data, target_data):
         r"""
         Focal loss
@@ -67,10 +66,8 @@ class SigmoidCrossEntropyRetina(ModuleBase):
             scalar loss
             format: (,)
         """
-        # resolve prediction & target
         pred = pred_data["cls_pred"]
         label = target_data["cls_gt"]
-        # mask
         mask = ~(label == self.ignore_label)
         mask = mask.type(torch.Tensor).to(label.device)
         vlabel = label * mask

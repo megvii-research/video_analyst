@@ -61,6 +61,8 @@ class DenseboxHead(ModuleBase):
         has_bn flag of conv3x3 in head, list with length of num_conv3x3
     head_width: int
         feature width in head structure
+    conv_weight_std: float
+        std for conv init
     """
     default_hyper_params = dict(
         total_stride=8,

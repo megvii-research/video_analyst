@@ -32,7 +32,6 @@ class SigmoidCrossEntropyCenterness(ModuleBase):
         self.ignore_label = self._hyper_params["ignore_label"]
         self.weight = self._hyper_params["weight"]
 
-    # def forward(self, pred, label):
     def forward(self, pred_data, target_data):
         r"""
         Center-ness loss
@@ -51,10 +50,8 @@ class SigmoidCrossEntropyCenterness(ModuleBase):
             scalar loss
             format: (,)
         """
-        # resolve prediction & target
         pred = pred_data["ctr_pred"]
         label = target_data["ctr_gt"]
-        # mask
         mask = (~(label == self.background)).type(torch.Tensor).to(pred.device)
         not_neg_mask = (pred >= 0).type(torch.Tensor).to(pred.device)
         loss = (pred * not_neg_mask - pred * label +
