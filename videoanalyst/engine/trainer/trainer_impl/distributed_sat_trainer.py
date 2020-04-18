@@ -59,14 +59,6 @@ class DistributedSATTrainer(TrainerBase):
         self._state["devices"] = torch.device("cuda:0")
         self.tracker = tracker
 
-    def update_params(self, ):
-        super(DistributedSATTrainer, self).update_params()
-        self._hyper_params["num_iterations"] = self._hyper_params[
-            "nr_image_per_epoch"] // self._hyper_params["minibatch"]
-        self._state["snapshot_dir"] = osp.join(self._hyper_params["exp_save"],
-                                               self._hyper_params["exp_name"])
-
-        self._state["snapshot_file"] = self._hyper_params["snapshot"]
 
     def init_train(self, ):
         torch.cuda.empty_cache()

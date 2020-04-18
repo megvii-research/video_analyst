@@ -70,10 +70,14 @@ class TrainerBase:
                 raise KeyError
             self._hyper_params[key] = hps[key]
 
-    def update_params(self):
-        r"""
-        an interface for update params
-        """
+    def update_params(self, ):
+        self._hyper_params["num_iterations"] = self._hyper_params[
+            "nr_image_per_epoch"] // self._hyper_params["minibatch"]
+        self._state["snapshot_dir"] = osp.join(self._hyper_params["exp_save"],
+                                               self._hyper_params["exp_name"])
+
+        self._state["snapshot_file"] = self._hyper_params["snapshot"]
+        
     def init_train(self):
         r"""
         an interface to process pre-train overhead before training
