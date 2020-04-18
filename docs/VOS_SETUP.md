@@ -11,7 +11,7 @@ git clone https://github.com/MegviiDetection/video_analyst.git
 cd video_analyst
 ```
 
-You can choose either using native python (with pip/pip3) or using virtual environment (with conda).
+You can choose either using native python (with pip/pip3) or using virtual environment.
 
 ```Bash
 pip3 install -U -r requirements.txt
@@ -31,10 +31,11 @@ Please install python3-tk by running:
 sudo apt-get install python3-tk
 ```
 
-## Download models & raw results
-
-* [Google Drive](https://drive.google.com/open?id=1UXshq4k9WKx4hNkdpOagJLXPR57ZkBkg)
-* [baidu yun](https://pan.baidu.com/s/1uZ26iZyVJm50dJ3GoLCQ9w), code: rcsn
+## Download models
+### SiamFCpp tracker
+* [Tencent Weiyun](https://share.weiyun.com/56C92l4), code: wg47g7 with md5sum ad240
+### SAT segmentor
+* [baidu yun](https://pan.baidu.com/s/1Tpr-Cfl1_rXjKuatyKHT0w) code: 7usj
 
 ## Compile evaluation toolkit
 
@@ -43,11 +44,27 @@ bash compile.sh
 ```
 
 ## Set datasets
+### Davis
 Download [Davis](https://davischallenge.org/davis2017/code.html)
 Set soft link to dataset directory 
 
 ```bash
 ln -s path_to_datasets datasets/DAVIS
+```
+### YoutubeVOS
+Download [YoutubeVOS2018](https://youtube-vos.org/dataset/)
+Set soft link to dataset directory 
+
+```bash
+ln -s path_to_datasets datasets/youtubevos
+```
+
+### COCO
+Download [COCO2017](http://cocodataset.org/#download)
+Set soft link to dataset directory 
+
+```bash
+ln -s path_to_datasets datasets/coco2017
 ```
 
 At _path_to_datasets_:
@@ -60,6 +77,16 @@ datasets
     |        └── 480p_2016 # annotation for davis2016
     ├── ImageSets
     └── ...
+└── coco2017
+    ├── annotations
+    |        ├── instances_train2017.json
+    |        └── instances_val2017.json
+    ├── train2017
+    └── val2017
+└── youtubevos
+    ├── train
+    └── valid
+
 ```
 
 
@@ -75,8 +102,8 @@ At _path_to_models_:
 
 ```File Tree
 models
+├── siamfcpp
+    |── siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl
 ├── sat
-    |── transferred-model
-       ├── siamfcpp_brain2torch-md5_abfe30e8531e001d83e9f0a6482da444.pkl
-       ├── siamfcpp-googlenet-vot-md5_f2680ba074213ee39d82fcb84533a1a6.pkl
+    |── sat_res50_davis17_2518a.pkl
 ```
