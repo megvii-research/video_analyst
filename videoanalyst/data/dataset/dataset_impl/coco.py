@@ -41,7 +41,7 @@ class COCODataset(DatasetBase):
             "val2017",
         ],
         ratio=1.0,
-        with_mask=True,
+        with_mask=False,
     )
 
     def __init__(self) -> None:

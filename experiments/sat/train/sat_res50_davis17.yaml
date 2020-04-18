@@ -27,6 +27,7 @@ train:
               subsets: ["train"]
             COCODataset:
               ratio: 2.0
+              with_mask: True
               subsets: ["train2017", "val2017"]
             DavisDataset:
               ratio: 1.0
