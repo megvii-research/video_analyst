@@ -76,6 +76,5 @@ class OTBTester(TesterBase):
         return test_result_dict
 
 
-OTBTester.default_hyper_params = copy.deepcopy(
-    OTBTester.default_hyper_params)
+OTBTester.default_hyper_params = copy.deepcopy(OTBTester.default_hyper_params)
 OTBTester.default_hyper_params.update(OTBTester.extra_hyper_params)

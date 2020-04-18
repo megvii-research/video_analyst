@@ -6,7 +6,7 @@ from videoanalyst.model import builder as model_builder
 from videoanalyst.pipeline import builder as pipeline_builder
 from videoanalyst.utils import complete_path_wt_root_in_cfg, load_image
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy, xyxy2xywh
-from videoanalyst.utils.image import ImageFileVideoStream, ImageFileVideoWriter 
+from videoanalyst.utils.image import ImageFileVideoStream, ImageFileVideoWriter
 
 import os.path as osp
 import glob
@@ -94,7 +94,8 @@ def main(args):
         else:
             fourcc = cv2.VideoWriter_fourcc(*'MJPG')
             width, height = vs.get(3), vs.get(4)
-            vw = cv2.VideoWriter(args.output, fourcc, 25, (int(width), int(height)))
+            vw = cv2.VideoWriter(args.output, fourcc, 25,
+                                 (int(width), int(height)))
 
     # loop over sequence
     while vs.isOpened():
@@ -123,7 +124,7 @@ def main(args):
             cv2.imshow(window_name, show_frame)
             if vw is not None:
                 vw.write(show_frame)
-        # catch key if 
+        # catch key if
         if (init_box is None) or (vw is None):
             logger.debug("Press key s to select object.")
             key = cv2.waitKey(30) & 0xFF
@@ -146,9 +147,11 @@ def main(args):
                     frame[box[1]:box[1] + box[3], box[0]:box[0] + box[2]],
                     (128, 128))
                 pipeline.init(frame, init_box)
-                logger.debug("pipeline initialized with bbox : {}".format(init_box))
+                logger.debug(
+                    "pipeline initialized with bbox : {}".format(init_box))
         elif key == ord("c"):
-            logger.debug("init_box/template released, press key s to select object.")
+            logger.debug(
+                "init_box/template released, press key s to select object.")
             init_box = None
             template = None
     vs.release()

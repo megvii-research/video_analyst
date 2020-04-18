@@ -52,6 +52,7 @@ def load_image(img_file: str) -> np.array:
 
     return img
 
+
 class ImageFileVideoStream:
     r"""Adaptor class to be compatible with VideoStream object
         Accept seperate video frames
@@ -61,19 +62,19 @@ class ImageFileVideoStream:
         self._state["video_dir"] = video_dir
         self._state["frame_files"] = sorted(glob.glob(video_dir))
         self._state["video_length"] = len(self._state["frame_files"])
-        self._state["counter"] = init_counter # 0
-    
-    def isOpened(self,):
+        self._state["counter"] = init_counter  # 0
+
+    def isOpened(self, ):
         return (self._state["counter"] < self._state["video_length"])
 
-    def read(self,):
+    def read(self, ):
         frame_idx = self._state["counter"]
         frame_file = self._state["frame_files"][frame_idx]
         frame_img = load_image(frame_file)
         self._state["counter"] += 1
         return frame_idx, frame_img
 
-    def release(self,):
+    def release(self, ):
         self._state["counter"] = 0
 
 
@@ -89,9 +90,10 @@ class ImageFileVideoWriter:
 
     def write(self, im):
         frame_idx = self._state["counter"]
-        frame_file = osp.join(self._state["video_dir"], "{:06d}.jpg".format(frame_idx))
+        frame_file = osp.join(self._state["video_dir"],
+                              "{:06d}.jpg".format(frame_idx))
         cv2.imwrite(frame_file, im)
         self._state["counter"] += 1
 
-    def release(self,):
+    def release(self, ):
         self._state["counter"] = 0
