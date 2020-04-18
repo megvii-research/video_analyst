@@ -19,4 +19,4 @@ VOS test configuration directory: _experiments/sat/test/
 
 __Nota__:
 
-[1]  We reimplement SAT with pytorch. The J&F is lower than what we trained with internal frame work slightly.
+[1]  We reimplement SAT with pytorch. The J&F is slightly lower than what we trained with internal framework. We will continue refining the training code.
