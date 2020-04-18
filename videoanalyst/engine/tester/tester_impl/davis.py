@@ -3,7 +3,6 @@ import copy
 import cv2
 import numpy as np
 import itertools
-import logging
 import math
 import os
 import torch
@@ -20,9 +19,6 @@ from ..tester_base import TRACK_TESTERS, TesterBase, VOS_TESTERS
 from videoanalyst.evaluation import davis_benchmark
 from videoanalyst.utils import ensure_dir
 from PIL import Image
-
-davis_benchmark.init_log('global', logging.INFO)
-
 
 @VOS_TESTERS.register
 class DAVISTester(TesterBase):

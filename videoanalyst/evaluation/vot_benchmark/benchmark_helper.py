@@ -58,13 +58,9 @@ def load_dataset(vot_path, dataset):
     info = OrderedDict()
     if 'VOT' in dataset:
         base_path = join(vot_path, dataset)
-        # if not exists(base_path):
-        #     logging.error("Please download test dataset!!!")
-        #     exit()
         list_path = join(base_path, 'list.txt')
         f = get_txt(list_path)
         videos = [v.strip() for v in f.strip().split('\n')]
-        #print(videos)
         for video in videos:
             video_path = join(base_path, video)
             image_path = join(video_path, 'color')

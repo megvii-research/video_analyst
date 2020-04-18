@@ -114,16 +114,6 @@ Remarks:
 
 ## Misc
 
-### Logging
-
-Names of currently used loggers are listed as below:
-
-- global
-  - built on each place
-- data
-  - built at: videoanalyst/data/builder.py
-  - log file by default stored at: snapshots/EXP_NAME/logs/data.log
-
 ## Tips for debugging
 
 ### Debugging in-tree files

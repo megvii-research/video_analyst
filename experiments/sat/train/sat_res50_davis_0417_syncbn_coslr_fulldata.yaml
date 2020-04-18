@@ -102,8 +102,8 @@ train:
         nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
         snapshot: ""
       monitors:
-        names: ["SegMetric", "TrackInfo"]
-        TrackInfo:
+        names: ["SegMetric", "TextInfo"]
+        TextInfo:
           {}
         SegMetric:
           interval: 100

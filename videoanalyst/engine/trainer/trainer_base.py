@@ -77,7 +77,7 @@ class TrainerBase:
                                                self._hyper_params["exp_name"])
 
         self._state["snapshot_file"] = self._hyper_params["snapshot"]
-        
+
     def init_train(self):
         r"""
         an interface to process pre-train overhead before training
@@ -114,7 +114,7 @@ class TrainerBase:
             dev = self._state["devices"][0]
             snapshot = torch.load(snapshot_file, map_location=dev)
             self._model.load_state_dict(snapshot["model_state_dict"])
-            #self._optimizer.load_state_dict(snapshot["optimizer_state_dict"])
+            self._optimizer.load_state_dict(snapshot["optimizer_state_dict"])
             self._state["epoch"] = snapshot["epoch"]
             logger.info("Load snapshot from: %s" % osp.realpath(snapshot_file))
         else:
