@@ -43,12 +43,12 @@ class TrackPairSampler(SamplerBase):
     def __init__(self,
                  datasets: List[DatasetBase] = [],
                  seed: int = 0,
-                 filt=None) -> None:
+                 datafilter=None) -> None:
         super().__init__(datasets, seed=seed)
-        if filt is None:
-            self.filt = [lambda x: False]
+        if datafilter is None:
+            self.datafilter = [lambda x: False]
         else:
-            self.filt = filt
+            self.datafilter = datafilter
 
         self._state["ratios"] = [
             d._hyper_params["ratio"] for d in self.datasets
@@ -65,7 +65,7 @@ class TrackPairSampler(SamplerBase):
                             self._hyper_params["negative_pair_ratio"])
         data1 = data2 = None
 
-        while self.filt(data1) or self.filt(data2):
+        while self.datafilter(data1) or self.datafilter(data2):
             if is_negative_pair:
                 data1 = self._sample_track_frame()
                 data2 = self._sample_track_frame()
