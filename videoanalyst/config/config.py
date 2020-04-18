@@ -24,7 +24,6 @@ for task in task_list:
     if task == "track":
         test_cfg[task]["model"] = get_model_cfg(task_list)[task]
     elif task == "vos":
-        test_cfg[task]["tracker"] = get_model_cfg(task_list)['vos']
         test_cfg[task]["segmenter"] = get_model_cfg(task_list)['vos']
         test_cfg[task]["tracker_model"] = get_model_cfg(task_list)['track']
         test_cfg[task]["tracker_pipeline"] = get_pipeline_cfg(task_list)['track']
@@ -45,7 +44,7 @@ for task in task_list:
     if task == "track":
         train_cfg[task]["model"] = get_model_cfg(task_list)[task]
     elif task == "vos":
-        train_cfg[task]["tracker"] = get_model_cfg(task_list)[task]
+        train_cfg[task]["tracker_model"] = get_model_cfg(task_list)[task]
         train_cfg[task]["segmenter"] = get_model_cfg(task_list)[task]
     train_cfg[task]["pipeline"] = get_pipeline_cfg(task_list)[task]
     train_cfg[task]["tester"] = get_tester_cfg(task_list)[task]

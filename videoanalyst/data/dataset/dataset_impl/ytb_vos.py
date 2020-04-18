@@ -15,7 +15,6 @@ from collections import OrderedDict
 import contextlib
 import cv2
 import numpy as np
-from yacs.config import CfgNode
 
 from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, VOS_DATASETS, DatasetBase
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
@@ -48,11 +47,7 @@ class YoutubeVOSDataset(DatasetBase):
 
     def __init__(self) -> None:
         r"""
-        Create dataset with config
-        Arguments
-        ---------
-        cfg: CfgNode
-            dataset config
+        Create youtube vos dataset
         """
         super(YoutubeVOSDataset, self).__init__()
         self._state["dataset"] = None
@@ -84,7 +79,6 @@ class YoutubeVOSDataset(DatasetBase):
         return len(YoutubeVOSDataset.data_items)
 
     def _ensure_cache(self):
-        # current_dir = osp.dirname(osp.realpath(__file__))
         dataset_root = self._hyper_params["dataset_root"]
         for subset in self._hyper_params["subsets"]:
             image_root = osp.join(dataset_root, subset, "JPEGImages")

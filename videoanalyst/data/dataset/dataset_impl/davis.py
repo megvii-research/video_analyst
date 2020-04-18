@@ -17,7 +17,6 @@ from PIL import Image
 import contextlib
 import cv2
 import numpy as np
-from yacs.config import CfgNode
 
 from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, VOS_DATASETS, DatasetBase
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
@@ -31,8 +30,8 @@ class DavisDataset(DatasetBase):
     ----------------
     dataset_root: str
         path to root of the dataset
-    subset: str
-        dataset split name (train|val)
+    subsets: list
+        dataset split name list [train, val]
     ratio: float
         dataset ratio. used by sampler (data.sampler).
     max_diff: int
@@ -44,16 +43,12 @@ class DavisDataset(DatasetBase):
         dataset_root="datasets/DAVIS",
         subsets=["train",], 
         ratio=1.0,
-        max_diff=50,
+        max_diff=10,
     )
 
     def __init__(self) -> None:
         r"""
-        Create dataset with config
-        Arguments
-        ---------
-        cfg: CfgNode
-            dataset config
+        Create davis dataset 
         """
         super(DavisDataset, self).__init__()
         self._state["dataset"] = None
@@ -78,14 +73,12 @@ class DavisDataset(DatasetBase):
         record = DavisDataset.data_items[item]
         anno = [[anno_file, record['obj_id']] for anno_file in record["annos"]]
         sequence_data = dict(image=record["image_files"], anno=anno)
-
         return sequence_data
 
     def __len__(self):
         return len(DavisDataset.data_items)
 
     def _ensure_cache(self):
-        # current_dir = osp.dirname(osp.realpath(__file__))
         dataset_root = self._hyper_params["dataset_root"]
         for subset in self._hyper_params["subsets"]:
             image_root = osp.join(dataset_root, "JPEGImages", "480p")

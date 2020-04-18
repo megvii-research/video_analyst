@@ -36,18 +36,22 @@ class TrackPairSampler(SamplerBase):
             └── _sample_pair_idx_pair_within_max_diff
     Hyper-parameters
     ----------------
+    negative_pair_ratio: float
+        the ratio of negative pairs
+    target_type: str
+        "mask" or "bbox"
     """
     default_hyper_params = dict(negative_pair_ratio=0.0, target_type="bbox")
 
     def __init__(self,
                  datasets: List[DatasetBase] = [],
                  seed: int = 0,
-                 filt=None) -> None:
+                 data_filter=None) -> None:
         super().__init__(datasets, seed=seed)
-        if filt is None:
-            self.filt = [lambda x: False]
+        if data_filter is None:
+            self.data_filter = [lambda x: False]
         else:
-            self.filt = filt
+            self.data_filter = data_filter
 
         self._state["ratios"] = [
             d._hyper_params["ratio"] for d in self.datasets
@@ -64,7 +68,7 @@ class TrackPairSampler(SamplerBase):
                             self._hyper_params["negative_pair_ratio"])
         data1 = data2 = None
         sample_try_num = 0
-        while self.filt(data1) or self.filt(data2):
+        while self.data_filter(data1) or self.data_filter(data2):
             if is_negative_pair:
                 data1 = self._sample_track_frame()
                 data2 = self._sample_track_frame()
@@ -84,9 +88,6 @@ class TrackPairSampler(SamplerBase):
     def _get_len_seq(self, seq_data) -> int:
         return len(seq_data["image"])
 
-    def _get_len_seq(self, seq_data) -> int:
-        return len(seq_data["image"])
-
     def _sample_track_pair(self) -> Tuple[Dict, Dict]:
         dataset_idx, dataset = self._sample_dataset()
         sequence_data = self._sample_sequence_from_dataset(dataset)
@@ -103,7 +104,7 @@ class TrackPairSampler(SamplerBase):
         return data1, data2
 
     def _sample_track_frame(self) -> Dict:
-        dataset_idx, dataset = self._sample_dataset()
+        _, dataset = self._sample_dataset()
         sequence_data = self._sample_sequence_from_dataset(dataset)
         len_seq = self._get_len_seq(sequence_data)
         if len_seq == 1:
@@ -142,7 +143,8 @@ class TrackPairSampler(SamplerBase):
         sequence_data = dataset[idx]
 
         return sequence_data
-    def _generate_mask_for_ytbvos(self, anno):
+
+    def _generate_mask_for_vos(self, anno):
         mask = Image.open(anno[0])
         mask = np.array(mask, dtype=np.uint8)
         obj_id = anno[1]
@@ -155,10 +157,10 @@ class TrackPairSampler(SamplerBase):
         len_seq = self._get_len_seq(sequence_data)
         idx = rng.choice(len_seq)
         data_frame = {k: v[idx] for k, v in sequence_data.items()}
-        # convert mask path to mask, specical for youtubevos
+        # convert mask path to mask, specical for youtubevos and davis
         if self._hyper_params["target_type"] == "mask":
             if isinstance(data_frame["anno"], list):
-                mask = self._generate_mask_for_ytbvos(data_frame["anno"])
+                mask = self._generate_mask_for_vos(data_frame["anno"])
                 data_frame["anno"] = mask
         return data_frame
 
@@ -186,8 +188,8 @@ class TrackPairSampler(SamplerBase):
         data2 = {k: v[idx2] for k, v in sequence_data.items()}
         if isinstance(data1["anno"], list) and self._hyper_params["target_type"] == "mask":
             # convert mask path to mask, specical for youtubevos
-            data1["anno"] = self._generate_mask_for_ytbvos(data1["anno"])
-            data2["anno"] = self._generate_mask_for_ytbvos(data2["anno"])
+            data1["anno"] = self._generate_mask_for_vos(data1["anno"])
+            data2["anno"] = self._generate_mask_for_vos(data2["anno"])
         return data1, data2
 
     def _sample_pair_idx_pair_within_max_diff(self, L, max_diff):
@@ -207,6 +209,7 @@ class TrackPairSampler(SamplerBase):
         idx2_choices = list(set(idx2_choices).intersection(set(range(L))))
         idx2 = rng.choice(idx2_choices)
         return int(idx1), int(idx2)
+
     def _sample_track_frame_from_static_image(self, sequence_data):
         rng = self._state["rng"]
         num_anno = len(sequence_data['anno'])
@@ -215,7 +218,13 @@ class TrackPairSampler(SamplerBase):
             anno = sequence_data["anno"][idx]
         else:
             # no anno, assign a dummy one
-            anno = [-1, -1, -1, -1]
+            if self._hyper_params["target_type"] == "bbox":
+                anno = [-1, -1, -1, -1]
+            elif self._hyper_params["target_type"] == "mask":
+                anno = np.zeros((sequence_data["image"][0].shape[:2]))
+            else:
+                logger.error("target type {} is not supported".format(self._hyper_params["target_type"]))
+                exit(0)
         data = dict(
             image=sequence_data["image"][0],
             anno=anno,

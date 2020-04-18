@@ -22,13 +22,9 @@ test:
         SiamTrack:
           corr_fea_output: True
           pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl"
-          #pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_88e4e9ee476545b952b04ae80c480f08.pkl"
     tracker_pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
-        #test_lr: 0.58
-        #window_influence: 0.21
-        #penalty_k: 0.08
         test_lr: 0.512
         window_influence: 0.254
         penalty_k: 0.064
@@ -56,11 +52,7 @@ test:
       task_model:
         name: "SatVOS"
         SatVOS:
-          #pretrain_model_path: "snapshots/sat_res50_davis_0410_syncbn/epoch-16.pkl"
-          #pretrain_model_path: "snapshots/sat_res50_davis_0414_syncbn_coslr_fulldata_newsot/epoch-17.pkl"
-          #pretrain_model_path: "snapshots/sat_res50_davis_0414_syncbn_coslr_fulldata/epoch-17.pkl"
-          pretrain_model_path: "snapshots/sat_res50_davis_0410_syncbn_coslr_aug/epoch-18.pkl"
-          #pretrain_model_path: "snapshots/sat_res50_davis_0414_syncbn_coslr_fulldata_laug/epoch-16.pkl"
+          pretrain_model_path: "snapshots/sat_res50_davis_0417_syncbn_coslr_fulldata/epoch-18.pkl"
     pipeline:
       name: "StateAwareTrackerNew"
       StateAwareTrackerNew:

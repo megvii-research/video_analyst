@@ -32,6 +32,8 @@ def build(task: str, cfg: CfgNode, seed: int = 0) -> DataLoader:
         task name (track|vos)
     cfg: CfgNode
         node name: data
+    seed: int
+        seed for random
     """
 
     if task in ["track", "vos"]:

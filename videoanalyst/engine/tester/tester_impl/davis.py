@@ -43,10 +43,6 @@ class DAVISTester(TesterBase):
     save_video: bool
         save videos with predicted mask overlap for visualization and debug
     save_patch: bool
-        save patches of mask prediction on saliency image for visualization and debug
-    iou_eval_thres: np.array
-        IOU thresholds for prediction
-
     """
 
     extra_hyper_params = dict(device_num=1,
@@ -72,8 +68,6 @@ class DAVISTester(TesterBase):
         self._state['speed'] = -1
         self.iou_eval_thres=np.arange(0.3, 0.5, 0.05)
 
-    def update_params(self):
-        pass
 
     def test(self):
         r"""
@@ -97,7 +91,7 @@ class DAVISTester(TesterBase):
 
     def run_tracker(self):
         """
-        Run self.pipeline on VOT
+        Run self.pipeline on DAVIS
         """
         num_gpu = self._hyper_params["device_num"]
         all_devs = [torch.device("cuda:%d" % i) for i in range(num_gpu)]
@@ -151,8 +145,7 @@ class DAVISTester(TesterBase):
         tracker.set_device(dev)
         for v_id, video in enumerate(records):
             speed = self.track_single_video_vos(tracker,
-                                                dataset[video],
-                                                visualization=True)
+                                                dataset[video])
             if speed_queue is not None:
                 speed_queue.put_nowait(speed)
 
@@ -173,7 +166,6 @@ class DAVISTester(TesterBase):
             eval_dump_path, search_task_name + '_name_per_sequence_results.csv')
 
         version = self.dataset_name[-4:]
-        # results_path = '/data/project/davis2017-evaluation-master/results/semi-supervised/ranet'
         hp_dict = {}
         return davis_benchmark.davis2017_eval(davis_data_path,
                                        results_path,
@@ -185,9 +177,11 @@ class DAVISTester(TesterBase):
     def track_single_video_vos(self,
                                tracker,
                                video,
-                               mot_enable=True,
-                               visualization=False):
+                               mot_enable=True):
         '''
+        perfrom semi-supervised video object segmentation for single video
+        :param tracker: tracker pipeline
+        :param video: video info
         :param mot_enable:  if true, perform instance level segmentation on davis, otherwise semantic
         '''
         image_files = video['image_files']
@@ -320,12 +314,6 @@ class DAVISTester(TesterBase):
             VideoOut = cv2.VideoWriter(
                 video_path + '/' + video['name'] + '.avi',
                 cv2.VideoWriter_fourcc(*'MJPG'), 10.0, (img_w, img_h))
-            #pred_mask_final = np.array(pred_masks)
-            #pred_mask_final = (
-            #    np.argmax(pred_mask_final, axis=0).astype('uint8') +
-            #    1) * (np.max(pred_mask_final, axis=0) >
-            #          tracker._hyper_params['mask_pred_thresh']).astype('uint8')
-
             for f, image_file in enumerate(image_files):
                 img = cv2.imread(image_file)
                 mask_f = pred_mask_final[f, :, :]
@@ -352,7 +340,7 @@ class DAVISTester(TesterBase):
                     cv2.rectangle(img, (rect[0], rect[1]),
                                   (rect[0] + rect[2], rect[1] + rect[3]),
                                   color=color_tuple,
-                                  thickness=4)
+                                  thickness=2)
 
                     if rect_mask[0] > 0:
                         cv2.rectangle(img, (rect_mask[0], rect_mask[1]),
@@ -365,7 +353,7 @@ class DAVISTester(TesterBase):
                                     'M {} T{} S {}'.format(mask_score, track_score_, state_score_),
                                     (rect[0], max(rect[1], 5) + 10),
                                     cv2.FONT_HERSHEY_SIMPLEX,
-                                    1.0,
+                                    0.5,
                                     color=(0,0,255),
                                     thickness=2)
 

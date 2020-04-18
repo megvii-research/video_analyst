@@ -1,7 +1,3 @@
-# import glob
-
-# from .utils import Dataset
-
 # -*- coding: utf-8 -*-
 import copy
 import io
@@ -17,12 +13,9 @@ from pycocotools.coco import COCO
 import contextlib
 import cv2
 import numpy as np
-from yacs.config import CfgNode
 
 from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, VOS_DATASETS, DatasetBase
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
-
-
 
 @TRACK_DATASETS.register
 @VOS_DATASETS.register
@@ -33,12 +26,10 @@ class COCODataset(DatasetBase):
     ----------------
     dataset_root: str
         path to root of the dataset
-    subset: str
-        dataset split name (train|val)
+    subsets: list
+        dataset split name [train2017,val2017]
     ratio: float
         dataset ratio. used by sampler (data.sampler).
-    max_diff: int
-        maximum difference in index of a pair of sampled frames 
     """
     data_items = []
     _DUMMY_ANNO = [[-1, -1, 0, 0]]
@@ -53,10 +44,6 @@ class COCODataset(DatasetBase):
     def __init__(self) -> None:
         r"""
         Create dataset with config
-        Arguments
-        ---------
-        cfg: CfgNode
-            dataset config
         """
         super(COCODataset, self).__init__()
         self._state["dataset"] = None
@@ -122,17 +109,15 @@ class COCODataset(DatasetBase):
         return len(COCODataset.data_items)
 
     def _ensure_cache(self):
-        # current_dir = osp.dirname(osp.realpath(__file__))
         dataset_root = self._hyper_params["dataset_root"]
         subsets = self._hyper_params["subsets"]
         for subset in subsets:
             data_anno_list = []
             image_root = osp.join(dataset_root, subset)
             if self._hyper_params["with_mask"]:
-                cache_file = osp.join(dataset_root, "cache/coco_mask_%s.pkl" % subset)
+                cache_file = osp.join(dataset_root, "cache/coco_mask_{}.pkl".format(subset))
             else:
-                cache_file = osp.join(dataset_root, "cache/coco_%s.pkl" % subset)
-            # dataset_name = type(self).__name__
+                cache_file = osp.join(dataset_root, "cache/coco_bbox_{}.pkl".format(subset))
             if osp.exists(cache_file):
                 with open(cache_file, 'rb') as f:
                     COCODataset.data_items += pickle.load(f)

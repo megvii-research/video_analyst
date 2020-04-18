@@ -15,7 +15,7 @@ from videoanalyst.utils import dist_utils
 
 @TRACK_MONITORS.register
 @VOS_MONITORS.register
-class TrackInfo(MonitorBase):
+class TextInfo(MonitorBase):
     r"""
     Print tracking information during training.
     Compatible with _RegularTrainer_
@@ -31,10 +31,10 @@ class TrackInfo(MonitorBase):
         Arguments
         ---------
         """
-        super(TrackInfo, self).__init__()
+        super(TextInfo, self).__init__()
 
     def init(self, engine_state: Dict):
-        super(TrackInfo, self).init(engine_state)
+        super(TextInfo, self).init(engine_state)
 
     def update(self, engine_data: Dict):
         r"""

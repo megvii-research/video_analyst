@@ -21,6 +21,26 @@ class SegMetric(MonitorBase):
 
     Hyper-parameters
     ----------------
+    gt_name: str
+        gt name in training data
+    img_name: str
+        img name in training data
+    num_classes: int
+        number of classes
+    ignore_label: int
+        ignore label
+    show_items: list
+        metric names for show, ["mean_iou", "acc", "acc_cls", "fwavacc"]
+    show_predict: bool
+        whether show the predict mask
+    show_gt: bool
+        whether show the gt mask
+    max_show_num: int
+        the max number of images to show at all
+    interval: int
+        the interval for claculation
+    result_path:
+        the path of dir for show image
     """
 
     default_hyper_params = {

@@ -28,22 +28,16 @@ from ..trainer_base import VOS_TRAINERS, TrainerBase
 @VOS_TRAINERS.register
 class DistributedSATTrainer(TrainerBase):
     r"""
-    Distributed Trainer to test the vot dataset, the result is saved as follows
-    exp_dir/logs/$dataset_name$/$tracker_name$/baseline
-                                    |-$video_name$/ floder of result files
-                                    |-eval_result.csv evaluation result file
-
     Hyper-parameters
     ----------------
-    devices: List[str]
-        list of string
-    num_iterations: int
-        number of iterations
+    minibatch: int
+        batch size 
+    nr_image_per_epoch: int
+        image number for each epoch
     """
     extra_hyper_params = dict(
         minibatch=1,
         nr_image_per_epoch=1,
-        max_epoch=1,
         snapshot="",
     )
 
@@ -80,8 +74,6 @@ class DistributedSATTrainer(TrainerBase):
         torch.cuda.empty_cache()
         devs = self._state["devices"]
         self._model.train()
-        # load from self._state["snapshot_file"]
-        self.load_snapshot()
         # parallelism with Distributed Data Parallel (DDP)
         self._model.set_device(devs[0])
         self._model = nn.parallel.DistributedDataParallel(
@@ -104,7 +96,6 @@ class DistributedSATTrainer(TrainerBase):
         num_iterations = self._hyper_params["num_iterations"]
 
         # udpate engine_state
-        self._state["max_epoch"] = self._hyper_params["max_epoch"]
         self._state["max_iteration"] = num_iterations
 
         self._optimizer.modify_grad(epoch)
@@ -136,10 +127,6 @@ class DistributedSATTrainer(TrainerBase):
             # backward propagation
             with Timer(name="bwd", output_dict=time_dict):
                 total_loss.backward()
-            # TODO: No need for average_gradients() when wrapped model with DDP?
-            # TODO: need to register _optimizer.modify_grad as hook
-            #       see https://discuss.pytorch.org/t/distributeddataparallel-modify-gradient-before-averaging/59291
-            # self._optimizer.modify_grad(epoch, iteration)
             with Timer(name="optim", output_dict=time_dict):
                 self._optimizer.step()
             cost_time = (num_iterations-iteration)*(time.time() - start_time)

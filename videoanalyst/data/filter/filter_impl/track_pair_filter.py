@@ -6,7 +6,8 @@ from yacs.config import CfgNode
 from loguru import logger
 
 from videoanalyst.data.utils.filter_box import \
-    filter_unreasonable_training_boxes, filter_unreasonable_training_masks
+    filter_unreasonable_training_boxes
+from videoanalyst.pipeline.utils.bbox import xyxy2xywh
 
 from ..filter_base import TRACK_FILTERS, VOS_FILTERS, FilterBase
 
@@ -35,12 +36,12 @@ class TrackPairFilter(FilterBase):
             return True
         im, anno = data["image"], data["anno"]
         if self._hyper_params["target_type"] == "bbox":
-            filter_flag = filter_unreasonable_training_boxes(
-                im, anno, self._hyper_params)
+            bbox = xyxy2xywh(anno)
         elif self._hyper_params["target_type"] == "mask":
-            filter_flag = filter_unreasonable_training_masks(
-                im, anno, self._hyper_params)
+            bbox = cv2.boundingRect(anno)
         else:
             logger.error("unspported target type {} in filter".format(self._hyper_params["target_type"]))
             exit()
+        filter_flag = filter_unreasonable_training_boxes(
+            im, bbox, self._hyper_params)
         return filter_flag

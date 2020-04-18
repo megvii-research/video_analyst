@@ -188,7 +188,7 @@ if __name__ == '__main__':
     ) >= world_size, "cuda device {} is less than {}".format(
         torch.cuda.device_count(), world_size)
     # build tracker model
-    tracker = model_builder.build("track", task_cfg.tracker)
+    tracker_model = model_builder.build("track", task_cfg.tracker_model)
     # build model
     segmenter = model_builder.build("vos", task_cfg.segmenter)
     # get dist url
@@ -201,7 +201,7 @@ if __name__ == '__main__':
     torch.multiprocessing.set_start_method('spawn', force=True)
     # spawn trainer process
     mp.spawn(run_dist_training,
-             args=(world_size, task, task_cfg, parsed_args, segmenter, tracker, dist_url),
+             args=(world_size, task, task_cfg, parsed_args, segmenter, tracker_model, dist_url),
              nprocs=world_size,
              join=True)
     logger.info("Distributed training completed.")

@@ -12,6 +12,33 @@ from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
 @VOS_TARGETS.register
 class SATMaskTarget(TargetBase):
+    """
+    target for paper State-Aware Tracker for Real-Time Video Object Segmentation
+
+    Hyper-parameters
+    ----------------
+
+    context_amount: float
+        the context factor for template image
+    max_scale: float
+        the max scale change ratio for search image
+    max_shift:  float
+        the max shift change ratio for search image
+    max_scale_temp: float
+        the max scale change ratio for template image
+    max_shift_temp:  float
+        the max shift change ratio for template image
+    track_z_size: int
+        output size of template image
+    track_x_size: int
+        output size of search image
+    seg_x_size: int
+        the original size of segmentation search image
+    seg_x_resize: int
+        the resized output size of segmentation search image
+    global_fea_output: int
+        the image size of images for global feature extraction
+    """
     default_hyper_params = dict(
         track_z_size=127,
         track_x_size = 303,
