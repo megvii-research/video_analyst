@@ -14,7 +14,6 @@ import torch.nn.functional as F
 from videoanalyst.model.backbone.backbone_base import (TRACK_BACKBONES,
                                                        VOS_BACKBONES)
 from videoanalyst.model.module_base import ModuleBase
-from videoanalyst.utils import md5sum
 
 # from videoanalyst.model.common_opr.common_block import conv_bn_relu
 
@@ -151,16 +150,7 @@ class Inception3(ModuleBase):
         # return x
 
     def update_params(self):
-        model_file = self._hyper_params["pretrain_model_path"]
-        if model_file != "":
-            state_dict = torch.load(model_file,
-                                    map_location=torch.device("cpu"))
-            self.load_state_dict(state_dict, strict=False)
-            logger.info("Load pretrained GoogLeNet parameters from: %s" %
-                        model_file)
-            logger.info("Check md5sum of pretrained GoogLeNet parameters: %s" %
-                        md5sum(model_file))
-
+        super().update_params()
         self.crop_pad = self._hyper_params['crop_pad']
         self.pruned = self._hyper_params['pruned']
 

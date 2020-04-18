@@ -8,7 +8,6 @@ from videoanalyst.model.backbone.backbone_base import (TRACK_BACKBONES,
                                                        VOS_BACKBONES)
 from videoanalyst.model.common_opr.common_block import conv_bn_relu
 from videoanalyst.model.module_base import ModuleBase
-from videoanalyst.utils import md5sum
 
 
 @VOS_BACKBONES.register
@@ -44,14 +43,3 @@ class AlexNet(ModuleBase):
         x = self.conv4(x)
         x = self.conv5(x)
         return x
-
-    def update_params(self):
-        model_file = self._hyper_params["pretrain_model_path"]
-        if model_file != "":
-            state_dict = torch.load(model_file,
-                                    map_location=torch.device("cpu"))
-            self.load_state_dict(state_dict, strict=False)
-            logger.info("Load pretrained AlexNet parameters from: %s" %
-                        model_file)
-            logger.info("Check md5sum of pretrained AlexNet parameters: %s" %
-                        md5sum(model_file))

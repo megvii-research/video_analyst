@@ -12,7 +12,6 @@ from videoanalyst.model.common_opr.common_block import (conv_bn_relu,
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
                                                           VOS_TASKMODELS)
-from videoanalyst.utils import md5sum
 
 torch.set_printoptions(precision=8)
 
@@ -147,24 +146,8 @@ class SiamTrack(ModuleBase):
         """
         self._make_convs()
         self._initialize_conv()
+        super().update_params()
 
-        if self._hyper_params["pretrain_model_path"] != "":
-            model_path = self._hyper_params["pretrain_model_path"]
-            try:
-                state_dict = torch.load(model_path,
-                                        map_location=torch.device("gpu"))
-            except:
-                state_dict = torch.load(model_path,
-                                        map_location=torch.device("cpu"))
-            if "model_state_dict" in state_dict:
-                state_dict = state_dict["model_state_dict"]
-            try:
-                self.load_state_dict(state_dict, strict=True)
-            except:
-                self.load_state_dict(state_dict, strict=False)
-            logger.info("Pretrained weights loaded from {}".format(model_path))
-            logger.info("Check md5sum of Pretrained weights: %s" %
-                        md5sum(model_path))
 
     def _make_convs(self):
         head_width = self._hyper_params['head_width']
@@ -302,22 +285,7 @@ class SiamTrack_VOS(ModuleBase):
         """
         self._make_convs()
         self._initialize_conv()
-
-        if self._hyper_params["pretrain_model_path"] != "":
-            model_path = self._hyper_params["pretrain_model_path"]
-            try:
-                state_dict = torch.load(model_path,
-                                        map_location=torch.device("gpu"))
-            except:
-                state_dict = torch.load(model_path,
-                                        map_location=torch.device("cpu"))
-            if "model_state_dict" in state_dict:
-                state_dict = state_dict["model_state_dict"]
-            try:
-                self.load_state_dict(state_dict, strict=True)
-            except:
-                self.load_state_dict(state_dict, strict=False)
-            logger.info("Pretrained weights loaded from {}".format(model_path))
+        super().update_params()
 
     def _make_convs(self):
         head_width = self._hyper_params['head_width']

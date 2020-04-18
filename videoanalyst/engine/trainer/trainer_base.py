@@ -32,6 +32,7 @@ class TrainerBase:
     default_hyper_params = dict(
         exp_name="default_training",
         exp_save="snapshots",
+        max_epoch=20,
     )
 
     def __init__(self, optimizer, dataloader, monitors=[]):
