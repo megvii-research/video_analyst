@@ -43,6 +43,20 @@ GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 | ShuffleNetV2x1.0 | SiamFCppTracker | GOT-10k-val | 76.6 | 88.8 | 71.5 | siamfcpp_shufflenetv2x1_0_got.yaml | siamfcpp-shufflenetv2x1_0-got-md5_aa824cc413b100bcb10f57c4d0e52423.pkl |
 | ShuffleNetV2x1.0 | SiamFCppTracker | GOT-10k-test | 57.9 | 68.1 | 43.6 | siamfcpp_shufflenetv2x1_0_got.yaml | siamfcpp-shufflenetv2x1_0-got-md5_aa824cc413b100bcb10f57c4d0e52423.pkl |
 
+
+### LaSOT
+
+| Backbone | Pipeline | Dataset | Success | Precision | Normalized Precision | Config. Filename | Model Filename |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| GoogLeNet | SiamFCppTracker | LaSOT-test | 55.7 | 55.6 | 58.9 | siamfcpp_googlenet-lasot.yaml | siamfcpp-googlenet-lasot-md5sum_434540569e163188d2bf47438e075529.pkl |
+
+### OTB-2015
+
+| Backbone | Pipeline | Dataset | Success | Precision | Config. Filename | Model Filename |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| AlexNet | SiamFCppTracker | OTB2015 | 68.0 | 88.4 | siamfcpp_googlenet-lasot.yaml | siamfcpp-googlenet-lasot-md5sum_434540569e163188d2bf47438e075529.pkl |
+| GoogLeNet | SiamFCppTracker | OTB2015 | 68.2 | 89.6 | siamfcpp_googlenet-lasot.yaml | siamfcpp-googlenet-lasot-md5sum_434540569e163188d2bf47438e075529.pkl |
+
 #### Pipeline
 
 * SiamFCppTracker
