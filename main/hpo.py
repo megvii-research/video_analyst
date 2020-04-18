@@ -47,7 +47,6 @@ if __name__ == '__main__':
 
     # experiment config
     exp_cfg_path = osp.realpath(parsed_args.config)
-    # from IPython import embed;embed()
     root_cfg.merge_from_file(exp_cfg_path)
     logger.info("Load experiment configuration at: %s" % exp_cfg_path)
 
@@ -69,7 +68,6 @@ if __name__ == '__main__':
     csv_file = osp.join(hpo_cfg["exp_save"],
                         "hpo_{}.csv".format(task_cfg_origin["exp_name"]))
 
-    # from IPython import embed;embed();exit(0)
     while True:
         task_cfg = deepcopy(task_cfg_origin)
         hpo_exp_dict = hpo.sample_and_update_hps(task_cfg, hpo_schedules)

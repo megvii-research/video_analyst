@@ -60,7 +60,6 @@ def build(cfg: List[str], **kwargs):
     ListLR
 
     """
-    # from IPython import embed;embed()
     cfg = [json.loads(c) for c in cfg]
 
     SingleLRs = []
@@ -140,32 +139,6 @@ class MultiStageLR(BaseLR):
     def __len__(self):
         return self._lr_stages[-1][0]
 
-@LR_POLICIES.register
-class CosineLRV2(BaseLR):
-    """ Multi-stage learning rate scheduler
-    """
-    def __init__(self, start_lr=0, min_lr=0, max_epoch=1, max_iter=1, **kwargs):
-        """
-        :param lr_stages: list, [(milestone1, lr1), (milestone2, lr2), ...]
-        """
-        self._start_lr = start_lr
-        self._min_lr = min_lr
-        self._max_epoch=max_epoch
-        self._max_iter = 1
-
-    def get_lr(self, epoch=0, iter=0):
-        if epoch > self._max_epoch:
-            raise ValueError('Invalid epoch.')
-        else:
-            if iter == 0:
-                cosine_decay = 0.5*(1+math.cos(math.pi*(epoch/self._max_epoch)))
-                lr = max(self._start_lr*cosine_decay, self._min_lr)
-                self._start_lr = lr
-            else:
-                lr = self._start_lr
-        return lr
-    def __len__(self):
-        return self._max_epoch
 
 def _IDENTITY(x):
     return x
@@ -274,11 +247,6 @@ def schedule_lr(optimizer, lr):
 
 
 if __name__ == '__main__':
-
-    lr_scheduler = ListLR(
-        LinearLR(start_lr=1e-6, end_lr=8e-2, max_epoch=2, max_iter=1250),
-        CosineLRV2(start_lr=8e-2, min_lr=1e-7, max_epoch=40, max_iter=1250))
-    plot_LR(lr_scheduler, 'Cosine annealing v2 with warmup')
 
     lr_scheduler = ListLR(
         LinearLR(start_lr=1e-6, end_lr=1e-1, max_epoch=5, max_iter=5000),

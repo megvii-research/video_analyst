@@ -38,7 +38,6 @@ def clip_bbox(bbox, im_size):
     """
     bbox = np.array(bbox)
     im_size = np.array(im_size)
-    # from IPython import embed;embed()
     bbox[..., 0] = np.maximum(np.minimum(bbox[..., 0], im_size[..., 0] - 1), 0)
     bbox[..., 1] = np.maximum(np.minimum(bbox[..., 1], im_size[..., 1] - 1), 0)
     bbox[..., 2] = np.maximum(np.minimum(bbox[..., 2], im_size[..., 0] - 1), 0)
@@ -242,5 +241,4 @@ class TestBboxTransform(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # from IPython import embed;embed()
     unittest.main()
