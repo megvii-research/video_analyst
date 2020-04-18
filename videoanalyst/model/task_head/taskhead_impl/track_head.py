@@ -42,6 +42,7 @@ def get_box(xy_ctr, offsets):
 
 
 @TRACK_HEADS.register
+@VOS_HEADS.register
 class DenseboxHead(ModuleBase):
     r"""
     Densebox Head for siamfcpp
@@ -60,6 +61,8 @@ class DenseboxHead(ModuleBase):
         has_bn flag of conv3x3 in head, list with length of num_conv3x3
     head_width: int
         feature width in head structure
+    conv_weight_std: float
+        std for conv init
     """
     default_hyper_params = dict(
         total_stride=8,
@@ -105,7 +108,7 @@ class DenseboxHead(ModuleBase):
         self.fm_ctr = self.fm_ctr.to(offsets.device)
         bbox = get_box(self.fm_ctr, offsets)
 
-        return [cls_score, ctr_score, bbox]
+        return [cls_score, ctr_score, bbox, cls]
 
     def update_params(self):
         x_size = self._hyper_params["x_size"]

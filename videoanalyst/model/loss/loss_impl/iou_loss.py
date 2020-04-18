@@ -33,13 +33,10 @@ class IOULoss(ModuleBase):
         self.ignore_label = self._hyper_params["ignore_label"]
         self.weight = self._hyper_params["weight"]
 
-    # def forward(self, pred, gt, cls_gt):
     def forward(self, pred_data, target_data):
-        # resolve prediction & target
         pred = pred_data["box_pred"]
         gt = target_data["box_gt"]
         cls_gt = target_data["cls_gt"]
-        # mask
         mask = ((~(cls_gt == self.background)) *
                 (~(cls_gt == self.ignore_label))).detach()
         mask = mask.type(torch.Tensor).squeeze(2).to(pred.device)
@@ -59,7 +56,6 @@ class IOULoss(ModuleBase):
         iou = torch.max(inter / union, self.t_zero)
         loss = -self.safelog(iou)
 
-        # from IPython import embed;embed()
         loss = (loss * mask).sum() / torch.max(
             mask.sum(), self.t_one) * self._hyper_params["weight"]
         iou = iou.detach()

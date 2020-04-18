@@ -9,7 +9,6 @@ from videoanalyst.model.backbone.backbone_base import (TRACK_BACKBONES,
 from videoanalyst.model.common_opr.common_block import conv_bn_relu
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.model.common_opr.common_block import projector
-from videoanalyst.utils import md5sum
 
 
 class creat_residual_block(nn.Module):
@@ -169,17 +168,6 @@ class ResNet50_M(ModuleBase):
         x5 = self.stage5(x4)
         return x5
 
-    def update_params(self):
-        model_file = self._hyper_params["pretrain_model_path"]
-        if model_file != "":
-            state_dict = torch.load(model_file,
-                                    map_location=torch.device("cpu"))
-            self.load_state_dict(state_dict, strict=False)
-            logger.info("Load pretrained resnet-50 parameters from: %s" %
-                        model_file)
-            logger.info("Check md5sum of pretrained resnet-50 parameters: %s" %
-                        md5sum(model_file))
-
 
 @VOS_BACKBONES.register
 class ResNet18_M(ModuleBase):
@@ -235,17 +223,6 @@ class ResNet18_M(ModuleBase):
         x5 = self.stage5(x4)
         return x5
 
-    def update_params(self):
-        model_file = self._hyper_params["pretrain_model_path"]
-        if model_file != "":
-            state_dict = torch.load(model_file,
-                                    map_location=torch.device("cpu"))
-            self.load_state_dict(state_dict, strict=False)
-            logger.info("Load pretrained resnet-18 parameters from: %s" %
-                        model_file)
-            logger.info("Check md5sum of pretrained resnet-18 parameters: %s" %
-                        md5sum(model_file))
-
 
 @VOS_BACKBONES.register
 class JointEncoder(ModuleBase):
@@ -265,18 +242,6 @@ class JointEncoder(ModuleBase):
         x4 = self.basemodel.stage4(x3) + corr_feature
         x5 = self.basemodel.stage5(x4)
         return [x5, x4, x3, x2]
-
-    def update_params(self):
-        model_file = self._hyper_params["pretrain_model_path"]
-        if model_file != "":
-            state_dict = torch.load(model_file,
-                                    map_location=torch.device("cpu"))
-            self.load_state_dict(state_dict, strict=False)
-            logger.info("Load pretrained joint encoder parameters from: %s" %
-                        model_file)
-            logger.info(
-                "Check md5sum of pretrained joint encoder parameters: %s" %
-                md5sum(model_file))
 
 
 if __name__ == "__main__":

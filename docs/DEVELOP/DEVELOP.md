@@ -162,4 +162,3 @@ __Nota__: make sure that X-Server is able to run on your terminal's side.
 - Windows: [VcXsrv Windows X Server](http://vcxsrv.sourceforge.net/) or [MobaXterm](https://mobaxterm.mobatek.net/)
 - Linux: just connect to your server with argument "-X": _ssh –X_
 - MacOS: [XQuartz](https://www.xquartz.org/)
-

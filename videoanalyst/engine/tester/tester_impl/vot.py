@@ -2,7 +2,7 @@
 from typing import Dict
 import copy
 import itertools
-import logging
+from loguru import logger
 import math
 import os
 import os.path as osp
@@ -24,9 +24,6 @@ from videoanalyst.evaluation import vot_benchmark
 from videoanalyst.utils import ensure_dir
 
 from ..tester_base import TRACK_TESTERS, TesterBase
-
-vot_benchmark.init_log('global', logging.INFO)
-logger = logging.getLogger("global")
 
 
 @TRACK_TESTERS.register
