@@ -77,7 +77,7 @@ train:
       encoder_basemodel:
         name: "ResNet50_M"
         ResNet50_M:
-          pretrain_model_path: "models/resnet/res-50-imagenet.pkl"
+          pretrain_model_path: "models/resnet/res-50-imagenet-fff49.pkl"
       encoder:
         name: "JointEncoder"
         JointEncoder:
@@ -85,7 +85,7 @@ train:
       gml_extractor:
         name: "ResNet50_M"
         ResNet50_M:
-          pretrain_model_path: "models/resnet/res-50-imagenet.pkl"
+          pretrain_model_path: "models/resnet/res-50-imagenet-fff49.pkl"
       task_head:
         name: "DecoderHead"
       losses:

@@ -37,23 +37,23 @@ torch.backends.cudnn.deterministic = True
 def make_parser():
     parser = argparse.ArgumentParser(description='Test')
     parser.add_argument(
-        '-cfg', '--config',
+        '-cfg',
+        '--config',
         default='experiments/siamfcpp/data/siamfcpp_data-trn.yaml',
         type=str,
         help='path to experiment configuration')
 
-    parser.add_argument(
-        '-t', '--target',
-        default='dataset',
-        type=str,
-        help='targeted debugging module (datasampler|dataset))')
+    parser.add_argument('-t',
+                        '--target',
+                        default='dataset',
+                        type=str,
+                        help='targeted debugging module (datasampler|dataset))')
 
-    parser.add_argument(
-        '-dt',
-        '--data_type',
-        default='bbox',
-        type=str,
-        help='target datat yep(bbox | mask))')
+    parser.add_argument('-dt',
+                        '--data_type',
+                        default='bbox',
+                        type=str,
+                        help='target datat yep(bbox | mask))')
 
     return parser
 
@@ -87,29 +87,30 @@ if __name__ == '__main__':
             seq_idx = int(seq_idx)
             seq = dataset[seq_idx]
             # for one video
-            if len(seq['image']) > 1: 
+            if len(seq['image']) > 1:
                 frame_idx = np.random.choice(range(len(seq['image'])))
                 frame = {k: seq[k][frame_idx] for k in seq}
             else:
-                frame = dict(image= seq['image'][0],anno=seq['anno'])
+                frame = dict(image=seq['image'][0], anno=seq['anno'])
             # fetch & visualize data
             im = load_image(frame['image'])
             if parsed_args.data_type == "bbox":
                 cv2.rectangle(im,
-                            tuple(map(int, frame['anno'][:2])),
-                            tuple(map(int, frame['anno'][2:])), (0, 255, 0),
-                            thickness=3)
+                              tuple(map(int, frame['anno'][:2])),
+                              tuple(map(int, frame['anno'][2:])), (0, 255, 0),
+                              thickness=3)
                 im = cv2.resize(im, (0, 0), fx=0.33, fy=0.33)
                 cv2.imshow("im", im)
                 cv2.waitKey(0)
             elif parsed_args.data_type == "mask":
                 cv2.imshow("im", im)
                 print(frame['anno'][0])
-                mask = (frame['anno'][0]*50).astype(np.uint8).copy()
+                mask = (frame['anno'][0] * 50).astype(np.uint8).copy()
                 cv2.imwrite("mask_0.png", mask)
                 cv2.waitKey(0)
             else:
-                logger.error("data type {} is not support now".format(parsed_args.data_type))
+                logger.error("data type {} is not support now".format(
+                    parsed_args.data_type))
                 exit()
 
     elif parsed_args.target == "datapipeline":
@@ -123,7 +124,9 @@ if __name__ == '__main__':
             cv2.imwrite("z.png", data["im_z"].astype(np.uint8))
             cv2.imwrite("x.png", data["im_x"].astype(np.uint8))
             cv2.imwrite("g_img.png", data["global_img"].astype(np.uint8))
-            cv2.imwrite("g_mask.png", data["global_mask"].astype(np.uint8)*250)
+            cv2.imwrite("g_mask.png",
+                        data["global_mask"].astype(np.uint8) * 250)
             cv2.imwrite("seg_img.png", data["seg_img"].astype(np.uint8))
-            cv2.imwrite("filtered_g.png", data["filtered_global_img"].astype(np.uint8))
-            cv2.imwrite("seg_mask.png", data["seg_mask"].astype(np.uint8)*250)
+            cv2.imwrite("filtered_g.png",
+                        data["filtered_global_img"].astype(np.uint8))
+            cv2.imwrite("seg_mask.png", data["seg_mask"].astype(np.uint8) * 250)
