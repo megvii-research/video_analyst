@@ -20,13 +20,13 @@ test:
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl"
+          pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_88e4e9ee476545b952b04ae80c480f08.pkl"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
-        test_lr: 0.52
+        test_lr: 0.58
         window_influence: 0.21
-        penalty_k: 0.04
+        penalty_k: 0.08
         num_conv3x3: 3
     tester:
       names: ["VOTTester",]
