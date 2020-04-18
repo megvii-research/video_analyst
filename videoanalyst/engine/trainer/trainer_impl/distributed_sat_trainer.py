@@ -52,13 +52,12 @@ class DistributedSATTrainer(TrainerBase):
             Usage: batch_data = next(dataloader)
         """
         super(DistributedSATTrainer, self).__init__(optimizer, dataloader,
-                                                        monitors)
+                                                    monitors)
         # update state
         self._state["epoch"] = -1  # uninitialized
         self._state["initialized"] = False
         self._state["devices"] = torch.device("cuda:0")
         self.tracker = tracker
-
 
     def init_train(self, ):
         torch.cuda.empty_cache()
@@ -106,7 +105,8 @@ class DistributedSATTrainer(TrainerBase):
                 corr_fea = tracker_output["corr_fea"].detach()
             # forward propagation
             with Timer(name="segfwd", output_dict=time_dict):
-                predict_data = self._model(training_data["seg_img"], corr_fea, training_data["filtered_global_img"])
+                predict_data = self._model(training_data["seg_img"], corr_fea,
+                                           training_data["filtered_global_img"])
                 training_losses, extras = OrderedDict(), OrderedDict()
                 for loss_name, loss in self._losses.items():
                     training_losses[loss_name], extras[loss_name] = loss(
@@ -117,7 +117,8 @@ class DistributedSATTrainer(TrainerBase):
                 total_loss.backward()
             with Timer(name="optim", output_dict=time_dict):
                 self._optimizer.step()
-            cost_time = (num_iterations-iteration)*(time.time() - start_time)
+            cost_time = (num_iterations - iteration) * (time.time() -
+                                                        start_time)
             if dist_utils.get_rank() == 0:
                 trainer_data = dict(
                     schedule_info=schedule_info,
@@ -130,9 +131,13 @@ class DistributedSATTrainer(TrainerBase):
                 )
                 for monitor in self._monitors:
                     monitor.update(trainer_data)
-                print_str = "{}/{} epoch {} eta ({}h {}m {}s) bs: {} ".format(iteration, num_iterations, epoch, int(cost_time//(3600)), int(cost_time%3600//60), int(cost_time%60), training_data["im_x"].size(0))+self._state["print_str"]
+                print_str = "{}/{} epoch {} eta ({}h {}m {}s) bs: {} ".format(
+                    iteration, num_iterations, epoch, int(cost_time // (3600)),
+                    int(cost_time % 3600 // 60), int(cost_time % 60),
+                    training_data["im_x"].size(0)) + self._state["print_str"]
                 logger.info(print_str)
-            del training_data 
+            del training_data
+
 
 DistributedSATTrainer.default_hyper_params = copy.deepcopy(
     DistributedSATTrainer.default_hyper_params)

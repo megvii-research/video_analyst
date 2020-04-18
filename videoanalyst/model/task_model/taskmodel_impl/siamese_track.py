@@ -143,7 +143,6 @@ class SiamTrack(ModuleBase):
         self._initialize_conv()
         super().update_params()
 
-
     def _make_convs(self):
         head_width = self._hyper_params['head_width']
 

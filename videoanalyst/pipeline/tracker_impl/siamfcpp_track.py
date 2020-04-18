@@ -147,8 +147,7 @@ class SiamFCppTracker(PipelineBase):
         phase = self._hyper_params['phase_init']
         with torch.no_grad():
             data = imarray_to_tensor(im_z_crop).to(self.device)
-            features = self._model(data,
-                                   phase=phase)
+            features = self._model(data, phase=phase)
 
         return features, im_z_crop, avg_chans
 
@@ -259,9 +258,10 @@ class SiamFCppTracker(PipelineBase):
             self._state['ctr'] = ctr
 
         return new_target_pos, new_target_sz
+
     def set_state(self, state):
         self._state["state"] = state
-    
+
     def get_track_score(self):
         return float(self._state["pscore"])
 

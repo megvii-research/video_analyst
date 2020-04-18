@@ -53,13 +53,15 @@ class DecoderHead(ModuleBase):
                                  align_corners=False)
         if phase == "train":
             pred_s16 = self.f_s16_projector(f_s16)
-            pred_s16_resize = F.interpolate(pred_s16,(self.output_size, self.output_size),
-                                 mode='bilinear',
-                                 align_corners=False)
+            pred_s16_resize = F.interpolate(
+                pred_s16, (self.output_size, self.output_size),
+                mode='bilinear',
+                align_corners=False)
             pred_s8 = self.f_s8_projector(f_s8)
-            pred_s8_resize = F.interpolate(pred_s8,(self.output_size, self.output_size),
-                                 mode='bilinear',
-                                 align_corners=False)
+            pred_s8_resize = F.interpolate(pred_s8,
+                                           (self.output_size, self.output_size),
+                                           mode='bilinear',
+                                           align_corners=False)
             return [pred_s16_resize, pred_s8_resize, p_resize]
         else:
             prediction = self.activation(p_resize)

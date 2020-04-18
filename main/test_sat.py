@@ -52,8 +52,10 @@ if __name__ == '__main__':
 
     elif task == 'vos':
         # build model
-        tracker_model  = model_builder.build("track", task_cfg.tracker_model)
-        tracker = pipeline_builder.build("track", task_cfg.tracker_pipeline, model=tracker_model)
+        tracker_model = model_builder.build("track", task_cfg.tracker_model)
+        tracker = pipeline_builder.build("track",
+                                         task_cfg.tracker_pipeline,
+                                         model=tracker_model)
         segmenter = model_builder.build('vos', task_cfg.segmenter)
         # build pipeline
         pipeline = pipeline_builder.build('vos',

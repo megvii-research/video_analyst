@@ -202,7 +202,8 @@ if __name__ == '__main__':
     torch.multiprocessing.set_start_method('spawn', force=True)
     # spawn trainer process
     mp.spawn(run_dist_training,
-             args=(world_size, task, task_cfg, parsed_args, segmenter, tracker_model, dist_url),
+             args=(world_size, task, task_cfg, parsed_args, segmenter,
+                   tracker_model, dist_url),
              nprocs=world_size,
              join=True)
     logger.info("Distributed training completed.")

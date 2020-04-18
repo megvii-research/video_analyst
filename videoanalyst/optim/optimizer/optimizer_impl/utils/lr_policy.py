@@ -143,6 +143,7 @@ class MultiStageLR(BaseLR):
 def _IDENTITY(x):
     return x
 
+
 class TransitionLR(BaseLR):
     """
     Transition scheduler, to be inheritated for different usate
@@ -180,8 +181,6 @@ class TransitionLR(BaseLR):
     @property
     def max_iter(self):
         return self._max_iter
-
-
 
 
 @LR_POLICIES.register

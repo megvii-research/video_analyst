@@ -6,6 +6,7 @@ import random
 from yacs.config import CfgNode
 from ..transformer_base import TRACK_TRANSFORMERS, VOS_TRANSFORMERS, TransformerBase
 
+
 class RandomBlur(object):
     def __init__(self, ratio=0.25):
         self.ratio = ratio
@@ -27,8 +28,6 @@ def gray_aug(image):
     return image
 
 
-
-
 def fb_brightness_aug(img, val):
     alpha = 1. + val * (np.random.rand() * 2 - 1)
     img = img * alpha
@@ -42,7 +41,6 @@ def fb_grayscale(img):
     gs = (img * w).sum(axis=2, keepdims=True)
 
     return gs
-
 
 
 def fb_contrast_aug(img, val):
@@ -63,8 +61,7 @@ def fb_saturation_aug(img, val):
 
 
 def fb_color_jitter(img, brightness, contrast, saturation):
-    augs = [(fb_brightness_aug, brightness),
-            (fb_contrast_aug, contrast),
+    augs = [(fb_brightness_aug, brightness), (fb_contrast_aug, contrast),
             (fb_saturation_aug, saturation)]
     random.shuffle(augs)
 
@@ -75,11 +72,12 @@ def fb_color_jitter(img, brightness, contrast, saturation):
 
 
 def fb_lighting(img, std):
-    eigval = np.array([ 0.2175, 0.0188, 0.0045 ])
-    eigvec = np.array([[ -0.5836, -0.6948,  0.4203 ],
-                       [ -0.5808, -0.0045, -0.8140 ],
-                       [ -0.5675, 0.7192, 0.4009 ],
-                       ])
+    eigval = np.array([0.2175, 0.0188, 0.0045])
+    eigvec = np.array([
+        [-0.5836, -0.6948, 0.4203],
+        [-0.5808, -0.0045, -0.8140],
+        [-0.5675, 0.7192, 0.4009],
+    ])
     if std == 0:
         return img
 
@@ -90,11 +88,12 @@ def fb_lighting(img, std):
 
     return img
 
+
 @TRACK_TRANSFORMERS.register
 @VOS_TRANSFORMERS.register
 class ImageAug(TransformerBase):
     default_hyper_params = dict(
-        color_jitter_brightness = 0.1,
+        color_jitter_brightness=0.1,
         color_jitter_contrast=0.1,
         color_jitter_saturation=0.1,
         lighting_std=0.1,
@@ -106,8 +105,10 @@ class ImageAug(TransformerBase):
     def __call__(self, sampled_data: Dict) -> Dict:
         for img_name in ["data1", "data2"]:
             image = sampled_data[img_name]["image"]
-            image = fb_color_jitter(image, self._hyper_params["color_jitter_brightness"],
-            self._hyper_params["color_jitter_contrast"], self._hyper_params["color_jitter_saturation"])
+            image = fb_color_jitter(
+                image, self._hyper_params["color_jitter_brightness"],
+                self._hyper_params["color_jitter_contrast"],
+                self._hyper_params["color_jitter_saturation"])
             image = fb_lighting(image, self._hyper_params["lighting_std"])
             sampled_data[img_name]["image"] = image
         return sampled_data

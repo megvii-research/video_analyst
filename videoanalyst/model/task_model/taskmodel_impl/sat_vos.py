@@ -80,7 +80,6 @@ class SatVOS(ModuleBase):
             raise ValueError("Phase non-implemented.")
         return out_list
 
-
     def set_device(self, dev):
         if not isinstance(dev, torch.device):
             dev = torch.device(dev)

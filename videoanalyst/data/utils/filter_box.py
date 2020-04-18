@@ -34,6 +34,7 @@ def filter_unreasonable_training_boxes(im: np.array, bbox,
 
     return filter_flag
 
+
 def filter_unreasonable_training_masks(im: np.array, mask,
                                        config: Dict) -> bool:
     r""" 

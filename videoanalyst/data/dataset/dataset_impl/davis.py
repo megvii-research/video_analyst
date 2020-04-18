@@ -41,7 +41,9 @@ class DavisDataset(DatasetBase):
 
     default_hyper_params = dict(
         dataset_root="datasets/DAVIS",
-        subsets=["train",], 
+        subsets=[
+            "train",
+        ],
         ratio=1.0,
         max_diff=10,
     )
@@ -61,7 +63,7 @@ class DavisDataset(DatasetBase):
         self._hyper_params["dataset_root"] = osp.realpath(dataset_root)
         if len(DavisDataset.data_items) == 0:
             self._ensure_cache()
-    
+
     def __getitem__(self, item):
         """
         :param item: int, video id
@@ -88,9 +90,11 @@ class DavisDataset(DatasetBase):
             if osp.exists(cache_file):
                 with open(cache_file, 'rb') as f:
                     DavisDataset.data_items += pickle.load(f)
-                logger.info("{}: loaded cache file {}".format(DavisDataset.__name__, cache_file))
+                logger.info("{}: loaded cache file {}".format(
+                    DavisDataset.__name__, cache_file))
             else:
-                meta_file = osp.join(dataset_root, "ImageSets", "2017", "train.txt")
+                meta_file = osp.join(dataset_root, "ImageSets", "2017",
+                                     "train.txt")
                 with open(meta_file) as f:
                     video_names = [item.strip() for item in f.readlines()]
                 for video_name in video_names:
@@ -99,21 +103,28 @@ class DavisDataset(DatasetBase):
                     object_dict = defaultdict(list)
                     for anno_name in os.listdir(anno_dir):
                         anno_file = os.path.join(anno_dir, anno_name)
-                        anno_data = np.array(Image.open(anno_file), dtype=np.uint8)
+                        anno_data = np.array(Image.open(anno_file),
+                                             dtype=np.uint8)
                         obj_ids = np.unique(anno_data)
                         for obj_id in obj_ids:
                             if obj_id > 0:
-                                object_dict[obj_id].append(anno_name.split(".")[0])
+                                object_dict[obj_id].append(
+                                    anno_name.split(".")[0])
                     for k, v in object_dict.items():
                         record = {}
                         record["obj_id"] = k
-                        record["image_files"] = [osp.join(img_dir, frame+'.jpg') for frame in v]
-                        record["annos"] = [osp.join(anno_dir, frame+'.png') for frame in v]
+                        record["image_files"] = [
+                            osp.join(img_dir, frame + '.jpg') for frame in v
+                        ]
+                        record["annos"] = [
+                            osp.join(anno_dir, frame + '.png') for frame in v
+                        ]
                         data_anno_list.append(record)
                 cache_dir = osp.dirname(cache_file)
                 if not osp.exists(cache_dir):
                     os.makedirs(cache_dir)
                 with open(cache_file, 'wb') as f:
                     pickle.dump(data_anno_list, f)
-                logger.info("Davis VOS dataset: cache dumped at: {}".format(cache_file))
+                logger.info(
+                    "Davis VOS dataset: cache dumped at: {}".format(cache_file))
                 DavisDataset.data_items += data_anno_list

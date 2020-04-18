@@ -20,7 +20,6 @@ from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, VOS_DATASETS,
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
 
-
 @VOS_DATASETS.register
 class YoutubeVOSDataset(DatasetBase):
     r"""
@@ -40,7 +39,9 @@ class YoutubeVOSDataset(DatasetBase):
 
     default_hyper_params = dict(
         dataset_root="datasets/youtubevos",
-        subsets=["train",], 
+        subsets=[
+            "train",
+        ],
         ratio=1.0,
         max_diff=50,
     )
@@ -60,7 +61,7 @@ class YoutubeVOSDataset(DatasetBase):
         self._hyper_params["dataset_root"] = osp.realpath(dataset_root)
         if len(YoutubeVOSDataset.data_items) == 0:
             self._ensure_cache()
-    
+
     def __getitem__(self, item):
         """
         :param item: int, video id
@@ -88,7 +89,8 @@ class YoutubeVOSDataset(DatasetBase):
             if osp.exists(cache_file):
                 with open(cache_file, 'rb') as f:
                     YoutubeVOSDataset.data_items += pickle.load(f)
-                logger.info("{}: loaded cache file {}".format(YoutubeVOSDataset.__name__, cache_file))
+                logger.info("{}: loaded cache file {}".format(
+                    YoutubeVOSDataset.__name__, cache_file))
             else:
                 meta_file = osp.join(dataset_root, subset, "meta.json")
                 with open(meta_file) as f:
@@ -98,8 +100,14 @@ class YoutubeVOSDataset(DatasetBase):
                     video = records[video_id]
                     for obj_id in video["objects"]:
                         record = video['objects'][obj_id]
-                        record['image_files'] = [osp.join(image_root, video_id, frame_id+'.jpg') for frame_id in record['frames']]
-                        record['annos'] = [osp.join(anno_root, video_id, frame_id+'.png') for frame_id in record['frames']]
+                        record['image_files'] = [
+                            osp.join(image_root, video_id, frame_id + '.jpg')
+                            for frame_id in record['frames']
+                        ]
+                        record['annos'] = [
+                            osp.join(anno_root, video_id, frame_id + '.png')
+                            for frame_id in record['frames']
+                        ]
                         record['obj_id'] = int(obj_id)
                         data_anno_list.append(record)
                 cache_dir = osp.dirname(cache_file)
@@ -107,5 +115,6 @@ class YoutubeVOSDataset(DatasetBase):
                     os.makedirs(cache_dir)
                 with open(cache_file, 'wb') as f:
                     pickle.dump(data_anno_list, f)
-                logger.info("Youtube VOS dataset: cache dumped at: {}".format(cache_file))
+                logger.info("Youtube VOS dataset: cache dumped at: {}".format(
+                    cache_file))
                 YoutubeVOSDataset.data_items += data_anno_list

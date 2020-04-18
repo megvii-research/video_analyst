@@ -15,7 +15,8 @@ from ..monitor.monitor_base import TASK_MONITORS
 from .trainer_base import TASK_TRAINERS, TrainerBase
 
 
-def build(task: str, cfg: CfgNode, optimizer, dataloader, tracker=None) -> TrainerBase:
+def build(task: str, cfg: CfgNode, optimizer, dataloader,
+          tracker=None) -> TrainerBase:
     r"""
     Builder function.
 

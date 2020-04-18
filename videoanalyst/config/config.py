@@ -26,7 +26,8 @@ for task in task_list:
     elif task == "vos":
         test_cfg[task]["segmenter"] = get_model_cfg(task_list)['vos']
         test_cfg[task]["tracker_model"] = get_model_cfg(task_list)['track']
-        test_cfg[task]["tracker_pipeline"] = get_pipeline_cfg(task_list)['track']
+        test_cfg[task]["tracker_pipeline"] = get_pipeline_cfg(
+            task_list)['track']
 
     test_cfg[task]["pipeline"] = get_pipeline_cfg(task_list)[task]
     test_cfg[task]["tester"] = get_tester_cfg(task_list)[task]

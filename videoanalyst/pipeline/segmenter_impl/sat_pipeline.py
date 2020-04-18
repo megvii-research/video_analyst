@@ -66,8 +66,8 @@ class StateAwareTracker(PipelineBase):
         global_modeling=True,
         seg_ema_u=0.5,
         seg_ema_s=0.5,
-        context_amount = 0.5,
-        mask_rect_lr = 1.0,
+        context_amount=0.5,
+        mask_rect_lr=1.0,
         track_failed_score_th=0.0,
         update_global_fea_th=0.0,
     )
@@ -138,7 +138,7 @@ class StateAwareTracker(PipelineBase):
             func_get_subwindow=get_subwindow_tracking,
         )
         init_mask_c3 = np.stack([init_mask, init_mask, init_mask],
-                        -1).astype(np.uint8)
+                                -1).astype(np.uint8)
         init_mask_crop_c3, _ = get_crop(
             init_mask_c3,
             target_pos,
@@ -167,7 +167,6 @@ class StateAwareTracker(PipelineBase):
         self._state['seg_global_feature'] = deep_feature
         self._state['gml_feature'] = deep_feature
         self._state['conf_score'] = 1
-
 
     def global_modeling(self):
         """
@@ -265,8 +264,9 @@ class StateAwareTracker(PipelineBase):
             pred_mask,
             size=self._hyper_params["saliency_image_size"],
             region=self._hyper_params["saliency_image_field"])
-        self._state['mask_in_full_image'] = mask_in_full_image 
-        if self._tracker.get_track_score() < self._hyper_params["track_failed_score_th"]:
+        self._state['mask_in_full_image'] = mask_in_full_image
+        if self._tracker.get_track_score(
+        ) < self._hyper_params["track_failed_score_th"]:
             self._state['mask_in_full_image'] *= 0
         return pred_mask, pred_mask_b
 
@@ -276,12 +276,15 @@ class StateAwareTracker(PipelineBase):
             rect = cv2.boundingRect(cnt.reshape(-1, 2))
             boxes[i] = rect
         boxes[:, 2:] = boxes[:, :2] + boxes[:, 2:]
-        global_box = [np.amin(boxes[:, 0]), np.amin(boxes[:, 1]), np.amax(boxes[:, 2]), np.amax(boxes[:, 3])]
+        global_box = [
+            np.amin(boxes[:, 0]),
+            np.amin(boxes[:, 1]),
+            np.amax(boxes[:, 2]),
+            np.amax(boxes[:, 3])
+        ]
         global_box = np.array(global_box)
         global_box[2:] = global_box[2:] - global_box[:2]
         return global_box
-
-
 
     def cropping_strategy(self, p_mask_b, track_pos=None, track_size=None):
         r"""
@@ -320,9 +323,11 @@ class StateAwareTracker(PipelineBase):
                 if state_score > self._hyper_params['state_score_thresh']:
                     new_target_pos = mask_pos
                     lr = self._hyper_params["mask_rect_lr"]
-                    new_target_sz = self._state["state"][1]*(1-lr) + mask_sz*lr
+                    new_target_sz = self._state["state"][1] * (
+                        1 - lr) + mask_sz * lr
                 else:
-                    if self._state["track_score"] > self._hyper_params["track_failed_score_th"]:
+                    if self._state["track_score"] > self._hyper_params[
+                            "track_failed_score_th"]:
                         new_target_pos, new_target_sz = track_pos, track_size
 
                 self._state['mask_rect'] = rect_full
@@ -346,13 +351,13 @@ class StateAwareTracker(PipelineBase):
         # forward inference to estimate new state
         # tracking for VOS returns regressed box and correlation feature
         self._tracker.set_state(self._state["state"])
-        target_pos_track, target_sz_track, corr_feature = self._tracker.update(im)
+        target_pos_track, target_sz_track, corr_feature = self._tracker.update(
+            im)
 
         # segmentation returnd predicted masks
         gml_feature = self._state['gml_feature']
         pred_mask, pred_mask_b = self.joint_segmentation(
             im, target_pos_prior, target_sz_prior, corr_feature, gml_feature)
-
 
         # cropping strategy loop swtiches the coordinate prediction method
         if self._hyper_params['cropping_strategy']:
@@ -363,7 +368,8 @@ class StateAwareTracker(PipelineBase):
 
         # global modeling loop updates global feature for next frame's segmentation
         if self._hyper_params['global_modeling']:
-            if self._state["state_score"] > self._hyper_params["update_global_fea_th"]: 
+            if self._state["state_score"] > self._hyper_params[
+                    "update_global_fea_th"]:
                 self.global_modeling()
         # save underlying state
         self._state['state'] = target_pos, target_sz

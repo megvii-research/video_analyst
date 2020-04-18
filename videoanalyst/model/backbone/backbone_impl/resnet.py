@@ -169,7 +169,6 @@ class ResNet50_M(ModuleBase):
         return x5
 
 
-
 @VOS_BACKBONES.register
 class ResNet18_M(ModuleBase):
 
@@ -243,6 +242,7 @@ class JointEncoder(ModuleBase):
         x4 = self.basemodel.stage4(x3) + corr_feature
         x5 = self.basemodel.stage5(x4)
         return [x5, x4, x3, x2]
+
 
 if __name__ == "__main__":
     print(VOS_BACKBONES)

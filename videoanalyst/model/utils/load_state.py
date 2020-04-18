@@ -2,6 +2,8 @@ from copy import deepcopy
 from typing import Dict, Any, List, Iterable, Tuple
 from collections import defaultdict
 from torch import nn
+
+
 def group_checkpoint_keys(keys: List[str]) -> Dict[str, List[str]]:
     """
     Group keys based on common prefixes. A prefix is the string up to the final
@@ -16,11 +18,13 @@ def group_checkpoint_keys(keys: List[str]) -> Dict[str, List[str]]:
     for key in keys:
         pos = key.rfind(".")
         if pos >= 0:
-            head, tail = key[:pos], [key[pos + 1 :]]
+            head, tail = key[:pos], [key[pos + 1:]]
         else:
             head, tail = key, []
         groups[head].extend(tail)
     return groups
+
+
 def strip_prefix_if_present(state_dict: Dict[str, Any], prefix: str) -> None:
     """
     Strip the prefix in metadata, if any.
@@ -33,7 +37,7 @@ def strip_prefix_if_present(state_dict: Dict[str, Any], prefix: str) -> None:
         return
 
     for key in keys:
-        newkey = key[len(prefix) :]
+        newkey = key[len(prefix):]
         state_dict[newkey] = state_dict.pop(key)
 
     # also strip the prefix in metadata, if any..
@@ -50,8 +54,9 @@ def strip_prefix_if_present(state_dict: Dict[str, Any], prefix: str) -> None:
 
             if len(key) == 0:
                 continue
-            newkey = key[len(prefix) :]
+            newkey = key[len(prefix):]
             metadata[newkey] = metadata.pop(key)
+
 
 def get_missing_parameters_message(keys: List[str]) -> str:
     """
@@ -68,9 +73,9 @@ def get_missing_parameters_message(keys: List[str]) -> str:
         msg += "{}:{}\n".format(k, v)
     return msg
 
-def named_modules_with_dup(
-    model: nn.Module, prefix: str = ""
-) -> Iterable[Tuple[str, nn.Module]]:
+
+def named_modules_with_dup(model: nn.Module,
+                           prefix: str = "") -> Iterable[Tuple[str, nn.Module]]:
     """
     The same as `model.named_modules()`, except that it includes
     duplicated modules that have more than one name.
@@ -81,6 +86,7 @@ def named_modules_with_dup(
             continue
         submodule_prefix = prefix + ("." if prefix else "") + name
         yield from named_modules_with_dup(module, submodule_prefix)
+
 
 def get_unexpected_parameters_message(keys: List[str]) -> str:
     """
@@ -97,6 +103,7 @@ def get_unexpected_parameters_message(keys: List[str]) -> str:
         msg += "{}:{}\n".format(k, v)
     return msg
 
+
 def filter_reused_missing_keys(model: nn.Module, keys: List[str]) -> List[str]:
     """
     Filter "missing keys" to not include keys that have been loaded with another name.
@@ -105,15 +112,14 @@ def filter_reused_missing_keys(model: nn.Module, keys: List[str]) -> List[str]:
     param_to_names = defaultdict(set)  # param -> names that points to it
     for module_prefix, module in named_modules_with_dup(model):
         for name, param in list(module.named_parameters(recurse=False)) + list(
-            module.named_buffers(recurse=False)  # pyre-ignore
+                module.named_buffers(recurse=False)  # pyre-ignore
         ):
             full_name = (module_prefix + "." if module_prefix else "") + name
             param_to_names[param].add(full_name)
     for names in param_to_names.values():
         # if one name appears missing but its alias exists, then this
         # name is not considered missing
-        if any(n in keyset for n in names) and not all(
-            n in keyset for n in names
-        ):
+        if any(n in keyset for n in names) and not all(n in keyset
+                                                       for n in names):
             [keyset.remove(n) for n in names if n in keyset]
     return list(keyset)

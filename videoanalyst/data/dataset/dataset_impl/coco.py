@@ -17,6 +17,7 @@ import numpy as np
 from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, VOS_DATASETS, DatasetBase
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
+
 @TRACK_DATASETS.register
 @VOS_DATASETS.register
 class COCODataset(DatasetBase):
@@ -36,7 +37,9 @@ class COCODataset(DatasetBase):
 
     default_hyper_params = dict(
         dataset_root="datasets/coco2017",
-        subsets=["val2017",], 
+        subsets=[
+            "val2017",
+        ],
         ratio=1.0,
         with_mask=True,
     )
@@ -56,22 +59,20 @@ class COCODataset(DatasetBase):
         self._hyper_params["dataset_root"] = osp.realpath(dataset_root)
         if len(COCODataset.data_items) == 0:
             self._ensure_cache()
-    
+
     def _generate_mask_from_anno(self, raw_mask, img_h, img_w):
-        jth_mask_raw = MaskApi.frPyObjects(
-            raw_mask, img_h, img_w)
+        jth_mask_raw = MaskApi.frPyObjects(raw_mask, img_h, img_w)
         jth_mask = MaskApi.decode(jth_mask_raw)
         mask_shape = jth_mask.shape
         if len(mask_shape) == 3:
-            target_mask = np.zeros(
-                (mask_shape[0], mask_shape[1]), dtype=np.uint8)
+            target_mask = np.zeros((mask_shape[0], mask_shape[1]),
+                                   dtype=np.uint8)
             for iter_chl in range(mask_shape[2]):
                 target_mask = target_mask | jth_mask[:, :, iter_chl]
         else:
             target_mask = jth_mask
         target_mask = target_mask.astype(np.uint8)  # 全部是0或者1
         return target_mask
-
 
     def __getitem__(self, item):
         """
@@ -92,13 +93,13 @@ class COCODataset(DatasetBase):
                 raw_mask = obj['segmentation']
                 mask = self._generate_mask_from_anno(raw_mask, img_h, img_w)
                 mask_anno.append(mask)
-            
+
             sequence_data = dict(image=[image_file], anno=mask_anno)
         else:
             box_anno = []
             for obj in anno:
                 box_anno.append(obj['bbox'])
-            if len(box_anno)<=0:
+            if len(box_anno) <= 0:
                 box_anno = self._DUMMY_ANNO
             box_anno = xywh2xyxy(box_anno)
             sequence_data = dict(image=[image_file], anno=box_anno)
@@ -115,15 +116,20 @@ class COCODataset(DatasetBase):
             data_anno_list = []
             image_root = osp.join(dataset_root, subset)
             if self._hyper_params["with_mask"]:
-                cache_file = osp.join(dataset_root, "cache/coco_mask_{}.pkl".format(subset))
+                cache_file = osp.join(dataset_root,
+                                      "cache/coco_mask_{}.pkl".format(subset))
             else:
-                cache_file = osp.join(dataset_root, "cache/coco_bbox_{}.pkl".format(subset))
+                cache_file = osp.join(dataset_root,
+                                      "cache/coco_bbox_{}.pkl".format(subset))
             if osp.exists(cache_file):
                 with open(cache_file, 'rb') as f:
                     COCODataset.data_items += pickle.load(f)
-                logger.info("{}: loaded cache file {}".format(COCODataset.__name__, cache_file))
+                logger.info("{}: loaded cache file {}".format(
+                    COCODataset.__name__, cache_file))
             else:
-                anno_file = osp.join(dataset_root, "annotations/instances_{}.json".format(subset))
+                anno_file = osp.join(
+                    dataset_root,
+                    "annotations/instances_{}.json".format(subset))
                 with contextlib.redirect_stdout(io.StringIO()):
                     coco_api = COCO(anno_file)
                     # sort indices for reproducible results
@@ -158,17 +164,22 @@ class COCODataset(DatasetBase):
                     # The popular valminusminival & minival annotations for COCO2014 contain this bug.
                     # However the ratio of buggy annotations there is tiny and does not affect accuracy.
                     # Therefore we explicitly white-list them.
-                    ann_ids = [ann["id"] for anns_per_image in anns for ann in anns_per_image]
-                    assert len(set(ann_ids)) == len(ann_ids), "Annotation ids in '{}' are not unique!".format(
-                        anno_file
-                    )
+                    ann_ids = [
+                        ann["id"] for anns_per_image in anns
+                        for ann in anns_per_image
+                    ]
+                    assert len(set(ann_ids)) == len(
+                        ann_ids
+                    ), "Annotation ids in '{}' are not unique!".format(
+                        anno_file)
 
                 imgs_anns = list(zip(imgs, anns))
                 ann_keys = ["iscrowd", "bbox", "keypoints", "category_id"]
                 # iterate over annotation
                 for (img_dict, anno_dict_list) in imgs_anns:
                     record = {}
-                    record["file_name"] = os.path.join(image_root, img_dict["file_name"])
+                    record["file_name"] = os.path.join(image_root,
+                                                       img_dict["file_name"])
                     record["height"] = img_dict["height"]
                     record["width"] = img_dict["width"]
                     image_id = record["image_id"] = img_dict["id"]
@@ -182,17 +193,26 @@ class COCODataset(DatasetBase):
                         # The original COCO valminusminival2014 & minival2014 annotation files
                         # actually contains bugs that, together with certain ways of using COCO API,
                         # can trigger this assertion.
-                        assert anno["image_id"] == image_id, logger.error("{} vs {}".format(anno["image_id"], image_id))
+                        assert anno["image_id"] == image_id, logger.error(
+                            "{} vs {}".format(anno["image_id"], image_id))
 
-                        assert anno.get("ignore", 0) == 0, '"ignore" in COCO json file is not supported.'
+                        assert anno.get(
+                            "ignore", 0
+                        ) == 0, '"ignore" in COCO json file is not supported.'
 
-                        obj = {key: anno[key] for key in ann_keys if key in anno}
+                        obj = {
+                            key: anno[key]
+                            for key in ann_keys if key in anno
+                        }
 
                         segm = anno.get("segmentation", None)
                         if segm:  # either list[list[float]] or dict(RLE)
                             if not isinstance(segm, dict):
                                 # filter out invalid polygons (< 3 points)
-                                segm = [poly for poly in segm if len(poly) % 2 == 0 and len(poly) >= 6]
+                                segm = [
+                                    poly for poly in segm
+                                    if len(poly) % 2 == 0 and len(poly) >= 6
+                                ]
                                 if len(segm) == 0:
                                     num_instances_without_valid_segmentation += 1
                                     continue  # ignore this instance
@@ -213,5 +233,6 @@ class COCODataset(DatasetBase):
                     os.makedirs(cache_dir)
                 with open(cache_file, 'wb') as f:
                     pickle.dump(data_anno_list, f)
-                logger.info("COCO dataset: cache dumped at: {}".format(cache_file))
+                logger.info(
+                    "COCO dataset: cache dumped at: {}".format(cache_file))
                 COCODataset.data_items += data_anno_list

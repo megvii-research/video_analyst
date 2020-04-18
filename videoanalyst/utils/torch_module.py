@@ -12,8 +12,8 @@ import numpy as np
 np_str_obj_array_pattern = re.compile(r"[aO]")
 default_collate_err_msg_format = (
     "default_collator: inputs must contain numpy arrays, numbers, "
-    "Unicode strings, bytes, dicts or lists; found {}"
-)
+    "Unicode strings, bytes, dicts or lists; found {}")
+
 
 def move_data_to_device(data_dict: Dict, dev: torch.device):
     for k in data_dict:
@@ -34,21 +34,19 @@ def convert_numpy_to_tensor(raw_data):
     convert numpy array dict or list to torch.Tensor
     """
     elem_type = type(raw_data)
-    if (
-        elem_type.__module__ == "numpy"
-        and elem_type.__name__ != "str_"
-        and elem_type.__name__ != "string_"
-    ):
+    if (elem_type.__module__ == "numpy" and elem_type.__name__ != "str_"
+            and elem_type.__name__ != "string_"):
         return torch.from_numpy(raw_data).float()
     elif isinstance(raw_data, collections.abc.Mapping):
-        data =  {key: convert_numpy_to_tensor(raw_data[key]) for key in raw_data}
+        data = {key: convert_numpy_to_tensor(raw_data[key]) for key in raw_data}
         if 'image' in data:
-            data['image'] = data['image'].permute(2,0,1)
+            data['image'] = data['image'].permute(2, 0, 1)
         return data
     elif isinstance(raw_data, collections.abc.Sequence):
         return [convert_numpy_to_tensor(data) for data in raw_data]
     else:
         return raw_data
+
 
 def convert_tensor_to_numpy(raw_data):
     r"""
@@ -57,9 +55,9 @@ def convert_tensor_to_numpy(raw_data):
     if isinstance(raw_data, torch.Tensor):
         return raw_data.cpu().numpy()
     elif isinstance(raw_data, collections.abc.Mapping):
-        data =  {key: convert_tensor_to_numpy(raw_data[key]) for key in raw_data}
+        data = {key: convert_tensor_to_numpy(raw_data[key]) for key in raw_data}
         if 'image' in data:
-            data['image'] = data['image'].transpose(1,2,0).astype(np.uint8)
+            data['image'] = data['image'].transpose(1, 2, 0).astype(np.uint8)
         return data
     elif isinstance(raw_data, collections.abc.Sequence):
         return [convert_tensor_to_numpy(data) for data in raw_data]

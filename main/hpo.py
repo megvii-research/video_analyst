@@ -50,7 +50,7 @@ if __name__ == '__main__':
     root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.test
     task, task_cfg_origin = specify_task(root_cfg)
-    
+
     # hpo config
     with open(parsed_args.hpo_config, "r") as f:
         hpo_cfg = yaml.safe_load(f)

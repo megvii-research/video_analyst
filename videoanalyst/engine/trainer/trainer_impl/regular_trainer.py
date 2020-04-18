@@ -61,7 +61,6 @@ class RegularTrainer(TrainerBase):
         self._state["initialized"] = False
         self._state["devices"] = torch.device("cuda:0")
 
-
     def init_train(self, ):
         torch.cuda.empty_cache()
         # move model & loss to target devices

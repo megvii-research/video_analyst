@@ -40,7 +40,8 @@ class TrackPairFilter(FilterBase):
         elif self._hyper_params["target_type"] == "mask":
             bbox = cv2.boundingRect(anno)
         else:
-            logger.error("unspported target type {} in filter".format(self._hyper_params["target_type"]))
+            logger.error("unspported target type {} in filter".format(
+                self._hyper_params["target_type"]))
             exit()
         filter_flag = filter_unreasonable_training_boxes(
             im, bbox, self._hyper_params)
