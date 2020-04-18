@@ -49,10 +49,10 @@ train:
       target:
         name: "SATMaskTarget"
         SATMaskTarget:
-          max_scale: 0.2
-          max_shift: 0.2
-          max_scale_temp: 0.2
-          max_shift_temp: 0.2
+          max_scale: 0.1
+          max_shift: 0.1
+          max_scale_temp: 0.0
+          max_shift_temp: 0.0
 
 
     tracker_model:
