@@ -18,7 +18,7 @@ python3 ./main/dist_train_sat.py --config 'path/to/config.yaml' --resume 10
 Resuming from certain snapshot file
 
 ```Bash
-python3 ./main/dist_train_sat.py --config 'path/to/config.yaml' --resume 'snapshots/siamfcpp_alexnet/epoch-10.pkl'
+python3 ./main/dist_train_sat.py --config 'path/to/config.yaml' --resume 'xxxx/epoch-10.pkl'
 ```
 Resuming from the latest snapshot file
 
