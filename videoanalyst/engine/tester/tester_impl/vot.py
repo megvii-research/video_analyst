@@ -7,6 +7,8 @@ import math
 import os
 import os.path as osp
 from collections import OrderedDict
+import importlib
+
 import torch.multiprocessing as mp
 
 from os.path import join
@@ -179,6 +181,9 @@ class VOTTester(TesterBase):
         r"""
         Run evaluation & write result to csv file under self.tracker_dir
         """
+        AccuracyRobustnessBenchmark = importlib.import_module("videoanalyst.evaluation.vot_benchmark.pysot.evaluation", package="AccuracyRobustnessBenchmark").AccuracyRobustnessBenchmark
+        EAOBenchmark = importlib.import_module("videoanalyst.evaluation.vot_benchmark.pysot.evaluation", package="EAOBenchmark").EAOBenchmark
+
         tracker_name = self._hyper_params["exp_name"]
         result_csv = "%s.csv" % tracker_name
 
@@ -187,12 +192,12 @@ class VOTTester(TesterBase):
             self.dataset_name,
             self._hyper_params["data_root"][self.dataset_name])
         dataset.set_tracker(self.tracker_dir, self.tracker_name)
-        ar_benchmark = vot_benchmark.AccuracyRobustnessBenchmark(dataset)
+        ar_benchmark = AccuracyRobustnessBenchmark(dataset)
         ar_result = {}
         ret = ar_benchmark.eval(self.tracker_name)
         ar_result.update(ret)
         ar_benchmark.show_result(ar_result)
-        benchmark = vot_benchmark.EAOBenchmark(dataset)
+        benchmark = EAOBenchmark(dataset)
         eao_result = {}
         ret = benchmark.eval(self.tracker_name)
         eao_result.update(ret)
@@ -224,6 +229,8 @@ class VOTTester(TesterBase):
         v_id: int
             video id
         """
+        vot_overlap = importlib.import_module("videoanalyst.evaluation.vot_benchmark.pysot.utils.region", package="vot_overlap").vot_overlap
+        vot_float2str = importlib.import_module("videoanalyst.evaluation.vot_benchmark.pysot.utils.region", package="vot_float2str").vot_float2str
         regions = []
         video = self.dataset[video]
         image_files, gt = video['image_files'], video['gt']
@@ -250,7 +257,7 @@ class VOTTester(TesterBase):
                                 location[0] + location[2],
                                 location[1] + location[3], location[0],
                                 location[1] + location[3])
-                b_overlap = vot_benchmark.vot_overlap(
+                b_overlap = vot_overlap(
                     gt_polygon, pred_polygon, (im.shape[1], im.shape[0]))
                 gt_polygon = ((gt[f][0], gt[f][1]), (gt[f][2], gt[f][3]),
                               (gt[f][4], gt[f][5]), (gt[f][6], gt[f][7]))
@@ -279,7 +286,7 @@ class VOTTester(TesterBase):
         with open(result_path, "w") as fin:
             for x in regions:
                 fin.write("{:d}\n".format(x)) if isinstance(x, int) else \
-                    fin.write(','.join([vot_benchmark.vot_float2str("%.4f", i) for i in x]) + '\n')
+                    fin.write(','.join([vot_float2str("%.4f", i) for i in x]) + '\n')
 
         logger.info(
             '({:d}) Video: {:12s} Time: {:02.1f}s Speed: {:3.1f}fps Lost: {:d} '
