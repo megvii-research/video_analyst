@@ -64,6 +64,7 @@ class DistributedSATTrainer(TrainerBase):
         torch.cuda.empty_cache()
         devs = self._state["devices"]
         self._model.train()
+        self.load_snapshot()
         # parallelism with Distributed Data Parallel (DDP)
         self._model.set_device(devs[0])
         self._model = nn.parallel.DistributedDataParallel(
