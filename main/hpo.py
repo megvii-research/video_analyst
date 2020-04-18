@@ -34,6 +34,28 @@ def make_parser():
 
     return parser
 
+def build_siamfcpp_tester(task_cfg):
+    # build model
+    model = model_builder.build("track", task_cfg.model)
+    # build pipeline
+    pipeline = pipeline_builder.build("track", task_cfg.pipeline, model)
+    # build tester
+    testers = tester_builder("track", task_cfg.tester, "tester", pipeline)
+    return testers
+
+def build_sat_tester(task_cfg):
+    # build model
+    tracker_model  = model_builder.build("track", task_cfg.tracker_model)
+    tracker = pipeline_builder.build("track", task_cfg.tracker_pipeline, model=tracker_model)
+    segmenter = model_builder.build('vos', task_cfg.segmenter)
+    # build pipeline
+    pipeline = pipeline_builder.build('vos',
+                                        task_cfg.pipeline,
+                                        segmenter=segmenter,
+                                        tracker=tracker)
+    # build tester
+    testers = tester_builder(task, task_cfg.tester, "tester", pipeline)
+    return testers
 
 if __name__ == '__main__':
     # parsing
@@ -49,12 +71,11 @@ if __name__ == '__main__':
     root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.test
     task, task_cfg_origin = specify_task(root_cfg)
-
+    
     # hpo config
     with open(parsed_args.hpo_config, "r") as f:
         hpo_cfg = yaml.safe_load(f)
-    hpo_cfg = hpo_cfg["test"]
-    _, hpo_cfg = specify_task(hpo_cfg)
+    hpo_cfg = hpo_cfg["test"][task]
     hpo_schedules = hpo.parse_hp_path_and_range(hpo_cfg)
 
     csv_file = osp.join(hpo_cfg["exp_save"],
@@ -63,14 +84,14 @@ if __name__ == '__main__':
     while True:
         task_cfg = deepcopy(task_cfg_origin)
         hpo_exp_dict = hpo.sample_and_update_hps(task_cfg, hpo_schedules)
-
+        if task == "track":
+            testers = build_siamfcpp_tester(task_cfg)
+        elif task == "vos":
+            testers = build_sat_tester(task_cfg)
+        else:
+            logger.error("task {} is not supported".format(task_cfg))
+            exit()
         task_cfg.freeze()
-        # build model
-        model = model_builder.build(task, task_cfg.model)
-        # build pipeline
-        pipeline = pipeline_builder.build(task, task_cfg.pipeline, model)
-        # build tester
-        testers = tester_builder(task, task_cfg.tester, "tester", pipeline)
         tester = testers[0]
         test_result_dict = tester.test()
         hpo_exp_dict["main_performance"] = test_result_dict["main_performance"]
