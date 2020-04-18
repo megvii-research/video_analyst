@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 python3 ./main/test.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml'
 python3 ./main/test.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet-new.yaml'
 python3 ./main/test.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet-multi_temp.yaml'
