@@ -35,7 +35,7 @@ sudo apt-get install python3-tk
 ### SiamFCpp tracker
 * [Tencent Weiyun](https://share.weiyun.com/56C92l4), code: wg47g7 with md5sum ad240
 ### SAT segmentor
-* [baidu yun](https://pan.baidu.com/s/1Tpr-Cfl1_rXjKuatyKHT0w) code: 7usj
+* [baidu yun](https://pan.baidu.com/s/1uZ26iZyVJm50dJ3GoLCQ9w), code: rcsn
 
 ## Compile evaluation toolkit
 
@@ -44,6 +44,7 @@ bash compile.sh
 ```
 
 ## Set datasets
+
 ### Davis
 Download [Davis](https://davischallenge.org/davis2017/code.html)
 Set soft link to dataset directory 
@@ -91,13 +92,6 @@ datasets
 
 
 ## Set models
-
-Set soft link to model directory
-
-```Bash
-ln -s path_to_models models/sat
-```
-
 At _path_to_models_:
 
 ```File Tree
@@ -106,4 +100,6 @@ models
     |── siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl
 ├── sat
     |── sat_res50_davis17_2518a.pkl
+├── resnet
+    |── res-50-imagenet.pkl
 ```

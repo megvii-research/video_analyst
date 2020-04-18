@@ -58,8 +58,8 @@ test:
         SatVOS:
           pretrain_model_path: "snapshots/sat_res50_davis_0417_syncbn_coslr_nococo/epoch-19.pkl"
     pipeline:
-      name: "StateAwareTrackerNew"
-      StateAwareTrackerNew:
+      name: "StateAwareTracker"
+      StateAwareTracker:
         save_patch: &save_patch False
         mask_pred_thresh: 0.35
         mask_filter_thresh: 0.45

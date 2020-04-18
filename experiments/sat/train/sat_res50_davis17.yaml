@@ -1,6 +1,6 @@
 train:
   vos:
-    exp_name: &TRAIN_NAME "sat_res50_davis_0418_syncbn_coslr_fulldata"
+    exp_name: &TRAIN_NAME "sat_res50_davis17"
     exp_save: &TRAIN_SAVE "snapshots"
     num_processes: 8
     data:
@@ -49,13 +49,13 @@ train:
       target:
         name: "SATMaskTarget"
         SATMaskTarget:
-          max_scale: 0.2
-          max_shift: 0.2
-          max_scale_temp: 0.2
-          max_shift_temp: 0.2
+          max_scale: 0.1
+          max_shift: 0.1
+          max_scale_temp: 0.0
+          max_shift_temp: 0.0
 
 
-    tracker_model:
+    tracker:
       backbone:
         name: "AlexNet"
       task_head:

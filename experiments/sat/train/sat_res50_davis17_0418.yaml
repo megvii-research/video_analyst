@@ -1,6 +1,6 @@
 train:
   vos:
-    exp_name: &TRAIN_NAME "sat_res50_davis_0414_syncbn_coslr_newsot"
+    exp_name: &TRAIN_NAME "sat_res50_davis_0418_syncbn_coslr_fulldata"
     exp_save: &TRAIN_SAVE "snapshots"
     num_processes: 8
     data:
@@ -24,8 +24,10 @@ train:
             YoutubeVOSDataset:
               ratio: 5.0
               max_diff: 10
+              subsets: ["train"]
             COCODataset:
               ratio: 2.0
+              subsets: ["train2017", "val2017"]
             DavisDataset:
               ratio: 1.0
               max_diff: 10
@@ -33,7 +35,7 @@ train:
             name: "TrackPairFilter"
             TrackPairFilter:
               max_area_rate: 0.75
-              min_area_rate: 0.001
+              min_area_rate: 0.02
               max_ratio: 10
               target_type: "mask"
       transformer:
@@ -47,13 +49,13 @@ train:
       target:
         name: "SATMaskTarget"
         SATMaskTarget:
-          max_scale: 0.1
-          max_shift: 0.1
-          max_scale_temp: 0.0
-          max_shift_temp: 0.0
+          max_scale: 0.2
+          max_shift: 0.2
+          max_scale_temp: 0.2
+          max_shift_temp: 0.2
 
 
-    tracker:
+    tracker_model:
       backbone:
         name: "AlexNet"
       task_head:
@@ -67,7 +69,7 @@ train:
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_88e4e9ee476545b952b04ae80c480f08.pkl"
+          pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl"
           corr_fea_output: True
 
     segmenter:

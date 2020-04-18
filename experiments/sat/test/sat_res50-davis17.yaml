@@ -1,6 +1,6 @@
 test:
   vos:
-    exp_name: &TEST_NAME "sat_res50_davis_0410_syncbn_coslr_aug"
+    exp_name: &TEST_NAME "sat_res50_davis17"
     exp_save: &TEST_SAVE "logs"
     tracker_model:
       backbone:
@@ -52,10 +52,10 @@ test:
       task_model:
         name: "SatVOS"
         SatVOS:
-          pretrain_model_path: "snapshots/sat_res50_davis_0417_syncbn_coslr_fulldata/epoch-18.pkl"
+          pretrain_model_path: "models/sat/sat_res50_davis17_b81fa.pkl"
     pipeline:
-      name: "StateAwareTrackerNew"
-      StateAwareTrackerNew:
+      name: "StateAwareTracker"
+      StateAwareTracker:
         save_patch: &save_patch False
         mask_pred_thresh: 0.35
         mask_filter_thresh: 0.45

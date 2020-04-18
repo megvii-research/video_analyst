@@ -3,7 +3,7 @@ test:
     exp_name: &TEST_NAME "siamfcpp-sat50-param"
     exp_save: &TEST_SAVE "logs/hpo"
     pipeline:
-      StateAwareTrackerNew:
+      StateAwareTracker:
         mask_pred_thresh_hpo_range: [0.3, 0.35, 0.4]
         mask_filter_thresh_hpo_range: [0.45]
         state_score_thresh_hpo_range: [0.8]
