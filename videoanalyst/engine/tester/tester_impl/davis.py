@@ -3,7 +3,6 @@ import copy
 import cv2
 import numpy as np
 import itertools
-import logging
 import math
 import os
 import torch
@@ -11,6 +10,8 @@ from loguru import logger
 from os import makedirs
 from os.path import join, isdir
 from collections import OrderedDict
+import torch.multiprocessing as mp
+from torch.multiprocessing import Pool, Manager
 from multiprocessing import Process, Queue
 from tqdm import tqdm
 
@@ -18,8 +19,6 @@ from ..tester_base import TRACK_TESTERS, TesterBase, VOS_TESTERS
 from videoanalyst.evaluation import davis_benchmark
 from videoanalyst.utils import ensure_dir
 from PIL import Image
-
-davis_benchmark.init_log('global', logging.INFO)
 
 
 @VOS_TESTERS.register
@@ -41,19 +40,15 @@ class DAVISTester(TesterBase):
     save_video: bool
         save videos with predicted mask overlap for visualization and debug
     save_patch: bool
-        save patches of mask prediction on saliency image for visualization and debug
-
     """
 
-    extra_hyper_params = dict(
-        device_num=1,
-        data_root="datasets/DAVIS",
-        dataset_names=[
-            "DAVIS2017",
-        ],
-        save_video=False,
-        save_patch=False,
-    )
+    extra_hyper_params = dict(device_num=1,
+                              data_root="datasets/DAVIS",
+                              dataset_names=[
+                                  "DAVIS2017",
+                              ],
+                              save_video=False,
+                              save_patch=False)
 
     def __init__(self, *args, **kwargs):
         r"""
@@ -69,9 +64,6 @@ class DAVISTester(TesterBase):
         super(DAVISTester, self).__init__(*args, **kwargs)
         self._state['speed'] = -1
         self.iou_eval_thres = np.arange(0.3, 0.5, 0.05)
-
-    def update_params(self):
-        pass
 
     def test(self):
         r"""
@@ -89,11 +81,12 @@ class DAVISTester(TesterBase):
             # track videos
             self.run_tracker()
             # evaluation
-            self.evaluation('default_hp')
+            eval_result = self.evaluation('default_hp')
+        return dict(main_performance=eval_result["JF"])
 
     def run_tracker(self):
         """
-        Run self.pipeline on VOT
+        Run self.pipeline on DAVIS
         """
         num_gpu = self._hyper_params["device_num"]
         all_devs = [torch.device("cuda:%d" % i) for i in range(num_gpu)]
@@ -109,9 +102,10 @@ class DAVISTester(TesterBase):
         pbar = tqdm(total=nr_records)
         mean_speed = -1
         speed_list = []
-        speed_queue = Queue(500)
+        manager = Manager()
+        speed_queue = manager.Queue(500)
         # set worker
-        if num_gpu == 1:
+        if num_gpu == 0:
             self.worker(keys, all_devs[0], self.dataset, speed_queue)
             for i in range(nr_records):
                 s = speed_queue.get()
@@ -124,9 +118,9 @@ class DAVISTester(TesterBase):
                 start = i * nr_video
                 end = min(start + nr_video, nr_records)
                 split_records = keys[start:end]
-                proc = Process(target=self.worker,
-                               args=(split_records, all_devs[i], self.dataset,
-                                     speed_queue))
+                proc = mp.Process(target=self.worker,
+                                  args=(split_records, all_devs[i],
+                                        self.dataset, speed_queue))
                 logger.info('process:%d, start:%d, end:%d' % (i, start, end))
                 proc.start()
                 procs.append(proc)
@@ -142,12 +136,10 @@ class DAVISTester(TesterBase):
         self._state['speed'] = mean_speed
 
     def worker(self, records, dev, dataset, speed_queue=None):
-        tracker = copy.deepcopy(self._pipeline)
+        tracker = self._pipeline
         tracker.set_device(dev)
         for v_id, video in enumerate(records):
-            speed = self.track_single_video_vos(tracker,
-                                                dataset[video],
-                                                visualization=True)
+            speed = self.track_single_video_vos(tracker, dataset[video])
             if speed_queue is not None:
                 speed_queue.put_nowait(speed)
 
@@ -168,21 +160,19 @@ class DAVISTester(TesterBase):
             eval_dump_path, search_task_name + '_name_per_sequence_results.csv')
 
         version = self.dataset_name[-4:]
-        # results_path = '/data/project/davis2017-evaluation-master/results/semi-supervised/ranet'
         hp_dict = {}
-        davis_benchmark.davis2017_eval(davis_data_path,
-                                       results_path,
-                                       csv_name_global_path,
-                                       csv_name_per_sequence_path,
-                                       hp_dict,
-                                       version=version)
+        return davis_benchmark.davis2017_eval(davis_data_path,
+                                              results_path,
+                                              csv_name_global_path,
+                                              csv_name_per_sequence_path,
+                                              hp_dict,
+                                              version=version)
 
-    def track_single_video_vos(self,
-                               tracker,
-                               video,
-                               mot_enable=True,
-                               visualization=False):
+    def track_single_video_vos(self, tracker, video, mot_enable=True):
         '''
+        perfrom semi-supervised video object segmentation for single video
+        :param tracker: tracker pipeline
+        :param video: video info
         :param mot_enable:  if true, perform instance level segmentation on davis, otherwise semantic
         '''
         image_files = video['image_files']
@@ -215,10 +205,13 @@ class DAVISTester(TesterBase):
             track_boxes = np.zeros((object_num, len(image_files), 4))
             track_mask_boxes = np.zeros((object_num, len(image_files), 4))
             track_mask_score = np.zeros((object_num, len(image_files)))
-        if self._hyper_params['save_video']:
+            track_score = np.zeros((object_num, len(image_files)))
+            state_score = np.zeros((object_num, len(image_files)))
+        if self._hyper_params['save_patch']:
             patch_list = []
 
         for obj_id, o_id in enumerate(object_ids):
+            obj_patch_list = []
             logger.info('{} th object in video {}'.format(o_id, video['name']))
             if 'start_frame' in video:
                 start_frame = video['start_frame'][str(o_id)]
@@ -232,28 +225,29 @@ class DAVISTester(TesterBase):
 
                 tic = cv2.getTickCount()
                 if f == start_frame:  # init
-                    mask = annos_init[obj_id] == o_id
+                    mask = (annos_init[obj_id] == o_id).astype(np.uint8)
                     x, y, w, h = cv2.boundingRect((mask).astype(np.uint8))
                     tracker.init(im, np.array([x, y, w, h]), mask)
                 elif end_frame >= f > start_frame:  # tracking
-                    location = tracker.update(im)
-                    mask = tracker._state['mask_in_full_image']
-
+                    mask = tracker.update(im)
                     if self._hyper_params['save_video']:
                         rect_mask = tracker._state['mask_rect']
                         mask_score = tracker._state['conf_score']
-                        track_boxes[obj_id, f, :] = location
+                        track_boxes[obj_id, f, :] = tracker._state['track_box']
                         track_mask_boxes[obj_id, f, :] = rect_mask
                         track_mask_score[obj_id, f] = mask_score
+                        track_score[obj_id, f] = tracker._state["track_score"]
+                        state_score[obj_id, f] = tracker._state["state_score"]
 
                     if self._hyper_params['save_patch']:
                         patch = tracker._state['patch_prediction']
-                        patch_list.append(patch)
+                        obj_patch_list.append(patch)
 
                 toc += cv2.getTickCount() - tic
                 if end_frame >= f >= start_frame:
                     pred_masks[obj_id, f, :, :] = mask
-
+            if self._hyper_params['save_patch']:
+                patch_list.append(obj_patch_list)
         toc /= cv2.getTickFrequency()
 
         if len(annos) == len(image_files):
@@ -276,8 +270,11 @@ class DAVISTester(TesterBase):
             logger.info('save patches path: {}'.format(video_path))
             if not isdir(video_path): makedirs(video_path)
             for i in range(len(patch_list)):
-                patch_image = patch_list[i]
-                cv2.imwrite(join(video_path, str(i) + '.png'), patch_image)
+                patch_images = patch_list[i]
+                for frame_id, patch_image in enumerate(patch_images):
+                    cv2.imwrite(
+                        join(video_path, 'obj_{}_{}.png'.format(i, frame_id)),
+                        patch_image)
 
         video_path = join(self.save_root_dir, 'results_multi', video['name'])
         logger.info('save mask path:{}'.format(video_path))
@@ -308,14 +305,13 @@ class DAVISTester(TesterBase):
             VideoOut = cv2.VideoWriter(
                 video_path + '/' + video['name'] + '.avi',
                 cv2.VideoWriter_fourcc(*'MJPG'), 10.0, (img_w, img_h))
-            pred_mask_final = np.array(pred_masks)
-            pred_mask_final = (
-                np.argmax(pred_mask_final, axis=0).astype('uint8') +
-                1) * (np.max(pred_mask_final, axis=0) >
-                      tracker._hyper_params['mask_pred_thresh']).astype('uint8')
-
             for f, image_file in enumerate(image_files):
                 img = cv2.imread(image_file)
+                mask_f = pred_mask_final[f, :, :]
+                img = davis_benchmark.overlay_semantic_mask(img,
+                                                            mask_f,
+                                                            alpha=0.3,
+                                                            contour_thickness=1)
                 for i in range(object_num):
                     rect = track_boxes[i, f]
                     rect = [int(l) for l in rect]
@@ -323,17 +319,11 @@ class DAVISTester(TesterBase):
                     rect_mask = track_mask_boxes[i, f]
                     rect_mask = [int(l) for l in rect_mask]
 
-                    score = round(track_mask_score[i, f], 2)
+                    mask_score = round(track_mask_score[i, f], 2)
+                    track_score_ = round(track_score[i, f], 2)
+                    state_score_ = round(state_score[i, f], 2)
                     color = davis_benchmark.labelcolormap(object_num + 1)[i + 1]
                     color_tuple = (int(color[0]), int(color[1]), int(color[2]))
-                    if f > 0:
-                        cv2.putText(img,
-                                    'State Score : ' + str(score),
-                                    (rect[0], max(rect[1], 5) + 10),
-                                    cv2.FONT_HERSHEY_SIMPLEX,
-                                    0.5,
-                                    color=color_tuple,
-                                    thickness=2)
                     cv2.putText(img,
                                 'Frame : ' + str(f), (10, 20),
                                 cv2.FONT_HERSHEY_SIMPLEX,
@@ -351,12 +341,17 @@ class DAVISTester(TesterBase):
                                        rect_mask[1] + rect_mask[3]),
                                       color=(255, 255, 255),
                                       thickness=2)
+                    if f > 0:
+                        cv2.putText(img,
+                                    'M {} T{} S {}'.format(
+                                        mask_score, track_score_, state_score_),
+                                    (rect[0], max(rect[1], 5) + 10),
+                                    cv2.FONT_HERSHEY_SIMPLEX,
+                                    0.5,
+                                    color=(0, 0, 255),
+                                    thickness=2)
 
-                mask_f = pred_mask_final[f, :, :]
-                output_frame = davis_benchmark.overlay_semantic_mask(
-                    img, mask_f, alpha=0.3, contour_thickness=1)
-
-                VideoOut.write(output_frame)
+                VideoOut.write(img)
             VideoOut.release()
         return speed
 

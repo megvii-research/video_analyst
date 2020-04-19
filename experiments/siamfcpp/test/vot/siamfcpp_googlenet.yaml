@@ -25,9 +25,9 @@ test:
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
-        test_lr: 0.52
-        window_influence: 0.24
-        penalty_k: 0.08
+        test_lr: 0.5463495315846685
+        window_influence: 0.2375528904700477
+        penalty_k: 0.04665662301445518
         num_conv3x3: 2
     tester:
       names: ["VOTTester",]

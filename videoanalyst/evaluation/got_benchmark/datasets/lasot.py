@@ -38,8 +38,9 @@ class LaSOT(object):
         self.root_dir = root_dir
         self.subset = subset
         self.return_meta = return_meta
-        if check_integrity:
-            self._check_integrity(root_dir)
+        # check seems useless, disabled 
+        # if check_integrity:
+        #     self._check_integrity(root_dir)
         self.cache_path = cache_path
         self.ignore_cache = ignore_cache
 

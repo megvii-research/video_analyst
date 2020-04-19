@@ -1,9 +1,8 @@
 from .bbox_helper import cxy_wh_2_rect, get_axis_aligned_bbox
 from .benchmark_helper import get_img, load_dataset
-from .log_helper import add_file_handler, init_log
 from .pysot.datasets import VOTDataset
-from .pysot.evaluation import AccuracyRobustnessBenchmark, EAOBenchmark
-from .pysot.utils.region import vot_float2str, vot_overlap
+# from .pysot.evaluation import AccuracyRobustnessBenchmark, EAOBenchmark
+# from .pysot.utils.region import vot_float2str, vot_overlap
 
 
 def show_result(self, result, topk=10, result_file=None):

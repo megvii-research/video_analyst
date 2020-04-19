@@ -61,15 +61,6 @@ class RegularTrainer(TrainerBase):
         self._state["initialized"] = False
         self._state["devices"] = torch.device("cuda:0")
 
-    def update_params(self, ):
-        super(RegularTrainer, self).update_params()
-        self._hyper_params["num_iterations"] = self._hyper_params[
-            "nr_image_per_epoch"] // self._hyper_params["minibatch"]
-        self._state["snapshot_dir"] = osp.join(self._hyper_params["exp_save"],
-                                               self._hyper_params["exp_name"])
-
-        self._state["snapshot_file"] = self._hyper_params["snapshot"]
-
     def init_train(self, ):
         torch.cuda.empty_cache()
         # move model & loss to target devices
@@ -82,7 +73,7 @@ class RegularTrainer(TrainerBase):
             self._model = nn.DataParallel(self._model, device_ids=devs)
             logger.info("Use nn.DataParallel for data parallelism")
         super(RegularTrainer, self).init_train()
-        logger.info("%s initialized", type(self).__name__)
+        logger.info("{} initialized".format(type(self).__name__))
 
     def train(self):
         if not self._state["initialized"]:

@@ -158,7 +158,7 @@ if __name__ == '__main__':
     ensure_dir(log_dir)
     logger.configure(
         handlers=[
-            dict(sink=sys.stderr, format="[{time}] {message}", level="INFO"),
+            dict(sink=sys.stderr, level="INFO"),
             dict(sink=osp.join(log_dir, "train_log.txt"),
                  enqueue=True,
                  serialize=True,

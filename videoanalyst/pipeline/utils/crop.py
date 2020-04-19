@@ -44,7 +44,12 @@ def get_axis_aligned_bbox(region):
     return cx, cy, w, h
 
 
-def get_subwindow_tracking(im, pos, model_sz, original_sz, avg_chans=(0, 0, 0)):
+def get_subwindow_tracking(im,
+                           pos,
+                           model_sz,
+                           original_sz,
+                           avg_chans=(0, 0, 0),
+                           mask=None):
     r"""
     Get subwindow via cv2.warpAffine
 
@@ -60,6 +65,9 @@ def get_subwindow_tracking(im, pos, model_sz, original_sz, avg_chans=(0, 0, 0)):
         subwindow range on the original image
     avg_chans: tuple
         average values per channel
+    mask: numpy.array
+        mask, (H, W)
+
 
     Returns
     -------
@@ -88,6 +96,12 @@ def get_subwindow_tracking(im, pos, model_sz, original_sz, avg_chans=(0, 0, 0)):
                               flags=(cv2.INTER_LINEAR | cv2.WARP_INVERSE_MAP),
                               borderMode=cv2.BORDER_CONSTANT,
                               borderValue=tuple(map(int, avg_chans)))
+    if mask is not None:
+        mask_patch = cv2.warpAffine(mask,
+                                    mat2x3, (model_sz, model_sz),
+                                    flags=(cv2.INTER_NEAREST
+                                           | cv2.WARP_INVERSE_MAP))
+        return im_patch, mask_patch
     return im_patch
 
 
@@ -99,7 +113,8 @@ def get_crop(im,
              avg_chans=(0, 0, 0),
              context_amount=0.5,
              func_get_subwindow=get_subwindow_tracking,
-             output_size=None):
+             output_size=None,
+             mask=None):
     r"""
     Get cropped patch for tracking
 
@@ -123,6 +138,8 @@ def get_crop(im,
         function used to perform cropping & resizing
     output_size: int
         the size of output if it is not None
+    mask: numpy.array
+        mask of the object
 
     Returns
     -------
@@ -141,11 +158,18 @@ def get_crop(im,
 
     if output_size is None:
         output_size = x_size
-    # extract scaled crops for search region x at previous target position
-    im_crop = func_get_subwindow(im, target_pos, output_size, round(s_crop),
-                                 avg_chans)
-
-    return im_crop, scale
+    if mask is not None:
+        im_crop, mask_crop = func_get_subwindow(im,
+                                                target_pos,
+                                                output_size,
+                                                round(s_crop),
+                                                avg_chans,
+                                                mask=mask)
+        return im_crop, mask_crop, scale
+    else:
+        im_crop = func_get_subwindow(im, target_pos, output_size, round(s_crop),
+                                     avg_chans)
+        return im_crop, scale
 
 
 def _make_valid_int_pair(sz) -> Tuple[int, int]:

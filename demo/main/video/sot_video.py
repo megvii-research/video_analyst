@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*
-
 from paths import ROOT_PATH  # isort:skip
 from videoanalyst.config.config import cfg
 from videoanalyst.config.config import specify_task
 from videoanalyst.model import builder as model_builder
 from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.utils import complete_path_wt_root_in_cfg
+from videoanalyst.utils import complete_path_wt_root_in_cfg, load_image
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy, xyxy2xywh
+from videoanalyst.utils.image import ImageFileVideoStream, ImageFileVideoWriter
 
+import os.path as osp
+import glob
 import argparse
 from loguru import logger
 
@@ -46,6 +48,11 @@ def make_parser():
                         type=str,
                         default="",
                         help="path to dump the track video")
+    parser.add_argument("-s",
+                        "--start-index",
+                        type=int,
+                        default=0,
+                        help="start index / #frames to skip")
     return parser
 
 
@@ -70,22 +77,36 @@ def main(args):
     template = None
     vw = None
 
+    # create video stream
     if args.video == "webcam":
         logger.info("[INFO] starting video stream...")
         vs = cv2.VideoCapture(0)
         vs.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+    elif not osp.isfile(args.video):
+        vs = ImageFileVideoStream(args.video, init_counter=args.start_index)
     else:
         vs = cv2.VideoCapture(args.video)
+
+    # create video writer to output video
     if args.output:
-        fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        width, height = vs.get(3), vs.get(4)
-        vw = cv2.VideoWriter(args.output, fourcc, 25, (int(width), int(height)))
+        if osp.isdir(args.output):
+            vw = ImageFileVideoWriter(args.output)
+        else:
+            fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+            width, height = vs.get(3), vs.get(4)
+            vw = cv2.VideoWriter(args.output, fourcc, 25,
+                                 (int(width), int(height)))
+
+    # loop over sequence
     while vs.isOpened():
+        key = 255
         ret, frame = vs.read()
+        logger.debug("frame: {}".format(ret))
         if ret:
             if init_box is not None:
                 time_a = time.time()
                 rect_pred = pipeline.update(frame)
+                logger.debug(rect_pred)
                 show_frame = frame.copy()
                 time_cost = time.time() - time_a
                 bbox_pred = xywh2xyxy(rect_pred)
@@ -103,7 +124,11 @@ def main(args):
             cv2.imshow(window_name, show_frame)
             if vw is not None:
                 vw.write(show_frame)
-        key = cv2.waitKey(30) & 0xFF
+        # catch key if
+        if (init_box is None) or (vw is None):
+            logger.debug("Press key s to select object.")
+            key = cv2.waitKey(30) & 0xFF
+        logger.debug("key: {}".format(key))
         if key == ord("q"):
             break
         # if the 's' key is selected, we are going to "select" a bounding
@@ -111,6 +136,7 @@ def main(args):
         elif key == ord("s"):
             # select the bounding box of the object we want to track (make
             # sure you press ENTER or SPACE after selecting the ROI)
+            logger.debug("Select object to track")
             box = cv2.selectROI(window_name,
                                 frame,
                                 fromCenter=False,
@@ -121,7 +147,11 @@ def main(args):
                     frame[box[1]:box[1] + box[3], box[0]:box[0] + box[2]],
                     (128, 128))
                 pipeline.init(frame, init_box)
+                logger.debug(
+                    "pipeline initialized with bbox : {}".format(init_box))
         elif key == ord("c"):
+            logger.debug(
+                "init_box/template released, press key s to select object.")
             init_box = None
             template = None
     vs.release()

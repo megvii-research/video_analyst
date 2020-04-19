@@ -2,9 +2,52 @@
 
 Date format: YY/MM/DD
 
+## 2020/04/18
+* add SAT train code
+* update SAT test code
+* change TrackInfo to TextInfo
+* new param loader for model borrowed from dectron2
+* update coco dataset from detectron2
+
+## 2020/04/18
+* New features in SOT demo (sot_video.py)
+  * Add image file video reader (reading from image files)
+  * Add image file video dumping (dump result as frame-level image files)
+
+## 2020/04/13
+* Add OTB test
+
+## 2020/04/12
+* Add iterable dataset in
+  * dataset_type under config node: data
+    * regular: former dataset
+    * iterable: newly added dataset
+  * data/adaptor_dataset.py: _AdaptorIterableDataset_ / _MultiStreamDataloader_
+  * data/builder.py: the branch with _cfg.dataset_type_
+* Fix seed issue
+  * pass builder's seed to dataset as ext_seed
+
 ## 2020/04/06
-* add model/pipeline/tester for SAT on DAVIS
-* add transferred models for SAT
+* Add model/pipeline/tester for SAT on DAVIS
+* Add transferred models for SAT
+
+## 2020/03/25
+
+____Major changes____
+
+* Add hyper-parameter search script
+  * _main/hpo.py_
+  * _experiment_
+  * _videoanalyst/utils/hpo.py_
+
+## 2020/03/23
+
+____Major changes____
+
+* Add full training data
+  * coco / det / vid / trackingnet / lasot / got10k
+  * with caching mechanism (reducing storage I/O by caching indexes into memory)
+  * TODO: perform verification with full data (under batchsize=256)
 
 ## 2020/03/25
 
