@@ -27,8 +27,6 @@ Visulize scheduled LR
     plot_LR(lr_scheduler, 'Exponential decay with warmup')
 See the bottom of code for more plot examples, together with some exmples for .yaml configuration files (commented part).
 """
-import sys
-sys.path.insert(0, ".")
 import json
 import math
 from abc import ABCMeta, abstractmethod
