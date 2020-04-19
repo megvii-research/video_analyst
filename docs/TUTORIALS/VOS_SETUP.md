@@ -102,5 +102,5 @@ models
 ├── sat
     |── sat_res50_davis17_2518a.pkl
 ├── resnet
-    |── res-50-imagenet.pkl
+    |── res-50-imagenet-fff49.pkl
 ```
