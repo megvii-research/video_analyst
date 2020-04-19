@@ -96,30 +96,19 @@ def xcorr_depthwise(x, kernel):
 class upsample_block(nn.Module):
     r"""
     Upsample block. e.g. used for upsample and feature fusion in decoder
-
-    Arguments
-    ---------
-    h_channel:
-        channel number of high-level feature
-
-    l_channel:
-        channel number of low-level feature
-
-    out_channel:
-        channel number of output feature after fusion
-
-    high_level_f: torch.Tensor
-        high level feature with smaller resolution
-
-    low_level_f: torch.Tensor
-        low level feature with larger resolution
-
-    Returns
-    -------
-    torch.Tensor
-        feature fusion result
     """
     def __init__(self, h_channel, l_channel, out_channel):
+        r"""
+        h_channel:
+            channel number of high-level feature
+
+        l_channel:
+            channel number of low-level feature
+
+        out_channel:
+            channel number of output feature after fusion
+        """
+
         super(upsample_block, self).__init__()
         self.conv1 = conv_bn_relu(h_channel, out_channel, pad=1, bias=False)
         self.conv_adjust = conv_bn_relu(out_channel + l_channel,
@@ -128,6 +117,18 @@ class upsample_block(nn.Module):
                                         bias=False)
 
     def forward(self, high_level_f, low_level_f):
+        r"""
+        :param high_level_f: torch.Tensor
+            high level feature with smaller resolution
+
+        :param low_level_f: torch.Tensor
+            low level feature with larger resolution
+
+        Returns
+        -------
+        torch.Tensor
+            feature fusion result
+        """
         high_level_f = self.conv1(high_level_f)
         f_resize = F.interpolate(high_level_f,
                                  size=low_level_f.size()[2:],
@@ -141,16 +142,6 @@ class upsample_block(nn.Module):
 class projector(nn.Module):
     r"""
     Projection layer to adjust channel number
-
-    Arguments
-    ---------
-    x: torch.Tensor
-        feature to project
-
-    Returns
-    -------
-    torch.Tensor
-        adjusted result
     """
     def __init__(self, in_channel, out_channel):
         super(projector, self).__init__()

@@ -68,6 +68,6 @@ class DenseboxTarget(TargetBase):
             box_gt=box_label,
             is_negative_pair=int(is_negative_pair),
         )
-        training_data = super().__call__(training_data)
+        #training_data = super().__call__(training_data)
 
         return training_data

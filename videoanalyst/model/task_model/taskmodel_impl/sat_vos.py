@@ -5,7 +5,6 @@ from loguru import logger
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
                                                           VOS_TASKMODELS)
-from videoanalyst.utils import md5sum
 
 torch.set_printoptions(precision=8)
 
@@ -28,7 +27,6 @@ class SatVOS(ModuleBase):
         self.GML_extractor = GML_extractor
         self.joint_encoder = joint_encoder
         self.decoder = decoder
-        # loss
         self.loss = loss
 
     def forward(self, *args, phase="train"):
@@ -57,45 +55,30 @@ class SatVOS(ModuleBase):
         """
         # phase: train
         if phase == 'train':
-            pass
+            saliency_image, corr_feature, filtered_image = args
+            global_feature = self.GML_extractor(filtered_image)
+            enc_features = self.joint_encoder(saliency_image, corr_feature)
+            decoder_features = [global_feature] + enc_features
+            out_list = self.decoder(decoder_features, phase="train")
 
         # phase: feature
         elif phase == 'global_feature':
-            filterd_image, = args
-            f_g = self.GML_extractor(filterd_image)
+            filtered_image, = args
+            f_g = self.GML_extractor(filtered_image)
             out_list = [f_g]
-            return out_list
 
         elif phase == 'segment':
             saliency_image, corr_feature, global_feature = args
             enc_features = self.joint_encoder(saliency_image, corr_feature)
             decoder_features = [global_feature] + enc_features
 
-            outputs = self.decoder(decoder_features)
-            pred_mask = outputs[0]
+            outputs = self.decoder(decoder_features, phase="test")
+            pred_mask = outputs
             out_list = [pred_mask]
-            return out_list
 
         else:
             raise ValueError("Phase non-implemented.")
-
-    def update_params(self):
-        r"""
-        Load model parameters
-        """
-        if self._hyper_params["pretrain_model_path"] != "":
-            model_path = self._hyper_params["pretrain_model_path"]
-            state_dict = torch.load(model_path,
-                                    map_location=torch.device("cpu"))
-            if "model_state_dict" in state_dict:
-                state_dict = state_dict["model_state_dict"]
-            try:
-                self.load_state_dict(state_dict, strict=True)
-            except:
-                self.load_state_dict(state_dict, strict=False)
-            logger.info("Pretrained weights loaded from {}".format(model_path))
-            logger.info("Check md5sum of Pretrained weights: %s" %
-                        md5sum(model_path))
+        return out_list
 
     def set_device(self, dev):
         if not isinstance(dev, torch.device):

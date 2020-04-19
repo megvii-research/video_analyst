@@ -48,11 +48,10 @@ class SamplerBase:
         self._state = dict()
         self._state["rng"] = np.random.RandomState(seed)
         self.datasets = datasets
-        # logging info for underlying datasets
         for d in datasets:
             dataset_name = type(d).__name__
-            logger.info(
-                "Sampler's underlying datasets: {}".format(dataset_name))
+            logger.info("Sampler's underlying datasets: {}, length {}".format(
+                dataset_name, len(d)))
 
     def get_hps(self) -> Dict:
         r"""

@@ -36,7 +36,7 @@ def get_config(task_list: List) -> Dict[str, CfgNode]:
 
     for cfg_name, modules in TASK_TARGETS.items():
         cfg = cfg_dict[cfg_name]
-        cfg["name"] = ""
+        cfg["name"] = "IdentityTarget"
 
         for name in modules:
             cfg[name] = CfgNode()

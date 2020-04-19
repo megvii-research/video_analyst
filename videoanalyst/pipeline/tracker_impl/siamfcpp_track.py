@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*
 
 import numpy as np
-
+from copy import deepcopy
+from loguru import logger
 import torch
 import torch.nn as nn
 
@@ -46,6 +47,8 @@ class SiamFCppTracker(PipelineBase):
             phase name for template feature extraction
         phase_track: str
             phase name for target search
+        corr_fea_output: bool
+            whether output corr feature
 
     Hyper-parameters (to be calculated at runtime)
     ----------------------------------------------
@@ -70,6 +73,7 @@ class SiamFCppTracker(PipelineBase):
         min_h=10,
         phase_init="feature",
         phase_track="track",
+        corr_fea_output=False,
     )
 
     def __init__(self, *args, **kwargs):
@@ -142,8 +146,8 @@ class SiamFCppTracker(PipelineBase):
         )
         phase = self._hyper_params['phase_init']
         with torch.no_grad():
-            features = self._model(imarray_to_tensor(im_z_crop).to(self.device),
-                                   phase=phase)
+            data = imarray_to_tensor(im_z_crop).to(self.device)
+            features = self._model(data, phase=phase)
 
         return features, im_z_crop, avg_chans
 
@@ -182,6 +186,9 @@ class SiamFCppTracker(PipelineBase):
         # self.state['target_sz'] = target_sz
         self._state['state'] = (target_pos, target_sz)
 
+    def get_avg_chans(self):
+        return self._state['avg_chans']
+
     def track(self,
               im_x,
               target_pos,
@@ -208,11 +215,14 @@ class SiamFCppTracker(PipelineBase):
             context_amount=context_amount,
             func_get_subwindow=get_subwindow_tracking,
         )
+        self._state["scale_x"] = deepcopy(scale_x)
         with torch.no_grad():
-            score, box, cls, ctr, *args = self._model(
+            score, box, cls, ctr, extra = self._model(
                 imarray_to_tensor(im_x_crop).to(self.device),
                 *features,
                 phase=phase_track)
+        if self._hyper_params["corr_fea_output"]:
+            self._state["corr_fea"] = extra["corr_fea"]
 
         box = tensor_to_numpy(box[0])
         score = tensor_to_numpy(score[0])[:, 0]
@@ -242,12 +252,18 @@ class SiamFCppTracker(PipelineBase):
         # record optional mid-level info
         if update_state:
             self._state['score'] = score
-            self._state['pscore'] = pscore
+            self._state['pscore'] = pscore[best_pscore_id]
             self._state['all_box'] = box
             self._state['cls'] = cls
             self._state['ctr'] = ctr
 
         return new_target_pos, new_target_sz
+
+    def set_state(self, state):
+        self._state["state"] = state
+
+    def get_track_score(self):
+        return float(self._state["pscore"])
 
     def update(self, im):
 
@@ -270,6 +286,8 @@ class SiamFCppTracker(PipelineBase):
         # return rect format
         track_rect = cxywh2xywh(np.concatenate([target_pos, target_sz],
                                                axis=-1))
+        if self._hyper_params["corr_fea_output"]:
+            return target_pos, target_sz, self._state["corr_fea"]
         return track_rect
 
     # ======== tracking processes ======== #

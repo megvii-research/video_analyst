@@ -54,3 +54,5 @@ def davis2017_eval(davis_path,results_path,csv_name_global_path,csv_name_per_seq
     print(table_seq.to_string(index=False))
     total_time = time() - time_start
     sys.stdout.write('\nTotal time:' + str(total_time))
+    return dict(JF=final_mean, JM=np.mean(J["M"]), JR=np.mean(J["R"]), JD=np.mean(J["D"]), FM=np.mean(F["M"]), FR=np.mean(F["R"]),
+        FD=np.mean(F["D"]))

@@ -9,12 +9,13 @@ from tqdm import tqdm
 
 import torch
 
-from ..monitor_base import TRACK_MONITORS, MonitorBase
+from ..monitor_base import TRACK_MONITORS, VOS_MONITORS, MonitorBase
 from videoanalyst.utils import dist_utils
 
 
 @TRACK_MONITORS.register
-class TrackInfo(MonitorBase):
+@VOS_MONITORS.register
+class TextInfo(MonitorBase):
     r"""
     Print tracking information during training.
     Compatible with _RegularTrainer_
@@ -30,10 +31,10 @@ class TrackInfo(MonitorBase):
         Arguments
         ---------
         """
-        super(TrackInfo, self).__init__()
+        super(TextInfo, self).__init__()
 
     def init(self, engine_state: Dict):
-        super(TrackInfo, self).init(engine_state)
+        super(TextInfo, self).init(engine_state)
 
     def update(self, engine_data: Dict):
         r"""
@@ -56,8 +57,8 @@ class TrackInfo(MonitorBase):
             print_str += '%s: %.3f, ' % (k, l.detach().cpu().numpy())
         # extra info
         for extra in extras.values():
-            if extra:
-                extra = dist_utils.reduce_dict(extra)
+            #if extra:
+            #    extra = dist_utils.reduce_dict(extra)
             for k in extra:
                 l = extra[k]
                 print_str += '%s: %.3f, ' % (k, l)

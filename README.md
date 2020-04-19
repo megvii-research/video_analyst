@@ -29,7 +29,14 @@ Please refer to [SOT_SETUP.md](docs/SOT_SETUP.md)
 
 #### SOT video demo
 ```Bash
-python3 ./demo/main/video/sot_video.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml' --device cuda --video $video_path$ #default is web camera
+# demo with web camera
+python3 ./demo/main/video/sot_video.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml' --device cuda --video "webcam" 
+
+# demo with video file, and dump result into video file (optional)
+python3 ./demo/main/video/sot_video.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml' --device cuda --video $video_dir/demo.mp4 --output $dump_path/result.mp4
+
+# demo with extracted image files, and dump result into image files (optional)
+python3 ./demo/main/video/sot_video.py --config 'experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml' --device cuda --video $video_dir/*.jpg --output $dump_dir
 ```
 
 ### Test
@@ -90,7 +97,8 @@ For detail, please refer to markdown files under _docs_.
 ### VOS 
 * [VOS_SETUP.md](docs/VOS_SETUP.md): instructions for setting-up
 * [VOS_MODEL_ZOO.md](docs/VOS_MODEL_ZOO.md): description of released sot models
-* [VOS_TEST.md](docs/VOS_TEST.md): details related to test
+* [VOS_TRAINING.md](docs/VOS_TRAINING.md): details related to training
+* [VOS_TEST.md](docs/VOS_TEST.md): details related to training
 ### DEVELOP
 * [DEVELOP.md](docs/DEVELOP.md): description of project design (registry, configuration tree, etc.)
 * [PIPELINE_API.md](docs/PIPELINE_API.md): description for pipeline API
@@ -102,13 +110,12 @@ For detail, please refer to markdown files under _docs_.
   * [] LaSOT
   * [] COCO
 * [] Test code for OTB, LaSOT, TrackingNet
-* [] Training code for SAT
 
 ## Acknowledgement
 
 * video_analyst/evaluation/vot_benchmark and other related code have been borrowed from [PySOT](https://github.com/STVIR/pysot)
 * video_analyst/evaluation/got_benchmark and other related code have been borrowed from [got-toolkit](https://github.com/got-10k/toolkit.git)
-* video_analyst/utils/dist_utils.py from [detectron2](https://github.com/facebookresearch/detectron2)
+* [detectron2](https://github.com/facebookresearch/detectron2)
 
 ## Contact
 
