@@ -90,19 +90,19 @@ project_root/
 For detail, please refer to markdown files under _docs_.
 
 ### SOT 
-* [SOT_SETUP.md](docs/SOT_SETUP.md): instructions for setting-up
-* [SOT_MODEL_ZOO.md](docs/SOT_MODEL_ZOO.md): description of released sot models
-* [SOT_TRAINING.md](docs/SOT_TRAINING.md): details related to training
-* [SOT_TEST.md](docs/SOT_TEST.md): details related to test
+* [SOT_SETUP.md](docs/TUTORIALS/SOT_SETUP.md): instructions for setting-up
+* [SOT_MODEL_ZOO.md](docs/TUTORIALS/SOT_MODEL_ZOO.md): description of released sot models
+* [SOT_TRAINING.md](docs/TUTORIALS/SOT_TRAINING.md): details related to training
+* [SOT_TEST.md](docs/TUTORIALS/SOT_TEST.md): details related to test
 ### VOS 
-* [VOS_SETUP.md](docs/VOS_SETUP.md): instructions for setting-up
-* [VOS_MODEL_ZOO.md](docs/VOS_MODEL_ZOO.md): description of released sot models
-* [VOS_TRAINING.md](docs/VOS_TRAINING.md): details related to training
-* [VOS_TEST.md](docs/VOS_TEST.md): details related to training
+* [VOS_SETUP.md](docs/TUTORIALS/VOS_SETUP.md): instructions for setting-up
+* [VOS_MODEL_ZOO.md](docs/TUTORIALS/VOS_MODEL_ZOO.md): description of released sot models
+* [VOS_TRAINING.md](docs/TUTORIALS/VOS_TRAINING.md): details related to training
+* [VOS_TEST.md](docs/TUTORIALS/VOS_TEST.md): details related to training
 ### DEVELOP
-* [DEVELOP.md](docs/DEVELOP.md): description of project design (registry, configuration tree, etc.)
-* [PIPELINE_API.md](docs/PIPELINE_API.md): description for pipeline API
-* [FORMATTING_INSTRUCTION](docs/FORMATTING_INSTRUCTIONS.md): instruction for code formatting (yapf/isort/flake/etc.)
+* [DEVELOP.md](docs/DEVELOP/DEVELOP.md): description of project design (registry, configuration tree, etc.)
+* [PIPELINE_API.md](docs/DEVELOP/PIPELINE_API.md): description for pipeline API
+* [FORMATTING_INSTRUCTION](docs/DEVELOP/FORMATTING_INSTRUCTIONS.md): instruction for code formatting (yapf/isort/flake/etc.)
 
 ## TODO
 
