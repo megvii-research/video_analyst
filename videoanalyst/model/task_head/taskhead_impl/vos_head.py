@@ -35,9 +35,12 @@ class DecoderHead(ModuleBase):
         self.upblock3 = upsample_block(256, 128, 256)
         self.upblock4 = upsample_block(256, 64, 128)
         self.out_projector = projector(128, 1)
+        self.f_s16_projector = projector(256, 1)
+        self.f_s8_projector = projector(256, 1)
+        self.out_projector = projector(128, 1)
         self.activation = nn.Sigmoid()
 
-    def forward(self, feature_list):
+    def forward(self, feature_list, phase="train"):
         x1, x2, x3, x4, x5 = feature_list
         f_s32 = self.upblock1(x1, x2)
         f_s16 = self.upblock2(f_s32, x3)
@@ -48,5 +51,18 @@ class DecoderHead(ModuleBase):
         p_resize = F.interpolate(p, (self.output_size, self.output_size),
                                  mode='bilinear',
                                  align_corners=False)
-        prediction = self.activation(p_resize)
-        return prediction, f_s8
+        if phase == "train":
+            pred_s16 = self.f_s16_projector(f_s16)
+            pred_s16_resize = F.interpolate(
+                pred_s16, (self.output_size, self.output_size),
+                mode='bilinear',
+                align_corners=False)
+            pred_s8 = self.f_s8_projector(f_s8)
+            pred_s8_resize = F.interpolate(pred_s8,
+                                           (self.output_size, self.output_size),
+                                           mode='bilinear',
+                                           align_corners=False)
+            return [pred_s16_resize, pred_s8_resize, p_resize]
+        else:
+            prediction = self.activation(p_resize)
+            return prediction

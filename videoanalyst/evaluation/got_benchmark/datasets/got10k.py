@@ -109,7 +109,7 @@ class GOT10k(object):
                     logger.error('Warning: sequence %s not exists.' % seq_name)
         else:
             # dataset not exists
-            raise Exception('Dataset not found or corrupted.')
+            raise Exception('Dataset {} not found or corrupted.'.format(list_file))
 
     def _fetch_meta(self, seq_dir):
         # meta information

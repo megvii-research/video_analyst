@@ -12,12 +12,12 @@ from videoanalyst.model.common_opr.common_block import (conv_bn_relu,
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
                                                           VOS_TASKMODELS)
-from videoanalyst.utils import md5sum
 
 torch.set_printoptions(precision=8)
 
 
 @TRACK_TASKMODELS.register
+@VOS_TASKMODELS.register
 class SiamTrack(ModuleBase):
     r"""
     SiamTrack model for tracking
@@ -33,14 +33,13 @@ class SiamTrack(ModuleBase):
     default_hyper_params = dict(pretrain_model_path="",
                                 head_width=256,
                                 conv_weight_std=0.01,
-                                neck_conv_bias=[True, True, True, True])
+                                neck_conv_bias=[True, True, True, True],
+                                corr_fea_output=False)
 
     def __init__(self, backbone, head, loss=None):
         super(SiamTrack, self).__init__()
         self.basemodel = backbone
-        # head
         self.head = head
-        # loss
         self.loss = loss
 
     def forward(self, *args, phase="train"):
@@ -65,7 +64,6 @@ class SiamTrack(ModuleBase):
         fcos_ctr_prob_final: torch.Tensor
             center-ness score, shape=(B, HW, 1)
         """
-        # phase: train
         if phase == 'train':
             # resolve training data
             training_data = args[0]
@@ -83,15 +81,16 @@ class SiamTrack(ModuleBase):
             r_out = xcorr_depthwise(r_x, r_z_k)
             c_out = xcorr_depthwise(c_x, c_z_k)
             # head
-            fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final = self.head(
+            fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final, corr_fea = self.head(
                 c_out, r_out)
             predict_data = dict(
                 cls_pred=fcos_cls_score_final,
                 ctr_pred=fcos_ctr_score_final,
                 box_pred=fcos_bbox_final,
             )
+            if self._hyper_params["corr_fea_output"]:
+                predict_data["corr_fea"] = corr_fea
             return predict_data
-        # phase: feature
         elif phase == 'feature':
             target_img, = args
             # backbone feature
@@ -102,7 +101,6 @@ class SiamTrack(ModuleBase):
             # output
             out_list = [c_z_k, r_z_k]
 
-        # phase: track
         elif phase == 'track':
             if len(args) == 3:
                 search_img, c_z_k, r_z_k = args
@@ -121,7 +119,7 @@ class SiamTrack(ModuleBase):
             r_out = xcorr_depthwise(r_x, r_z_k)
             c_out = xcorr_depthwise(c_x, c_z_k)
             # head
-            fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final = self.head(
+            fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final, corr_fea = self.head(
                 c_out, r_out)
             # apply sigmoid
             fcos_cls_prob_final = torch.sigmoid(fcos_cls_score_final)
@@ -129,7 +127,7 @@ class SiamTrack(ModuleBase):
             # apply centerness correction
             fcos_score_final = fcos_cls_prob_final * fcos_ctr_prob_final
             # register extra output
-            extra = dict(c_x=c_x, r_x=r_x)
+            extra = dict(c_x=c_x, r_x=r_x, corr_fea=corr_fea)
             # output
             out_list = fcos_score_final, fcos_bbox_final, fcos_cls_prob_final, fcos_ctr_prob_final, extra
         else:
@@ -143,20 +141,7 @@ class SiamTrack(ModuleBase):
         """
         self._make_convs()
         self._initialize_conv()
-
-        if self._hyper_params["pretrain_model_path"] != "":
-            model_path = self._hyper_params["pretrain_model_path"]
-            state_dict = torch.load(model_path,
-                                    map_location=torch.device("cpu"))
-            if "model_state_dict" in state_dict:
-                state_dict = state_dict["model_state_dict"]
-            try:
-                self.load_state_dict(state_dict, strict=True)
-            except:
-                self.load_state_dict(state_dict, strict=False)
-            logger.info("Pretrained weights loaded from {}".format(model_path))
-            logger.info("Check md5sum of Pretrained weights: %s" %
-                        md5sum(model_path))
+        super().update_params()
 
     def _make_convs(self):
         head_width = self._hyper_params['head_width']
@@ -194,165 +179,3 @@ class SiamTrack(ModuleBase):
         if self.loss is not None:
             for loss_name in self.loss:
                 self.loss[loss_name].to(dev)
-
-
-@VOS_TASKMODELS.register
-class SiamTrack_VOS(ModuleBase):
-    r"""
-    SiamTrack model modified for State-Aware Tracker
-
-    feature phase: return f_z for template updation
-
-    track phase: return correlation feature
-
-    takes DenseBoxHead_M for head
-
-    """
-
-    default_hyper_params = dict(pretrain_model_path="",
-                                head_width=256,
-                                conv_weight_std=0.01,
-                                neck_conv_bias=[True, True, True, True])
-
-    def __init__(self, basemodel_target, basemodel_search, head, loss):
-        super(SiamTrack_VOS, self).__init__()
-        self.basemodel_target = basemodel_target
-        self.basemodel_search = basemodel_search
-        # head
-        self.head = head
-        # loss
-        self.loss = loss
-
-    def forward(self, *args, phase="train"):
-        r"""
-        Perform tracking process for different phases (e.g. train / init / track)
-
-        Arguments
-        ---------
-        target_img: torch.Tensor
-            target template image patch
-        search_img: torch.Tensor
-            search region image patch
-
-        Returns
-        -------
-        fcos_score_final: torch.Tensor
-            predicted score for bboxes, shape=(B, HW, 1)
-        fcos_bbox_final: torch.Tensor
-            predicted bbox in the crop, shape=(B, HW, 4)
-        fcos_cls_prob_final: torch.Tensor
-            classification score, shape=(B, HW, 1)
-        fcos_ctr_prob_final: torch.Tensor
-            center-ness score, shape=(B, HW, 1)
-        """
-        # phase: train
-        if phase == 'train':
-            pass
-
-        # phase: feature
-        elif phase == 'feature':
-            target_img, = args
-            # backbone feature
-            f_z = self.basemodel_target(target_img)
-            r_z_k = self.r_z_k(f_z)
-            out_list = [f_z, r_z_k]
-
-        # phase: track
-        elif phase == 'track':
-            search_img, f_z = args
-            c_z_k = self.c_z_k(f_z)
-            r_z_k = self.r_z_k(f_z)
-
-            f_x = self.basemodel_search(search_img)
-            # feature adjustment
-            c_x = self.c_x(f_x)
-            r_x = self.r_x(f_x)
-
-            # feature matching
-            r_out = xcorr_depthwise(r_x, r_z_k)
-            c_out = xcorr_depthwise(c_x, c_z_k)
-            # head
-            fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final, corr_feature = self.head(
-                c_out, r_out)
-            # apply sigmoid
-            fcos_cls_prob_final = torch.sigmoid(fcos_cls_score_final)
-            fcos_ctr_prob_final = torch.sigmoid(fcos_ctr_score_final)
-            # apply centerness correction
-            fcos_score_final = fcos_cls_prob_final * fcos_ctr_prob_final
-            # register extra output
-            #extra = dict(c_x=c_x, r_x=r_x, corr_feature = corr_feature)
-            # output
-            out_list = fcos_score_final, fcos_bbox_final, fcos_cls_prob_final, fcos_ctr_prob_final, corr_feature
-        else:
-            raise ValueError("Phase non-implemented.")
-
-        return out_list
-
-    def update_params(self):
-        r"""
-        Load model parameters
-        """
-        self._make_convs()
-        self._initialize_conv()
-
-        if self._hyper_params["pretrain_model_path"] != "":
-            model_path = self._hyper_params["pretrain_model_path"]
-            state_dict = torch.load(model_path,
-                                    map_location=torch.device("cpu"))
-            if "model_state_dict" in state_dict:
-                state_dict = state_dict["model_state_dict"]
-            try:
-                self.load_state_dict(state_dict, strict=True)
-            except:
-                self.load_state_dict(state_dict, strict=False)
-            logger.info("Pretrained weights loaded from {}".format(model_path))
-
-    def _make_convs(self):
-        head_width = self._hyper_params['head_width']
-        neck_conv_bias = self._hyper_params['neck_conv_bias']
-
-        # feature adjustment
-        self.r_z_k = conv_bn_relu(
-            head_width,
-            head_width,
-            1,
-            3,
-            0,
-            has_relu=False,
-            bias=neck_conv_bias[0],
-            #has_bn = False
-        )
-
-        self.r_x = conv_bn_relu(head_width,
-                                head_width,
-                                1,
-                                3,
-                                0,
-                                has_relu=False,
-                                bias=neck_conv_bias[1])
-
-        self.c_z_k = conv_bn_relu(head_width,
-                                  head_width,
-                                  1,
-                                  3,
-                                  0,
-                                  has_relu=False,
-                                  bias=neck_conv_bias[2])
-
-        self.c_x = conv_bn_relu(head_width,
-                                head_width,
-                                1,
-                                3,
-                                0,
-                                has_relu=False,
-                                bias=neck_conv_bias[3])
-
-    def _initialize_conv(self, ):
-        conv_weight_std = self._hyper_params['conv_weight_std']
-        conv_list = [
-            self.r_z_k.conv, self.c_z_k.conv, self.r_x.conv, self.c_x.conv
-        ]
-        for ith in range(len(conv_list)):
-            conv = conv_list[ith]
-            torch.nn.init.normal_(conv.weight,
-                                  std=conv_weight_std)  # conv_weight_std=0.01

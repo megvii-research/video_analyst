@@ -27,7 +27,6 @@ Visulize scheduled LR
     plot_LR(lr_scheduler, 'Exponential decay with warmup')
 See the bottom of code for more plot examples, together with some exmples for .yaml configuration files (commented part).
 """
-
 import json
 import math
 from abc import ABCMeta, abstractmethod
@@ -59,7 +58,6 @@ def build(cfg: List[str], **kwargs):
     ListLR
 
     """
-    # from IPython import embed;embed()
     cfg = [json.loads(c) for c in cfg]
 
     SingleLRs = []
@@ -140,6 +138,10 @@ class MultiStageLR(BaseLR):
         return self._lr_stages[-1][0]
 
 
+def _IDENTITY(x):
+    return x
+
+
 class TransitionLR(BaseLR):
     """
     Transition scheduler, to be inheritated for different usage
@@ -164,6 +166,9 @@ class TransitionLR(BaseLR):
         self._end_lr = end_lr
         self._max_epoch = max_epoch
         self._max_iter = max_iter
+        self._pre_func = _IDENTITY
+        self._trans_func = _IDENTITY
+        self._post_func = _IDENTITY
 
     def get_lr(self, epoch=0, iter=0):
         if not (0 <= epoch < self._max_epoch):
@@ -184,10 +189,6 @@ class TransitionLR(BaseLR):
     @property
     def max_iter(self):
         return self._max_iter
-
-
-def _IDENTITY(x):
-    return x
 
 
 @LR_POLICIES.register
@@ -299,8 +300,8 @@ if __name__ == '__main__':
     # }
 
     lr_scheduler = ListLR(
-        LinearLR(start_lr=1e-6, end_lr=1e-1, max_epoch=5, max_iter=5000),
-        CosineLR(start_lr=1e-1, end_lr=1e-4, max_epoch=15, max_iter=5000))
+        LinearLR(start_lr=1e-6, end_lr=8e-2, max_epoch=2, max_iter=1250),
+        CosineLR(start_lr=8e-2, end_lr=1e-7, max_epoch=20, max_iter=1250))
     plot_LR(lr_scheduler, 'Cosine annealing with warmup')
     # Example for .yaml configuration file
     # =========

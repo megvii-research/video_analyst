@@ -7,7 +7,6 @@ import torch.nn as nn
 
 from ...module_base import ModuleBase
 from ..backbone_base import TRACK_BACKBONES, VOS_BACKBONES
-from videoanalyst.utils import md5sum
 
 
 @TRACK_BACKBONES.register
@@ -31,19 +30,7 @@ class ShuffleNetV2_x1_0(ModuleBase):
                                     True, [4, 8, 4], [24, 116, 232, 464, 1024],
                                     fused_channls=[116, 232, 464],
                                     **kwargs)
-        model_file = self._hyper_params["pretrain_model_path"]
-        if model_file != "":
-            state_dict = torch.load(model_file,
-                                    map_location=torch.device("cpu"))
-            self._model.load_state_dict(state_dict, strict=False)
-            logger.info("Load pretrained ShuffleNet parameters from: %s" %
-                        model_file)
-            logger.info("Check md5sum of pretrained ShuffleNet parameters: %s" %
-                        md5sum(model_file))
-
-        # for k in self._model.state_dict():
-        #     print(k)
-        # from IPython import embed;embed()
+        super().update_params()
 
     def forward(self, x):
         x = self._model(x)

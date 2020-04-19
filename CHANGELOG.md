@@ -3,6 +3,13 @@
 Date format: YY/MM/DD
 
 ## 2020/04/18
+* add SAT train code
+* update SAT test code
+* change TrackInfo to TextInfo
+* new param loader for model borrowed from dectron2
+* update coco dataset from detectron2
+
+## 2020/04/18
 * New features in SOT demo (sot_video.py)
   * Add image file video reader (reading from image files)
   * Add image file video dumping (dump result as frame-level image files)

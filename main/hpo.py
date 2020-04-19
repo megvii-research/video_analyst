@@ -16,6 +16,7 @@ from videoanalyst.model import builder as model_builder
 from videoanalyst.pipeline import builder as pipeline_builder
 from videoanalyst.utils import complete_path_wt_root_in_cfg
 from videoanalyst.utils import hpo
+from main.test import build_sat_tester, build_siamfcpp_tester
 
 
 def make_parser():
@@ -31,11 +32,6 @@ def make_parser():
         default='experiments/siamfcpp/hpo/siamfcpp_SiamFCppTracker-hpo.yaml',
         type=str,
         help='experiment configuration')
-    # parser.add_argument('-hpocsv',
-    #                     '--hpo-csv',
-    #                     default='logs/hpo/hpo.csv',
-    #                     type=str,
-    #                     help='dumped hpo result')
 
     return parser
 
@@ -47,7 +43,6 @@ if __name__ == '__main__':
 
     # experiment config
     exp_cfg_path = osp.realpath(parsed_args.config)
-    # from IPython import embed;embed()
     root_cfg.merge_from_file(exp_cfg_path)
     logger.info("Load experiment configuration at: %s" % exp_cfg_path)
 
@@ -59,31 +54,23 @@ if __name__ == '__main__':
     # hpo config
     with open(parsed_args.hpo_config, "r") as f:
         hpo_cfg = yaml.safe_load(f)
-    hpo_cfg = hpo_cfg["test"]
-    _, hpo_cfg = specify_task(hpo_cfg)
+    hpo_cfg = hpo_cfg["test"][task]
     hpo_schedules = hpo.parse_hp_path_and_range(hpo_cfg)
-
-    # results = [hpo.sample_and_update_hps(task_cfg, hpo_schedules) for _ in range(5)]
-    # merged_result = hpo.merge_result_dict(results)
 
     csv_file = osp.join(hpo_cfg["exp_save"],
                         "hpo_{}.csv".format(task_cfg_origin["exp_name"]))
 
-    # from IPython import embed;embed();exit(0)
     while True:
         task_cfg = deepcopy(task_cfg_origin)
         hpo_exp_dict = hpo.sample_and_update_hps(task_cfg, hpo_schedules)
-        # print(pd.DataFrame(hpo.merge_result_dict(hpo_exp_dict)))
-
+        if task == "track":
+            testers = build_siamfcpp_tester(task_cfg)
+        elif task == "vos":
+            testers = build_sat_tester(task_cfg)
+        else:
+            logger.error("task {} is not supported".format(task_cfg))
+            exit()
         task_cfg.freeze()
-        # build model
-        model = model_builder.build(task, task_cfg.model)
-        # build pipeline
-        pipeline = pipeline_builder.build(task, task_cfg.pipeline, model)
-        # build tester
-        testers = tester_builder(task, task_cfg.tester, "tester", pipeline)
-        # start engine
-        # for tester in testers:
         tester = testers[0]
         test_result_dict = tester.test()
         hpo_exp_dict["main_performance"] = test_result_dict["main_performance"]

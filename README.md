@@ -97,6 +97,7 @@ For detail, please refer to markdown files under _docs_.
 ### VOS 
 * [VOS_SETUP.md](docs/VOS_SETUP.md): instructions for setting-up
 * [VOS_MODEL_ZOO.md](docs/VOS_MODEL_ZOO.md): description of released sot models
+* [VOS_TRAINING.md](docs/VOS_TRAINING.md): details related to training
 * [VOS_TEST.md](docs/VOS_TEST.md): details related to training
 ### DEVELOP
 * [DEVELOP.md](docs/DEVELOP.md): description of project design (registry, configuration tree, etc.)
@@ -109,13 +110,12 @@ For detail, please refer to markdown files under _docs_.
   * [] LaSOT
   * [] COCO
 * [] Test code for OTB, LaSOT, TrackingNet
-* [] Training code for SAT
 
 ## Acknowledgement
 
 * video_analyst/evaluation/vot_benchmark and other related code have been borrowed from [PySOT](https://github.com/STVIR/pysot)
 * video_analyst/evaluation/got_benchmark and other related code have been borrowed from [got-toolkit](https://github.com/got-10k/toolkit.git)
-* video_analyst/utils/dist_utils.py from [detectron2](https://github.com/facebookresearch/detectron2)
+* [detectron2](https://github.com/facebookresearch/detectron2)
 
 ## Contact
 

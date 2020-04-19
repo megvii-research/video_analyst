@@ -6,7 +6,7 @@ import numpy as np
 
 def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     """
-    Model training target generation function
+    Model training target generation function for densebox
 
     Arguments
     ---------

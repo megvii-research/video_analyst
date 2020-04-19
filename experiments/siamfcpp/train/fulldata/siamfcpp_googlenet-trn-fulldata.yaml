@@ -129,7 +129,7 @@ train:
             COCODataset:
               ratio: 0.07
               dataset_root: "datasets/COCO"
-              subset: "train2017" # train_val
+              subsets: ["train2017",] 
             DETDataset:
               ratio: 0.08
               dataset_root: "datasets/ILSVRC2015"
@@ -169,8 +169,8 @@ train:
         nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
         snapshot: ""
       monitors:
-        names: ["TrackInfo", "TensorboardLogger"]
-        TrackInfo:
+        names: ["TextInfo", "TensorboardLogger"]
+        TextInfo:
           {}
         TensorboardLogger:
           exp_name: *TRAIN_NAME

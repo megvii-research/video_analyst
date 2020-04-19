@@ -38,7 +38,6 @@ class VideoWriter(object):
         h_rsz, w_rsz = int(h * self.scale), int(w * self.scale)
         frame = cv2.resize(frame, (w_rsz, h_rsz))
         if self.writer is None:
-            # from IPython import embed;embed()
             video_dir = osp.dirname(osp.realpath(self.video_file))
             if not osp.exists(video_dir):
                 os.makedirs(video_dir)
