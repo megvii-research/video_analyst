@@ -45,7 +45,7 @@ class SATMaskTarget(TargetBase):
         seg_x_size=129,
         seg_x_resize=257,
         global_fea_input_size=129,
-        context_amount=1,
+        context_amount=0.5,
         max_scale=0.3,
         max_shift=0.4,
         max_scale_temp=0.1,

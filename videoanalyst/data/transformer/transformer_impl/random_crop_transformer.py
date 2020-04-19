@@ -35,7 +35,7 @@ class RandomCropTransformer(TransformerBase):
         output size of search image
     """
     default_hyper_params = dict(
-        context_amount=1.0,
+        context_amount=0.5,
         max_scale=0.3,
         max_shift=0.4,
         max_scale_temp=0.0,
