@@ -18,3 +18,4 @@ tensorboard
 future==0.18.2
 loguru==0.4.1
 scikit-image
+pycocotools
