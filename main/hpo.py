@@ -78,4 +78,4 @@ if __name__ == '__main__':
         df.sort_values(by='main_performance', inplace=True)
         df.reset_index(drop=True, inplace=True)
         print(df.head(10))
-        del model, pipeline, tester
+        del testers

@@ -25,20 +25,24 @@ class DecoderHead(ModuleBase):
 
     """
 
-    default_hyper_params = dict(output_size=257, )
+    default_hyper_params = dict(output_size=257,
+                                input_channel_list=[512, 256, 128, 64])
 
     def __init__(self):
         super(DecoderHead, self).__init__()
         self.output_size = self._hyper_params["output_size"]
-        self.upblock1 = upsample_block(512, 512, 256)
-        self.upblock2 = upsample_block(256, 256, 256)
-        self.upblock3 = upsample_block(256, 128, 256)
-        self.upblock4 = upsample_block(256, 64, 128)
         self.out_projector = projector(128, 1)
         self.f_s16_projector = projector(256, 1)
         self.f_s8_projector = projector(256, 1)
-        self.out_projector = projector(128, 1)
         self.activation = nn.Sigmoid()
+
+    def update_params(self):
+        input_channel_list = self._hyper_params["input_channel_list"]
+        self.upblock1 = upsample_block(input_channel_list[0],
+                                       input_channel_list[0], 256)
+        self.upblock2 = upsample_block(256, input_channel_list[1], 256)
+        self.upblock3 = upsample_block(256, input_channel_list[2], 256)
+        self.upblock4 = upsample_block(256, input_channel_list[3], 128)
 
     def forward(self, feature_list, phase="train"):
         x1, x2, x3, x4, x5 = feature_list

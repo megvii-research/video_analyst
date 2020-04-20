@@ -101,6 +101,8 @@ models
     |── siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl
 ├── sat
     |── sat_res50_davis17_2518a.pkl
+    |── sat_res18_davis17_7ccb1.pkl
 ├── resnet
-    |── res-50-imagenet.pkl
+    |── res-50-imagenet-fff49.pkl
+    |── res-18-imagenet-7ccb1.pkl
 ```

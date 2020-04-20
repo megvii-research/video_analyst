@@ -31,7 +31,7 @@ class DavisDataset(DatasetBase):
     dataset_root: str
         path to root of the dataset
     subsets: list
-        dataset split name list [train, val]
+        dataset split name list [train2017, val2017, train2016]
     ratio: float
         dataset ratio. used by sampler (data.sampler).
     max_diff: int
@@ -42,7 +42,7 @@ class DavisDataset(DatasetBase):
     default_hyper_params = dict(
         dataset_root="datasets/DAVIS",
         subsets=[
-            "train",
+            "train2017",
         ],
         ratio=1.0,
         max_diff=10,
@@ -83,8 +83,12 @@ class DavisDataset(DatasetBase):
     def _ensure_cache(self):
         dataset_root = self._hyper_params["dataset_root"]
         for subset in self._hyper_params["subsets"]:
+            year = subset[-4:]
             image_root = osp.join(dataset_root, "JPEGImages", "480p")
-            anno_root = osp.join(dataset_root, "Annotations", "480p")
+            if year == "2016":
+                anno_root = osp.join(dataset_root, "Annotations", "480p_2016")
+            else:
+                anno_root = osp.join(dataset_root, "Annotations", "480p")
             data_anno_list = []
             cache_file = osp.join(dataset_root, "cache/{}.pkl".format(subset))
             if osp.exists(cache_file):
@@ -93,8 +97,8 @@ class DavisDataset(DatasetBase):
                 logger.info("{}: loaded cache file {}".format(
                     DavisDataset.__name__, cache_file))
             else:
-                meta_file = osp.join(dataset_root, "ImageSets", "2017",
-                                     "train.txt")
+                meta_file = osp.join(dataset_root, "ImageSets", year,
+                                     subset[:-4] + ".txt")
                 with open(meta_file) as f:
                     video_names = [item.strip() for item in f.readlines()]
                 for video_name in video_names:
