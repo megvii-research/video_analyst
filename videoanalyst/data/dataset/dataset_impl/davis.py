@@ -98,7 +98,7 @@ class DavisDataset(DatasetBase):
                     DavisDataset.__name__, cache_file))
             else:
                 meta_file = osp.join(dataset_root, "ImageSets", year,
-                                    subset[:-4]+".txt")
+                                     subset[:-4] + ".txt")
                 with open(meta_file) as f:
                     video_names = [item.strip() for item in f.readlines()]
                 for video_name in video_names:
