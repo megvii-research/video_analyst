@@ -6,12 +6,7 @@ from yacs.config import CfgNode
 
 from videoanalyst.utils import merge_cfg_into_hps
 
-from .backbone_base import TRACK_BACKBONES, VOS_BACKBONES
-
-TASK_BACKBONES = dict(
-    track=TRACK_BACKBONES,
-    vos=VOS_BACKBONES,
-)
+from .backbone_base import TRACK_BACKBONES, VOS_BACKBONES, TASK_BACKBONES
 
 
 def build(task: str, cfg: CfgNode, basemodel=None):
