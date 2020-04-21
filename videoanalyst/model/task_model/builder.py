@@ -54,8 +54,6 @@ def build(task: str,
         exit(-1)
 
 
-
-
 def build_sat_model(task: str,
                     cfg: CfgNode,
                     gml_extractor=None,

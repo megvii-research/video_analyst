@@ -41,7 +41,6 @@ def build(task: str, cfg: CfgNode):
     return head_module
 
 
-
 def get_config(task_list: List) -> Dict[str, CfgNode]:
     r"""
     Get available component list config
