@@ -54,45 +54,6 @@ def build(task: str,
         exit(-1)
 
 
-def build_track_dual_backbone(task: str,
-                              cfg: CfgNode,
-                              basemodel_target=None,
-                              basemodel_search=None,
-                              head=None,
-                              loss: ModuleBase = None):
-    r"""
-        Builder function for SiamFCpp
-        In case of the siamese branches do not share weights
-
-        Arguments
-        ---------
-        task: str
-            builder task name
-        cfg: CfgNode
-            buidler configuration
-        basemodel_target: torch.nn.Module
-            backbone used by target image backbone.
-        basemodel_search: torch.nn.Module
-            backbone used by search image backbone.
-        head: torch.nn.Module
-            head network used by task module.
-        loss: torch.nn.Module
-            criterion module used by task module (for training). None in case other than training.
-
-        Returns
-        -------
-        torch.nn.Module
-            task module built by builder
-        """
-    task_modules = TASK_TASKMODELS[task]
-    name = cfg.name
-    task_module = task_modules[name](basemodel_target, basemodel_search, head,
-                                     loss)
-    hps = task_module.get_hps()
-    hps = merge_cfg_into_hps(cfg[name], hps)
-    task_module.set_hps(hps)
-    task_module.update_params()
-    return task_module
 
 
 def build_sat_model(task: str,
