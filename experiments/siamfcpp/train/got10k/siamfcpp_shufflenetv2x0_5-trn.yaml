@@ -1,6 +1,6 @@
 test:
   track:
-    exp_name: &TEST_NAME "siamfcpp_shufflenetv2x0_5"
+    exp_name: &TEST_NAME "siamfcpp_shufflenetv2x0_5-got"
     exp_save: &TEST_SAVE "logs"
     model:
       backbone:
@@ -21,7 +21,7 @@ test:
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          pretrain_model_path: "snapshots/siamfcpp_shufflenetv2x0_5/epoch-19.pkl"
+          pretrain_model_path: "snapshots/siamfcpp_shufflenetv2x0_5-got/epoch-19.pkl"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
@@ -46,7 +46,7 @@ test:
         subsets: ["test"]  # (train_test|test)
 train:
   track:
-    exp_name: &TRAIN_NAME "siamfcpp_shufflenetv2x0_5"
+    exp_name: &TRAIN_NAME "siamfcpp_shufflenetv2x0_5-got"
     exp_save: &TRAIN_SAVE "snapshots"
     num_processes: 4
     model:
