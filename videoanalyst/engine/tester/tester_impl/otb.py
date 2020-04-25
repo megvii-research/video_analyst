@@ -51,9 +51,6 @@ class OTBTester(TesterBase):
         tracker_name = self._hyper_params["exp_name"]
         all_devs = self._state["all_devs"]
         nr_devs = len(all_devs)
-        dev = all_devs[0]
-        self._pipeline.set_device(dev)
-        pipeline_tracker = PipelineTracker(tracker_name, self._pipeline)
 
         for subset in self._hyper_params["subsets"]:
             root_dir = self._hyper_params["data_root"]
@@ -69,6 +66,9 @@ class OTBTester(TesterBase):
                                     report_dir=report_dir)
             # single worker
             if nr_devs == 1:
+                dev = all_devs[0]
+                self._pipeline.set_device(dev)
+                pipeline_tracker = PipelineTracker(tracker_name, self._pipeline)
                 experiment.run(pipeline_tracker)
             # multi-worker
             else:
