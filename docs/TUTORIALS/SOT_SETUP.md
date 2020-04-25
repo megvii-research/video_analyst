@@ -1,35 +1,5 @@
-# Setup
+# Setup-SOT
 
-## Install requirements
-
-- Linux or MacOS
-- Python >= 3.5
-- GCC >= 4.9
-
-```Bash
-git clone https://github.com/MegviiDetection/video_analyst.git
-cd video_analyst
-```
-
-You can choose either using native python (with pip/pip3) or using virtual environment (with conda).
-
-```Bash
-pip3 install -U -r requirements.txt
-```
-
-### python-tkinter
-
-In case of:
-
-```Python
-ModuleNotFoundError: No module named 'tkinter'
-```
-
-Please install python3-tk by running:
-
-```Bash
-sudo apt-get install python3-tk
-```
 
 ## Download models & raw results
 
@@ -37,6 +7,8 @@ sudo apt-get install python3-tk
 - [Tencent Weiyun](https://share.weiyun.com/56C92l4), code: wg47g7
 
 ## Compile evaluation toolkit
+
+If you want to run experiments on VOT, run the following script to compile _region_.
 
 ```Bash
 bash compile.sh
