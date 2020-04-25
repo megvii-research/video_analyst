@@ -35,4 +35,4 @@ test:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
         device_num: 1
-        subsets: ["train0"]  # (val|test)
+        subsets: ["test"]  # (train|test|train0,1,...)

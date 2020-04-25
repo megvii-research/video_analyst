@@ -70,7 +70,7 @@ class ExperimentOTB(object):
             # tracking loop
             boxes, times = tracker.track(
                 img_files, anno[0, :], visualize=visualize)
-            assert len(boxes) == len(anno)
+            # assert len(boxes) == len(anno) # disabled as annotations for some benchmarks are withholded
             
             # record results
             self._record(record_file, boxes, times)
