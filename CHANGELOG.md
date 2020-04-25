@@ -6,8 +6,9 @@ Date format: YY/MM/DD
 
 * Add multi-processing tester
   * otb
+  * lasot
   * trackingnet
-
+  
 ## 2020/04/18
 * add SAT train code
 * update SAT test code
@@ -172,3 +173,4 @@ ____Minor changes____
 * Support SiamFC++ test on VOT benchmark
   * SiamFC++-AlexNet
   * SiamFC++-GoogLeNet
+
