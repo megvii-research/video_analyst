@@ -61,9 +61,9 @@ class LaSOTTester(TesterBase):
             report_dir = osp.join(save_root_dir, "report")
 
             experiment = ExperimentLaSOT(root_dir,
-                                        subset=subset,
-                                        result_dir=result_dir,
-                                        report_dir=report_dir)
+                                         subset=subset,
+                                         result_dir=result_dir,
+                                         report_dir=report_dir)
             # single worker
             if nr_devs == 1:
                 dev = all_devs[0]
@@ -75,11 +75,13 @@ class LaSOTTester(TesterBase):
                 procs = []
                 slicing_step = 1.0 / nr_devs
                 for dev_id, dev in enumerate(all_devs):
-                    slicing_quantile = (slicing_step * dev_id, slicing_step * (dev_id + 1))
-                    proc = mp.Process(target=self.worker, 
-                                      args=(dev_id, dev, subset, slicing_quantile))
+                    slicing_quantile = (slicing_step * dev_id,
+                                        slicing_step * (dev_id + 1))
+                    proc = mp.Process(target=self.worker,
+                                      args=(dev_id, dev, subset,
+                                            slicing_quantile))
                     proc.start()
-                    procs.append(proc)                
+                    procs.append(proc)
                 for p in procs:
                     p.join()
             # evalutate
@@ -94,7 +96,8 @@ class LaSOTTester(TesterBase):
         return test_result_dict
 
     def worker(self, dev_id, dev, subset, slicing_quantile):
-        logger.debug("Worker starts: slice {} at {}".format(slicing_quantile, dev))
+        logger.debug("Worker starts: slice {} at {}".format(
+            slicing_quantile, dev))
         tracker_name = self._hyper_params["exp_name"]
 
         pipeline = self._pipeline
@@ -103,17 +106,17 @@ class LaSOTTester(TesterBase):
 
         root_dir = self._hyper_params["data_root"]
         dataset_name = "GOT-Benchmark"
-        save_root_dir = osp.join(self._hyper_params["exp_save"],
-                                    dataset_name)
+        save_root_dir = osp.join(self._hyper_params["exp_save"], dataset_name)
         result_dir = osp.join(save_root_dir, "result")
         report_dir = osp.join(save_root_dir, "report")
 
         experiment = ExperimentLaSOT(root_dir,
-                                    subset=subset,
-                                    result_dir=result_dir,
-                                    report_dir=report_dir)
+                                     subset=subset,
+                                     result_dir=result_dir,
+                                     report_dir=report_dir)
         experiment.run(pipeline_tracker, slicing_quantile=slicing_quantile)
-        logger.debug("Worker ends: slice {} at {}".format(slicing_quantile, dev))
+        logger.debug("Worker ends: slice {} at {}".format(
+            slicing_quantile, dev))
 
 
 LaSOTTester.default_hyper_params = copy.deepcopy(
