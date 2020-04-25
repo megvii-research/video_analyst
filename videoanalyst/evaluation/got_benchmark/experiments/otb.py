@@ -36,12 +36,27 @@ class ExperimentOTB(object):
         self.nbins_iou = 21
         self.nbins_ce = 51
 
-    def run(self, tracker, visualize=False, overwrite_result=True):
+    def run(self, tracker, visualize=False, overwrite_result=True, slicing_quantile=(0.0, 1.0)):
+        """
+        Arguments
+        ---------
+        overwrite_result : bool
+            whether overwrite existing result or not 
+        slicing_quantile : Tuple[float, float]
+            quantile used for dataset slicing
+        """
         print('Running tracker %s on %s...' % (
             tracker.name, type(self.dataset).__name__))
+        
+        start_quantile, end_quantile = slicing_quantile
+        len_dataset = len(self.dataset)
+        start_idx = int(len_dataset*start_quantile)
+        end_idx = int(len_dataset*end_quantile)
 
-        # loop over the complete dataset
-        for s, (img_files, anno) in enumerate(self.dataset):
+        # loop over the complete dataset / dataset slice
+        # for s, (img_files, anno) in enumerate(self.dataset):
+        for s in range(start_idx, end_idx):
+            img_files, anno = self.dataset[s]
             seq_name = self.dataset.seq_names[s]
             print('--Sequence %d/%d: %s' % (s + 1, len(self.dataset), seq_name))
 
