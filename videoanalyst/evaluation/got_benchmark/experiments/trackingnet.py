@@ -8,6 +8,7 @@ from loguru import logger
 from .otb import ExperimentOTB
 from ..datasets import TrackingNet
 from ..utils.metrics import rect_iou, center_error
+from ..utils.ioutils import compress
 
 
 class ExperimentTrackingNet(ExperimentOTB):
@@ -29,6 +30,7 @@ class ExperimentTrackingNet(ExperimentOTB):
                  result_dir='results', report_dir='reports'):
         # assert subset.upper() in ['TRAIN', 'TEST']
         assert subset.startswith(('train', 'test')), 'Unknown subset.'
+        self.subset = subset
         self.dataset = TrackingNet(root_dir, subset, return_meta=return_meta)
         self.result_dir = os.path.join(result_dir, 'TrackingNet')
         self.report_dir = os.path.join(report_dir, 'TrackingNet')
@@ -40,12 +42,23 @@ class ExperimentTrackingNet(ExperimentOTB):
         self.nbins_ce = 51
 
     def report(self, tracker_names, *args, plot_curves=True, **kwargs):
-        try:
-            performance = super(ExperimentTrackingNet, self).report(tracker_names, *args, plot_curves=plot_curves, **kwargs)
-        except:
-            logger.info("report error, performance=None")
-            report_dir = os.path.join(self.report_dir, tracker_names[0])
+        if self.subset == 'test':
+            logger.info("TEST subset's annotations are withholded, generate submission file instead...")
+            for tracker_name in tracker_names:
+                # compress all tracking results
+                result_dir = os.path.join(self.result_dir, tracker_name)
+                save_file = result_dir + '.zip'
+                compress(result_dir, save_file)
+                print('Records saved at', save_file)
+
+            # print submission guides
+            print('\033[93mLogin and follow instructions on')
+            print('http://eval.tracking-net.org/')
+            print('to upload and evaluate your tracking results\033[0m')
+
             performance = None
+        else:
+            performance = super(ExperimentTrackingNet, self).report(tracker_names, *args, plot_curves=plot_curves, **kwargs)
 
         return performance
 
