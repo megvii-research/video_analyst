@@ -14,8 +14,8 @@ class ExperimentTrackingNet(ExperimentOTB):
 
     Args:
         root_dir (string): Root directory of LaSOT dataset.
-        subset (string, optional): Specify ``train`` or ``test``
-            subset of LaSOT.  Default is ``test``.
+        subset (string, optional): Specify ``train`` or ``test`` or ``train0,1,...``
+            subset of TrackingNet.  Default is ``test``.
         return_meta (bool, optional): whether to fetch meta info
         (occlusion or out-of-view).  Default is ``False``.
         result_dir (string, optional): Directory for storing tracking
@@ -25,7 +25,8 @@ class ExperimentTrackingNet(ExperimentOTB):
     """
     def __init__(self, root_dir, subset='test', return_meta=False,
                  result_dir='results', report_dir='reports'):
-        assert subset.upper() in ['TRAIN', 'TEST']
+        # assert subset.upper() in ['TRAIN', 'TEST']
+        assert subset.startswith(('train', 'test')), 'Unknown subset.'
         self.dataset = TrackingNet(root_dir, subset, return_meta=return_meta)
         self.result_dir = result_dir
         self.report_dir = report_dir
