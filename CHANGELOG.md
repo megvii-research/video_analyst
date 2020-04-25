@@ -2,6 +2,12 @@
 
 Date format: YY/MM/DD
 
+## 2020/0425
+
+* Add multi-processing tester
+  * otb
+  * trackingnet
+
 ## 2020/04/18
 * add SAT train code
 * update SAT test code
