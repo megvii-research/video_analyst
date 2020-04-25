@@ -66,11 +66,8 @@ class TrackingNetTester(TesterBase):
                                           result_dir=result_dir,
                                           report_dir=report_dir)
             experiment.run(pipeline_tracker, overwrite_result=True)
-            try:
-                performance = experiment.report([tracker_name], plot_curves=False)
-            except:
-                logger.info("report error, performance=None")
-                performance = None
+            performance = experiment.report([tracker_name], plot_curves=False)
+
         test_result_dict = dict()
         if performance is not None:
             test_result_dict["main_performance"] = performance[tracker_name][

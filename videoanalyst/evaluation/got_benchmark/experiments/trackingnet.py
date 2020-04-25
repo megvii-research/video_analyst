@@ -3,6 +3,8 @@ from __future__ import absolute_import
 import os
 import numpy as np
 
+from loguru import logger
+
 from .otb import ExperimentOTB
 from ..datasets import TrackingNet
 from ..utils.metrics import rect_iou, center_error
@@ -28,13 +30,25 @@ class ExperimentTrackingNet(ExperimentOTB):
         # assert subset.upper() in ['TRAIN', 'TEST']
         assert subset.startswith(('train', 'test')), 'Unknown subset.'
         self.dataset = TrackingNet(root_dir, subset, return_meta=return_meta)
-        self.result_dir = result_dir
-        self.report_dir = report_dir
+        self.result_dir = os.path.join(result_dir, 'TrackingNet')
+        self.report_dir = os.path.join(report_dir, 'TrackingNet')
+
 
         # as nbins_iou increases, the success score
         # converges to the average overlap (AO)
         self.nbins_iou = 21
         self.nbins_ce = 51
+
+    def report(self, tracker_names, *args, plot_curves=True, **kwargs):
+        try:
+            performance = super(ExperimentTrackingNet, self).report(tracker_names, *args, plot_curves=plot_curves, **kwargs)
+        except:
+            logger.info("report error, performance=None")
+            report_dir = os.path.join(self.report_dir, tracker_names[0])
+            performance = None
+
+        return performance
+
 
     # def _calc_metrics(self, boxes, anno):
     #     valid = ~np.any(np.isnan(anno), axis=1)
