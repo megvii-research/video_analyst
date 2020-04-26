@@ -8,6 +8,7 @@ Date format: YY/MM/DD
   * otb
   * lasot
   * trackingnet
+  * got10k
   
 ## 2020/04/18
 * add SAT train code
