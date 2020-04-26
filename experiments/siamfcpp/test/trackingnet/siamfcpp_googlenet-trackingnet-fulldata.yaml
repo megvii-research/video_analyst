@@ -21,7 +21,7 @@ test:
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          pretrain_model_path: "models/siamfcpp/siamfcpp-googlenet-trackingnet-md5_1b41f1b5db5d87566e095d723cab9818.pkl"
+          pretrain_model_path: "models/siamfcpp/siamfcpp-googlenet-vot_retrain-md5_0b2ab436b1b6866daad8f7915c135482.pkl"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
@@ -34,5 +34,5 @@ test:
       TrackingNetTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
-        device_num: 8
+        device_num: 1
         subsets: ["test"]  # (train|test|train0,1,...)

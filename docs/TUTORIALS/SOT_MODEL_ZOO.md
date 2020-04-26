@@ -54,7 +54,7 @@ GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 
 | Backbone | Pipeline | Dataset | Success | Precision | Normalized Precision | Config. Filename | Model Filename |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| GoogLeNet | SiamFCppTracker | TrackingNet-TEST | 75.3 | 69.5 | 80.9 | siamfcpp_googlenet-trackingnet.yaml | siamfcpp-googlenet-vot_retrain-md5_0b2ab436b1b6866daad8f7915c135482.pkl |
+| GoogLeNet | SiamFCppTracker | TrackingNet-TEST | 75.3 | 69.5 | 80.9 | siamfcpp_googlenet-trackingnet-fulldata.yaml | siamfcpp-googlenet-vot_retrain-md5_0b2ab436b1b6866daad8f7915c135482.pkl |
 
 
 ### OTB-2015
