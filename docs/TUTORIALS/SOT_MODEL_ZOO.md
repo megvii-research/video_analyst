@@ -52,15 +52,17 @@ GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 
 ### TrackingNet
 
-| Backbone | Pipeline | Dataset | Success | Precision | Normalized Precision | Config. Filename | Model Filename |
+| Backbone | Pipeline | Training Data | Test Dataset | Success | Precision | Normalized Precision | Config. Filename | Model Filename |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| GoogLeNet | SiamFCppTracker | TrackingNet-TEST | 75.3 | 69.5 | 80.9 | siamfcpp_googlenet-trackingnet-fulldata.yaml | siamfcpp-googlenet-vot_retrain-md5_0b2ab436b1b6866daad8f7915c135482.pkl |
+| GoogLeNet | SiamFCppTracker | TrackingNet-TRAIN | TrackingNet-TEST | 74.5 | 68.5 | 79.8 | siamfcpp_googlenet-trackingnet.yaml | siamfcpp-googlenet-trackingnet-md5_1b41f1b5db5d87566e095d723cab9818.pkl |
+| GoogLeNet | SiamFCppTracker | fulldata | TrackingNet-TEST | 75.3 | 69.5 | 80.9 | siamfcpp_googlenet-trackingnet-fulldata.yaml | siamfcpp-googlenet-vot_retrain-md5_0b2ab436b1b6866daad8f7915c135482.pkl |
 
+P.S. _fulldata_ denotes COCO, VID, ILSVRC-VID/DET, LaSOT, GOT10k
 
 ### OTB-2015
 
 | Backbone | Pipeline | Dataset | Success | Precision | Config. Filename | Model Filename |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | AlexNet | SiamFCppTracker | OTB2015 | 68.0 | 88.4 | siamfcpp_alexnet-otb.yaml | siamfcpp-alexnet-vot-md5_88e4e9ee476545b952b04ae80c480f08.pkl |
 | GoogLeNet | SiamFCppTracker | OTB2015 | 68.2 | 89.6 | siamfcpp_googlenet-otb.yaml | siamfcpp-googlenet-vot-md5_f2680ba074213ee39d82fcb84533a1a6.pkl |
 
