@@ -24,9 +24,6 @@ test:
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
-        # test_lr: 0.5249642198880932
-        # window_influence: 0.23153228172839774
-        # penalty_k: 0.05413758904760692
         test_lr: 0.5249642198880932
         window_influence: 0.23153228172839774
         penalty_k: 0.05413758904760692

@@ -61,8 +61,8 @@ GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 
 | Backbone | Pipeline | Dataset | Success | Precision | Config. Filename | Model Filename |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| AlexNet | SiamFCppTracker | OTB2015 | 68.0 | 88.4 | siamfcpp_googlenet-lasot.yaml | siamfcpp-googlenet-lasot-md5sum_434540569e163188d2bf47438e075529.pkl |
-| GoogLeNet | SiamFCppTracker | OTB2015 | 68.2 | 89.6 | siamfcpp_googlenet-lasot.yaml | siamfcpp-googlenet-lasot-md5sum_434540569e163188d2bf47438e075529.pkl |
+| AlexNet | SiamFCppTracker | OTB2015 | 68.0 | 88.4 | siamfcpp_alexnet-otb.yaml | siamfcpp-alexnet-vot-md5_88e4e9ee476545b952b04ae80c480f08.pkl |
+| GoogLeNet | SiamFCppTracker | OTB2015 | 68.2 | 89.6 | siamfcpp_googlenet-otb.yaml | siamfcpp-googlenet-vot-md5_f2680ba074213ee39d82fcb84533a1a6.pkl |
 
 #### Pipeline
 
