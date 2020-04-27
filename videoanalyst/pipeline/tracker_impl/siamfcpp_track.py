@@ -271,6 +271,7 @@ class SiamFCppTracker(PipelineBase):
     def update(self, im, state=None):
         """ Perform tracking on current frame
             Accept provided target state prior on current frame
+            e.g. search the target in another video sequence simutanously
 
         Arguments
         ---------

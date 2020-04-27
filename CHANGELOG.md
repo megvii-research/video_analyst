@@ -2,7 +2,12 @@
 
 Date format: YY/MM/DD
 
-## 2020/0425
+## 2020/04/28
+
+* Modify interface of _siamfcpp_track.py: update_
+  * Accept provided target state (bbox)
+
+## 2020/04/25
 
 * Add multi-processing tester
   * otb
