@@ -15,9 +15,9 @@ test:
         name: "DenseboxHead"
         DenseboxHead:
           total_stride: 8
-          score_size: 19
-          x_size: 303
-          num_conv3x3: 2
+          score_size: &SCORE_SIZE_TEST 19
+          x_size: &X_SIZE_TEST 303
+          num_conv3x3: &NUM_CONV3x3 2
           head_conv_bn: [False, False]
       task_model:
         name: "SiamTrack"
@@ -29,7 +29,8 @@ test:
         test_lr: 0.52
         window_influence: 0.21
         penalty_k: 0.04
-        num_conv3x3: 2
+        x_size: *X_SIZE_TEST
+        num_conv3x3: *NUM_CONV3x3
     tester:
       names: ["LaSOTTester",] # (VOTTester|GOT10kTester|LaSOTTester)
       LaSOTTester:
