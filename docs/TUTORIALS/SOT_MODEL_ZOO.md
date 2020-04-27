@@ -37,7 +37,7 @@ GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 | AlexNet | SiamFCppTracker | GOT-10k-val | 72.0 | 85.0 | 63.3 | siamfcpp_alexnet_got.yaml | siamfcpp-alexnet-got-md5_5e01cf6271ad42e935032b61b05854d3.pkl|
 | AlexNet | SiamFCppTracker | GOT-10k-test | 52.6 | 62.5 | 34.7 | siamfcpp_alexnet_got.yaml | siamfcpp-alexnet-got-md5_5e01cf6271ad42e935032b61b05854d3.pkl|
 | GoogLeNet | SiamFCppTracker | GOT-10k-val | 76.4 | 90.4 | 71.8 | siamfcpp_googlenet_got.yaml | siamfcpp-googlenet-got-md5_e182dc4c3823427022eccf7313d740a7.pkl |
-| GoogLeNet | SiamFCppTracker | GOT-10k-test | 60.7 | 73.7 | 46.4 | siamfcpp_googlenet_got.yaml | siamfcpp-googlenet-got-md5_e182dc4c3823427022eccf7313d740a7.pkl |
+| GoogLeNet | SiamFCppTracker | GOT-10k-test | 60.4 | 73.7 | 46.4 | siamfcpp_googlenet_got.yaml | siamfcpp-googlenet-got-md5_e182dc4c3823427022eccf7313d740a7.pkl |
 | ShuffleNetV2x0.5 | SiamFCppTracker | GOT-10k-val | 74.2 | 87.0| 67.1 | siamfcpp_shufflenetv2x0_5_got.yaml | siamfcpp-shufflenetv2x0_5-got-md5_d710ce17736d31a28bfe37cfbb997c5a.pkl |
 | ShuffleNetV2x0.5 | SiamFCppTracker | GOT-10k-test | 52.9 | 61.7 | 38.1 | siamfcpp_shufflenetv2x0_5_got.yaml | siamfcpp-shufflenetv2x0_5-got-md5_d710ce17736d31a28bfe37cfbb997c5a.pkl |
 | ShuffleNetV2x1.0 | SiamFCppTracker | GOT-10k-val | 76.6 | 88.8 | 71.5 | siamfcpp_shufflenetv2x1_0_got.yaml | siamfcpp-shufflenetv2x1_0-got-md5_aa824cc413b100bcb10f57c4d0e52423.pkl |
