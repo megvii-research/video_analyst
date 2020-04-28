@@ -57,7 +57,6 @@ GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 | GoogLeNet | SiamFCppTracker | TrackingNet-TRAIN | TrackingNet-TEST | 74.5 | 68.5 | 79.8 | [siamfcpp_googlenet-trackingnet.yaml](../../experiments/siamfcpp/test/trackingnet/siamfcpp_googlenet-trackingnet.yaml) |
 | GoogLeNet | SiamFCppTracker | fulldata | TrackingNet-TEST | 75.3 | 69.5 | 80.9 | [siamfcpp_googlenet-trackingnet-fulldata.yaml](../../experiments/siamfcpp/test/trackingnet/siamfcpp_googlenet-trackingnet-fulldata.yaml) |
 
-
 P.S. _fulldata_ denotes COCO, VID, TrackingNet-TRAIN, ILSVRC-VID/DET, LaSOT, GOT10k
 
 ### OTB-2015
@@ -92,6 +91,7 @@ Augmenting the search region may further improve the performance on some benchma
 | GoogLeNet | SiamFCppTracker | LaSOT-test | 383 | 29 | 57.1 | 57.2 | 60.5 | - |
 | GoogLeNet | SiamFCppTracker | LaSOT-test | 399 | 31 | __57.7__ | 58.2 | 61.3 | [x_size/siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/x_size/siamfcpp_googlenet-lasot.yaml) |
 | GoogLeNet | SiamFCppTracker | LaSOT-test | 415 | 33 | 57.4 | 57.7 | 60.9 | - |
+| GoogLeNet | SiamFCppTracker | LaSOT-test | 431 | 35 | 57.4 | 57.8 | 61.0 | - |
 
 
 
