@@ -38,11 +38,14 @@ def make_parser():
                         default="cpu",
                         type=str,
                         help="torch.device, cuda or cpu")
-    parser.add_argument("-v",
-                        "--video",
-                        type=str,
-                        default="webcam",
-                        help=r"video input mode. \"webcam\" for webcamera, \"path/*.<extension>\" for image files, \"path/file.<extension>\". Default is webcam. ")
+    parser.add_argument(
+        "-v",
+        "--video",
+        type=str,
+        default="webcam",
+        help=
+        r"video input mode. \"webcam\" for webcamera, \"path/*.<extension>\" for image files, \"path/file.<extension>\". Default is webcam. "
+    )
     parser.add_argument("-o",
                         "--output",
                         type=str,
@@ -53,15 +56,19 @@ def make_parser():
                         type=int,
                         default=0,
                         help="start index / #frames to skip")
-    parser.add_argument("-r",
-                        "--resize",
-                        type=float,
-                        default=1.0,
-                        help="resize result image to anothor ratio (for saving bandwidth)")
-    parser.add_argument("-do",
-                        "--dump-only",
-                        action="store_true",
-                        help="only dump, do not show image (in cases where cv2.imshow inccurs errors)")
+    parser.add_argument(
+        "-r",
+        "--resize",
+        type=float,
+        default=1.0,
+        help="resize result image to anothor ratio (for saving bandwidth)")
+    parser.add_argument(
+        "-do",
+        "--dump-only",
+        action="store_true",
+        help=
+        "only dump, do not show image (in cases where cv2.imshow inccurs errors)"
+    )
     parser.add_argument("-i",
                         "--init-bbox",
                         type=float,
@@ -116,8 +123,9 @@ def main(args):
         else:
             fourcc = cv2.VideoWriter_fourcc(*'MJPG')
             width, height = vs.get(3), vs.get(4)
-            vw = cv2.VideoWriter(args.output, fourcc, 25,
-                                 (int(width*resize_ratio), int(height*resize_ratio)))
+            vw = cv2.VideoWriter(
+                args.output, fourcc, 25,
+                (int(width * resize_ratio), int(height * resize_ratio)))
 
     # loop over sequence
     while vs.isOpened():
@@ -143,8 +151,9 @@ def main(args):
                     show_frame[:128, :128] = template
             else:
                 show_frame = frame
-            show_frame = cv2.resize(show_frame, 
-                                    (int(show_frame.shape[1]*resize_ratio), int(show_frame.shape[0]*resize_ratio)))  # resize
+            show_frame = cv2.resize(
+                show_frame, (int(show_frame.shape[1] * resize_ratio),
+                             int(show_frame.shape[0] * resize_ratio)))  # resize
             if not dump_only:
                 cv2.imshow(window_name, show_frame)
             if vw is not None:
@@ -175,11 +184,11 @@ def main(args):
             template = None
         if (init_box is not None) and (template is None):
             template = cv2.resize(
-                frame[int(init_box[1]):int(init_box[1] + init_box[3]), int(init_box[0]):int(init_box[0] + init_box[2])],
+                frame[int(init_box[1]):int(init_box[1] + init_box[3]),
+                      int(init_box[0]):int(init_box[0] + init_box[2])],
                 (128, 128))
             pipeline.init(frame, init_box)
-            logger.debug(
-                "pipeline initialized with bbox : {}".format(init_box))
+            logger.debug("pipeline initialized with bbox : {}".format(init_box))
     vs.release()
     if vw is not None:
         vw.release()
