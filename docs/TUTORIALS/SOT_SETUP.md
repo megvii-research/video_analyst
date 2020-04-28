@@ -43,6 +43,8 @@ path_to_datasets
 │   └── test
 ```
 
+See [DATA.md](../../docs/DEVELOP/DATA.md) for a full description.
+
 ### Auxilary files for VOT
 
 Auxilary files (list.txt / VOTXXXX.json) located at _videoanalyst/evaluation/vot_benchmark/vot_list_
@@ -92,3 +94,7 @@ path_to_models
 │   └── inception_v3_google-1a9a5a14-961cad7697695cca7d9ca4814b17a88d.pth
 │
 ```
+
+## Run Test
+
+See [SOT_TEST.md](./SOT_TEST.md)
