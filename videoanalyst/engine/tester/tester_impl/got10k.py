@@ -54,7 +54,7 @@ class GOT10kTester(TesterBase):
 
         for subset in self._hyper_params["subsets"]:
             root_dir = self._hyper_params["data_root"]
-            dataset_name = "GOT-Benchmark"
+            dataset_name = "GOT-Benchmark"  # the name of benchmark toolkit, shown under "repo/logs" directory
             save_root_dir = osp.join(self._hyper_params["exp_save"],
                                      dataset_name)
             result_dir = osp.join(save_root_dir, "result")
@@ -105,7 +105,7 @@ class GOT10kTester(TesterBase):
         pipeline_tracker = PipelineTracker(tracker_name, pipeline)
 
         root_dir = self._hyper_params["data_root"]
-        dataset_name = "GOT-Benchmark"
+        dataset_name = "GOT-Benchmark"  # the name of benchmark toolkit, shown under "repo/logs" directory
         save_root_dir = osp.join(self._hyper_params["exp_save"], dataset_name)
         result_dir = osp.join(save_root_dir, "result")
         report_dir = osp.join(save_root_dir, "report")
