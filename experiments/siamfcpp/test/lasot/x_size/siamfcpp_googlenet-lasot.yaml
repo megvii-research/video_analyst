@@ -6,6 +6,7 @@ test:
       backbone:
         name: "Inception3"
         Inception3:
+          pretrain_model_path: ""
           crop_pad: 4
           pruned: True
       losses:
@@ -14,14 +15,14 @@ test:
         name: "DenseboxHead"
         DenseboxHead:
           total_stride: 8
-          score_size: &SCORE_SIZE_TEST 19
-          x_size: &X_SIZE_TEST 303
+          score_size: &SCORE_SIZE_TEST 25 # 19
+          x_size: &X_SIZE_TEST 351 # 303
           num_conv3x3: &NUM_CONV3x3 2
           head_conv_bn: [False, False]
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          pretrain_model_path: "models/siamfcpp/siamfcpp-googlenet-got-md5_e182dc4c3823427022eccf7313d740a7.pkl"
+          pretrain_model_path: "models/siamfcpp/siamfcpp-googlenet-lasot-md5sum_434540569e163188d2bf47438e075529.pkl"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
@@ -31,9 +32,9 @@ test:
         x_size: *X_SIZE_TEST
         num_conv3x3: *NUM_CONV3x3
     tester:
-      names: ["GOT10kTester",]
-      GOT10kTester:
+      names: ["LaSOTTester",] # (VOTTester|GOT10kTester|LaSOTTester)
+      LaSOTTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
         device_num: 1
-        subsets: ["val"]  # (val|test)
+        subsets: ["test"]  # (train_test|test)

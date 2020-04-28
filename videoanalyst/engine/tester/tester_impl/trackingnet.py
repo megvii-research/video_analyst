@@ -9,33 +9,33 @@ import torch
 import torch.multiprocessing as mp
 
 from videoanalyst.evaluation import got_benchmark
-from videoanalyst.evaluation.got_benchmark.experiments import ExperimentOTB
+from videoanalyst.evaluation.got_benchmark.experiments import ExperimentTrackingNet
 
 from ..tester_base import TRACK_TESTERS, TesterBase
 from .utils.got_benchmark_helper import PipelineTracker
 
 
 @TRACK_TESTERS.register
-class OTBTester(TesterBase):
-    r"""OTB tester
+class TrackingNetTester(TesterBase):
+    r"""TrackingNet tester
     
     Hyper-parameters
     ----------------
     device_num: int
         number of gpus. If set to non-positive number, then use cpu
     data_root: str
-        path to got-10k root
+        path to TrackingNet root
     subsets: List[str]
         list of subsets name (val|test)
     """
     extra_hyper_params = dict(
         device_num=1,
-        data_root="datasets/OTB/OTB2015",
-        subsets=["2015"],  # (2013|2015)
+        data_root="datasets/TrackingNet",
+        subsets=["TEST"],  # (val|test)
     )
 
     def __init__(self, *args, **kwargs):
-        super(OTBTester, self).__init__(*args, **kwargs)
+        super(TrackingNetTester, self).__init__(*args, **kwargs)
         # self._experiment = None
 
     def update_params(self):
@@ -60,10 +60,10 @@ class OTBTester(TesterBase):
             result_dir = osp.join(save_root_dir, "result")
             report_dir = osp.join(save_root_dir, "report")
 
-            experiment = ExperimentOTB(root_dir,
-                                       version=subset,
-                                       result_dir=result_dir,
-                                       report_dir=report_dir)
+            experiment = ExperimentTrackingNet(root_dir,
+                                               subset=subset,
+                                               result_dir=result_dir,
+                                               report_dir=report_dir)
             # single worker
             if nr_devs == 1:
                 dev = all_devs[0]
@@ -90,7 +90,7 @@ class OTBTester(TesterBase):
         test_result_dict = dict()
         if performance is not None:
             test_result_dict["main_performance"] = performance[tracker_name][
-                "overall"]["success_score"]
+                "overall"]["ao"]
         else:
             test_result_dict["main_performance"] = -1
         return test_result_dict
@@ -110,14 +110,16 @@ class OTBTester(TesterBase):
         result_dir = osp.join(save_root_dir, "result")
         report_dir = osp.join(save_root_dir, "report")
 
-        experiment = ExperimentOTB(root_dir,
-                                   version=subset,
-                                   result_dir=result_dir,
-                                   report_dir=report_dir)
+        experiment = ExperimentTrackingNet(root_dir,
+                                           subset=subset,
+                                           result_dir=result_dir,
+                                           report_dir=report_dir)
         experiment.run(pipeline_tracker, slicing_quantile=slicing_quantile)
         logger.debug("Worker ends: slice {} at {}".format(
             slicing_quantile, dev))
 
 
-OTBTester.default_hyper_params = copy.deepcopy(OTBTester.default_hyper_params)
-OTBTester.default_hyper_params.update(OTBTester.extra_hyper_params)
+TrackingNetTester.default_hyper_params = copy.deepcopy(
+    TrackingNetTester.default_hyper_params)
+TrackingNetTester.default_hyper_params.update(
+    TrackingNetTester.extra_hyper_params)

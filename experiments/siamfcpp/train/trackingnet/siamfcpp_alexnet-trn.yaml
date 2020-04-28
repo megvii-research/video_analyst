@@ -29,12 +29,12 @@ test:
         penalty_k: 0.04
         num_conv3x3: 3
     tester:
-      names: ["VOTTester",] # (VOTTester|GOT10kTester|LaSOTTester)
-      VOTTester:
+      names: ["TrackingNetTester",]
+      TrackingNetTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
         device_num: 1
-        dataset_names: ["VOT2018"]
+        subsets: ["test"]  # (train|test|train0,1,...)
 train:
   track:
     exp_name: &TRAIN_NAME "siamfcpp_alexnet-trackingnet"

@@ -152,12 +152,15 @@ class SiamFCppTracker(PipelineBase):
         return features, im_z_crop, avg_chans
 
     def init(self, im, state):
-        r"""
-        Initialize tracker
+        r"""Initialize tracker
             Internal target state representation: self._state['state'] = (target_pos, target_sz)
-        :param im: initial frame image
-        :param state: bbox, format: xywh
-        :return: None
+        
+        Arguments
+        ---------
+        im : np.array
+            initial frame image
+        state
+            target state on initial frame (bbox in case of SOT), format: xywh
         """
         rect = state  # bbox in xywh format is given for initialization in case of tracking
         box = xywh2cxywh(rect)
@@ -265,11 +268,26 @@ class SiamFCppTracker(PipelineBase):
     def get_track_score(self):
         return float(self._state["pscore"])
 
-    def update(self, im):
+    def update(self, im, state=None):
+        """ Perform tracking on current frame
+            Accept provided target state prior on current frame
+            e.g. search the target in another video sequence simutanously
 
-        # get track
-        # target_pos_prior, target_sz_prior = self.state['target_pos'], self.state['target_sz']
-        target_pos_prior, target_sz_prior = self._state['state']
+        Arguments
+        ---------
+        im : np.array
+            current frame image
+        state
+            provided target state prior (bbox in case of SOT), format: xywh
+        """
+        # use prediction on the last frame as target state prior
+        if state is None:
+            target_pos_prior, target_sz_prior = self._state['state']
+        # use provided bbox as target state prior
+        else:
+            rect = state  # bbox in xywh format is given for initialization in case of tracking
+            box = xywh2cxywh(rect).reshape(4)
+            target_pos_prior, target_sz_prior = box[:2], box[2:]
         features = self._state['features']
 
         # forward inference to estimate new state
