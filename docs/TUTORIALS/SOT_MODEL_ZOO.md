@@ -66,7 +66,31 @@ P.S. _fulldata_ denotes COCO, VID, TrackingNet-TRAIN, ILSVRC-VID/DET, LaSOT, GOT
 | AlexNet | SiamFCppTracker | OTB2015 | 68.0 | 88.4 | [siamfcpp_alexnet-otb.yaml](../../experiments/siamfcpp/test/otb/siamfcpp_alexnet-otb.yaml) |
 | GoogLeNet | SiamFCppTracker | OTB2015 | 68.2 | 89.6 | [siamfcpp_googlenet-otb.yaml](../../experiments/siamfcpp/test/otb/siamfcpp_googlenet-otb.yaml) |
 
-#### Pipeline
+
+## Improvements
+
+### Large Search Region (x_size)
+
+Augmenting the search region may further improve the performance on some benchmarks. Here we report some of them.
+
+#### Large _x_size_ on GOT-10k
+
+| Backbone | Pipeline | Dataset | x_size | score_size | AO (val) | SR.50 (val) | SR.75 (val) | AO (test) | SR.50 (test) | SR.75 (test) | Config. File |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| GoogLeNet | SiamFCppTracker | GOT-10k | 303 | 19 | 76.4 | 90.4 | 71.8 | 60.4 | 73.7 | 46.4 | [siamfcpp_googlenet-got.yaml](../../experiments/siamfcpp/test/got10k/siamfcpp_googlenet-got.yaml) |
+| GoogLeNet | SiamFCppTracker | GOT-10k | 335 | 23 | 76.6 | 90.6 | 71.9 | 61.0 | 74.2 | 46.7 | [x_size/siamfcpp_googlenet-got.yaml](../../experiments/siamfcpp/test/got10k/x_size/siamfcpp_googlenet-got.yaml) |
+
+
+#### Large _x_size_ on LaSOT
+
+| Backbone | Pipeline | Dataset | x_size | score_size | Success | Precision | Normalized Precision | Config. File |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| GoogLeNet | SiamFCppTracker | LaSOT-test | 303 | 19 | 55.7 | 55.6 | 58.9 | [siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/siamfcpp_googlenet-lasot.yaml) |
+| GoogLeNet | SiamFCppTracker | LaSOT-test | 351 | 25 | 56.4 | 56.4 | 59.8 | [x_size/siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/x_size/siamfcpp_googlenet-lasot.yaml) |
+
+
+
+## Pipeline
 
 * SiamFCppTracker
   * [videoanalyst/pipeline/tracker/tracker_impl/siamfcpp_track.py](../videoanalyst/pipeline/tracker/tracker_impl/siamfcpp_track.py)
