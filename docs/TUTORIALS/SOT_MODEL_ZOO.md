@@ -15,7 +15,7 @@ VOT test configuration directory: _experiments/siamfcpp/test/vot_
 
 
 | Backbone | Pipeline | Dataset | A | R | EAO | FPS@GTX2080Ti | FPS@GTX1080Ti | Config. File |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:
 | AlexNet | SiamFCppTracker | VOT2018 |0.576 | 0.183 | 0.393| ~200| ~185 | [siamfcpp_alexnet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml)
  | 
 | GoogLeNet | SiamFCppTracker | VOT2018 | 0.583 | 0.173 | 0.426 | ~80 | ~65 | [siamfcpp_googlenet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_googlenet.yaml) |
@@ -23,7 +23,7 @@ VOT test configuration directory: _experiments/siamfcpp/test/vot_
 #### Multi-template
 
 | Backbone | Pipeline | Dataset | A | R | EAO | FPS@GTX2080Ti | FPS@GTX1080Ti | Config. File |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | AlexNet | SiamFCppMultiTempTracker| VOT2018 | 0.597 | 0.215 | 0.370 | ~90 | ~75 | [siamfcpp_alexnet-multi_temp.yaml](../../experiments/siamfcpp/test/vot/multi_temp/siamfcpp_alexnet-multi_temp.yaml) | siamfcpp-alexnet-vot-md5_18fd31a2f94b0296c08fff9b0f9ad240.pkl|
 | GoogLeNet | SiamFCppMultiTempTracker | VOT2018 | 0.587 | 0.150 |  0.467 | ~50 | ~45 | [siamfcpp_googlenet-multi_temp.yaml](../../experiments/siamfcpp/test/vot/multi_temp/siamfcpp_googlenet-multi_temp.yaml) |
 
@@ -47,7 +47,7 @@ GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 ### LaSOT
 
 | Backbone | Pipeline | Dataset | Success | Precision | Normalized Precision | Config. File |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | GoogLeNet | SiamFCppTracker | LaSOT-test | 55.7 | 55.6 | 58.9 | [siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/siamfcpp_googlenet-lasot.yaml) |
 
 ### TrackingNet
@@ -63,7 +63,7 @@ P.S. _fulldata_ denotes COCO, VID, TrackingNet-TRAIN, ILSVRC-VID/DET, LaSOT, GOT
 ### OTB-2015
 
 | Backbone | Pipeline | Dataset | Success | Precision | Config. File|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|
 | AlexNet | SiamFCppTracker | OTB2015 | 68.0 | 88.4 | [siamfcpp_alexnet-otb.yaml](../../experiments/siamfcpp/test/otb/siamfcpp_alexnet-otb.yaml) |
 | GoogLeNet | SiamFCppTracker | OTB2015 | 68.2 | 89.6 | [siamfcpp_googlenet-otb.yaml](../../experiments/siamfcpp/test/otb/siamfcpp_googlenet-otb.yaml) |
 
@@ -85,7 +85,7 @@ Augmenting the search region may further improve the performance on some benchma
 #### Large _x_size_ on LaSOT
 
 | Backbone | Pipeline | Dataset | x_size | score_size | Success | Precision | Normalized Precision | Config. File |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | GoogLeNet | SiamFCppTracker | LaSOT-test | 303 | 19 | 55.7 | 55.6 | 58.9 | [siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/siamfcpp_googlenet-lasot.yaml) |
 | GoogLeNet | SiamFCppTracker | LaSOT-test | 351 | 25 | 56.4 | 56.4 | 59.8 | [x_size/siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/x_size/siamfcpp_googlenet-lasot.yaml) |
 
