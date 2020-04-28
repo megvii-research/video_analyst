@@ -42,7 +42,7 @@ def make_parser():
                         "--video",
                         type=str,
                         default="webcam",
-                        help="path to input video file, default is webcam")
+                        help=r"video input mode. \"webcam\" for webcamera, \"path/*.<extension>\" for image files, \"path/file.<extension>\". Default is webcam. ")
     parser.add_argument("-o",
                         "--output",
                         type=str,
@@ -53,6 +53,21 @@ def make_parser():
                         type=int,
                         default=0,
                         help="start index / #frames to skip")
+    parser.add_argument("-r",
+                        "--resize",
+                        type=float,
+                        default=1.0,
+                        help="resize result image to anothor ratio (for saving bandwidth)")
+    parser.add_argument("-do",
+                        "--dump-only",
+                        action="store_true",
+                        help="only dump, do not show image (in cases where cv2.imshow inccurs errors)")
+    parser.add_argument("-i",
+                        "--init-bbox",
+                        type=float,
+                        nargs="+",
+                        default=[-1.0],
+                        help="initial bbox, length=4, format=xywh")
     return parser
 
 
@@ -75,16 +90,23 @@ def main(args):
     pipeline.set_device(dev)
     init_box = None
     template = None
+    if len(args.init_bbox) == 4:
+        init_box = args.init_bbox
+
     vw = None
+    resize_ratio = args.resize
+    dump_only = args.dump_only
 
     # create video stream
     if args.video == "webcam":
-        logger.info("[INFO] starting video stream...")
+        logger.info("Starting video stream...")
         vs = cv2.VideoCapture(0)
         vs.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
     elif not osp.isfile(args.video):
+        logger.info("Starting from video frame image files...")
         vs = ImageFileVideoStream(args.video, init_counter=args.start_index)
     else:
+        logger.info("Starting from video file...")
         vs = cv2.VideoCapture(args.video)
 
     # create video writer to output video
@@ -95,7 +117,7 @@ def main(args):
             fourcc = cv2.VideoWriter_fourcc(*'MJPG')
             width, height = vs.get(3), vs.get(4)
             vw = cv2.VideoWriter(args.output, fourcc, 25,
-                                 (int(width), int(height)))
+                                 (int(width*resize_ratio), int(height*resize_ratio)))
 
     # loop over sequence
     while vs.isOpened():
@@ -103,7 +125,7 @@ def main(args):
         ret, frame = vs.read()
         logger.debug("frame: {}".format(ret))
         if ret:
-            if init_box is not None:
+            if template is not None:
                 time_a = time.time()
                 rect_pred = pipeline.update(frame)
                 logger.debug(rect_pred)
@@ -121,7 +143,10 @@ def main(args):
                     show_frame[:128, :128] = template
             else:
                 show_frame = frame
-            cv2.imshow(window_name, show_frame)
+            show_frame = cv2.resize(show_frame, 
+                                    (int(show_frame.shape[1]*resize_ratio), int(show_frame.shape[0]*resize_ratio)))  # resize
+            if not dump_only:
+                cv2.imshow(window_name, show_frame)
             if vw is not None:
                 vw.write(show_frame)
         # catch key if
@@ -143,17 +168,18 @@ def main(args):
                                 showCrosshair=True)
             if box[2] > 0 and box[3] > 0:
                 init_box = box
-                template = cv2.resize(
-                    frame[box[1]:box[1] + box[3], box[0]:box[0] + box[2]],
-                    (128, 128))
-                pipeline.init(frame, init_box)
-                logger.debug(
-                    "pipeline initialized with bbox : {}".format(init_box))
         elif key == ord("c"):
             logger.debug(
                 "init_box/template released, press key s to select object.")
             init_box = None
             template = None
+        if (init_box is not None) and (template is None):
+            template = cv2.resize(
+                frame[int(init_box[1]):int(init_box[1] + init_box[3]), int(init_box[0]):int(init_box[0] + init_box[2])],
+                (128, 128))
+            pipeline.init(frame, init_box)
+            logger.debug(
+                "pipeline initialized with bbox : {}".format(init_box))
     vs.release()
     if vw is not None:
         vw.release()
