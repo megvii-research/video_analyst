@@ -1,6 +1,6 @@
 test:
   track:
-    exp_name: &TEST_NAME "siamfcpp_alexnet-got"
+    exp_name: &TEST_NAME "siamfcpp_alexnet-trackingnet"
     exp_save: &TEST_SAVE "logs"
     model:
       backbone:
@@ -20,7 +20,7 @@ test:
       task_model:
         name: "SiamTrack"
         SiamTrack:
-          pretrain_model_path: "snapshots/siamfcpp_alexnet-got/epoch-19.pkl"
+          pretrain_model_path: "snapshots/siamfcpp_alexnet-trackingnet/epoch-19.pkl"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
@@ -29,23 +29,15 @@ test:
         penalty_k: 0.04
         num_conv3x3: 3
     tester:
-      names: ["GOT10kTester",]  # (VOTTester|GOT10kTester|LaSOTTester)
-      VOTTester:
+      names: ["TrackingNetTester",]
+      TrackingNetTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
         device_num: 1
-        dataset_names: ["VOT2018"]
-      GOT10kTester:
-        exp_name: *TEST_NAME
-        exp_save: *TEST_SAVE
-        subsets: ["val", "test"]  # (val|test)
-      LaSOTTester:
-        exp_name: *TEST_NAME
-        exp_save: *TEST_SAVE
-        subsets: ["test"]  # (train_test|test)
+        subsets: ["test"]  # (train|test|train0,1,...)
 train:
   track:
-    exp_name: &TRAIN_NAME "siamfcpp_alexnet-got"
+    exp_name: &TRAIN_NAME "siamfcpp_alexnet-trackingnet"
     exp_save: &TRAIN_SAVE "snapshots"
     num_processes: 2
     model:
@@ -97,18 +89,13 @@ train:
           negative_pair_ratio: 0.1
         submodules:
           dataset:
-            names: ["GOT10kDataset",]  # (GOT10kDataset|LaSOTDataset)
-            GOT10kDataset: &GOT10KDATASET_CFG
+            names: ["TrackingNetDataset",]
+            TrackingNetDataset:
               ratio: 1.0
               max_diff: 100
-              dataset_root: "datasets/GOT-10k"
-              subset: "train"
-            GOT10kDatasetFixed: *GOT10KDATASET_CFG  # got10k dataset with exclusion of unfixed sequences
-            LaSOTDataset:
-              ratio: 1.0
-              max_diff: 100
-              dataset_root: "datasets/LaSOT"
-              subset: "train"
+              dataset_root: "datasets/TrackingNet"
+              subset: "train" # "train"
+              check_integrity: false  # no need to check integrity for visualization purpose
           filter:
             name: "TrackPairFilter"
             TrackPairFilter:
@@ -136,7 +123,6 @@ train:
         max_epoch: 20
         minibatch: *MINIBATCH
         nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
-        # num_iterations: 12500
         snapshot: ""
       monitors:
         names: ["TextInfo", "TensorboardLogger"]

@@ -2,6 +2,19 @@
 
 Date format: YY/MM/DD
 
+## 2020/04/28
+
+* Modify interface of _siamfcpp_track.py: update_
+  * Accept provided target state (bbox)
+
+## 2020/04/25
+
+* Add multi-processing tester
+  * otb
+  * lasot
+  * trackingnet
+  * got10k
+  
 ## 2020/04/18
 * add SAT train code
 * update SAT test code
@@ -166,3 +179,4 @@ ____Minor changes____
 * Support SiamFC++ test on VOT benchmark
   * SiamFC++-AlexNet
   * SiamFC++-GoogLeNet
+

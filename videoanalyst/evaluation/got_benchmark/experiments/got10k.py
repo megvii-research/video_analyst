@@ -45,7 +45,7 @@ class ExperimentGOT10k(object):
         self.nbins_iou = 101
         self.repetitions = 3
 
-    def run(self, tracker, visualize=False, save_video=False, overwrite_result=True):
+    def run(self, tracker, visualize=False, save_video=False, overwrite_result=True, slicing_quantile=(0.0, 1.0)):
         if self.subset == 'test':
             print('\033[93m[WARNING]:\n' \
                   'The groundtruths of GOT-10k\'s test set is withholded.\n' \
@@ -57,8 +57,16 @@ class ExperimentGOT10k(object):
         print('Running tracker %s on GOT-10k...' % tracker.name)
         self.dataset.return_meta = False
 
+        start_quantile, end_quantile = slicing_quantile
+        len_dataset = len(self.dataset)
+        start_idx = int(len_dataset*start_quantile)
+        end_idx = int(len_dataset*end_quantile)
+
+
         # loop over the complete dataset
-        for s, (img_files, anno) in enumerate(self.dataset):
+        # for s, (img_files, anno) in enumerate(self.dataset):
+        for s in range(start_idx, end_idx):
+            img_files, anno = self.dataset[s]
             seq_name = self.dataset.seq_names[s]
             print('--Sequence %d/%d: %s' % (
                 s + 1, len(self.dataset), seq_name))

@@ -5,6 +5,8 @@ import argparse
 from loguru import logger
 import os.path as osp
 
+import torch
+
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.config.config import specify_task
 from videoanalyst.engine.builder import build as tester_builder
@@ -66,6 +68,8 @@ if __name__ == '__main__':
     root_cfg = root_cfg.test
     task, task_cfg = specify_task(root_cfg)
     task_cfg.freeze()
+
+    torch.multiprocessing.set_start_method('spawn', force=True)
 
     if task == 'track':
         testers = build_siamfcpp_tester(task_cfg)

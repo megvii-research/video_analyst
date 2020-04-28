@@ -1,35 +1,7 @@
-# Setup
+# Setup-VOS
 
 ## Install requirements
 
-- Linux or MacOS
-- Python >= 3.5
-- GCC >= 4.9
-
-```Bash
-git clone https://github.com/MegviiDetection/video_analyst.git
-cd video_analyst
-```
-
-You can choose either using native python (with pip/pip3) or using virtual environment.
-
-```Bash
-pip3 install -U -r requirements.txt
-```
-
-### python-tkinter
-
-In case of:
-
-```Python
-ModuleNotFoundError: No module named 'tkinter'
-```
-
-Please install python3-tk by running:
-
-```Bash
-sudo apt-get install python3-tk
-```
 
 ## Download models
 ### SiamFCpp tracker
