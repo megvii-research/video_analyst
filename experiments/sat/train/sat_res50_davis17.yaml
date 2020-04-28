@@ -138,7 +138,7 @@ train:
             }
 test:
   vos:
-    exp_name: &TRAIN_NAME "sat_res50_davis17"
+    exp_name: &TEST_NAME "sat_res50_davis17"
     exp_save: &TEST_SAVE "logs"
     tracker_model:
       backbone:

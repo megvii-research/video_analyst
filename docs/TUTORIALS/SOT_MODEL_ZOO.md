@@ -57,6 +57,7 @@ GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 | GoogLeNet | SiamFCppTracker | TrackingNet-TRAIN | TrackingNet-TEST | 74.5 | 68.5 | 79.8 | [siamfcpp_googlenet-trackingnet.yaml](../../experiments/siamfcpp/test/trackingnet/siamfcpp_googlenet-trackingnet.yaml) |
 | GoogLeNet | SiamFCppTracker | fulldata | TrackingNet-TEST | 75.3 | 69.5 | 80.9 | [siamfcpp_googlenet-trackingnet-fulldata.yaml](../../experiments/siamfcpp/test/trackingnet/siamfcpp_googlenet-trackingnet-fulldata.yaml) |
 
+
 P.S. _fulldata_ denotes COCO, VID, TrackingNet-TRAIN, ILSVRC-VID/DET, LaSOT, GOT10k
 
 ### OTB-2015
