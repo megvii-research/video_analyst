@@ -105,11 +105,7 @@ For detail, please refer to markdown files under _docs_.
 * [FORMATTING_INSTRUCTION](docs/DEVELOP/FORMATTING_INSTRUCTIONS.md): instruction for code formatting (yapf/isort/flake/etc.)
 
 ## TODO
-
-* [] Training code
-  * [] LaSOT
-  * [] COCO
-* [] Test code for OTB, LaSOT, TrackingNet
+[] refine code stype and test cases
 
 ## Acknowledgement
 
