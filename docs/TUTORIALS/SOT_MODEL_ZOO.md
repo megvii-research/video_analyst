@@ -86,7 +86,11 @@ Augmenting the search region may further improve the performance on some benchma
 | Backbone | Pipeline | Dataset | x_size | score_size | Success | Precision | Normalized Precision | Config. File |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | GoogLeNet | SiamFCppTracker | LaSOT-test | 303 | 19 | 55.7 | 55.6 | 58.9 | [siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/siamfcpp_googlenet-lasot.yaml) |
-| GoogLeNet | SiamFCppTracker | LaSOT-test | 351 | 25 | 56.4 | 56.4 | 59.8 | [x_size/siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/x_size/siamfcpp_googlenet-lasot.yaml) |
+| GoogLeNet | SiamFCppTracker | LaSOT-test | 351 | 25 | 56.4 | 56.4 | 59.8 | - |
+| GoogLeNet | SiamFCppTracker | LaSOT-test | 367 | 27 | 56.6 | 56.4 | 60.0 | - |
+| GoogLeNet | SiamFCppTracker | LaSOT-test | 383 | 29 | 57.1 | 57.2 | 60.5 | - |
+| GoogLeNet | SiamFCppTracker | LaSOT-test | 399 | 31 | __57.7__ | 58.2 | 61.3 | [x_size/siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/x_size/siamfcpp_googlenet-lasot.yaml) |
+| GoogLeNet | SiamFCppTracker | LaSOT-test | 415 | 33 | 57.4 | 57.7 | 60.9 | - |
 
 
 
