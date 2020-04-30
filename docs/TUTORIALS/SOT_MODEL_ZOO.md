@@ -15,8 +15,9 @@ VOT test configuration directory: _experiments/siamfcpp/test/vot_
 
 
 | Backbone | Pipeline | Dataset | A | R | EAO | FPS@GTX2080Ti | FPS@GTX1080Ti | Config. File |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | AlexNet | SiamFCppTracker | VOT2018 |0.576 | 0.183 | 0.393| ~200| ~185 | [siamfcpp_alexnet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml)
+ | 
 | GoogLeNet | SiamFCppTracker | VOT2018 | 0.583 | 0.173 | 0.426 | ~80 | ~65 | [siamfcpp_googlenet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_googlenet.yaml) |
 
 #### Multi-template
@@ -46,7 +47,7 @@ GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 ### LaSOT
 
 | Backbone | Pipeline | Dataset | Success | Precision | Normalized Precision | Config. File |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | GoogLeNet | SiamFCppTracker | LaSOT-test | 55.7 | 55.6 | 58.9 | [siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/siamfcpp_googlenet-lasot.yaml) |
 
 ### TrackingNet
@@ -86,8 +87,13 @@ Augmenting the search region may further improve the performance on some benchma
 | Backbone | Pipeline | Dataset | x_size | score_size | Success | Precision | Normalized Precision | Config. File |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | GoogLeNet | SiamFCppTracker | LaSOT-test | 303 | 19 | 55.7 | 55.6 | 58.9 | [siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/siamfcpp_googlenet-lasot.yaml) |
-| GoogLeNet | SiamFCppTracker | LaSOT-test | 351 | 25 | 56.4 | 56.4 | 59.8 | [x_size/siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/x_size/siamfcpp_googlenet-lasot.yaml) |
+| GoogLeNet | SiamFCppTracker | LaSOT-test | 351 | 25 | 56.4 | 56.4 | 59.8 | - |
+| GoogLeNet | SiamFCppTracker | LaSOT-test | 367 | 27 | 56.6 | 56.4 | 60.0 | - |
+| GoogLeNet | SiamFCppTracker | LaSOT-test | 383 | 29 | 57.1 | 57.2 | 60.5 | - |
+| GoogLeNet | SiamFCppTracker | LaSOT-test | 399 | 31 | __57.7__ | 58.2 | 61.3 | [x_size/siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/x_size/siamfcpp_googlenet-lasot.yaml) |
+| GoogLeNet | SiamFCppTracker | LaSOT-test | 415 | 33 | 57.4 | 57.7 | 60.9 | - |
 
+P.S. _window_influence_ may require tuning as search region size slightly change the shape of window of score penalization.
 
 
 ## Pipeline
