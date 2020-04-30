@@ -24,7 +24,7 @@ Current implementation list:
 
 ### Setup
 
-Please refer to [SOT_SETUP.md](docs/SOT_SETUP.md)
+Please refer to [SOT_SETUP.md](docs/TUTORIALS/SOT_SETUP.md)
 ### Demo
 
 #### SOT video demo
@@ -41,11 +41,11 @@ python3 ./demo/main/video/sot_video.py --config 'experiments/siamfcpp/test/vot/s
 
 ### Test
 
-Please refer to [docs/SOT_TEST.md](docs/SOT_TEST.md) for detail.
+Please refer to [SOT_TEST.md](docs/TUTORIALS/SOT_TEST.md) for detail.
 
 ### Training
 
-Please refer to [docs/SOT_TRAINING.md](docs/SOT_TRAINING.md) for detail.
+Please refer to [SOT_TRAINING.md](docs/TUTORIALS/SOT_TRAINING.md) for detail.
 
 ## Repository structure (in progress)
 
@@ -102,14 +102,10 @@ For detail, please refer to markdown files under _docs_.
 ### DEVELOP
 * [DEVELOP.md](docs/DEVELOP/DEVELOP.md): description of project design (registry, configuration tree, etc.)
 * [PIPELINE_API.md](docs/DEVELOP/PIPELINE_API.md): description for pipeline API
-* [FORMATTING_INSTRUCTION](docs/DEVELOP/FORMATTING_INSTRUCTIONS.md): instruction for code formatting (yapf/isort/flake/etc.)
+* [FORMATTING_INSTRUCTION](docs/DEVELOP/REFORMATTING_INSTRUCTIONS.md): instruction for code formatting (yapf/isort/flake/etc.)
 
 ## TODO
-
-* [] Training code
-  * [] LaSOT
-  * [] COCO
-* [] Test code for OTB, LaSOT, TrackingNet
+[] refine code stype and test cases
 
 ## Acknowledgement
 
