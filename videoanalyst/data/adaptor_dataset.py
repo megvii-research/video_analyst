@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*
 from itertools import chain
-from typing import Dict
 
 from loguru import logger
 

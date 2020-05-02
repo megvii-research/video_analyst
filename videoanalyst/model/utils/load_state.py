@@ -1,5 +1,4 @@
 from collections import defaultdict
-from copy import deepcopy
 from typing import Any, Dict, Iterable, List, Tuple
 
 from torch import nn

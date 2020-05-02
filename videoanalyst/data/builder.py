@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*
 import gc
-import os.path as osp
 from typing import Dict, List
 
 from loguru import logger

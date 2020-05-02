@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*
 import os.path as osp
 from collections import OrderedDict
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 import numpy as np
 import pandas as pd

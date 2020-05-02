@@ -1,10 +1,8 @@
 import glob
-import json
 import os
 import os.path as osp
 import pickle
 import xml.etree.ElementTree as ET
-from collections import OrderedDict
 
 import cv2
 import numpy as np

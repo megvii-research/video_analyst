@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from typing import Dict
 
 import cv2
 import numpy as np

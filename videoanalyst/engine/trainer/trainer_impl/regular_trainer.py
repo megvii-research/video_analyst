@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*
 import copy
 import itertools
-import os
-import os.path as osp
 from collections import OrderedDict
-from typing import Tuple
 
 import cv2
 import numpy as np

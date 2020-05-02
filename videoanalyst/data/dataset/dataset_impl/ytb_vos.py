@@ -2,16 +2,11 @@
 
 # from .utils import Dataset
 
-import contextlib
 # -*- coding: utf-8 -*-
-import copy
-import io
 import json
 import os
 import os.path as osp
 import pickle
-from collections import OrderedDict
-from typing import Dict, List
 
 import cv2
 import numpy as np

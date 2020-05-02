@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-import copy
 import os.path as osp
-from typing import Dict, List
+from typing import Dict
 
 import cv2
 import numpy as np

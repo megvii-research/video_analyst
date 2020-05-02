@@ -30,7 +30,7 @@ See the bottom of code for more plot examples, together with some exmples for .y
 import json
 import math
 from abc import ABCMeta, abstractmethod
-from typing import Dict, List
+from typing import List
 
 import numpy as np
 from yacs.config import CfgNode
