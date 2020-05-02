@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*
-from typing import Tuple
 import copy
 import itertools
-from loguru import logger
 import os
 import os.path as osp
 from collections import OrderedDict
+from typing import Tuple
 
 import cv2
 import numpy as np
+from loguru import logger
 from tqdm import tqdm
 
 import torch

@@ -5,9 +5,10 @@ import cv2
 import numpy as np
 from yacs.config import CfgNode
 
-from ..target_base import VOS_TARGETS, TargetBase
 from videoanalyst.data.utils.crop_track_pair import crop_track_pair_for_sat
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
+
+from ..target_base import VOS_TARGETS, TargetBase
 
 
 @VOS_TARGETS.register

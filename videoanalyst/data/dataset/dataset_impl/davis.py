@@ -2,23 +2,24 @@
 
 # from .utils import Dataset
 
+import contextlib
 # -*- coding: utf-8 -*-
 import copy
 import io
-from loguru import logger
-from collections import defaultdict
+import json
 import os
 import os.path as osp
-import json
 import pickle
+from collections import OrderedDict, defaultdict
 from typing import Dict, List
-from collections import OrderedDict
-from PIL import Image
-import contextlib
+
 import cv2
 import numpy as np
+from loguru import logger
+from PIL import Image
 
-from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, VOS_DATASETS, DatasetBase
+from videoanalyst.data.dataset.dataset_base import (TRACK_DATASETS,
+                                                    VOS_DATASETS, DatasetBase)
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
 

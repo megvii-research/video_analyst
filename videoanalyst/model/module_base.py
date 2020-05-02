@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*
-import torch
-from copy import deepcopy
-from typing import Dict, Any, List, Iterable, Tuple
 from collections import defaultdict
-from torch import nn
+from copy import deepcopy
+from typing import Any, Dict, Iterable, List, Tuple
+
 from loguru import logger
-from .utils.load_state import filter_reused_missing_keys, get_missing_parameters_message, get_unexpected_parameters_message
+
+import torch
+from torch import nn
+
 from videoanalyst.utils import md5sum
+
+from .utils.load_state import (filter_reused_missing_keys,
+                               get_missing_parameters_message,
+                               get_unexpected_parameters_message)
 
 
 class ModuleBase(nn.Module):

@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*
 import itertools
-from loguru import logger
 from typing import Dict
 
 import cv2
 import numpy as np
+from loguru import logger
 from tqdm import tqdm
 
 import torch
 
-from ..monitor_base import TRACK_MONITORS, VOS_MONITORS, MonitorBase
 from videoanalyst.utils import dist_utils
+
+from ..monitor_base import TRACK_MONITORS, VOS_MONITORS, MonitorBase
 
 
 @TRACK_MONITORS.register

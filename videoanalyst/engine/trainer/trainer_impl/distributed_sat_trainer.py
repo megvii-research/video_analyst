@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*
-from typing import Tuple, List
 import copy
 import itertools
-import time
-from loguru import logger
 import os.path as osp
+import time
 from collections import OrderedDict
+from typing import List, Tuple
 
 import cv2
 import numpy as np
+from loguru import logger
+
 import torch
+import torch.distributed as dist
 from torch import nn
 from torch.utils.data import DataLoader
-import torch.distributed as dist
 
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.optim.optimizer.optimizer_base import OptimizerBase
-from videoanalyst.utils import (Timer, ensure_dir, move_data_to_device,
-                                unwrap_model, average_gradients)
-from videoanalyst.utils import dist_utils
+from videoanalyst.utils import (Timer, average_gradients, dist_utils,
+                                ensure_dir, move_data_to_device, unwrap_model)
 
 from ..trainer_base import VOS_TRAINERS, TrainerBase
 

@@ -1,24 +1,27 @@
 # -*- coding: utf-8 -*
 import copy
-import cv2
-import numpy as np
 import itertools
 import math
 import os
-import torch
-from loguru import logger
-from os import makedirs
-from os.path import join, isdir
 from collections import OrderedDict
-import torch.multiprocessing as mp
-from torch.multiprocessing import Pool, Manager
 from multiprocessing import Process, Queue
+from os import makedirs
+from os.path import isdir, join
+
+import cv2
+import numpy as np
+from loguru import logger
+from PIL import Image
 from tqdm import tqdm
 
-from ..tester_base import TRACK_TESTERS, TesterBase, VOS_TESTERS
+import torch
+import torch.multiprocessing as mp
+from torch.multiprocessing import Manager, Pool
+
 from videoanalyst.evaluation import davis_benchmark
 from videoanalyst.utils import ensure_dir
-from PIL import Image
+
+from ..tester_base import TRACK_TESTERS, VOS_TESTERS, TesterBase
 
 
 @VOS_TESTERS.register

@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*
-from loguru import logger
 import os
 import os.path as osp
-import torch
-
 from copy import deepcopy
-from typing import Dict, Tuple, List
+from typing import Dict, List, Tuple
 
+from loguru import logger
+
+import torch
 from torch import nn
 from torch.utils.data import DataLoader
 
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.optim.optimizer.optimizer_base import OptimizerBase
-from videoanalyst.utils import (Registry, ensure_dir, unwrap_model)
+from videoanalyst.utils import Registry, ensure_dir, unwrap_model
 
 TRACK_TRAINERS = Registry('TRACK_TRAINERS')
 VOS_TRAINERS = Registry('VOS_TRAINERS')

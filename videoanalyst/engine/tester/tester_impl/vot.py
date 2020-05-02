@@ -1,24 +1,22 @@
 # -*- coding: utf-8 -*
-from typing import Dict
 import copy
+import importlib
 import itertools
-from loguru import logger
 import math
 import os
 import os.path as osp
 from collections import OrderedDict
-import importlib
-
-import torch.multiprocessing as mp
-
 from os.path import join
+from typing import Dict
 
-from yacs.config import CfgNode
 import cv2
 import numpy as np
+from loguru import logger
 from tqdm import tqdm
+from yacs.config import CfgNode
 
 import torch
+import torch.multiprocessing as mp
 
 from videoanalyst.evaluation import vot_benchmark
 from videoanalyst.utils import ensure_dir

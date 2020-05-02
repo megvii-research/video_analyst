@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*
 
-import numpy as np
-import torch
+from copy import deepcopy
+
 import cv2
+import numpy as np
+from loguru import logger
+
+import torch
 import torch.nn as nn
 
-from copy import deepcopy
-from loguru import logger
-from videoanalyst.pipeline.pipeline_base import PipelineBase
-from videoanalyst.pipeline.pipeline_base import VOS_PIPELINES
+from videoanalyst.pipeline.pipeline_base import VOS_PIPELINES, PipelineBase
 from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
                                          get_subwindow_tracking,
                                          imarray_to_tensor, tensor_to_numpy,

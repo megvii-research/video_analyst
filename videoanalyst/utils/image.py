@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import os.path as osp
 import glob
+import os.path as osp
 
 import cv2
 import numpy as np
