@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*
 import os.path as osp
 
-import numpy as np
 import cv2
+import numpy as np
 
 import torch
 

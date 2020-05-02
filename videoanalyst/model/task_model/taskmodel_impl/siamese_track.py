@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*
 
 import numpy as np
+from loguru import logger
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from collections import OrderedDict
-from loguru import logger
+
 from videoanalyst.model.common_opr.common_block import (conv_bn_relu,
                                                         xcorr_depthwise)
 from videoanalyst.model.module_base import ModuleBase

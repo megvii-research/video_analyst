@@ -2,9 +2,9 @@
 
 import re
 from collections import OrderedDict
-from loguru import logger
 from typing import Dict, List
 
+from loguru import logger
 from yacs.config import CfgNode
 
 import torch

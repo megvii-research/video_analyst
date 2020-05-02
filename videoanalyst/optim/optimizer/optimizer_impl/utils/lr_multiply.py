@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*
 import json
 import re
-from loguru import logger
 from typing import List
 
+from loguru import logger
 from yacs.config import CfgNode
 
 import torch

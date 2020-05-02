@@ -1,6 +1,6 @@
-from copy import deepcopy
-from typing import Dict, Any, List, Iterable, Tuple
 from collections import defaultdict
+from typing import Any, Dict, Iterable, List, Tuple
+
 from torch import nn
 
 

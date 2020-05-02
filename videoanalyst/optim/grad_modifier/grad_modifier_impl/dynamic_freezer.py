@@ -9,7 +9,7 @@ from yacs.config import CfgNode
 import torch
 from torch import nn
 
-from ..grad_modifier_base import (GRAD_MODIFIERS, GradModifierBase)
+from ..grad_modifier_base import GRAD_MODIFIERS, GradModifierBase
 from .utils.freeze import apply_freeze_schedule
 
 

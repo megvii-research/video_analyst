@@ -1,27 +1,23 @@
 # -*- coding: utf-8 -*
-from loguru import logger
-import os.path as osp
-
+import gc
 from typing import Dict, List
 
-import gc
-
+from loguru import logger
 from yacs.config import CfgNode
 
 import torch
+import torch.distributed as dist
 from torch.utils.data import DataLoader, Dataset
 from torch.utils.data.dataloader import default_collate
-import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
 
-from videoanalyst.utils import Timer, ensure_dir
+from videoanalyst.utils import Timer, dist_utils, ensure_dir
 
 from .adaptor_dataset import AdaptorDataset
 from .datapipeline import builder as datapipeline_builder
 from .sampler import builder as sampler_builder
 from .target import builder as target_builder
 from .transformer import builder as transformer_builder
-from videoanalyst.utils import dist_utils
 
 
 def build(task: str, cfg: CfgNode, seed: int = 0) -> DataLoader:
