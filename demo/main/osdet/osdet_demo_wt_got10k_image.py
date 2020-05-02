@@ -1,26 +1,24 @@
 # -*- coding: utf-8 -*
 from paths import ROOT_PATH  # isort:skip
-import demo
-
-from videoanalyst.config.config import cfg as root_cfg
-from videoanalyst.config.config import specify_task
-from videoanalyst.engine.builder import build as tester_builder
-from videoanalyst.model import builder as model_builder
-from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.utils import complete_path_wt_root_in_cfg
-from videoanalyst.pipeline.utils.bbox import xywh2xyxy, xyxy2xywh
-from videoanalyst.pipeline.utils.crop import get_subwindow
-
-from videoanalyst.data.dataset import builder as dataset_buidler
-from videoanalyst.utils.image import load_image
-
-from copy import deepcopy
 import argparse
-from loguru import logger
 
 import cv2
 import numpy as np
+from loguru import logger
+
 import torch
+
+import demo
+from videoanalyst.config.config import cfg as root_cfg
+from videoanalyst.config.config import specify_task
+from videoanalyst.data.dataset import builder as dataset_buidler
+from videoanalyst.engine.builder import build as tester_builder
+from videoanalyst.model import builder as model_builder
+from videoanalyst.pipeline import builder as pipeline_builder
+from videoanalyst.pipeline.utils.bbox import xywh2xyxy, xyxy2xywh
+from videoanalyst.pipeline.utils.crop import get_subwindow
+from videoanalyst.utils import complete_path_wt_root_in_cfg
+from videoanalyst.utils.image import load_image
 
 color = dict(
     target=(0, 255, 0),

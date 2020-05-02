@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*
 from typing import Dict, List
+
 from loguru import logger
 from yacs.config import CfgNode
+
 from torch import nn
+
 from .backbone import builder as backbone_builder
 from .loss import builder as loss_builder
 from .task_head import builder as head_builder

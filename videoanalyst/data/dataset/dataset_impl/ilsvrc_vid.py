@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-import copy
-from loguru import logger
 import os.path as osp
-from typing import Dict, List
+from typing import Dict
 
 import cv2
 import numpy as np
+from loguru import logger
 from yacs.config import CfgNode
 
 from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, DatasetBase

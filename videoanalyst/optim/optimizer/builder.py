@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from typing import Dict, List
 
 from yacs.config import CfgNode
 

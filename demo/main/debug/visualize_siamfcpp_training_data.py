@@ -2,27 +2,25 @@
 from paths import ROOT_PATH  # isort:skip
 
 import argparse
-from loguru import logger
 import os.path as osp
-import pickle
 
 import cv2
+from loguru import logger
 
 import torch
 
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.config.config import specify_task
 from videoanalyst.data import builder as dataloader_builder
-from videoanalyst.data.dataset import builder as dataset_buidler
 from videoanalyst.data.datapipeline import builder as datapipeline_builder
+from videoanalyst.data.dataset import builder as dataset_buidler
+from videoanalyst.data.utils.visualization import show_img_FCOS
 from videoanalyst.engine import builder as engine_builder
 from videoanalyst.model import builder as model_builder
 from videoanalyst.model.loss import builder as losses_builder
 from videoanalyst.optim import builder as optim_builder
 from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.utils import Timer, ensure_dir, complete_path_wt_root_in_cfg
-
-from videoanalyst.data.utils.visualization import show_img_FCOS
+from videoanalyst.utils import Timer, complete_path_wt_root_in_cfg, ensure_dir
 
 cv2.setNumThreads(1)
 

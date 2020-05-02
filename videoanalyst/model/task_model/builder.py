@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*
-from loguru import logger
 from typing import Dict, List
 
+from loguru import logger
 from yacs.config import CfgNode
 
 from videoanalyst.model.module_base import ModuleBase

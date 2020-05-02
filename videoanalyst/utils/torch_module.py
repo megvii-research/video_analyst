@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*
-from typing import Dict
-
-import torch
-from torch import nn
-import torch.distributed as dist
-import numpy as np
 import collections.abc
 import re
+from typing import Dict
 
 import numpy as np
+
+import torch
+import torch.distributed as dist
+from torch import nn
+
 np_str_obj_array_pattern = re.compile(r"[aO]")
 default_collate_err_msg_format = (
     "default_collator: inputs must contain numpy arrays, numbers, "

@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*
 import copy
-from loguru import logger
 import os.path as osp
 
+from loguru import logger
 from yacs.config import CfgNode
 
 import torch
 import torch.multiprocessing as mp
 
 from videoanalyst.evaluation import got_benchmark
-from videoanalyst.evaluation.got_benchmark.experiments import ExperimentTrackingNet
+from videoanalyst.evaluation.got_benchmark.experiments import \
+    ExperimentTrackingNet
 
 from ..tester_base import TRACK_TESTERS, TesterBase
 from .utils.got_benchmark_helper import PipelineTracker

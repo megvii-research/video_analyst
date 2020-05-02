@@ -2,8 +2,9 @@ from typing import Dict
 
 import cv2
 import numpy as np
-import torch
 from yacs.config import CfgNode
+
+import torch
 
 from videoanalyst.data.utils.crop_track_pair import crop_track_pair
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy

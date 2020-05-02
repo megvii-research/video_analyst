@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from abc import ABCMeta
-from typing import List, Dict
+from typing import Dict, List
 
 import cv2 as cv
 import numpy as np
-from yacs.config import CfgNode
 from loguru import logger
+from yacs.config import CfgNode
 
 from videoanalyst.utils import Registry
 

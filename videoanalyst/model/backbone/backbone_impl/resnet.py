@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*
+
+from loguru import logger
+
 import torch
 import torch.nn as nn
 
-import sys
-from loguru import logger
 from videoanalyst.model.backbone.backbone_base import (TRACK_BACKBONES,
                                                        VOS_BACKBONES)
-from videoanalyst.model.common_opr.common_block import conv_bn_relu
+from videoanalyst.model.common_opr.common_block import conv_bn_relu, projector
 from videoanalyst.model.module_base import ModuleBase
-from videoanalyst.model.common_opr.common_block import projector
 
 
 class creat_residual_block(nn.Module):

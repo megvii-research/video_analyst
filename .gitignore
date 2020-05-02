@@ -69,4 +69,5 @@ log.txt
 /models
 /snapshots
 vaenv
+venv
 /tmp

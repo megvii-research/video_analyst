@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*
 from paths import ROOT_PATH  # isort:skip
-from videoanalyst.config.config import cfg
-from videoanalyst.config.config import specify_task
-from videoanalyst.model import builder as model_builder
-from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.utils import complete_path_wt_root_in_cfg, load_image
-from videoanalyst.pipeline.utils.bbox import xywh2xyxy, xyxy2xywh
-from videoanalyst.utils.image import ImageFileVideoStream, ImageFileVideoWriter
-
-import os.path as osp
-import glob
 import argparse
-from loguru import logger
+import os.path as osp
+import time
 
 import cv2
 import numpy as np
-import time
+from loguru import logger
+
 import torch
+
+from videoanalyst.config.config import cfg, specify_task
+from videoanalyst.model import builder as model_builder
+from videoanalyst.pipeline import builder as pipeline_builder
+from videoanalyst.pipeline.utils.bbox import xywh2xyxy, xyxy2xywh
+from videoanalyst.utils import complete_path_wt_root_in_cfg, load_image
+from videoanalyst.utils.image import ImageFileVideoStream, ImageFileVideoWriter
 
 font_size = 0.5
 font_width = 1

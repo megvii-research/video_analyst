@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*
-from loguru import logger
 from typing import Dict, List
 
+from loguru import logger
 from yacs.config import CfgNode
 
 from videoanalyst.utils import merge_cfg_into_hps
 
-from .backbone_base import TRACK_BACKBONES, VOS_BACKBONES, TASK_BACKBONES
+from .backbone_base import TASK_BACKBONES, TRACK_BACKBONES, VOS_BACKBONES
 
 
 def build(task: str, cfg: CfgNode, basemodel=None):

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*
-from loguru import logger
 from collections import OrderedDict
 from typing import Dict, List
 
+from loguru import logger
 from yacs.config import CfgNode
 
 from videoanalyst.model.loss.loss_base import TASK_LOSSES
