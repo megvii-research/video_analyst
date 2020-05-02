@@ -15,8 +15,6 @@ from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
 # from .utils import Dataset, extract_fname, LazzyList
 
-
-
 _VALID_SUBSETS = ['train', 'val']
 
 

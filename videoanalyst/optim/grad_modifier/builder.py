@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 from yacs.config import CfgNode
 
 from videoanalyst.utils import merge_cfg_into_hps
