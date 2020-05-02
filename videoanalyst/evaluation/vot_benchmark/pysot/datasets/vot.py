@@ -1,17 +1,11 @@
-# --------------------------------------------------------
-# Python Single Object Tracking Evaluation
-# Licensed under The MIT License [see LICENSE for details]
-# Written by Fangyi Zhang
-# @author fangyi.zhang@vipl.ict.ac.cn
-# @project https://github.com/StrangerZhang/pysot-toolkit.git
-# Revised for SiamMask by foolwood
-# --------------------------------------------------------
+import cv2
+import json
 import os
 from glob import glob
 
 import numpy as np
 from tqdm import tqdm
-
+from loguru import logger
 from ...benchmark_helper import get_json
 from .dataset import Dataset
 from .video import Video
@@ -105,11 +99,9 @@ class VOTDataset(Dataset):
             f = os.path.join(dataset_root, name + '.json')
             meta_data = get_json(f)
         except:
-            download_str = '# download json file for eval toolkit\n'+\
-                           'cd $SiamMask/data\n'+\
-                           'wget http://www.robots.ox.ac.uk/~qwang/VOT2016.json\n'+\
-                           'wget http://www.robots.ox.ac.uk/~qwang/VOT2018.json'
-            print(download_str)
+            download_str = 'Please download json file from https://pan.baidu.com/s/1js0Qhykqqur7_lNRtle1tA#list/path=%2F or https://drive.google.com/drive/folders/10cfXjwQQBQeu48XMf2xc_W1LucpistPI\n'
+            logger.error("Can not open vot json file {}\n".format(f))
+            logger.error(download_str)
             exit()
 
         # load videos
@@ -130,3 +122,83 @@ class VOTDataset(Dataset):
             'all', 'camera_motion', 'illum_change', 'motion_change',
             'size_change', 'occlusion', 'empty'
         ]
+class VOTLTVideo(Video):
+    """
+    Args:
+        name: video name
+        root: dataset root
+        video_dir: video directory
+        init_rect: init rectangle
+        img_names: image names
+        gt_rect: groundtruth rectangle
+    """
+    def __init__(self, name, root, video_dir, init_rect, img_names,
+            gt_rect, load_img=False):
+        super(VOTLTVideo, self).__init__(name, root, video_dir,
+                init_rect, img_names, gt_rect, None, load_img)
+        self.gt_traj = [[0] if np.isnan(bbox[0]) else bbox
+                for bbox in self.gt_traj]
+        if not load_img:
+            img_name = os.path.join(root, self.img_names[0])
+            img = cv2.imread(img_name)
+            self.width = img.shape[1]
+            self.height = img.shape[0]
+        self.confidence = {}
+
+    def load_tracker(self, path, tracker_names=None, store=True):
+        """
+        Args:
+            path(str): path to result
+            tracker_name(list): name of tracker
+        """
+        if not tracker_names:
+            tracker_names = [x.split('/')[-1] for x in glob(path)
+                    if os.path.isdir(x)]
+        if isinstance(tracker_names, str):
+            tracker_names = [tracker_names]
+        for name in tracker_names:
+            traj_file = os.path.join(path, name, 'longterm',
+                    self.name, self.name+'_001.txt')
+            with open(traj_file, 'r') as f:
+                traj = [list(map(float, x.strip().split(',')))
+                        for x in f.readlines()]
+            if store:
+                self.pred_trajs[name] = traj
+            confidence_file = os.path.join(path, name, 'longterm',
+                    self.name, self.name+'_001_confidence.value')
+            with open(confidence_file, 'r') as f:
+                score = [float(x.strip()) for x in f.readlines()[1:]]
+                score.insert(0, float('nan'))
+            if store:
+                self.confidence[name] = score
+        return traj, score
+
+class VOTLTDataset(Dataset):
+    """
+    Args:
+        name: dataset name, 'VOT2018-LT'
+        dataset_root: dataset root
+        load_img: wether to load all imgs
+    """
+    def __init__(self, name, dataset_root, load_img=False):
+        super(VOTLTDataset, self).__init__(name, dataset_root)
+        try:
+            f = os.path.join(dataset_root, name + '.json')
+            meta_data = get_json(f)
+        except:
+            download_str = 'Please download json file from https://pan.baidu.com/s/1js0Qhykqqur7_lNRtle1tA#list/path=%2F or https://drive.google.com/drive/folders/10cfXjwQQBQeu48XMf2xc_W1LucpistPI\n'
+            logger.error("Can not open vot json file {}\n".format(f))
+            logger.error(download_str)
+            exit()
+
+        # load videos
+        pbar = tqdm(meta_data.keys(), desc='loading '+name, ncols=100)
+        self.videos = {}
+        for video in pbar:
+            pbar.set_postfix_str(video)
+            self.videos[video] = VOTLTVideo(video,
+                                          dataset_root,
+                                          meta_data[video]['video_dir'],
+                                          meta_data[video]['init_rect'],
+                                          meta_data[video]['img_names'],
+                                          meta_data[video]['gt_rect'])
