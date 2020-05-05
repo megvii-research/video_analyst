@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*
+import hashlib
 import time
 from typing import Dict
-import hashlib
 
 from loguru import logger
 from yacs.config import CfgNode as CN

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*
-from typing import Tuple
 from collections import Iterable
+from typing import Tuple
 
 import cv2
 import numpy as np

@@ -5,12 +5,13 @@ This is useful when doing distributed training.
 """
 
 import functools
-import numpy as np
 import pickle
+
+import numpy as np
+from loguru import logger
+
 import torch
 import torch.distributed as dist
-
-from loguru import logger
 
 _LOCAL_PROCESS_GROUP = None
 """

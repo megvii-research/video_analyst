@@ -2,8 +2,9 @@
 from paths import ROOT_PATH  # isort:skip
 
 import argparse
-from loguru import logger
 import os.path as osp
+
+from loguru import logger
 
 import torch
 

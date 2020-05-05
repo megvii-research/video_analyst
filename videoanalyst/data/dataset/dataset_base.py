@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from typing import Dict
-
 from abc import ABCMeta
+from typing import Dict
 
 import cv2 as cv
 import numpy as np

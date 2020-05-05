@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-from loguru import logger
-from typing import Dict, List, Tuple
 from copy import deepcopy
-import cv2
+from typing import Dict, List, Tuple
 
+import cv2
 import numpy as np
-from yacs.config import CfgNode
+from loguru import logger
 from PIL import Image
+from yacs.config import CfgNode
+
 from videoanalyst.data.dataset.dataset_base import DatasetBase
 from videoanalyst.evaluation.got_benchmark.datasets import got10k
 from videoanalyst.utils import load_image

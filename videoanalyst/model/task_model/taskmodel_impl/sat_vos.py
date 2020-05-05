@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*
+from loguru import logger
+
 import torch
 
-from loguru import logger
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
                                                           VOS_TASKMODELS)

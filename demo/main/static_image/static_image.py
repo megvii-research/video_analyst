@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*
 from paths import ROOT_PATH  # isort:skip
-import demo
-from demo.resources.static_img_example.getImage import im, bbox, im_z, im_x, target_bbox, search_bbox
-
 from copy import deepcopy
+
 import cv2
 from loguru import logger
+
+import demo
+from demo.resources.static_img_example.getImage import (bbox, im, im_x, im_z,
+                                                        search_bbox,
+                                                        target_bbox)
 
 color = dict(
     target=(0, 255, 0),

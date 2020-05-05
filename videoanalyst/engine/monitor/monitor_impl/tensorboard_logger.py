@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*
 import itertools
-from collections import Mapping
-from loguru import logger
-from typing import Dict
 import os.path as osp
+from collections import Mapping
+from typing import Dict
 
 import cv2
 import numpy as np
+from loguru import logger
 from tqdm import tqdm
 
 import torch
 from torch.utils.tensorboard.writer import SummaryWriter
 
-from ..monitor_base import TRACK_MONITORS, VOS_MONITORS, MonitorBase
 from videoanalyst.utils import ensure_dir
+
+from ..monitor_base import TRACK_MONITORS, VOS_MONITORS, MonitorBase
 
 
 @TRACK_MONITORS.register

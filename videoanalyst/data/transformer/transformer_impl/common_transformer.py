@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*
+import random
 from typing import Dict
+
 import cv2
 import numpy as np
-import random
 from yacs.config import CfgNode
-from ..transformer_base import TRACK_TRANSFORMERS, VOS_TRANSFORMERS, TransformerBase
+
+from ..transformer_base import (TRACK_TRANSFORMERS, VOS_TRANSFORMERS,
+                                TransformerBase)
 
 
 class RandomBlur(object):

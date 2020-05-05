@@ -4,8 +4,8 @@ from paths import ROOT_PATH  # isort:skip
 import argparse
 import os
 import os.path as osp
-import sys
 import pickle
+import sys
 
 import cv2
 from loguru import logger
@@ -23,7 +23,8 @@ from videoanalyst.model import builder as model_builder
 from videoanalyst.model.loss import builder as losses_builder
 from videoanalyst.optim import builder as optim_builder
 from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.utils import Timer, ensure_dir, complete_path_wt_root_in_cfg, dist_utils
+from videoanalyst.utils import (Timer, complete_path_wt_root_in_cfg, dist_utils,
+                                ensure_dir)
 
 cv2.setNumThreads(1)
 
