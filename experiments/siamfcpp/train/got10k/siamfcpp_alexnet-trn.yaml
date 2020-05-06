@@ -136,7 +136,6 @@ train:
         max_epoch: 20
         minibatch: *MINIBATCH
         nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
-        # num_iterations: 12500
         snapshot: ""
       monitors:
         names: ["TextInfo", "TensorboardLogger"]
