@@ -56,7 +56,7 @@ train:
           max_shift_temp: 0.0
 
 
-    tracker:
+    tracker_model:
       backbone:
         name: "AlexNet"
       task_head:
