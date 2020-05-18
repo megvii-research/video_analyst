@@ -127,15 +127,10 @@ def main(args):
     # create video writer to output video
     if args.output:
         # save as image files
-        if osp.isdir(args.output):
+        if not str(args.output).endswith(r".mp4"):
             vw = ImageFileVideoWriter(osp.join(args.output, video_name))
         # save as a single video file
         else:
-            # fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-            # width, height = vs.get(3), vs.get(4)
-            # vw = cv2.VideoWriter(
-            #     args.output, fourcc, 25,
-            #     (int(width * resize_ratio), int(height * resize_ratio)))
             vw = VideoWriter(args.output, fps=20)
 
     # loop over sequence
