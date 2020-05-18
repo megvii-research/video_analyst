@@ -2,6 +2,7 @@
 import os
 import os.path as osp
 
+from loguru import logger
 import cv2
 import numpy as np
 
@@ -32,8 +33,6 @@ class VideoWriter(object):
         :param frame: numpy array, (H, W, 3), BGR, frame to write
         :return:
         """
-        if self.writer is None:
-            return
         h, w = frame.shape[:2]
         h_rsz, w_rsz = int(h * self.scale), int(w * self.scale)
         frame = cv2.resize(frame, (w_rsz, h_rsz))
@@ -41,8 +40,8 @@ class VideoWriter(object):
             video_dir = osp.dirname(osp.realpath(self.video_file))
             if not osp.exists(video_dir):
                 os.makedirs(video_dir)
-            self.writer = cv2.VideoWriter(self.video_file,
-                                          cv2.VideoWriter_fourcc(*'MJPG'),
+            fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+            self.writer = cv2.VideoWriter(self.video_file, fourcc,
                                           self.fps, tuple(frame.shape[1::-1]))
         self.writer.write(frame)
 
@@ -54,9 +53,7 @@ class VideoWriter(object):
         if self.writer is None:
             return
         self.writer.release()
-        print('Video saved at %s' % self.video_file)
+        logger.info("video file dumped at {}".format(self.video_file))
 
     def __del__(self):
-        if self.writer is None:
-            return
         self.release()
