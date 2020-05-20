@@ -10,6 +10,10 @@ from .utils import make_densebox_target
 
 @TRACK_TARGETS.register
 class IdentityTarget(TargetBase):
+    r"""
+    Identity target
+    just pass through the data without any modification
+    """
     def __init__(self):
         super().__init__()
 
