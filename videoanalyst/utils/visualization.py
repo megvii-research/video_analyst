@@ -41,8 +41,8 @@ class VideoWriter(object):
             if not osp.exists(video_dir):
                 os.makedirs(video_dir)
             fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-            self.writer = cv2.VideoWriter(self.video_file, fourcc,
-                                          self.fps, tuple(frame.shape[1::-1]))
+            self.writer = cv2.VideoWriter(self.video_file, fourcc, self.fps,
+                                          tuple(frame.shape[1::-1]))
         self.writer.write(frame)
 
     def release(self):
