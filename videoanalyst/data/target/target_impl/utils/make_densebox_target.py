@@ -171,5 +171,13 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
 if __name__ == '__main__':
     # gt_boxes
     gt_boxes = np.asarray([[13, 25, 100, 140, 1]])
-    resized_image = np.zeros((255, 255, 3))
-    densebox_target(gt_boxes, resized_image.shape)
+    config_dict = dict(
+        x_size=303,
+        score_size=17,
+        total_stride=8,
+        score_offset=(303-1 - (17-1)*8) // 2,
+    )
+    target = make_densebox_target(gt_boxes, config_dict)
+    for v in target:
+        print("{}".format(v.shape))
+    from IPython import embed;embed()
