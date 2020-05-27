@@ -16,6 +16,7 @@ from videoanalyst.pipeline import builder as pipeline_builder
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy, xyxy2xywh
 from videoanalyst.utils import complete_path_wt_root_in_cfg, load_image
 from videoanalyst.utils.image import ImageFileVideoStream, ImageFileVideoWriter
+from videoanalyst.utils.visualization import VideoWriter
 
 font_size = 0.5
 font_width = 1
@@ -99,32 +100,38 @@ def main(args):
     if len(args.init_bbox) == 4:
         init_box = args.init_bbox
 
+    video_name = "untitled"
     vw = None
     resize_ratio = args.resize
     dump_only = args.dump_only
 
     # create video stream
+    # from webcam
     if args.video == "webcam":
         logger.info("Starting video stream...")
         vs = cv2.VideoCapture(0)
         vs.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+        formated_time_str = time.strftime(r"%Y%m%d-%H%M%S", time.localtime())
+        video_name = "webcam-{}".format(formated_time_str)
+    # from image files
     elif not osp.isfile(args.video):
         logger.info("Starting from video frame image files...")
         vs = ImageFileVideoStream(args.video, init_counter=args.start_index)
+        video_name = osp.basename(osp.dirname(args.video))
+    # from video file
     else:
         logger.info("Starting from video file...")
         vs = cv2.VideoCapture(args.video)
+        video_name = osp.splitext(osp.basename(args.video))[0]
 
     # create video writer to output video
     if args.output:
-        if osp.isdir(args.output):
-            vw = ImageFileVideoWriter(args.output)
+        # save as image files
+        if not str(args.output).endswith(r".mp4"):
+            vw = ImageFileVideoWriter(osp.join(args.output, video_name))
+        # save as a single video file
         else:
-            fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-            width, height = vs.get(3), vs.get(4)
-            vw = cv2.VideoWriter(
-                args.output, fourcc, 25,
-                (int(width * resize_ratio), int(height * resize_ratio)))
+            vw = VideoWriter(args.output, fps=20)
 
     # loop over sequence
     while vs.isOpened():

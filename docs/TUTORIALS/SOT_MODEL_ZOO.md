@@ -124,6 +124,13 @@ Following issues would influence the reproducibility of the results of existing 
   * should be matched with the PyTorch (rebuilding may be needed)
 * OpenCV version
   * Slight performance drop has been observed with the following change: 3.2.0.6 -> 4.1.0.25
+* device type (cpu/gpu)
+  * e.g. for [experiments/siamfcpp/test/got10k/siamfcpp_alexnet-got.yaml](../../experiments/siamfcpp/test/got10k/siamfcpp_alexnet-got.yaml), 
+    * cpu result: ao=71.9@got-val
+    * gpu result: ao=72.0@got-val
+  * e.g. for [experiments/siamfcpp/test/got10k/siamfcpp_googlenet-got.yaml](../../experiments/siamfcpp/test/got10k/siamfcpp_googlenet-got.yaml), 
+    * cpu result: ao=76.3@got-val
+    * gpu result: ao=76.4@got-val
 
 We recommend keeping up-to-date with latest package version, and thus the points reported here counld be slightly away from the real points. Feel free to point them out in Issues if it is the case so that we can correct them.
 
