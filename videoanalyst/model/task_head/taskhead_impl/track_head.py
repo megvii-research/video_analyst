@@ -106,8 +106,10 @@ class DenseboxHead(ModuleBase):
         offsets = torch.exp(self.si * offsets + self.bi) * self.total_stride
         # bbox decoding
         if self._hyper_params["input_size_adapt"]:
-            score_offset = ( x_size- 1 - (offsets.size(-1) - 1) * self.total_stride) // 2
-            fm_ctr = get_xy_ctr(offsets.size(-1), score_offset, self.total_stride)
+            score_offset = (x_size - 1 -
+                            (offsets.size(-1) - 1) * self.total_stride) // 2
+            fm_ctr = get_xy_ctr(offsets.size(-1), score_offset,
+                                self.total_stride)
             fm_ctr = fm_ctr.to(offsets.device)
         else:
             fm_ctr = self.fm_ctr.to(offsets.device)

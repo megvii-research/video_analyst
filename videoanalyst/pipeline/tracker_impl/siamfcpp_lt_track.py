@@ -177,6 +177,7 @@ class SiamFCppLTTracker(PipelineBase):
         else:
             window = np.ones((score_size, score_size))
         return window
+
     def init(self, im, state):
         r"""Initialize tracker
             Internal target state representation: self._state['state'] = (target_pos, target_sz)
@@ -200,7 +201,8 @@ class SiamFCppLTTracker(PipelineBase):
 
         score_size = self._hyper_params['score_size']
         window = self.get_window(score_size)
-        lost_search_window = self.get_window(self._hyper_params["lost_score_size"])
+        lost_search_window = self.get_window(
+            self._hyper_params["lost_score_size"])
 
         self._state['z_crop'] = im_z_crop
         self._state['avg_chans'] = avg_chans
@@ -282,7 +284,7 @@ class SiamFCppLTTracker(PipelineBase):
             self._state['cls'] = cls
             self._state['ctr'] = ctr
         if pscore[best_pscore_id] > self._hyper_params["lost_score_th_high"]:
-            self._state["lost_target"]  = False
+            self._state["lost_target"] = False
         elif pscore[best_pscore_id] < self._hyper_params["lost_score_th_low"]:
             self._state["lost_target"] = True
             logger.info("lost target")

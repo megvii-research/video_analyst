@@ -7,13 +7,18 @@ import matplotlib.patches as patches
 import matplotlib.colors as mcolors
 from PIL import Image
 
-
 fig_dict = {}
 patch_dict = {}
 
 
-def show_frame(image, boxes=None, fig_n=1, pause=0.001,
-               linewidth=3, cmap=None, colors=None, legends=None):
+def show_frame(image,
+               boxes=None,
+               fig_n=1,
+               pause=0.001,
+               linewidth=3,
+               cmap=None,
+               colors=None,
+               legends=None):
     r"""Visualize an image w/o drawing rectangle(s).
     
     Args:
@@ -42,7 +47,7 @@ def show_frame(image, boxes=None, fig_n=1, pause=0.001,
     if boxes is not None:
         if not isinstance(boxes, (list, tuple)):
             boxes = [boxes]
-        
+
         if colors is None:
             colors = ['r', 'g', 'b', 'c', 'm', 'y'] + \
                 list(mcolors.CSS4_COLORS.keys())
@@ -52,10 +57,14 @@ def show_frame(image, boxes=None, fig_n=1, pause=0.001,
         if not fig_n in patch_dict:
             patch_dict[fig_n] = []
             for i, box in enumerate(boxes):
-                patch_dict[fig_n].append(patches.Rectangle(
-                    (box[0], box[1]), box[2], box[3], linewidth=linewidth,
-                    edgecolor=colors[i % len(colors)], facecolor='none',
-                    alpha=0.7 if len(boxes) > 1 else 1.0))
+                patch_dict[fig_n].append(
+                    patches.Rectangle((box[0], box[1]),
+                                      box[2],
+                                      box[3],
+                                      linewidth=linewidth,
+                                      edgecolor=colors[i % len(colors)],
+                                      facecolor='none',
+                                      alpha=0.7 if len(boxes) > 1 else 1.0))
             for patch in patch_dict[fig_n]:
                 fig_dict[fig_n].axes.add_patch(patch)
         else:
@@ -63,11 +72,14 @@ def show_frame(image, boxes=None, fig_n=1, pause=0.001,
                 patch.set_xy((box[0], box[1]))
                 patch.set_width(box[2])
                 patch.set_height(box[3])
-        
+
         if legends is not None:
-            fig_dict[fig_n].axes.legend(
-                patch_dict[fig_n], legends, loc=1,
-                prop={'size': 8}, fancybox=True, framealpha=0.5)
+            fig_dict[fig_n].axes.legend(patch_dict[fig_n],
+                                        legends,
+                                        loc=1,
+                                        prop={'size': 8},
+                                        fancybox=True,
+                                        framealpha=0.5)
 
     plt.pause(pause)
     plt.draw()

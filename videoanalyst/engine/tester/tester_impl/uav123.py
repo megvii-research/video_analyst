@@ -61,9 +61,9 @@ class UAVTester(TesterBase):
             report_dir = osp.join(save_root_dir, "report")
 
             experiment = ExperimentUAV123(root_dir,
-                                       version=subset,
-                                       result_dir=result_dir,
-                                       report_dir=report_dir)
+                                          version=subset,
+                                          result_dir=result_dir,
+                                          report_dir=report_dir)
             # single worker
             if nr_devs == 1:
                 dev = all_devs[0]
@@ -111,9 +111,9 @@ class UAVTester(TesterBase):
         report_dir = osp.join(save_root_dir, "report")
 
         experiment = ExperimentUAV123(root_dir,
-                                   version=subset,
-                                   result_dir=result_dir,
-                                   report_dir=report_dir)
+                                      version=subset,
+                                      result_dir=result_dir,
+                                      report_dir=report_dir)
         experiment.run(pipeline_tracker, slicing_quantile=slicing_quantile)
         logger.debug("Worker ends: slice {} at {}".format(
             slicing_quantile, dev))

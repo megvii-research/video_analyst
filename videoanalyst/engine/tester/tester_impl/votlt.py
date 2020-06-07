@@ -44,8 +44,7 @@ class VOTLTTester(TesterBase):
 
     extra_hyper_params = dict(
         device_num=1,
-        data_root=CfgNode(
-            dict(VOT2018LT="datasets/")),
+        data_root=CfgNode(dict(VOT2018LT="datasets/")),
         dataset_names=[
             "VOT2018LT",
         ],
@@ -83,7 +82,7 @@ class VOTLTTester(TesterBase):
             self.save_root_dir = os.path.join(self.tracker_dir,
                                               self.tracker_name, "longterm")
             self.save_video_dir = os.path.join(self.tracker_dir,
-                                              self.tracker_name, "video")
+                                               self.tracker_name, "video")
             ensure_dir(self.save_root_dir)
             ensure_dir(self.save_video_dir)
             # track videos
@@ -177,26 +176,18 @@ class VOTLTTester(TesterBase):
 
         csv_to_write = open(join(self.tracker_dir, result_csv), 'a+')
         dataset = vot_benchmark.VOTLTDataset(
-            self.dataset_name, self._hyper_params["data_root"][self.dataset_name])
+            self.dataset_name,
+            self._hyper_params["data_root"][self.dataset_name])
         dataset.set_tracker(self.tracker_dir, self.tracker_name)
         f1_benchmark = F1Benchmark(dataset)
         f1_result = {}
         ret = f1_benchmark.eval(self.tracker_name)
         f1_result.update(ret)
         f1_benchmark.show_result(f1_result)
-        '''
-        self.write_result_to_csv(
-            ar_result,
-            eao_result,
-            speed=self._state['speed'],
-            result_csv=csv_to_write,
-        )
-        csv_to_write.close()
-        eao = eao_result[self.tracker_name]['all']
-        '''
         test_result_dict = dict()
         test_result_dict["main_performance"] = 0
         return test_result_dict
+
     def track_single_video(self, tracker, video, v_id=0):
         r"""
         track frames in single video with VOT rules
@@ -220,17 +211,17 @@ class VOTLTTester(TesterBase):
         image_files, gt = video['image_files'], video['gt']
         start_frame, end_frame, toc = 0, len(image_files), 0
         vw = None
-            
+
         for f, image_file in enumerate(tqdm(image_files)):
             im = vot_benchmark.get_img(image_file)
             im_show = im.copy().astype(np.uint8)
             if self._hyper_params["save_video"] and vw is None:
                 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-                video_path = os.path.join(self.save_video_dir, video['name']+".avi")
+                video_path = os.path.join(self.save_video_dir,
+                                          video['name'] + ".avi")
                 width, height = im.shape[1], im.shape[0]
-                vw = cv2.VideoWriter(
-                    video_path, fourcc, 25,
-                    (int(width), int(height)))
+                vw = cv2.VideoWriter(video_path, fourcc, 25,
+                                     (int(width), int(height)))
             tic = cv2.getTickCount()
             if f == start_frame:  # init
                 cx, cy, w, h = vot_benchmark.get_axis_aligned_bbox(gt[f])
@@ -243,14 +234,17 @@ class VOTLTTester(TesterBase):
                 regions.append(location)
                 scores.append(tracker._state["pscore"])
             toc += cv2.getTickCount() - tic
-            toc /= cv2.getTickFrequency()
             if self._hyper_params["save_video"]:
-                cv2.rectangle(im_show, (int(location[0]), int(location[1])), (int(location[0]+location[2]), int(location[1]+location[3])), (255, 0, 0), 2) 
-                cv2.putText(im_show, str(scores[-1]), (40, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+                cv2.rectangle(im_show, (int(location[0]), int(location[1])),
+                              (int(location[0] + location[2]),
+                               int(location[1] + location[3])), (255, 0, 0), 2)
+                cv2.putText(im_show, str(scores[-1]), (40, 40),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
                 vw.write(im_show)
         if vw is not None:
             vw.release()
 
+        toc /= cv2.getTickFrequency()
 
         # save result
         result_dir = join(self.save_root_dir, video['name'])
@@ -260,14 +254,15 @@ class VOTLTTester(TesterBase):
             for x in regions:
                 fin.write("{:d}\n".format(x)) if isinstance(x, int) else \
                     fin.write(','.join([vot_float2str("%.4f", i) for i in x]) + '\n')
-        result_path = os.path.join(result_dir,
-                        '{}_001_confidence.value'.format(video['name']))
+        result_path = os.path.join(
+            result_dir, '{}_001_confidence.value'.format(video['name']))
         with open(result_path, 'w') as fin:
             for x in scores:
-                fin.write('\n') if x is None else fin.write("{:.6f}\n".format(x))
+                fin.write('\n') if x is None else fin.write(
+                    "{:.6f}\n".format(x))
         logger.info(
-            '({:d}) Video: {:12s} Time: {:02.1f}s Speed: {:3.1f}'
-            .format(v_id, video['name'], toc, f / toc))
+            '({:d}) Video: {:12s} Time: {:02.1f}s Speed: {:3.1f}'.format(
+                v_id, video['name'], toc, f / toc))
 
         return f / toc
 
@@ -304,5 +299,6 @@ class VOTLTTester(TesterBase):
         result_csv.write('%s\n' % row_data)
 
 
-VOTLTTester.default_hyper_params = copy.deepcopy(VOTLTTester.default_hyper_params)
+VOTLTTester.default_hyper_params = copy.deepcopy(
+    VOTLTTester.default_hyper_params)
 VOTLTTester.default_hyper_params.update(VOTLTTester.extra_hyper_params)
