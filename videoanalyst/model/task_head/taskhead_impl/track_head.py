@@ -33,7 +33,6 @@ def get_xy_ctr(score_size, score_offset, total_stride):
 def get_box(xy_ctr, offsets):
     offsets = offsets.permute(0, 2, 3, 1)  # (B, H, W, C), C=4
     offsets = offsets.reshape(offsets.shape[0], -1, 4)
-
     xy0 = (xy_ctr[:, :, :] - offsets[:, :, :2])
     xy1 = (xy_ctr[:, :, :] + offsets[:, :, 2:])
     bboxes_pred = torch.cat([xy0, xy1], 2)
@@ -72,6 +71,7 @@ class DenseboxHead(ModuleBase):
         head_conv_bn=[False, False, True],
         head_width=256,
         conv_weight_std=0.0001,
+        input_size_adapt=True,
     )
 
     def __init__(self):
@@ -83,7 +83,7 @@ class DenseboxHead(ModuleBase):
         self.cls_convs = []
         self.bbox_convs = []
 
-    def forward(self, c_out, r_out):
+    def forward(self, c_out, r_out, x_size):
         # classification head
         num_conv3x3 = self._hyper_params['num_conv3x3']
         cls = c_out
@@ -105,8 +105,13 @@ class DenseboxHead(ModuleBase):
         offsets = self.bbox_offsets_p5(bbox)
         offsets = torch.exp(self.si * offsets + self.bi) * self.total_stride
         # bbox decoding
-        self.fm_ctr = self.fm_ctr.to(offsets.device)
-        bbox = get_box(self.fm_ctr, offsets)
+        if self._hyper_params["input_size_adapt"]:
+            score_offset = ( x_size- 1 - (offsets.size(-1) - 1) * self.total_stride) // 2
+            fm_ctr = get_xy_ctr(offsets.size(-1), score_offset, self.total_stride)
+            fm_ctr = fm_ctr.to(offsets.device)
+        else:
+            fm_ctr = self.fm_ctr.to(offsets.device)
+        bbox = get_box(fm_ctr, offsets)
 
         return [cls_score, ctr_score, bbox, cls]
 
@@ -190,7 +195,6 @@ class DenseboxHead(ModuleBase):
         conv_classifier = [self.cls_score_p5.conv]
         assert all(elem in conv_list for elem in conv_classifier)
 
-        num_classes = 1
         pi = 0.01
         bv = -np.log((1 - pi) / pi)
         for ith in range(len(conv_list)):
