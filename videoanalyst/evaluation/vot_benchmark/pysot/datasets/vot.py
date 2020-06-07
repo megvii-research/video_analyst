@@ -135,12 +135,16 @@ class VOTLTVideo(Video):
     def __init__(self, name, root, video_dir, init_rect, img_names,
             gt_rect, load_img=False):
         super(VOTLTVideo, self).__init__(name, root, video_dir,
-                init_rect, img_names, gt_rect, None, load_img)
+                init_rect, img_names, gt_rect, None)
         self.gt_traj = [[0] if np.isnan(bbox[0]) else bbox
                 for bbox in self.gt_traj]
         if not load_img:
             img_name = os.path.join(root, self.img_names[0])
+            if not os.path.exists(img_name):
+                img_name = img_name.replace("color/", "")
             img = cv2.imread(img_name)
+            if img is None:
+                logger.error("can not open img file {}".format(img_name))
             self.width = img.shape[1]
             self.height = img.shape[0]
         self.confidence = {}
@@ -197,7 +201,7 @@ class VOTLTDataset(Dataset):
         for video in pbar:
             pbar.set_postfix_str(video)
             self.videos[video] = VOTLTVideo(video,
-                                          dataset_root,
+                                          os.path.join(dataset_root, name),
                                           meta_data[video]['video_dir'],
                                           meta_data[video]['init_rect'],
                                           meta_data[video]['img_names'],
