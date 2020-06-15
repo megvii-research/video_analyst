@@ -17,7 +17,6 @@ VOT test configuration directory: _experiments/siamfcpp/test/vot_
 | Backbone | Pipeline | Dataset | A | R | EAO | FPS@GTX2080Ti | FPS@GTX1080Ti | Config. File |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | AlexNet | SiamFCppTracker | VOT2018 |0.576 | 0.183 | 0.393| ~200| ~185 | [siamfcpp_alexnet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml)
- | 
 | GoogLeNet | SiamFCppTracker | VOT2018 | 0.583 | 0.173 | 0.426 | ~80 | ~65 | [siamfcpp_googlenet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_googlenet.yaml) |
 
 #### Multi-template
@@ -47,7 +46,7 @@ GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 ### LaSOT
 
 | Backbone | Pipeline | Dataset | Success | Precision | Normalized Precision | Config. File |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | GoogLeNet | SiamFCppTracker | LaSOT-test | 55.7 | 55.6 | 58.9 | [siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/siamfcpp_googlenet-lasot.yaml) |
 
 ### TrackingNet
