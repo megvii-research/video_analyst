@@ -72,8 +72,8 @@ P.S. _fulldata_ denotes COCO, VID, TrackingNet-TRAIN, ILSVRC-VID/DET, LaSOT, GOT
 
 | Backbone | Pipeline | Dataset | Success | Precision | Success Rate | Config. File|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:
-| AlexNet | SiamFCppTracker | UAV123 | 62.3 | 78.1 | 76.6 |[siamfcpp_alexnet-otb.yaml](../../experiments/siamfcpp/test/UAV123/siamfcpp_alexnet-uav123.yaml) |
-| GoogLeNet | SiamFCppTracker | UAV123 | 63.1 | 79.5| 76.9 | [siamfcpp_googlenet-otb.yaml](../../experiments/siamfcpp/test/UAV123/siamfcpp_googlenet-uav123.yaml) |
+| AlexNet | SiamFCppTracker | UAV123 | 62.3 | 78.1 | 76.6 |[siamfcpp_alexnet-uav123.yaml](../../experiments/siamfcpp/test/UAV123/siamfcpp_alexnet-uav123.yaml) |
+| GoogLeNet | SiamFCppTracker | UAV123 | 63.1 | 79.5| 76.9 | [siamfcpp_googlenet-uav123.yaml](../../experiments/siamfcpp/test/UAV123/siamfcpp_googlenet-uav123.yaml) |
 
 P.S. The hyper-parameter and model weights are the same with vot test dataset. You can get better results with parameter adaption carefully.
 
