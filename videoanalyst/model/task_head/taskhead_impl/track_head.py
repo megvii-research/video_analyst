@@ -83,7 +83,7 @@ class DenseboxHead(ModuleBase):
         self.cls_convs = []
         self.bbox_convs = []
 
-    def forward(self, c_out, r_out, x_size):
+    def forward(self, c_out, r_out, x_size=0):
         # classification head
         num_conv3x3 = self._hyper_params['num_conv3x3']
         cls = c_out
@@ -105,7 +105,7 @@ class DenseboxHead(ModuleBase):
         offsets = self.bbox_offsets_p5(bbox)
         offsets = torch.exp(self.si * offsets + self.bi) * self.total_stride
         # bbox decoding
-        if self._hyper_params["input_size_adapt"]:
+        if self._hyper_params["input_size_adapt"] and x_size > 0:
             score_offset = (x_size - 1 -
                             (offsets.size(-1) - 1) * self.total_stride) // 2
             fm_ctr = get_xy_ctr(offsets.size(-1), score_offset,
