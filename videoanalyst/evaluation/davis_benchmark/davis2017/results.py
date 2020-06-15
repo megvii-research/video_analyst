@@ -10,12 +10,14 @@ class Results(object):
 
     def _read_mask(self, sequence, frame_id):
         try:
-            mask_path = os.path.join(self.root_dir, sequence, '{}.png'.format(frame_id))
+            mask_path = os.path.join(self.root_dir, sequence,
+                                     '{}.png'.format(frame_id))
             return np.array(Image.open(mask_path))
         except IOError as err:
             sys.stdout.write(sequence + " frame %s not found!\n" % frame_id)
-            sys.stdout.write("The frames have to be indexed PNG files placed inside the corespondent sequence "
-                             "folder.\nThe indexes have to match with the initial frame.\n")
+            sys.stdout.write(
+                "The frames have to be indexed PNG files placed inside the corespondent sequence "
+                "folder.\nThe indexes have to match with the initial frame.\n")
             sys.stderr.write("IOError: " + err.strerror + "\n")
             sys.exit()
 

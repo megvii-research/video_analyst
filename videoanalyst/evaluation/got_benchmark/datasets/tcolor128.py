@@ -26,15 +26,15 @@ class TColor128(object):
             self._download(root_dir)
         self._check_integrity(root_dir)
 
-        self.anno_files = sorted(glob.glob(
-            os.path.join(root_dir, '*/*_gt.txt')))
+        self.anno_files = sorted(glob.glob(os.path.join(root_dir,
+                                                        '*/*_gt.txt')))
         self.seq_dirs = [os.path.dirname(f) for f in self.anno_files]
         self.seq_names = [os.path.basename(d) for d in self.seq_dirs]
         # valid frame range for each sequence
-        self.range_files = [glob.glob(
-            os.path.join(d, '*_frames.txt'))[0]
-            for d in self.seq_dirs]
-    
+        self.range_files = [
+            glob.glob(os.path.join(d, '*_frames.txt'))[0] for d in self.seq_dirs
+        ]
+
     def __getitem__(self, index):
         r"""        
         Args:
@@ -50,11 +50,11 @@ class TColor128(object):
             index = self.seq_names.index(index)
 
         # load valid frame range
-        frames = np.loadtxt(
-            self.range_files[index], dtype=int, delimiter=',')
-        img_files = [os.path.join(
-            self.seq_dirs[index], 'img/%04d.jpg' % f)
-            for f in range(frames[0], frames[1] + 1)]
+        frames = np.loadtxt(self.range_files[index], dtype=int, delimiter=',')
+        img_files = [
+            os.path.join(self.seq_dirs[index], 'img/%04d.jpg' % f)
+            for f in range(frames[0], frames[1] + 1)
+        ]
 
         # load annotations
         anno = np.loadtxt(self.anno_files[index], delimiter=',')
