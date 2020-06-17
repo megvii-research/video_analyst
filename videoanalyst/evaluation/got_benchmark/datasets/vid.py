@@ -25,7 +25,9 @@ class ImageNetVID(object):
         cache_dir (string, optional): Directory for caching the paths and annotations
             for speeding up loading. Default is ``cache/imagenet_vid``.
     """
-    def __init__(self, root_dir, subset=('train', 'val'),
+    def __init__(self,
+                 root_dir,
+                 subset=('train', 'val'),
                  cache_dir='cache/imagenet_vid'):
         self.root_dir = root_dir
         self.cache_dir = cache_dir
@@ -37,7 +39,7 @@ class ImageNetVID(object):
             self.subset = subset
         else:
             raise Exception('Unknown subset')
-        
+
         # cache filenames and annotations to speed up training
         self.seq_dict = self._cache_meta()
         self.seq_names = [n for n in self.seq_dict]
@@ -62,8 +64,7 @@ class ImageNetVID(object):
         # anno = np.loadtxt(anno_file, delimiter=',')
 
         seq_dir, frames, anno = self.seq_dict[seq_name]
-        img_files = [os.path.join(
-            seq_dir, '%06d.JPEG' % f) for f in frames]
+        img_files = [os.path.join(seq_dir, '%06d.JPEG' % f) for f in frames]
 
         return img_files, anno
 
@@ -80,25 +81,31 @@ class ImageNetVID(object):
             with open(cache_file, 'rb') as f:
                 seq_dict = pickle.load(f)
             return seq_dict
-        
+
         # image and annotation paths
         print('Gather sequence paths...')
         seq_dirs = []
         anno_dirs = []
         if 'train' in self.subset:
-            seq_dirs_ = sorted(glob.glob(os.path.join(
-                self.root_dir, 'Data/VID/train/ILSVRC*/ILSVRC*')))
-            anno_dirs_ = [os.path.join(
-                self.root_dir, 'Annotations/VID/train',
-                *s.split('/')[-2:]) for s in seq_dirs_]
+            seq_dirs_ = sorted(
+                glob.glob(
+                    os.path.join(self.root_dir,
+                                 'Data/VID/train/ILSVRC*/ILSVRC*')))
+            anno_dirs_ = [
+                os.path.join(self.root_dir, 'Annotations/VID/train',
+                             *s.split('/')[-2:]) for s in seq_dirs_
+            ]
             seq_dirs += seq_dirs_
             anno_dirs += anno_dirs_
         if 'val' in self.subset:
-            seq_dirs_ = sorted(glob.glob(os.path.join(
-                self.root_dir, 'Data/VID/val/ILSVRC2015_val_*')))
-            anno_dirs_ = [os.path.join(
-                self.root_dir, 'Annotations/VID/val',
-                s.split('/')[-1]) for s in seq_dirs_]
+            seq_dirs_ = sorted(
+                glob.glob(
+                    os.path.join(self.root_dir,
+                                 'Data/VID/val/ILSVRC2015_val_*')))
+            anno_dirs_ = [
+                os.path.join(self.root_dir, 'Annotations/VID/val',
+                             s.split('/')[-1]) for s in seq_dirs_
+            ]
             seq_dirs += seq_dirs_
             anno_dirs += anno_dirs_
         seq_names = [os.path.basename(s) for s in seq_dirs]
@@ -115,16 +122,17 @@ class ImageNetVID(object):
             if s % 100 == 0 or s == len(seq_names) - 1:
                 print('--Caching sequence %d/%d: %s' % \
                     (s + 1, len(seq_names), seq_name))
-            anno_files = sorted(glob.glob(os.path.join(
-                anno_dirs[s], '*.xml')))
-            objects = [ET.ElementTree(file=f).findall('object')
-                       for f in anno_files]
-            
+            anno_files = sorted(glob.glob(os.path.join(anno_dirs[s], '*.xml')))
+            objects = [
+                ET.ElementTree(file=f).findall('object') for f in anno_files
+            ]
+
             # find all track ids
             track_ids, counts = np.unique([
-                obj.find('trackid').text for group in objects
-                for obj in group], return_counts=True)
-            
+                obj.find('trackid').text for group in objects for obj in group
+            ],
+                                          return_counts=True)
+
             # fetch paths and annotations for each track id
             for t, track_id in enumerate(track_ids):
                 if counts[t] < 2:
@@ -140,28 +148,28 @@ class ImageNetVID(object):
                             int(obj.find('bndbox/xmin').text),
                             int(obj.find('bndbox/ymin').text),
                             int(obj.find('bndbox/xmax').text),
-                            int(obj.find('bndbox/ymax').text)])
+                            int(obj.find('bndbox/ymax').text)
+                        ])
                 anno = np.array(anno, dtype=int)
                 anno[:, 2:] -= anno[:, :2] - 1
 
                 # store annotations
                 key = '%s.%d' % (seq_name, int(track_id))
-                    # store directly into cache pickle
+                # store directly into cache pickle
                 # cache_anno_file = os.path.join(cache_anno_dir, key + '.txt')
                 # np.savetxt(cache_anno_file, anno, fmt='%d', delimiter=',')
 
                 # store paths
                 # seq_dict.update([(key, [
                 #     seq_dirs[s], frames, cache_anno_file])])
-                    # directly store anno instead of seperate nptxt (avoid I/O conflict)
-                seq_dict.update([(key, [
-                    seq_dirs[s], frames, anno])])
-        
+                # directly store anno instead of seperate nptxt (avoid I/O conflict)
+                seq_dict.update([(key, [seq_dirs[s], frames, anno])])
+
         # store seq_dict
         # with open(cache_file, 'w') as f:
         #     json.dump(seq_dict, f)
-            # serialize with pickle
+        # serialize with pickle
         with open(cache_file, 'wb') as f:
-            pickle.dump(seq_dict, f)        
+            pickle.dump(seq_dict, f)
 
         return seq_dict

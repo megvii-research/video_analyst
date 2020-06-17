@@ -26,15 +26,18 @@ class ExperimentTrackingNet(ExperimentOTB):
         report_dir (string, optional): Directory for storing performance
             evaluation results. Default is ``./reports``.
     """
-    def __init__(self, root_dir, subset='test', return_meta=False,
-                 result_dir='results', report_dir='reports'):
+    def __init__(self,
+                 root_dir,
+                 subset='test',
+                 return_meta=False,
+                 result_dir='results',
+                 report_dir='reports'):
         # assert subset.upper() in ['TRAIN', 'TEST']
         assert subset.startswith(('train', 'test')), 'Unknown subset.'
         self.subset = subset
         self.dataset = TrackingNet(root_dir, subset, return_meta=return_meta)
         self.result_dir = os.path.join(result_dir, 'TrackingNet')
         self.report_dir = os.path.join(report_dir, 'TrackingNet')
-
 
         # as nbins_iou increases, the success score
         # converges to the average overlap (AO)
@@ -43,11 +46,13 @@ class ExperimentTrackingNet(ExperimentOTB):
 
     def report(self, tracker_names, *args, plot_curves=True, **kwargs):
         if self.subset == 'test':
-            logger.info("TEST subset's annotations are withholded, generate submission file instead...")
+            logger.info(
+                "TEST subset's annotations are withholded, generate submission file instead..."
+            )
             for tracker_name in tracker_names:
                 # compress all tracking results
                 result_dir = os.path.join(self.result_dir, tracker_name)
-                save_file = result_dir 
+                save_file = result_dir
                 compress(result_dir, save_file)
                 print('Records saved at', save_file + '.zip')
 
@@ -58,10 +63,13 @@ class ExperimentTrackingNet(ExperimentOTB):
 
             performance = None
         else:
-            performance = super(ExperimentTrackingNet, self).report(tracker_names, *args, plot_curves=plot_curves, **kwargs)
+            performance = super(ExperimentTrackingNet,
+                                self).report(tracker_names,
+                                             *args,
+                                             plot_curves=plot_curves,
+                                             **kwargs)
 
         return performance
-
 
     # def _calc_metrics(self, boxes, anno):
     #     valid = ~np.any(np.isnan(anno), axis=1)
