@@ -122,6 +122,8 @@ class VOTDataset(Dataset):
             'all', 'camera_motion', 'illum_change', 'motion_change',
             'size_change', 'occlusion', 'empty'
         ]
+
+
 class VOTLTVideo(Video):
     """
     Args:
@@ -132,15 +134,25 @@ class VOTLTVideo(Video):
         img_names: image names
         gt_rect: groundtruth rectangle
     """
-    def __init__(self, name, root, video_dir, init_rect, img_names,
-            gt_rect, load_img=False):
-        super(VOTLTVideo, self).__init__(name, root, video_dir,
-                init_rect, img_names, gt_rect, None, load_img)
+    def __init__(self,
+                 name,
+                 root,
+                 video_dir,
+                 init_rect,
+                 img_names,
+                 gt_rect,
+                 load_img=False):
+        super(VOTLTVideo, self).__init__(name, root, video_dir, init_rect,
+                                         img_names, gt_rect, None)
         self.gt_traj = [[0] if np.isnan(bbox[0]) else bbox
-                for bbox in self.gt_traj]
+                        for bbox in self.gt_traj]
         if not load_img:
             img_name = os.path.join(root, self.img_names[0])
+            if not os.path.exists(img_name):
+                img_name = img_name.replace("color/", "")
             img = cv2.imread(img_name)
+            if img is None:
+                logger.error("can not open img file {}".format(img_name))
             self.width = img.shape[1]
             self.height = img.shape[0]
         self.confidence = {}
@@ -152,26 +164,30 @@ class VOTLTVideo(Video):
             tracker_name(list): name of tracker
         """
         if not tracker_names:
-            tracker_names = [x.split('/')[-1] for x in glob(path)
-                    if os.path.isdir(x)]
+            tracker_names = [
+                x.split('/')[-1] for x in glob(path) if os.path.isdir(x)
+            ]
         if isinstance(tracker_names, str):
             tracker_names = [tracker_names]
         for name in tracker_names:
-            traj_file = os.path.join(path, name, 'longterm',
-                    self.name, self.name+'_001.txt')
+            traj_file = os.path.join(path, name, 'longterm', self.name,
+                                     self.name + '_001.txt')
             with open(traj_file, 'r') as f:
-                traj = [list(map(float, x.strip().split(',')))
-                        for x in f.readlines()]
+                traj = [
+                    list(map(float,
+                             x.strip().split(','))) for x in f.readlines()
+                ]
             if store:
                 self.pred_trajs[name] = traj
-            confidence_file = os.path.join(path, name, 'longterm',
-                    self.name, self.name+'_001_confidence.value')
+            confidence_file = os.path.join(path, name, 'longterm', self.name,
+                                           self.name + '_001_confidence.value')
             with open(confidence_file, 'r') as f:
                 score = [float(x.strip()) for x in f.readlines()[1:]]
                 score.insert(0, float('nan'))
             if store:
                 self.confidence[name] = score
         return traj, score
+
 
 class VOTLTDataset(Dataset):
     """
@@ -192,13 +208,13 @@ class VOTLTDataset(Dataset):
             exit()
 
         # load videos
-        pbar = tqdm(meta_data.keys(), desc='loading '+name, ncols=100)
+        pbar = tqdm(meta_data.keys(), desc='loading ' + name, ncols=100)
         self.videos = {}
         for video in pbar:
             pbar.set_postfix_str(video)
             self.videos[video] = VOTLTVideo(video,
-                                          dataset_root,
-                                          meta_data[video]['video_dir'],
-                                          meta_data[video]['init_rect'],
-                                          meta_data[video]['img_names'],
-                                          meta_data[video]['gt_rect'])
+                                            os.path.join(dataset_root, name),
+                                            meta_data[video]['video_dir'],
+                                            meta_data[video]['init_rect'],
+                                            meta_data[video]['img_names'],
+                                            meta_data[video]['gt_rect'])

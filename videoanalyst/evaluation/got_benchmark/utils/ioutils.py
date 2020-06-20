@@ -30,8 +30,9 @@ def extract(filename, extract_dir):
         with zipfile.ZipFile(filename) as z:
             z.extractall(extract_dir)
     else:
-        raise Exception('Unsupport extension {} of the compressed file {}.'.format(
-            os.path.splitext(filename)[1]), filename)
+        raise Exception(
+            'Unsupport extension {} of the compressed file {}.'.format(
+                os.path.splitext(filename)[1]), filename)
 
 
 def compress(dirname, save_file):

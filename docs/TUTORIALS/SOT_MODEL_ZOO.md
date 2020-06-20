@@ -17,7 +17,6 @@ VOT test configuration directory: _experiments/siamfcpp/test/vot_
 | Backbone | Pipeline | Dataset | A | R | EAO | FPS@GTX2080Ti | FPS@GTX1080Ti | Config. File |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | AlexNet | SiamFCppTracker | VOT2018 |0.576 | 0.183 | 0.393| ~200| ~185 | [siamfcpp_alexnet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml)
- | 
 | GoogLeNet | SiamFCppTracker | VOT2018 | 0.583 | 0.173 | 0.426 | ~80 | ~65 | [siamfcpp_googlenet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_googlenet.yaml) |
 
 #### Multi-template
@@ -47,7 +46,7 @@ GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 ### LaSOT
 
 | Backbone | Pipeline | Dataset | Success | Precision | Normalized Precision | Config. File |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | GoogLeNet | SiamFCppTracker | LaSOT-test | 55.7 | 55.6 | 58.9 | [siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/siamfcpp_googlenet-lasot.yaml) |
 
 ### TrackingNet
@@ -67,6 +66,15 @@ P.S. _fulldata_ denotes COCO, VID, TrackingNet-TRAIN, ILSVRC-VID/DET, LaSOT, GOT
 | AlexNet | SiamFCppTracker | OTB2015 | 68.0 | 88.4 | [siamfcpp_alexnet-otb.yaml](../../experiments/siamfcpp/test/otb/siamfcpp_alexnet-otb.yaml) |
 | GoogLeNet | SiamFCppTracker | OTB2015 | 68.2 | 89.6 | [siamfcpp_googlenet-otb.yaml](../../experiments/siamfcpp/test/otb/siamfcpp_googlenet-otb.yaml) |
 
+
+### UAV123
+
+| Backbone | Pipeline | Dataset | Success | Precision | Success Rate | Config. File|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:
+| AlexNet | SiamFCppTracker | UAV123 | 62.3 | 78.1 | 76.6 |[siamfcpp_alexnet-uav123.yaml](../../experiments/siamfcpp/test/UAV123/siamfcpp_alexnet-uav123.yaml) |
+| GoogLeNet | SiamFCppTracker | UAV123 | 63.1 | 79.5| 76.9 | [siamfcpp_googlenet-uav123.yaml](../../experiments/siamfcpp/test/UAV123/siamfcpp_googlenet-uav123.yaml) |
+
+P.S. The hyper-parameter and model weights are the same with vot test dataset. You can get better results with parameter adaption carefully.
 
 ## Improvements
 
@@ -124,6 +132,13 @@ Following issues would influence the reproducibility of the results of existing 
   * should be matched with the PyTorch (rebuilding may be needed)
 * OpenCV version
   * Slight performance drop has been observed with the following change: 3.2.0.6 -> 4.1.0.25
+* device type (cpu/gpu)
+  * e.g. for [experiments/siamfcpp/test/got10k/siamfcpp_alexnet-got.yaml](../../experiments/siamfcpp/test/got10k/siamfcpp_alexnet-got.yaml), 
+    * cpu result: ao=71.9@got-val
+    * gpu result: ao=72.0@got-val
+  * e.g. for [experiments/siamfcpp/test/got10k/siamfcpp_googlenet-got.yaml](../../experiments/siamfcpp/test/got10k/siamfcpp_googlenet-got.yaml), 
+    * cpu result: ao=76.3@got-val
+    * gpu result: ao=76.4@got-val
 
 We recommend keeping up-to-date with latest package version, and thus the points reported here counld be slightly away from the real points. Feel free to point them out in Issues if it is the case so that we can correct them.
 

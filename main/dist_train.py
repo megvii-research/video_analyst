@@ -118,6 +118,10 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
     # set up distributed
     setup(rank_id, world_size, dist_url)
     dist_utils.synchronize()
+    # move model to device before building optimizer.
+    # quick fix for resuming of DDP
+    # TODO: need to be refined in future
+    model.set_device(devs[0])
     # build optimizer
     optimizer = optim_builder.build(task, task_cfg.optim, model)
     # build dataloader with trainer

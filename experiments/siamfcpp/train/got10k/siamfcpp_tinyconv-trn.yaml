@@ -141,7 +141,6 @@ train:
         max_epoch: 20
         minibatch: *MINIBATCH
         nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
-        # num_iterations: 12500
         snapshot: ""
       monitors:
         names: ["TextInfo", "TensorboardLogger"]
@@ -176,7 +175,7 @@ train:
             "end_lr": 0.000001,
             "max_epoch": 19
             }
-          lr_multiplier: # ration for training from scratch
+          lr_multiplier:
           - >
             {
             "name": "backbone",

@@ -1,6 +1,6 @@
 from .bbox_helper import cxy_wh_2_rect, get_axis_aligned_bbox
 from .benchmark_helper import get_img, load_dataset
-from .pysot.datasets import VOTDataset
+from .pysot.datasets import VOTDataset, VOTLTDataset
 # from .pysot.evaluation import AccuracyRobustnessBenchmark, EAOBenchmark
 # from .pysot.utils.region import vot_float2str, vot_overlap
 
@@ -39,8 +39,8 @@ def show_result(self, result, topk=10, result_file=None):
                                reverse=True)[:topk]
         sorted_tacker = [x[0] for x in sorted_tacker]
         for tracker_name in sorted_tacker:
-            result_file.write(
-                "|{:^20}|".format(tracker_name) +
-                formatter.format(*[result[tracker_name][x]
-                                   for x in self.tags]) + '\n')
+            result_file.write("|{:^20}|".format(tracker_name) +
+                              formatter.format(
+                                  *[result[tracker_name][x]
+                                    for x in self.tags]) + '\n')
         result_file.write(bar + '\n')

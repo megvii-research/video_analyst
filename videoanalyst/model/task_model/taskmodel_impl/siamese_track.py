@@ -120,7 +120,7 @@ class SiamTrack(ModuleBase):
             c_out = xcorr_depthwise(c_x, c_z_k)
             # head
             fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final, corr_fea = self.head(
-                c_out, r_out)
+                c_out, r_out, search_img.size(-1))
             # apply sigmoid
             fcos_cls_prob_final = torch.sigmoid(fcos_cls_score_final)
             fcos_ctr_prob_final = torch.sigmoid(fcos_ctr_score_final)

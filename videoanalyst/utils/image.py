@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import glob
+import os
 import os.path as osp
 
 import cv2
@@ -92,6 +93,8 @@ class ImageFileVideoWriter:
         frame_idx = self._state["counter"]
         frame_file = osp.join(self._state["video_dir"],
                               "{:06d}.jpg".format(frame_idx))
+        if not osp.exists(self._state["video_dir"]):
+            os.makedirs(self._state["video_dir"])
         cv2.imwrite(frame_file, im)
         self._state["counter"] += 1
 
