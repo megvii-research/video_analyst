@@ -175,9 +175,10 @@ if __name__ == '__main__':
         x_size=303,
         score_size=17,
         total_stride=8,
-        score_offset=(303-1 - (17-1)*8) // 2,
+        score_offset=(303 - 1 - (17 - 1) * 8) // 2,
     )
     target = make_densebox_target(gt_boxes, config_dict)
     for v in target:
         print("{}".format(v.shape))
-    from IPython import embed;embed()
+    from IPython import embed
+    embed()
