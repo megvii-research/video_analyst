@@ -3,6 +3,7 @@ from typing import Dict, Tuple
 
 import numpy as np
 
+DUMP_FLAG = False
 
 def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     """
@@ -43,22 +44,24 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     score_offset = config["score_offset"]
     eps = 1e-5
     raw_height, raw_width = x_size, x_size
-
+    
+    # append class dimension to gt_boxes if ignored
     if gt_boxes.shape[1] == 4:
         gt_boxes = np.concatenate(
             [gt_boxes, np.ones(
                 (gt_boxes.shape[0], 1))], axis=1)  # boxes_cnt x 5
     # l, t, r, b
-    gt_boxes = np.concatenate([np.zeros((1, 5)), gt_boxes])  # boxes_cnt x 5
+    gt_boxes = np.concatenate([np.zeros((1, 5)), gt_boxes])  # (boxes_cnt, 5)
     gt_boxes_area = (np.abs(
         (gt_boxes[:, 2] - gt_boxes[:, 0]) * (gt_boxes[:, 3] - gt_boxes[:, 1])))
-    gt_boxes = gt_boxes[np.argsort(gt_boxes_area)]
-    boxes_cnt = len(gt_boxes)
+    gt_boxes = gt_boxes[np.argsort(gt_boxes_area)]  # sort gt_boxes by area, ascending order
+    boxes_cnt = len(gt_boxes)  # number of gt_boxes
 
-    shift_x = np.arange(0, raw_width).reshape(-1, 1)
+    shift_x = np.arange(0, raw_width).reshape(-1, 1)  
     shift_y = np.arange(0, raw_height).reshape(-1, 1)
-    shift_x, shift_y = np.meshgrid(shift_x, shift_y)
+    shift_x, shift_y = np.meshgrid(shift_x, shift_y)  # (H, W)
 
+    # (H, W, #boxes, 1d-offset(l/t/r/b) )
     off_l = (shift_x[:, :, np.newaxis, np.newaxis] -
              gt_boxes[np.newaxis, np.newaxis, :, 0, np.newaxis])
     off_t = (shift_y[:, :, np.newaxis, np.newaxis] -
@@ -68,13 +71,24 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     off_b = -(shift_y[:, :, np.newaxis, np.newaxis] -
               gt_boxes[np.newaxis, np.newaxis, :, 3, np.newaxis])
 
+    if DUMP_FLAG:
+        off_l.dump("off_l_old.npz")
+        off_t.dump("off_t_old.npz")
+        off_r.dump("off_r_old.npz")
+        off_b.dump("off_b_old.npz")
+    
+    # centerness
     center = ((np.minimum(off_l, off_r) * np.minimum(off_t, off_b)) /
               (np.maximum(off_l, off_r) * np.maximum(off_t, off_b) + eps))
+    if DUMP_FLAG:
+        center.dump("center_old.npz")
     center = np.squeeze(np.sqrt(np.abs(center)))
     center[:, :, 0] = 0
 
     offset = np.concatenate([off_l, off_t, off_r, off_b],
                             axis=3)  # h x w x boxes_cnt * 4
+    if DUMP_FLAG:
+        offset.dump("offset_old.npz")
     cls = gt_boxes[:, 4]
 
     cls_res_list = []
@@ -136,6 +150,7 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
                                                 xy[:, 1] * stride,
                                                 hit_gt_ind[xy[:, 0], xy[:, 1]]]
         ctr_res_list.append(center_res.reshape(-1))
+        # from IPython import embed;embed()
 
     cls_res_final = np.concatenate(cls_res_list,
                                    axis=0)[:, np.newaxis].astype(np.float32)
