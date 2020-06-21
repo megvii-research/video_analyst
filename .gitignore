@@ -71,3 +71,4 @@ log.txt
 vaenv
 venv
 /tmp
+*.onnx
