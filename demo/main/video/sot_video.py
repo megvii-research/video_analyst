@@ -170,7 +170,7 @@ def main(args):
         # catch key if
         if (init_box is None) or (vw is None):
             logger.debug("Press key s to select object.")
-            if (frame_idx==0):
+            if (frame_idx == 0):
                 wait_time = 5000
             else:
                 wait_time = 30
@@ -192,7 +192,8 @@ def main(args):
                 init_box = box
         elif key == ord("c"):
             logger.debug(
-                "init_box/template released, press key s again to select object.")
+                "init_box/template released, press key s again to select object."
+            )
             init_box = None
             template = None
         if (init_box is not None) and (template is None):

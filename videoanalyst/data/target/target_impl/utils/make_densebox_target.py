@@ -6,6 +6,7 @@ import torch
 
 DUMP_FLAG = False
 
+
 def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     """
     Model training target generation function for densebox
@@ -98,7 +99,7 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
         off_t.numpy().dump("off_t_new.npz")
         off_r.numpy().dump("off_r_new.npz")
         off_b.numpy().dump("off_b_new.npz")
-    
+
     # centerness
     # (H, W, #boxes, 1-d_centerness)
     center = ((torch.min(off_l, off_r) * torch.min(off_t, off_b)) /
@@ -112,8 +113,7 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     center[:, :, 0] = 0  # mask centerness for dummy box as zero
 
     # (H, W, #boxes, 4)
-    offset = torch.cat([off_l, off_t, off_r, off_b],
-                            dim=3)
+    offset = torch.cat([off_l, off_t, off_r, off_b], dim=3)
     if DUMP_FLAG:
         offset.numpy().dump("offset_new.npz")
 
@@ -122,8 +122,6 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     #   class 0 is background
     #   dummy box assigned as 0
     cls = gt_boxes[:, 4]
-
-
 
     fm_height, fm_width = score_size, score_size  # h, w
     fm_offset = score_offset
@@ -134,10 +132,9 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     y_coords = y_coords.reshape(-1)  # (hxw, ), flattened
     x_coords = x_coords.reshape(-1)  # (hxw, ), flattened
 
-
     # (hxw, #boxes, 4-d_offset_(l/t/r/b), )
     offset_on_fm = offset[fm_offset + y_coords * stride,
-                    fm_offset + x_coords * stride]  # will reduce dim by 1
+                          fm_offset + x_coords * stride]  # will reduce dim by 1
     # (hxw, #gt_boxes, )
     is_in_boxes = (offset_on_fm > 0).all(axis=2)
     # (h, w, #gt_boxes, ), boolean
@@ -147,7 +144,7 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
         y_coords,
         x_coords, :] = is_in_boxes  #& is_in_layer  # xy[:, 0], xy[:, 1] reduce dim by 1 to match is_in_boxes.shape & is_in_layer.shape
     offset_valid[:, :, 0] = 0  # h x w x boxes_cnt
-    
+
     # (h, w), boolean
     #   index of pixel on feature map
     #     used for indexing on gt_boxes, cls
@@ -159,8 +156,8 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     # (h, w, 4-d_box)
     #   gt_boxes
     gt_boxes_res = torch.zeros((fm_height, fm_width, 4))
-    gt_boxes_res[y_coords,
-                 x_coords] = gt_boxes[hit_gt_ind[y_coords, x_coords], :4]  # gt_boxes: (#boxes, 5)
+    gt_boxes_res[y_coords, x_coords] = gt_boxes[
+        hit_gt_ind[y_coords, x_coords], :4]  # gt_boxes: (#boxes, 5)
     gt_boxes_res = gt_boxes_res.reshape(-1, 4)
     # gt_boxes_res_list.append(gt_boxes_res.reshape(-1, 4))
 
@@ -171,11 +168,11 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
 
     # (h, w, 1-d_centerness)
     center_res = torch.zeros((fm_height, fm_width))
-    center_res[y_coords, x_coords] = center[fm_offset + y_coords * stride, 
-                                            fm_offset + x_coords * stride,
+    center_res[y_coords, x_coords] = center[fm_offset +
+                                            y_coords * stride, fm_offset +
+                                            x_coords * stride,
                                             hit_gt_ind[y_coords, x_coords]]
     center_res = center_res.reshape(-1, 1)
-
 
     return cls_res, center_res, gt_boxes_res
 
@@ -187,9 +184,10 @@ if __name__ == '__main__':
         x_size=303,
         score_size=17,
         total_stride=8,
-        score_offset=(303-1 - (17-1)*8) // 2,
+        score_offset=(303 - 1 - (17 - 1) * 8) // 2,
     )
     target = make_densebox_target(gt_boxes, config_dict)
     for v in target:
         print("{}".format(v.shape))
-    from IPython import embed;embed()
+    from IPython import embed
+    embed()

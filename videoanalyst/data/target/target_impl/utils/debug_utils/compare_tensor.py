@@ -8,4 +8,5 @@ tensor_new = np.load("{}_new.npz".format(tensor_prefix), allow_pickle=True)
 err = np.abs(tensor_old - tensor_new).max()
 print("{} max_err: {}".format(tensor_prefix, err))
 
-from IPython import embed;embed()
+from IPython import embed
+embed()

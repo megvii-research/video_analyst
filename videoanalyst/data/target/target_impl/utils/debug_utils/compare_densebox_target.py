@@ -9,7 +9,7 @@ config_dict = dict(
     x_size=303,
     score_size=17,
     total_stride=8,
-    score_offset=(303-1 - (17-1)*8) // 2,
+    score_offset=(303 - 1 - (17 - 1) * 8) // 2,
 )
 
 target_old = make_densebox_target_old(gt_boxes, config_dict)
@@ -20,4 +20,3 @@ for v_old, v_new in zip(target_old, target_new):
     err = np.abs(v_old - v_new).max()
     print("max_err", err)
     # from IPython import embed;embed()
-

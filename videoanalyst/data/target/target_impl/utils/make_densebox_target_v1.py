@@ -5,6 +5,7 @@ import numpy as np
 
 DUMP_FLAG = False
 
+
 def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     """
     Model training target generation function for densebox
@@ -44,7 +45,7 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     score_offset = config["score_offset"]
     eps = 1e-5
     raw_height, raw_width = x_size, x_size
-    
+
     # append class dimension to gt_boxes if ignored
     if gt_boxes.shape[1] == 4:
         gt_boxes = np.concatenate(
@@ -54,10 +55,11 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     gt_boxes = np.concatenate([np.zeros((1, 5)), gt_boxes])  # (boxes_cnt, 5)
     gt_boxes_area = (np.abs(
         (gt_boxes[:, 2] - gt_boxes[:, 0]) * (gt_boxes[:, 3] - gt_boxes[:, 1])))
-    gt_boxes = gt_boxes[np.argsort(gt_boxes_area)]  # sort gt_boxes by area, ascending order
+    gt_boxes = gt_boxes[np.argsort(
+        gt_boxes_area)]  # sort gt_boxes by area, ascending order
     boxes_cnt = len(gt_boxes)  # number of gt_boxes
 
-    shift_x = np.arange(0, raw_width).reshape(-1, 1)  
+    shift_x = np.arange(0, raw_width).reshape(-1, 1)
     shift_y = np.arange(0, raw_height).reshape(-1, 1)
     shift_x, shift_y = np.meshgrid(shift_x, shift_y)  # (H, W)
 
@@ -76,7 +78,7 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
         off_t.dump("off_t_old.npz")
         off_r.dump("off_r_old.npz")
         off_b.dump("off_b_old.npz")
-    
+
     # centerness
     center = ((np.minimum(off_l, off_r) * np.minimum(off_t, off_b)) /
               (np.maximum(off_l, off_r) * np.maximum(off_t, off_b) + eps))
@@ -190,9 +192,10 @@ if __name__ == '__main__':
         x_size=303,
         score_size=17,
         total_stride=8,
-        score_offset=(303-1 - (17-1)*8) // 2,
+        score_offset=(303 - 1 - (17 - 1) * 8) // 2,
     )
     target = make_densebox_target(gt_boxes, config_dict)
     for v in target:
         print("{}".format(v.shape))
-    from IPython import embed;embed()
+    from IPython import embed
+    embed()
