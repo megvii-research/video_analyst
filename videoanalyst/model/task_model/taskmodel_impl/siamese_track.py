@@ -42,7 +42,7 @@ class SiamTrack(ModuleBase):
         self.head = head
         self.loss = loss
 
-    def forward(self, *args, phase="train"):
+    def forward(self, *args, phase="track"):
         r"""
         Perform tracking process for different phases (e.g. train / init / track)
 
@@ -129,7 +129,7 @@ class SiamTrack(ModuleBase):
             # register extra output
             extra = dict(c_x=c_x, r_x=r_x, corr_fea=corr_fea)
             # output
-            out_list = fcos_score_final, fcos_bbox_final, fcos_cls_prob_final, fcos_ctr_prob_final, extra
+            out_list = fcos_score_final, fcos_bbox_final, fcos_cls_prob_final, fcos_ctr_prob_final  #, extra
         else:
             raise ValueError("Phase non-implemented.")
 
