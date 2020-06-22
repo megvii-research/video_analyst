@@ -134,11 +134,12 @@ def main(args):
             vw = VideoWriter(args.output, fps=20)
 
     # loop over sequence
+    frame_idx = 0  # global frame index
     while vs.isOpened():
         key = 255
         ret, frame = vs.read()
-        logger.debug("frame: {}".format(ret))
         if ret:
+            logger.debug("frame: {}".format(frame_idx))
             if template is not None:
                 time_a = time.time()
                 rect_pred = pipeline.update(frame)
@@ -164,10 +165,16 @@ def main(args):
                 cv2.imshow(window_name, show_frame)
             if vw is not None:
                 vw.write(show_frame)
+        else:
+            break
         # catch key if
         if (init_box is None) or (vw is None):
             logger.debug("Press key s to select object.")
-            key = cv2.waitKey(30) & 0xFF
+            if (frame_idx == 0):
+                wait_time = 5000
+            else:
+                wait_time = 30
+            key = cv2.waitKey(wait_time) & 0xFF
         logger.debug("key: {}".format(key))
         if key == ord("q"):
             break
@@ -185,7 +192,8 @@ def main(args):
                 init_box = box
         elif key == ord("c"):
             logger.debug(
-                "init_box/template released, press key s to select object.")
+                "init_box/template released, press key s again to select object."
+            )
             init_box = None
             template = None
         if (init_box is not None) and (template is None):
@@ -195,6 +203,8 @@ def main(args):
                 (128, 128))
             pipeline.init(frame, init_box)
             logger.debug("pipeline initialized with bbox : {}".format(init_box))
+        frame_idx += 1
+
     vs.release()
     if vw is not None:
         vw.release()
