@@ -8,6 +8,8 @@ Date format: YY/MM/DD
   * target making code: numpy -> pytorch
   * simplified for SOT task
     * reduce to single resolution layer
+* relax restrictions in requirements.txt
+  * e.g. version of pytorch, opencv, numpy, etc.
 
 ## 2020/04/28
 
