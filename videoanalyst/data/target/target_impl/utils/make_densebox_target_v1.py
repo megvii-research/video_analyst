@@ -1,4 +1,7 @@
 # encoding: utf-8
+# [Version 1] this is a archived version of densebox target maker
+# current version is under _make_densebox_target.py_ (i.e. without "_v1" suffix)
+
 from typing import Dict, Tuple
 
 import numpy as np

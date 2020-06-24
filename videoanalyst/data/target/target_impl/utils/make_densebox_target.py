@@ -4,15 +4,21 @@ from typing import Dict, Tuple
 import numpy as np
 import torch
 
-DUMP_FLAG = False
+DUMP_FLAG = False  # dump intermediate results for debugging
 
 
 def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     """
     Model training target generation function for densebox
-    Only one resolution layer is taken into consideration
+        Target processing code changed from numpy to pytorch
+        Only one resolution layer is taken into consideration
+        Refined & documented in detail, comparing to precedented version
+    
+    About Training Accuracy w.r.t. previous version
+        siamfcpp-alexnet: ao@got10k-val = 73.4
+        siamfcpp-googlenet: ao@got10k-val = 75.5
 
-    About alignmenet with previous version
+    About alignmenet w.r.t. previous version
     - classification target: aligned
     - centerness target: slightly differ, 
                            e.g. 
@@ -71,16 +77,16 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     #   append dummy box (0, 0, 0, 0) at first for convenient
     #   #boxes++
     gt_boxes = torch.cat([torch.zeros(1, 5), gt_boxes], dim=0)
-    # from IPython import embed;embed()
 
     gt_boxes_area = (torch.abs(
         (gt_boxes[:, 2] - gt_boxes[:, 0]) * (gt_boxes[:, 3] - gt_boxes[:, 1])))
     # sort gt_boxes by area, ascending order
     #   small box priviledged to large box
     gt_boxes = gt_boxes[torch.argsort(gt_boxes_area)]
-    # number of gt_boxes
+    # #boxes
     boxes_cnt = len(gt_boxes)
 
+    # coordinate meshgrid on image, shape=(H. W)
     x_coords = torch.arange(0, raw_width)  # (W, )
     y_coords = torch.arange(0, raw_height)  # (H, )
     y_coords, x_coords = torch.meshgrid(x_coords, y_coords)  # (H, W)
@@ -102,8 +108,11 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
 
     # centerness
     # (H, W, #boxes, 1-d_centerness)
+    #     CAUTION: division / broadcast operation can vary across computing framework (pytorch/numpy/etc.)
+    #                  which may cause computation result misalignement (but should be really slight)
     center = ((torch.min(off_l, off_r) * torch.min(off_t, off_b)) /
               (torch.max(off_l, off_r) * torch.max(off_t, off_b) + eps))
+    # TODO: consider using clamp rather than adding epsilon?
     # center = ((torch.min(off_l, off_r) * torch.min(off_t, off_b)) /
     #           torch.clamp(torch.max(off_l, off_r) * torch.max(off_t, off_b), min=eps))
     if DUMP_FLAG:
@@ -126,23 +135,25 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     fm_height, fm_width = score_size, score_size  # h, w
     fm_offset = score_offset
     stride = total_stride
-    x_coords = torch.arange(0, fm_width)  # (w, )
-    y_coords = torch.arange(0, fm_height)  # (h, )
-    y_coords, x_coords = torch.meshgrid(x_coords, y_coords)  # (H, W)
-    y_coords = y_coords.reshape(-1)  # (hxw, ), flattened
-    x_coords = x_coords.reshape(-1)  # (hxw, ), flattened
+
+    # coordinate meshgrid on feature map, shape=(h, w)
+    x_coords_on_fm = torch.arange(0, fm_width)  # (w, )
+    y_coords_on_fm = torch.arange(0, fm_height)  # (h, )
+    y_coords_on_fm, x_coords_on_fm = torch.meshgrid(x_coords_on_fm, y_coords_on_fm)  # (h, w)
+    y_coords_on_fm = y_coords_on_fm.reshape(-1)  # (hxw, ), flattened
+    x_coords_on_fm = x_coords_on_fm.reshape(-1)  # (hxw, ), flattened
 
     # (hxw, #boxes, 4-d_offset_(l/t/r/b), )
-    offset_on_fm = offset[fm_offset + y_coords * stride,
-                          fm_offset + x_coords * stride]  # will reduce dim by 1
+    offset_on_fm = offset[fm_offset + y_coords_on_fm * stride,
+                          fm_offset + x_coords_on_fm * stride]  # will reduce dim by 1
     # (hxw, #gt_boxes, )
     is_in_boxes = (offset_on_fm > 0).all(axis=2)
     # (h, w, #gt_boxes, ), boolean
     #   valid mask
     offset_valid = np.zeros((fm_height, fm_width, boxes_cnt))
     offset_valid[
-        y_coords,
-        x_coords, :] = is_in_boxes  #& is_in_layer  # xy[:, 0], xy[:, 1] reduce dim by 1 to match is_in_boxes.shape & is_in_layer.shape
+        y_coords_on_fm,
+        x_coords_on_fm, :] = is_in_boxes  #& is_in_layer  # xy[:, 0], xy[:, 1] reduce dim by 1 to match is_in_boxes.shape & is_in_layer.shape
     offset_valid[:, :, 0] = 0  # h x w x boxes_cnt
 
     # (h, w), boolean
@@ -156,22 +167,22 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     # (h, w, 4-d_box)
     #   gt_boxes
     gt_boxes_res = torch.zeros((fm_height, fm_width, 4))
-    gt_boxes_res[y_coords, x_coords] = gt_boxes[
-        hit_gt_ind[y_coords, x_coords], :4]  # gt_boxes: (#boxes, 5)
+    gt_boxes_res[y_coords_on_fm, x_coords_on_fm] = gt_boxes[
+        hit_gt_ind[y_coords_on_fm, x_coords_on_fm], :4]  # gt_boxes: (#boxes, 5)
     gt_boxes_res = gt_boxes_res.reshape(-1, 4)
     # gt_boxes_res_list.append(gt_boxes_res.reshape(-1, 4))
 
     # (h, w, 1-d_cls_score)
     cls_res = torch.zeros((fm_height, fm_width))
-    cls_res[y_coords, x_coords] = cls[hit_gt_ind[y_coords, x_coords]]
+    cls_res[y_coords_on_fm, x_coords_on_fm] = cls[hit_gt_ind[y_coords_on_fm, x_coords_on_fm]]
     cls_res = cls_res.reshape(-1, 1)
 
     # (h, w, 1-d_centerness)
     center_res = torch.zeros((fm_height, fm_width))
-    center_res[y_coords, x_coords] = center[fm_offset +
-                                            y_coords * stride, fm_offset +
-                                            x_coords * stride,
-                                            hit_gt_ind[y_coords, x_coords]]
+    center_res[y_coords_on_fm, x_coords_on_fm] = center[fm_offset +
+                                            y_coords_on_fm * stride, fm_offset +
+                                            x_coords_on_fm * stride,
+                                            hit_gt_ind[y_coords_on_fm, x_coords_on_fm]]
     center_res = center_res.reshape(-1, 1)
 
     return cls_res, center_res, gt_boxes_res
