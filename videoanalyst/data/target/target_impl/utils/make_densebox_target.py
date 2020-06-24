@@ -139,13 +139,14 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     # coordinate meshgrid on feature map, shape=(h, w)
     x_coords_on_fm = torch.arange(0, fm_width)  # (w, )
     y_coords_on_fm = torch.arange(0, fm_height)  # (h, )
-    y_coords_on_fm, x_coords_on_fm = torch.meshgrid(x_coords_on_fm, y_coords_on_fm)  # (h, w)
+    y_coords_on_fm, x_coords_on_fm = torch.meshgrid(x_coords_on_fm,
+                                                    y_coords_on_fm)  # (h, w)
     y_coords_on_fm = y_coords_on_fm.reshape(-1)  # (hxw, ), flattened
     x_coords_on_fm = x_coords_on_fm.reshape(-1)  # (hxw, ), flattened
 
     # (hxw, #boxes, 4-d_offset_(l/t/r/b), )
-    offset_on_fm = offset[fm_offset + y_coords_on_fm * stride,
-                          fm_offset + x_coords_on_fm * stride]  # will reduce dim by 1
+    offset_on_fm = offset[fm_offset + y_coords_on_fm * stride, fm_offset +
+                          x_coords_on_fm * stride]  # will reduce dim by 1
     # (hxw, #gt_boxes, )
     is_in_boxes = (offset_on_fm > 0).all(axis=2)
     # (h, w, #gt_boxes, ), boolean
@@ -174,15 +175,15 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
 
     # (h, w, 1-d_cls_score)
     cls_res = torch.zeros((fm_height, fm_width))
-    cls_res[y_coords_on_fm, x_coords_on_fm] = cls[hit_gt_ind[y_coords_on_fm, x_coords_on_fm]]
+    cls_res[y_coords_on_fm, x_coords_on_fm] = cls[
+        hit_gt_ind[y_coords_on_fm, x_coords_on_fm]]
     cls_res = cls_res.reshape(-1, 1)
 
     # (h, w, 1-d_centerness)
     center_res = torch.zeros((fm_height, fm_width))
-    center_res[y_coords_on_fm, x_coords_on_fm] = center[fm_offset +
-                                            y_coords_on_fm * stride, fm_offset +
-                                            x_coords_on_fm * stride,
-                                            hit_gt_ind[y_coords_on_fm, x_coords_on_fm]]
+    center_res[y_coords_on_fm, x_coords_on_fm] = center[
+        fm_offset + y_coords_on_fm * stride, fm_offset +
+        x_coords_on_fm * stride, hit_gt_ind[y_coords_on_fm, x_coords_on_fm]]
     center_res = center_res.reshape(-1, 1)
 
     return cls_res, center_res, gt_boxes_res
