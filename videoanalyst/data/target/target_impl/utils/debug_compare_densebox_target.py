@@ -6,7 +6,6 @@ import importlib
 from make_densebox_target_v1 import make_densebox_target as make_densebox_target_old
 from make_densebox_target import make_densebox_target as make_densebox_target_new
 
-
 gt_boxes = np.asarray([[150, 250, 130, 60, 1]])
 config_dict = dict(
     x_size=303,
