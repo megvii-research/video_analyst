@@ -1,10 +1,14 @@
 # encoding: utf-8
 from typing import Dict, Tuple
+import os
 
 import numpy as np
 import torch
 
 DUMP_FLAG = False  # dump intermediate results for debugging
+DUMP_DIR = "dump"
+if not os.path.exists(DUMP_DIR):
+    os.makedirs(DUMP_DIR)
 
 
 def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
@@ -101,10 +105,10 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
               gt_boxes[np.newaxis, np.newaxis, :, 3, np.newaxis])
 
     if DUMP_FLAG:
-        off_l.numpy().dump("off_l_new.npz")
-        off_t.numpy().dump("off_t_new.npz")
-        off_r.numpy().dump("off_r_new.npz")
-        off_b.numpy().dump("off_b_new.npz")
+        off_l.numpy().dump("{}/off_l_new.npz".format(DUMP_DIR))
+        off_t.numpy().dump("{}/off_t_new.npz".format(DUMP_DIR))
+        off_r.numpy().dump("{}/off_r_new.npz".format(DUMP_DIR))
+        off_b.numpy().dump("{}/off_b_new.npz".format(DUMP_DIR))
 
     # centerness
     # (H, W, #boxes, 1-d_centerness)
@@ -116,7 +120,7 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     # center = ((torch.min(off_l, off_r) * torch.min(off_t, off_b)) /
     #           torch.clamp(torch.max(off_l, off_r) * torch.max(off_t, off_b), min=eps))
     if DUMP_FLAG:
-        center.numpy().dump("center_new.npz")
+        center.numpy().dump("{}/center_new.npz".format(DUMP_DIR))
     # (H, W, #boxes, )
     center = torch.squeeze(torch.sqrt(torch.abs(center)), dim=3)
     center[:, :, 0] = 0  # mask centerness for dummy box as zero
@@ -124,7 +128,7 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     # (H, W, #boxes, 4)
     offset = torch.cat([off_l, off_t, off_r, off_b], dim=3)
     if DUMP_FLAG:
-        offset.numpy().dump("offset_new.npz")
+        offset.numpy().dump("{}/offset_new.npz".format(DUMP_DIR))
 
     # (#boxes, )
     #   store cls index of each box
