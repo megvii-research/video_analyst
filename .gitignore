@@ -64,10 +64,12 @@ log.txt
 *.protobuf
 
 /logs
-/debug
 /datasets
 /models
 /snapshots
 vaenv
 venv
 /tmp
+
+
+debug

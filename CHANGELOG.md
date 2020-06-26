@@ -2,6 +2,15 @@
 
 Date format: YY/MM/DD
 
+## 2020/06/23
+
+* refine make_densebox_target.py
+  * target making code: numpy -> pytorch
+  * simplified for SOT task
+    * reduce to single resolution layer
+* relax restrictions in requirements.txt
+  * e.g. version of pytorch, opencv, numpy, etc.
+
 ## 2020/04/28
 
 * Modify interface of _siamfcpp_track.py: update_
