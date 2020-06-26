@@ -37,3 +37,19 @@ view logs/GOT-Benchmark/report/LaSOT/<EXP_NAME>/performance.json
 view logs/GOT-Benchmark/report/otb2015/<EXP_NAME>/performance.json
 view logs/GOT-Benchmark/report/TrackingNet/<EXP_NAME>/performance.json
 ```
+
+## Misc
+
+### Use multiple GPUs for test
+
+Consider changing _device_num_ in .yaml configuration file.
+
+```yaml
+tester:
+    names: ["GOT10kTester",]
+    GOT10kTester:
+    exp_name: *TEST_NAME
+    exp_save: *TEST_SAVE
+    device_num: 4  # change here to use four GPU
+    subsets: ["val"]  # (val|test)
+```

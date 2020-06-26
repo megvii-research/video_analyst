@@ -21,6 +21,19 @@ You can choose either using native python (with pip/pip3) or using virtual envir
 pip3 install -U -r requirements.txt
 ```
 
+### GPU assignement
+
+By default, code use all GPUs visible for Python program with index starting from 0.
+
+Use _CUDA_VISIBLE_DEVICES_ to designate arbitrary GPUs to program via GPU visbility control.
+
+For example, to assign GPU 2 & GPU 3 for training, launch training code with:
+
+```bash
+CUDA_VISIBLE_DEVICES=2,3 python train.py --config experiments/siamfcpp/test/got10k/siamfcpp_alexnet-got.yaml
+```
+
+c.f. https://stackoverflow.com/questions/39649102/how-do-i-select-which-gpu-to-run-a-job-on
 
 
 ## Misc issue

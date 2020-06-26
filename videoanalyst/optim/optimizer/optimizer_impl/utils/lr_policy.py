@@ -218,6 +218,10 @@ class CosineLR(TransitionLR):
         self._post_func = _IDENTITY
 
     def _cosine_curve(self, x):
+        # recall that _cosine_curve(x) is assigned to _trans_func(x)
+        #   which stands for the transition progress from 0 to 1
+        #   so the following formula is reanable to increase
+        #   "decay" is determined by start_value and end_value
         return (1 - math.cos(x * math.pi)) / 2
 
 

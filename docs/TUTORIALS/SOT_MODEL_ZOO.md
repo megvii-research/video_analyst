@@ -46,7 +46,7 @@ GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 ### LaSOT
 
 | Backbone | Pipeline | Dataset | Success | Precision | Normalized Precision | Config. File |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | GoogLeNet | SiamFCppTracker | LaSOT-test | 55.7 | 55.6 | 58.9 | [siamfcpp_googlenet-lasot.yaml](../../experiments/siamfcpp/test/lasot/siamfcpp_googlenet-lasot.yaml) |
 
 ### TrackingNet
@@ -66,6 +66,15 @@ P.S. _fulldata_ denotes COCO, VID, TrackingNet-TRAIN, ILSVRC-VID/DET, LaSOT, GOT
 | AlexNet | SiamFCppTracker | OTB2015 | 68.0 | 88.4 | [siamfcpp_alexnet-otb.yaml](../../experiments/siamfcpp/test/otb/siamfcpp_alexnet-otb.yaml) |
 | GoogLeNet | SiamFCppTracker | OTB2015 | 68.2 | 89.6 | [siamfcpp_googlenet-otb.yaml](../../experiments/siamfcpp/test/otb/siamfcpp_googlenet-otb.yaml) |
 
+
+### UAV123
+
+| Backbone | Pipeline | Dataset | Success | Precision | Success Rate | Config. File|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:
+| AlexNet | SiamFCppTracker | UAV123 | 62.3 | 78.1 | 76.6 |[siamfcpp_alexnet-uav123.yaml](../../experiments/siamfcpp/test/UAV123/siamfcpp_alexnet-uav123.yaml) |
+| GoogLeNet | SiamFCppTracker | UAV123 | 63.1 | 79.5| 76.9 | [siamfcpp_googlenet-uav123.yaml](../../experiments/siamfcpp/test/UAV123/siamfcpp_googlenet-uav123.yaml) |
+
+P.S. The hyper-parameter and model weights are the same with vot test dataset. You can get better results with parameter adaption carefully.
 
 ## Improvements
 

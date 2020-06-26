@@ -19,6 +19,7 @@ def center_error(rects1, rects2):
 
     return errors
 
+
 def normalized_center_error(rects1, rects2):
     r"""Center error normalized by the size of ground truth.
 
@@ -30,7 +31,10 @@ def normalized_center_error(rects1, rects2):
     """
     centers1 = rects1[..., :2] + (rects1[..., 2:] - 1) / 2
     centers2 = rects2[..., :2] + (rects2[..., 2:] - 1) / 2
-    errors = np.sqrt(np.sum(np.power((centers1 - centers2)/np.maximum(np.array([[1.,1.]]), rects2[:, 2:]), 2), axis=-1))
+    errors = np.sqrt(
+        np.sum(np.power((centers1 - centers2) /
+                        np.maximum(np.array([[1., 1.]]), rects2[:, 2:]), 2),
+               axis=-1))
 
     return errors
 
@@ -121,7 +125,7 @@ def poly_iou(polys1, polys2, bound=None):
         bound = box(0, 0, bound[0], bound[1])
         polys1 = [p.intersection(bound) for p in polys1]
         polys2 = [p.intersection(bound) for p in polys2]
-    
+
     eps = np.finfo(float).eps
     ious = []
     for poly1, poly2 in zip(polys1, polys2):
@@ -147,7 +151,7 @@ def _to_polygon(polys):
             return box(x[0], x[1], x[0] + x[2], x[1] + x[3])
         elif len(x) == 8:
             return Polygon([(x[2 * i], x[2 * i + 1]) for i in range(4)])
-    
+
     if polys.ndim == 1:
         return to_polygon(polys)
     else:

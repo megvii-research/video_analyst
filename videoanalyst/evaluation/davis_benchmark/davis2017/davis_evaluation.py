@@ -16,7 +16,13 @@ from scipy.optimize import linear_sum_assignment
 
 
 class DAVISEvaluation(object):
-    def __init__(self, davis_root, task, gt_set, sequences='all', codalab=False,version = '2017'):
+    def __init__(self,
+                 davis_root,
+                 task,
+                 gt_set,
+                 sequences='all',
+                 codalab=False,
+                 version='2017'):
         """
         Class to evaluate DAVIS sequences from a certain set and for a certain task
         :param davis_root: Path to the DAVIS folder that contains JPEGImages, Annotations, etc. folders.
@@ -26,53 +32,90 @@ class DAVISEvaluation(object):
         """
         self.davis_root = davis_root
         self.task = task
-        self.dataset = DAVIS(root=davis_root, task=task, subset=gt_set, sequences=sequences, codalab=codalab,version = version)
+        self.dataset = DAVIS(root=davis_root,
+                             task=task,
+                             subset=gt_set,
+                             sequences=sequences,
+                             codalab=codalab,
+                             version=version)
 
     @staticmethod
-    def _evaluate_semisupervised(all_gt_masks, all_res_masks, all_void_masks, metric):
+    def _evaluate_semisupervised(all_gt_masks, all_res_masks, all_void_masks,
+                                 metric):
         if all_res_masks.shape[0] > all_gt_masks.shape[0]:
-            sys.stdout.write("\nIn your PNG files there is an index higher than the number of objects in the sequence!")
+            sys.stdout.write(
+                "\nIn your PNG files there is an index higher than the number of objects in the sequence!"
+            )
             sys.exit()
         elif all_res_masks.shape[0] < all_gt_masks.shape[0]:
-            zero_padding = np.zeros((all_gt_masks.shape[0] - all_res_masks.shape[0], *all_res_masks.shape[1:]))
-            all_res_masks = np.concatenate([all_res_masks, zero_padding], axis=0)
-        j_metrics_res, f_metrics_res = np.zeros(all_gt_masks.shape[:2]), np.zeros(all_gt_masks.shape[:2])
+            zero_padding = np.zeros(
+                (all_gt_masks.shape[0] - all_res_masks.shape[0],
+                 *all_res_masks.shape[1:]))
+            all_res_masks = np.concatenate([all_res_masks, zero_padding],
+                                           axis=0)
+        j_metrics_res, f_metrics_res = np.zeros(
+            all_gt_masks.shape[:2]), np.zeros(all_gt_masks.shape[:2])
         for ii in range(all_gt_masks.shape[0]):
             if 'J' in metric:
-                j_metrics_res[ii, :] = db_eval_iou(all_gt_masks[ii, ...], all_res_masks[ii, ...], all_void_masks)
+                j_metrics_res[ii, :] = db_eval_iou(all_gt_masks[ii, ...],
+                                                   all_res_masks[ii, ...],
+                                                   all_void_masks)
             if 'F' in metric:
-                f_metrics_res[ii, :] = db_eval_boundary(all_gt_masks[ii, ...], all_res_masks[ii, ...], all_void_masks)
+                f_metrics_res[ii, :] = db_eval_boundary(all_gt_masks[ii, ...],
+                                                        all_res_masks[ii, ...],
+                                                        all_void_masks)
         return j_metrics_res, f_metrics_res
 
     @staticmethod
-    def _evaluate_unsupervised(all_gt_masks, all_res_masks, all_void_masks, metric, max_n_proposals=20):
+    def _evaluate_unsupervised(all_gt_masks,
+                               all_res_masks,
+                               all_void_masks,
+                               metric,
+                               max_n_proposals=20):
         if all_res_masks.shape[0] > max_n_proposals:
-            sys.stdout.write("\nIn your PNG files there is an index higher than the maximum number ({}) of proposals allowed!".format(max_n_proposals))
+            sys.stdout.write(
+                "\nIn your PNG files there is an index higher than the maximum number ({}) of proposals allowed!"
+                .format(max_n_proposals))
             sys.exit()
         elif all_res_masks.shape[0] < all_gt_masks.shape[0]:
-            zero_padding = np.zeros((all_gt_masks.shape[0] - all_res_masks.shape[0], *all_res_masks.shape[1:]))
-            all_res_masks = np.concatenate([all_res_masks, zero_padding], axis=0)
-        j_metrics_res = np.zeros((all_res_masks.shape[0], all_gt_masks.shape[0], all_gt_masks.shape[1]))
-        f_metrics_res = np.zeros((all_res_masks.shape[0], all_gt_masks.shape[0], all_gt_masks.shape[1]))
+            zero_padding = np.zeros(
+                (all_gt_masks.shape[0] - all_res_masks.shape[0],
+                 *all_res_masks.shape[1:]))
+            all_res_masks = np.concatenate([all_res_masks, zero_padding],
+                                           axis=0)
+        j_metrics_res = np.zeros((all_res_masks.shape[0], all_gt_masks.shape[0],
+                                  all_gt_masks.shape[1]))
+        f_metrics_res = np.zeros((all_res_masks.shape[0], all_gt_masks.shape[0],
+                                  all_gt_masks.shape[1]))
         for ii in range(all_gt_masks.shape[0]):
             for jj in range(all_res_masks.shape[0]):
                 if 'J' in metric:
-                    j_metrics_res[jj, ii, :] = db_eval_iou(all_gt_masks[ii, ...], all_res_masks[jj, ...], all_void_masks)
+                    j_metrics_res[jj, ii, :] = db_eval_iou(
+                        all_gt_masks[ii, ...], all_res_masks[jj, ...],
+                        all_void_masks)
                 if 'F' in metric:
-                    f_metrics_res[jj, ii, :] = db_eval_boundary(all_gt_masks[ii, ...], all_res_masks[jj, ...], all_void_masks)
+                    f_metrics_res[jj, ii, :] = db_eval_boundary(
+                        all_gt_masks[ii, ...], all_res_masks[jj, ...],
+                        all_void_masks)
         if 'J' in metric and 'F' in metric:
-            all_metrics = (np.mean(j_metrics_res, axis=2) + np.mean(f_metrics_res, axis=2)) / 2
+            all_metrics = (np.mean(j_metrics_res, axis=2) +
+                           np.mean(f_metrics_res, axis=2)) / 2
         else:
-            all_metrics = np.mean(j_metrics_res, axis=2) if 'J' in metric else np.mean(f_metrics_res, axis=2)
+            all_metrics = np.mean(j_metrics_res,
+                                  axis=2) if 'J' in metric else np.mean(
+                                      f_metrics_res, axis=2)
         row_ind, col_ind = linear_sum_assignment(-all_metrics)
-        return j_metrics_res[row_ind, col_ind, :], f_metrics_res[row_ind, col_ind, :]
+        return j_metrics_res[row_ind, col_ind, :], f_metrics_res[row_ind,
+                                                                 col_ind, :]
 
     def evaluate(self, res_path, metric=('J', 'F'), debug=False):
-        metric = metric if isinstance(metric, tuple) or isinstance(metric, list) else [metric]
+        metric = metric if isinstance(metric, tuple) or isinstance(
+            metric, list) else [metric]
         if 'T' in metric:
             raise ValueError('Temporal metric not supported!')
         if 'J' not in metric and 'F' not in metric:
-            raise ValueError('Metric possible values are J for IoU or F for Boundary')
+            raise ValueError(
+                'Metric possible values are J for IoU or F for Boundary')
 
         # Containers
         metrics_res = {}
@@ -84,16 +127,21 @@ class DAVISEvaluation(object):
         # Sweep all sequences
         results = Results(root_dir=res_path)
         for seq in tqdm(list(self.dataset.get_sequences())):
-            all_gt_masks, all_void_masks, all_masks_id = self.dataset.get_all_masks(seq, True)
+            all_gt_masks, all_void_masks, all_masks_id = self.dataset.get_all_masks(
+                seq, True)
             if self.task == 'semi-supervised':
-                all_gt_masks, all_masks_id = all_gt_masks[:, 1:-1, :, :], all_masks_id[1:-1]
+                all_gt_masks, all_masks_id = all_gt_masks[:, 1:
+                                                          -1, :, :], all_masks_id[
+                                                              1:-1]
             all_res_masks = results.read_masks(seq, all_masks_id)
             if self.task == 'unsupervised':
-                j_metrics_res, f_metrics_res = self._evaluate_unsupervised(all_gt_masks, all_res_masks, all_void_masks, metric)
+                j_metrics_res, f_metrics_res = self._evaluate_unsupervised(
+                    all_gt_masks, all_res_masks, all_void_masks, metric)
             elif self.task == 'semi-supervised':
-                j_metrics_res, f_metrics_res = self._evaluate_semisupervised(all_gt_masks, all_res_masks, None, metric)
+                j_metrics_res, f_metrics_res = self._evaluate_semisupervised(
+                    all_gt_masks, all_res_masks, None, metric)
             for ii in range(all_gt_masks.shape[0]):
-                seq_name = '{}_{}'.format(seq,ii+1)
+                seq_name = '{}_{}'.format(seq, ii + 1)
                 if 'J' in metric:
                     [JM, JR, JD] = utils.db_statistics(j_metrics_res[ii])
                     metrics_res['J']["M"].append(JM)

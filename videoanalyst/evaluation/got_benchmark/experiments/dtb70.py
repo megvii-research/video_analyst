@@ -16,8 +16,7 @@ class ExperimentDTB70(ExperimentOTB):
         report_dir (string, optional): Directory for storing performance
             evaluation results. Default is ``./reports``.
     """
-    def __init__(self, root_dir,
-                 result_dir='results', report_dir='reports'):
+    def __init__(self, root_dir, result_dir='results', report_dir='reports'):
         self.dataset = DTB70(root_dir)
         self.result_dir = os.path.join(result_dir, 'DTB70')
         self.report_dir = os.path.join(report_dir, 'DTB70')
