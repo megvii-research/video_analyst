@@ -72,3 +72,4 @@ vaenv
 venv
 /tmp
 *.onnx
+*.trt

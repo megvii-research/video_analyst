@@ -21,6 +21,9 @@ test:
         name: "SiamTrack"
         SiamTrack:
           pretrain_model_path: "models/siamfcpp/siamfcpp-alexnet-vot-md5_88e4e9ee476545b952b04ae80c480f08.pkl"
+          trt_mode: False
+          trt_fea_model: "siamfcpp_alexnet_fea.trt"
+          trt_track_model: "siamfcpp_alexnet_track_fea.trt"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:

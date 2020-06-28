@@ -22,6 +22,9 @@ test:
         name: "SiamTrack"
         SiamTrack:
           pretrain_model_path: "models/siamfcpp/siamfcpp-googlenet-vot-md5_f2680ba074213ee39d82fcb84533a1a6.pkl"
+          trt_mode: False
+          trt_fea_model: "siamfcpp_googlenet_fea.trt"
+          trt_track_model: "siamfcpp_googlenet_track_fea.trt"
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
