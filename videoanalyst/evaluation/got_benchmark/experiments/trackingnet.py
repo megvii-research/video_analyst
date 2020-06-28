@@ -54,7 +54,7 @@ class ExperimentTrackingNet(ExperimentOTB):
                 result_dir = os.path.join(self.result_dir, tracker_name)
                 save_file = result_dir
                 compress(result_dir, save_file)
-                print('Records saved at', save_file + '.zip')
+                print('Records saved at', os.path.realpath(save_file + '.zip'))
 
             # print submission guides
             print('\033[93mLogin and follow instructions on')
