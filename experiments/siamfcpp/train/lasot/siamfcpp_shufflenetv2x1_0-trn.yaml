@@ -44,6 +44,7 @@ test:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
         subsets: ["test"]  # (train_test|test)
+        device_num: 4
 train:
   track:
     exp_name: &TRAIN_NAME "siamfcpp_shufflenetv2x1_0-lasot"

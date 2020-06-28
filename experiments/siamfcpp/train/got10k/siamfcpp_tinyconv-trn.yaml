@@ -41,6 +41,7 @@ test:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
         subsets: ["val", "test"]  # (val|test)
+        device_num: 2
       LaSOTTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
