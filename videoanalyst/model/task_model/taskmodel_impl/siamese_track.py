@@ -136,7 +136,7 @@ class SiamTrack(ModuleBase):
             # head
             return [c_x, r_x]
         # [Broken] used for template feature extraction (trt mode)
-        #   currently broken due to following issue of "torch2trt" package 
+        #   currently broken due to following issue of "torch2trt" package
         #   c.f. https://github.com/NVIDIA-AI-IOT/torch2trt/issues/251
         elif phase == "freeze_track_head":
             c_out, r_out = args
