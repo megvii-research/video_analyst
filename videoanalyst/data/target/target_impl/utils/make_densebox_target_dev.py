@@ -7,6 +7,7 @@ import torch
 
 DUMP_FLAG = False  # dump intermediate results for debugging
 DUMP_DIR = "dump"
+DUMP_SUFFIX = "dev"
 if not os.path.exists(DUMP_DIR):
     os.makedirs(DUMP_DIR)
 
@@ -105,10 +106,10 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
               gt_boxes[np.newaxis, np.newaxis, :, 3, np.newaxis])
 
     if DUMP_FLAG:
-        off_l.numpy().dump("{}/off_l_new.npz".format(DUMP_DIR))
-        off_t.numpy().dump("{}/off_t_new.npz".format(DUMP_DIR))
-        off_r.numpy().dump("{}/off_r_new.npz".format(DUMP_DIR))
-        off_b.numpy().dump("{}/off_b_new.npz".format(DUMP_DIR))
+        off_l.numpy().dump("{}/off_l_{}.npz".format(DUMP_DIR, DUMP_SUFFIX))
+        off_t.numpy().dump("{}/off_t_{}.npz".format(DUMP_DIR, DUMP_SUFFIX))
+        off_r.numpy().dump("{}/off_r_{}.npz".format(DUMP_DIR, DUMP_SUFFIX))
+        off_b.numpy().dump("{}/off_b_{}.npz".format(DUMP_DIR, DUMP_SUFFIX))
 
     # centerness
     # (H, W, #boxes, 1-d_centerness)
@@ -120,7 +121,7 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     # center = ((torch.min(off_l, off_r) * torch.min(off_t, off_b)) /
     #           torch.clamp(torch.max(off_l, off_r) * torch.max(off_t, off_b), min=eps))
     if DUMP_FLAG:
-        center.numpy().dump("{}/center_new.npz".format(DUMP_DIR))
+        center.numpy().dump("{}/center_{}.npz".format(DUMP_DIR, DUMP_SUFFIX))
     # (H, W, #boxes, )
     center = torch.squeeze(torch.sqrt(torch.abs(center)), dim=3)
     center[:, :, 0] = 0  # mask centerness for dummy box as zero
@@ -128,7 +129,7 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     # (H, W, #boxes, 4)
     offset = torch.cat([off_l, off_t, off_r, off_b], dim=3)
     if DUMP_FLAG:
-        offset.numpy().dump("{}/offset_new.npz".format(DUMP_DIR))
+        offset.numpy().dump("{}/offset_{}.npz".format(DUMP_DIR, DUMP_SUFFIX))
 
     # (#boxes, )
     #   store cls index of each box
