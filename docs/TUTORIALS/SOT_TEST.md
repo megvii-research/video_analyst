@@ -44,3 +44,19 @@ view logs/GOT-Benchmark/report/TrackingNet/<EXP_NAME>/performance.json
 2. please refer https://github.com/researchmm/TracKit/blob/master/lib/tutorial/install_trt.md to install torch2trt.
 3. we provide trt model for siamfcpp-googlenet-vot now, you can set trt_mode True in [yaml](../../experiments/siamfcpp/test/vot/siamfcpp_googlenet.yaml) to enable it.
 4. You can refer to [cvt_trt.py](../../main/cvt_trt.py) to transfer other models to trt.
+
+## Misc
+
+### Use multiple GPUs for test
+
+Consider changing _device_num_ in .yaml configuration file.
+
+```yaml
+tester:
+    names: ["GOT10kTester",]
+    GOT10kTester:
+    exp_name: *TEST_NAME
+    exp_save: *TEST_SAVE
+    device_num: 4  # change here to use four GPU
+    subsets: ["val"]  # (val|test)
+```

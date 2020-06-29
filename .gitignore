@@ -64,7 +64,6 @@ log.txt
 *.protobuf
 
 /logs
-/debug
 /datasets
 /models
 /snapshots
@@ -73,3 +72,4 @@ venv
 /tmp
 *.onnx
 *.trt
+debug
