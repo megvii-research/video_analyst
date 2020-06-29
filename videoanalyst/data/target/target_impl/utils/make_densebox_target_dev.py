@@ -168,7 +168,11 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     #   if not match any box, fall on dummy box at index 0
     #   if conflict, choose box with smaller index
     #   P.S. boxes already ordered by box's area
-    hit_gt_ind = torch.argmax(offset_valid, dim=2)
+    #   Attention: be aware of definition of _argmax_ here
+    #       which is assumed to find the FIRST OCCURENCE of the max value
+    #       currently torch.argmax's behavior is not aligned with np.argmax
+    #       c.f. https://github.com/pytorch/pytorch/issues/22853
+    hit_gt_ind = np.argmax(offset_valid, axis=2)
 
     # (h, w, 4-d_box)
     #   gt_boxes
