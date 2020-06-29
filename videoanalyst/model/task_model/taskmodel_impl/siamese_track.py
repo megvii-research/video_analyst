@@ -40,6 +40,7 @@ class SiamTrack(ModuleBase):
                                 trt_track_model_path="")
 
     support_phases = ["train", "feature", "track", "freeze_track_fea"]
+
     def __init__(self, backbone, head, loss=None):
         super(SiamTrack, self).__init__()
         self.basemodel = backbone
@@ -48,10 +49,11 @@ class SiamTrack(ModuleBase):
         self.trt_fea_model = None
         self.trt_track_model = None
         self._phase = "train"
-    
+
     @property
     def phase(self):
         return self._phase
+
     @phase.setter
     def phase(self, p):
         assert p in self.support_phases
@@ -132,8 +134,7 @@ class SiamTrack(ModuleBase):
         elif phase == "freeze_track_head":
             c_out, r_out = args
             # head
-            outputs = self.head(
-                c_out, r_out, 0, True)
+            outputs = self.head(c_out, r_out, 0, True)
             return outputs
 
         elif phase == 'track':
@@ -185,11 +186,12 @@ class SiamTrack(ModuleBase):
             logger.info("trt mode enable")
             from torch2trt import TRTModule
             self.trt_fea_model = TRTModule()
-            self.trt_fea_model.load_state_dict(torch.load(self._hyper_params["trt_fea_model_path"]))
+            self.trt_fea_model.load_state_dict(
+                torch.load(self._hyper_params["trt_fea_model_path"]))
             self.trt_track_model = TRTModule()
-            self.trt_track_model.load_state_dict(torch.load(self._hyper_params["trt_track_model_path"]))
+            self.trt_track_model.load_state_dict(
+                torch.load(self._hyper_params["trt_track_model_path"]))
             logger.info("loading trt model succefully")
-
 
     def _make_convs(self):
         head_width = self._hyper_params['head_width']

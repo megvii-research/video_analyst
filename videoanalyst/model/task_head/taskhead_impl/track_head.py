@@ -99,11 +99,6 @@ class DenseboxHead(ModuleBase):
         self.cls_convs = []
         self.bbox_convs = []
 
-    def decode_box(self, offsets):
-        fm_ctr = self.fm_ctr.to(offsets.device)
-        bbox = get_box(fm_ctr, offsets)
-        return bbox
-
     def forward(self, c_out, r_out, x_size=0, raw_output=False):
         # classification head
         num_conv3x3 = self._hyper_params['num_conv3x3']

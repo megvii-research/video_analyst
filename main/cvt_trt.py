@@ -38,6 +38,7 @@ def to_numpy(tensor):
     return tensor.detach().cpu().numpy(
     ) if tensor.requires_grad else tensor.cpu().numpy()
 
+
 def export_siamfcpp_fea_trt(task_cfg, parsed_args):
     model = model_builder.build("track", task_cfg.model)
     model = model.eval().cuda()
@@ -57,7 +58,6 @@ def export_siamfcpp_fea_trt(task_cfg, parsed_args):
                                rtol=1e-03,
                                atol=1e-05)
     logger.info("test accuracy ok")
-
 
 
 def export_siamfcpp_track_fea_trt(task_cfg, parsed_args):
@@ -83,6 +83,7 @@ def export_siamfcpp_track_fea_trt(task_cfg, parsed_args):
                                rtol=1e-03,
                                atol=1e-05)
     logger.info("test accuracy ok")
+
 
 if __name__ == '__main__':
     # parsing
