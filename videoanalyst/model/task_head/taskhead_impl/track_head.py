@@ -14,6 +14,8 @@ torch.set_printoptions(precision=8)
 
 
 def get_xy_ctr(score_size, score_offset, total_stride):
+    """ generate coordinates on image plane for score map pixels (in torch)
+    """
     batch, fm_height, fm_width = 1, score_size, score_size
 
     y_list = torch.linspace(0., fm_height - 1., fm_height).reshape(
@@ -31,6 +33,8 @@ def get_xy_ctr(score_size, score_offset, total_stride):
 
 
 def get_xy_ctr_np(score_size, score_offset, total_stride):
+    """ generate coordinates on image plane for score map pixels (in numpy)
+    """
     batch, fm_height, fm_width = 1, score_size, score_size
 
     y_list = np.linspace(0., fm_height - 1.,
