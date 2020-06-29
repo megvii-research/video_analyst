@@ -2,6 +2,9 @@
 
 Date format: YY/MM/DD
 
+## 2020/06/29
+* support acclerating tracking by tensorRT
+
 ## 2020/04/28
 
 * Modify interface of _siamfcpp_track.py: update_

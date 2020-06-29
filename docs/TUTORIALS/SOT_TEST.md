@@ -37,3 +37,10 @@ view logs/GOT-Benchmark/report/LaSOT/<EXP_NAME>/performance.json
 view logs/GOT-Benchmark/report/otb2015/<EXP_NAME>/performance.json
 view logs/GOT-Benchmark/report/TrackingNet/<EXP_NAME>/performance.json
 ```
+### Speed up with TensorRT
+
+1. we adopt [torch2trt](https://github.com/NVIDIA-AI-IOT/torch2trt) accelerate the speed. Because of this [issue](https://github.com/NVIDIA-AI-IOT/torch2trt/issues/251)， we only transfer the feature extraction part yet.
+
+2. please refer https://github.com/researchmm/TracKit/blob/master/lib/tutorial/install_trt.md to install torch2trt.
+3. we provide trt model for siamfcpp-googlenet-vot now, you can set trt_mode True in [yaml](../../experiments/siamfcpp/test/vot/siamfcpp_googlenet.yaml) to enable it.
+4. You can refer to [cvt_trt.py](../../main/cvt_trt.py) to transfer other models to trt.

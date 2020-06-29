@@ -36,8 +36,8 @@ class SiamTrack(ModuleBase):
                                 neck_conv_bias=[True, True, True, True],
                                 corr_fea_output=False,
                                 trt_mode=False,
-                                trt_fea_model="",
-                                trt_track_model="")
+                                trt_fea_model_path="",
+                                trt_track_model_path="")
 
     support_phases = ["train", "feature", "track", "freeze_track_fea"]
     def __init__(self, backbone, head, loss=None):
@@ -185,9 +185,9 @@ class SiamTrack(ModuleBase):
             logger.info("trt mode enable")
             from torch2trt import TRTModule
             self.trt_fea_model = TRTModule()
-            self.trt_fea_model.load_state_dict(torch.load(self._hyper_params["trt_fea_model"]))
+            self.trt_fea_model.load_state_dict(torch.load(self._hyper_params["trt_fea_model_path"]))
             self.trt_track_model = TRTModule()
-            self.trt_track_model.load_state_dict(torch.load(self._hyper_params["trt_track_model"]))
+            self.trt_track_model.load_state_dict(torch.load(self._hyper_params["trt_track_model_path"]))
             logger.info("loading trt model succefully")
 
 
