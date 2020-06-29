@@ -83,6 +83,7 @@ class SiamTrack(ModuleBase):
         """
         if phase is None:
             phase = self._phase
+        # used during training
         if phase == 'train':
             # resolve training data
             training_data = args[0]
@@ -110,9 +111,11 @@ class SiamTrack(ModuleBase):
             if self._hyper_params["corr_fea_output"]:
                 predict_data["corr_fea"] = corr_fea
             return predict_data
+        # used for template feature extraction (normal mode)
         elif phase == 'feature':
             target_img, = args
             if self._hyper_params["trt_mode"]:
+                # extract feature with trt model
                 out_list = self.trt_fea_model(target_img)
             else:
                 # backbone feature
@@ -122,6 +125,7 @@ class SiamTrack(ModuleBase):
                 r_z_k = self.r_z_k(f_z)
                 # output
                 out_list = [c_z_k, r_z_k]
+        # used for template feature extraction (trt mode)
         elif phase == "freeze_track_fea":
             search_img, = args
             # backbone feature
@@ -131,15 +135,17 @@ class SiamTrack(ModuleBase):
             r_x = self.r_x(f_x)
             # head
             return [c_x, r_x]
+        # [Broken] used for template feature extraction (trt mode)
+        #   currently broken due to following issue of "torch2trt" package 
+        #   c.f. https://github.com/NVIDIA-AI-IOT/torch2trt/issues/251
         elif phase == "freeze_track_head":
             c_out, r_out = args
             # head
             outputs = self.head(c_out, r_out, 0, True)
             return outputs
-
+        # used for tracking one frame during test
         elif phase == 'track':
             if len(args) == 3:
-
                 search_img, c_z_k, r_z_k = args
                 if self._hyper_params["trt_mode"]:
                     c_x, r_x = self.trt_track_model(search_img)
