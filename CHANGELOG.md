@@ -2,6 +2,9 @@
 
 Date format: YY/MM/DD
 
+## 2020/06/29
+* support acclerating tracking by tensorRT
+
 ## 2020/06/23
 
 * refine make_densebox_target.py
@@ -17,6 +20,7 @@ Date format: YY/MM/DD
    * add dataset and test_engine for UAV123 and VOTLT
    * add test results for UAV123
    * add long-term trakcker (need to  be refined)
+   
 ## 2020/04/28
 
 * Modify interface of _siamfcpp_track.py: update_

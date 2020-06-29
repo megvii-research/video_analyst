@@ -34,15 +34,32 @@ class SiamTrack(ModuleBase):
                                 head_width=256,
                                 conv_weight_std=0.01,
                                 neck_conv_bias=[True, True, True, True],
-                                corr_fea_output=False)
+                                corr_fea_output=False,
+                                trt_mode=False,
+                                trt_fea_model_path="",
+                                trt_track_model_path="")
+
+    support_phases = ["train", "feature", "track", "freeze_track_fea"]
 
     def __init__(self, backbone, head, loss=None):
         super(SiamTrack, self).__init__()
         self.basemodel = backbone
         self.head = head
         self.loss = loss
+        self.trt_fea_model = None
+        self.trt_track_model = None
+        self._phase = "train"
 
-    def forward(self, *args, phase="train"):
+    @property
+    def phase(self):
+        return self._phase
+
+    @phase.setter
+    def phase(self, p):
+        assert p in self.support_phases
+        self._phase = p
+
+    def forward(self, *args, phase=None):
         r"""
         Perform tracking process for different phases (e.g. train / init / track)
 
@@ -64,6 +81,9 @@ class SiamTrack(ModuleBase):
         fcos_ctr_prob_final: torch.Tensor
             center-ness score, shape=(B, HW, 1)
         """
+        if phase is None:
+            phase = self._phase
+        # used during training
         if phase == 'train':
             # resolve training data
             training_data = args[0]
@@ -91,24 +111,50 @@ class SiamTrack(ModuleBase):
             if self._hyper_params["corr_fea_output"]:
                 predict_data["corr_fea"] = corr_fea
             return predict_data
+        # used for template feature extraction (normal mode)
         elif phase == 'feature':
             target_img, = args
+            if self._hyper_params["trt_mode"]:
+                # extract feature with trt model
+                out_list = self.trt_fea_model(target_img)
+            else:
+                # backbone feature
+                f_z = self.basemodel(target_img)
+                # template as kernel
+                c_z_k = self.c_z_k(f_z)
+                r_z_k = self.r_z_k(f_z)
+                # output
+                out_list = [c_z_k, r_z_k]
+        # used for template feature extraction (trt mode)
+        elif phase == "freeze_track_fea":
+            search_img, = args
             # backbone feature
-            f_z = self.basemodel(target_img)
-            # template as kernel
-            c_z_k = self.c_z_k(f_z)
-            r_z_k = self.r_z_k(f_z)
-            # output
-            out_list = [c_z_k, r_z_k]
-
+            f_x = self.basemodel(search_img)
+            # feature adjustment
+            c_x = self.c_x(f_x)
+            r_x = self.r_x(f_x)
+            # head
+            return [c_x, r_x]
+        # [Broken] used for template feature extraction (trt mode)
+        #   currently broken due to following issue of "torch2trt" package
+        #   c.f. https://github.com/NVIDIA-AI-IOT/torch2trt/issues/251
+        elif phase == "freeze_track_head":
+            c_out, r_out = args
+            # head
+            outputs = self.head(c_out, r_out, 0, True)
+            return outputs
+        # used for tracking one frame during test
         elif phase == 'track':
             if len(args) == 3:
                 search_img, c_z_k, r_z_k = args
-                # backbone feature
-                f_x = self.basemodel(search_img)
-                # feature adjustment
-                c_x = self.c_x(f_x)
-                r_x = self.r_x(f_x)
+                if self._hyper_params["trt_mode"]:
+                    c_x, r_x = self.trt_track_model(search_img)
+                else:
+                    # backbone feature
+                    f_x = self.basemodel(search_img)
+                    # feature adjustment
+                    c_x = self.c_x(f_x)
+                    r_x = self.r_x(f_x)
             elif len(args) == 4:
                 # c_x, r_x already computed
                 c_z_k, r_z_k, c_x, r_x = args
@@ -142,6 +188,16 @@ class SiamTrack(ModuleBase):
         self._make_convs()
         self._initialize_conv()
         super().update_params()
+        if self._hyper_params["trt_mode"]:
+            logger.info("trt mode enable")
+            from torch2trt import TRTModule
+            self.trt_fea_model = TRTModule()
+            self.trt_fea_model.load_state_dict(
+                torch.load(self._hyper_params["trt_fea_model_path"]))
+            self.trt_track_model = TRTModule()
+            self.trt_track_model.load_state_dict(
+                torch.load(self._hyper_params["trt_track_model_path"]))
+            logger.info("loading trt model succefully")
 
     def _make_convs(self):
         head_width = self._hyper_params['head_width']

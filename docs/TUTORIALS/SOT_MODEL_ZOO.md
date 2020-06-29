@@ -18,6 +18,9 @@ VOT test configuration directory: _experiments/siamfcpp/test/vot_
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | AlexNet | SiamFCppTracker | VOT2018 |0.576 | 0.183 | 0.393| ~200| ~185 | [siamfcpp_alexnet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml)
 | GoogLeNet | SiamFCppTracker | VOT2018 | 0.583 | 0.173 | 0.426 | ~80 | ~65 | [siamfcpp_googlenet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_googlenet.yaml) |
+| GoogLeNet* | SiamFCppTracker | VOT2018 | 0.584 | 0.178 | 0.425 | ~120 | / | [siamfcpp_googlenet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_googlenet.yaml) |
+
+\* means using TensorRT to accelerate the backbone feature extraction, and you can set **trt_mode** True in the config yaml to enable it.
 
 #### Multi-template
 
