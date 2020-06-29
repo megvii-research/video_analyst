@@ -153,7 +153,7 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     offset_on_fm = offset[fm_offset + y_coords_on_fm * stride, fm_offset +
                           x_coords_on_fm * stride]  # will reduce dim by 1
     # (hxw, #gt_boxes, )
-    is_in_boxes = (offset_on_fm > 0).all(dim=2)
+    is_in_boxes = (offset_on_fm > 0).all(dim=2).type(torch.uint8)
     # (h, w, #gt_boxes, ), boolean
     #   valid mask
     offset_valid = torch.zeros((fm_height, fm_width, boxes_cnt), dtype=torch.uint8)
