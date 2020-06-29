@@ -15,7 +15,7 @@ if not os.path.exists(DUMP_DIR):
 
 
 def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
-    """
+    """ v1
     Model training target generation function for densebox
 
     Arguments
