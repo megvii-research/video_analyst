@@ -35,7 +35,7 @@ test:
       TrackingNetTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
-        device_num: 1
+        device_num: 4
         subsets: ["test"]  # (train|test|train0,1,...)
 train:
   track:
