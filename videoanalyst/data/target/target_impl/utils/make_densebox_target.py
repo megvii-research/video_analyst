@@ -7,30 +7,26 @@ import torch
 
 DUMP_FLAG = False  # dump intermediate results for debugging
 DUMP_DIR = "dump"
-DUMP_SUFFIX = "dev"
+DUMP_SUFFIX = "v2_1"
 if not os.path.exists(DUMP_DIR):
     os.makedirs(DUMP_DIR)
 
 
 def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
-    """ v2.1 [WIP] to be compare with current
+    """ v2.1, 
+          fix indexing type cast (compatible with previous)
     Model training target generation function for densebox
         Target processing code changed from numpy to pytorch
         Only one resolution layer is taken into consideration
         Refined & documented in detail, comparing to precedented version
     
-    About Training Accuracy w.r.t. previous version
-        siamfcpp-alexnet: ao@got10k-val = 73.4
-        siamfcpp-googlenet: ao@got10k-val = 75.5
+    About Training Accuracy w.r.t. previous version (torch==1.5.1)
+        siamfcpp-alexnet: ao@got10k-val = 73.3
+        siamfcpp-googlenet: ao@got10k-val = 76.3
 
-    About alignmenet w.r.t. previous version
+    About alignmenet w.r.t. v2
     - classification target: aligned
-    - centerness target: slightly differ, 
-                           e.g. 
-                             max_err ~= 1e-8 in final centerness
-                             max_err ~= 1e-6 in dense centerness
-                         May due to the difference in implementation
-                         of math operation (e.g. division)
+    - centerness target: aligned
     - bbox target: aligned
 
     Arguments
