@@ -124,7 +124,8 @@ class Inception3(ModuleBase):
 
         # cropping to alleviate
         crop_pad = self.crop_pad
-        x = x[:, :, crop_pad:-crop_pad, crop_pad:-crop_pad]
+        x = x[:, :, crop_pad:x.size(2) - crop_pad, crop_pad:x.size(3) -
+              crop_pad]
         x = self.channel_reduce(x)
         return x
 

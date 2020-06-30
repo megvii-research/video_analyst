@@ -14,6 +14,8 @@ torch.set_printoptions(precision=8)
 
 
 def get_xy_ctr(score_size, score_offset, total_stride):
+    """ generate coordinates on image plane for score map pixels (in torch)
+    """
     batch, fm_height, fm_width = 1, score_size, score_size
 
     y_list = torch.linspace(0., fm_height - 1., fm_height).reshape(
@@ -27,6 +29,24 @@ def get_xy_ctr(score_size, score_offset, total_stride):
         batch, -1,
         2)  # .broadcast([batch, fm_height, fm_width, 2]).reshape(batch, -1, 2)
     xy_ctr = xy_ctr.type(torch.Tensor)
+    return xy_ctr
+
+
+def get_xy_ctr_np(score_size, score_offset, total_stride):
+    """ generate coordinates on image plane for score map pixels (in numpy)
+    """
+    batch, fm_height, fm_width = 1, score_size, score_size
+
+    y_list = np.linspace(0., fm_height - 1.,
+                         fm_height).reshape(1, fm_height, 1, 1)
+    y_list = y_list.repeat(fm_width, axis=2)
+    x_list = np.linspace(0., fm_width - 1., fm_width).reshape(1, 1, fm_width, 1)
+    x_list = x_list.repeat(fm_height, axis=1)
+    xy_list = score_offset + np.concatenate((x_list, y_list), 3) * total_stride
+    xy_ctr = np.repeat(xy_list, batch, axis=0).reshape(
+        batch, -1,
+        2)  # .broadcast([batch, fm_height, fm_width, 2]).reshape(batch, -1, 2)
+    xy_ctr = torch.from_numpy(xy_ctr)
     return xy_ctr
 
 
@@ -71,7 +91,7 @@ class DenseboxHead(ModuleBase):
         head_conv_bn=[False, False, True],
         head_width=256,
         conv_weight_std=0.0001,
-        input_size_adapt=True,
+        input_size_adapt=False,
     )
 
     def __init__(self):
@@ -83,7 +103,7 @@ class DenseboxHead(ModuleBase):
         self.cls_convs = []
         self.bbox_convs = []
 
-    def forward(self, c_out, r_out, x_size=0):
+    def forward(self, c_out, r_out, x_size=0, raw_output=False):
         # classification head
         num_conv3x3 = self._hyper_params['num_conv3x3']
         cls = c_out
@@ -104,12 +124,14 @@ class DenseboxHead(ModuleBase):
         # regression
         offsets = self.bbox_offsets_p5(bbox)
         offsets = torch.exp(self.si * offsets + self.bi) * self.total_stride
+        if raw_output:
+            return [cls_score, ctr_score, offsets]
         # bbox decoding
         if self._hyper_params["input_size_adapt"] and x_size > 0:
             score_offset = (x_size - 1 -
                             (offsets.size(-1) - 1) * self.total_stride) // 2
-            fm_ctr = get_xy_ctr(offsets.size(-1), score_offset,
-                                self.total_stride)
+            fm_ctr = get_xy_ctr_np(offsets.size(-1), score_offset,
+                                   self.total_stride)
             fm_ctr = fm_ctr.to(offsets.device)
         else:
             fm_ctr = self.fm_ctr.to(offsets.device)
@@ -127,7 +149,8 @@ class DenseboxHead(ModuleBase):
         self.score_size = self._hyper_params["score_size"]
         self.total_stride = self._hyper_params["total_stride"]
         self.score_offset = self._hyper_params["score_offset"]
-        ctr = get_xy_ctr(self.score_size, self.score_offset, self.total_stride)
+        ctr = get_xy_ctr_np(self.score_size, self.score_offset,
+                            self.total_stride)
         self.fm_ctr = ctr
         self.fm_ctr.require_grad = False
 

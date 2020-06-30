@@ -39,8 +39,8 @@ def show_result(self, result, topk=10, result_file=None):
                                reverse=True)[:topk]
         sorted_tacker = [x[0] for x in sorted_tacker]
         for tracker_name in sorted_tacker:
-            result_file.write("|{:^20}|".format(tracker_name) +
-                              formatter.format(
-                                  *[result[tracker_name][x]
-                                    for x in self.tags]) + '\n')
+            result_file.write(
+                "|{:^20}|".format(tracker_name) +
+                formatter.format(*[result[tracker_name][x]
+                                   for x in self.tags]) + '\n')
         result_file.write(bar + '\n')
