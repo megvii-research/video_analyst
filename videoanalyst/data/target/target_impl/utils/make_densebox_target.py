@@ -77,7 +77,8 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     # (#boxes, 4-d_box + 1-d_cls)
     #   append dummy box (0, 0, 0, 0) at first for convenient
     #   #boxes++
-    gt_boxes = torch.cat([torch.zeros(1, 5, dtype=torch.float32), gt_boxes], dim=0)
+    gt_boxes = torch.cat([torch.zeros(1, 5, dtype=torch.float32), gt_boxes],
+                         dim=0)
 
     gt_boxes_area = (torch.abs(
         (gt_boxes[:, 2] - gt_boxes[:, 0]) * (gt_boxes[:, 3] - gt_boxes[:, 1])))
@@ -88,7 +89,7 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     boxes_cnt = len(gt_boxes)
 
     # coordinate meshgrid on image, shape=(H. W)
-    x_coords = torch.arange(0, raw_width, dtype=torch.int64)   # (W, )
+    x_coords = torch.arange(0, raw_width, dtype=torch.int64)  # (W, )
     y_coords = torch.arange(0, raw_height, dtype=torch.int64)  # (H, )
     y_coords, x_coords = torch.meshgrid(x_coords, y_coords)  # (H, W)
 
@@ -138,7 +139,7 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     stride = total_stride
 
     # coordinate meshgrid on feature map, shape=(h, w)
-    x_coords_on_fm = torch.arange(0, fm_width, dtype=torch.int64) # (w, )
+    x_coords_on_fm = torch.arange(0, fm_width, dtype=torch.int64)  # (w, )
     y_coords_on_fm = torch.arange(0, fm_height, dtype=torch.int64)  # (h, )
     y_coords_on_fm, x_coords_on_fm = torch.meshgrid(x_coords_on_fm,
                                                     y_coords_on_fm)  # (h, w)
@@ -152,7 +153,8 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     is_in_boxes = (offset_on_fm > 0).all(dim=2).type(torch.uint8)
     # (h, w, #gt_boxes, ), boolean
     #   valid mask
-    offset_valid = torch.zeros((fm_height, fm_width, boxes_cnt), dtype=torch.uint8)
+    offset_valid = torch.zeros((fm_height, fm_width, boxes_cnt),
+                               dtype=torch.uint8)
     offset_valid[
         y_coords_on_fm,
         x_coords_on_fm, :] = is_in_boxes  #& is_in_layer  # xy[:, 0], xy[:, 1] reduce dim by 1 to match is_in_boxes.shape & is_in_layer.shape

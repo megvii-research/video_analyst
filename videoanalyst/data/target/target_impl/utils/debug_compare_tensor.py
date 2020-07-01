@@ -5,9 +5,11 @@ tensor_prefix = "center"
 tensor_suffix_old = "main"
 tensor_suffix_new = "dev"
 
-tensor_old = np.load("{}/{}_{}.npz".format(DUMP_DIR, tensor_prefix, tensor_suffix_old),
+tensor_old = np.load("{}/{}_{}.npz".format(DUMP_DIR, tensor_prefix,
+                                           tensor_suffix_old),
                      allow_pickle=True)
-tensor_new = np.load("{}/{}_{}.npz".format(DUMP_DIR, tensor_prefix, tensor_suffix_new),
+tensor_new = np.load("{}/{}_{}.npz".format(DUMP_DIR, tensor_prefix,
+                                           tensor_suffix_new),
                      allow_pickle=True)
 
 # uncomment the next line to inspect tensors in detail

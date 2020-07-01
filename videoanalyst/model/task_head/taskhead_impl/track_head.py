@@ -48,7 +48,7 @@ def get_xy_ctr_np(score_size, score_offset, total_stride):
         batch, -1,
         2)  # .broadcast([batch, fm_height, fm_width, 2]).reshape(batch, -1, 2)
     # TODO: consider use float32 type from the beginning of this function
-    xy_ctr = torch.from_numpy(xy_ctr.astype(np.float32))  
+    xy_ctr = torch.from_numpy(xy_ctr.astype(np.float32))
     return xy_ctr
 
 
