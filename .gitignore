@@ -70,6 +70,6 @@ log.txt
 vaenv
 venv
 /tmp
-
-
+*.onnx
+*.trt
 debug

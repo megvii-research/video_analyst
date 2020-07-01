@@ -9,12 +9,13 @@ import numpy as np
 
 DUMP_FLAG = False  # dump intermediate results for debugging
 DUMP_DIR = "dump"
+DUMP_SUFFIX = "v1"
 if not os.path.exists(DUMP_DIR):
     os.makedirs(DUMP_DIR)
 
 
 def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
-    """
+    """ v1
     Model training target generation function for densebox
 
     Arguments
@@ -81,23 +82,23 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
               gt_boxes[np.newaxis, np.newaxis, :, 3, np.newaxis])
 
     if DUMP_FLAG:
-        off_l.dump("{}/off_l_old.npz".format(DUMP_DIR))
-        off_t.dump("{}/off_t_old.npz".format(DUMP_DIR))
-        off_r.dump("{}/off_r_old.npz".format(DUMP_DIR))
-        off_b.dump("{}/off_b_old.npz".format(DUMP_DIR))
+        off_l.dump("{}/off_l_{}.npz".format(DUMP_DIR, DUMP_SUFFIX))
+        off_t.dump("{}/off_t_{}.npz".format(DUMP_DIR, DUMP_SUFFIX))
+        off_r.dump("{}/off_r_{}.npz".format(DUMP_DIR, DUMP_SUFFIX))
+        off_b.dump("{}/off_b_{}.npz".format(DUMP_DIR, DUMP_SUFFIX))
 
     # centerness
     center = ((np.minimum(off_l, off_r) * np.minimum(off_t, off_b)) /
               (np.maximum(off_l, off_r) * np.maximum(off_t, off_b) + eps))
     if DUMP_FLAG:
-        center.dump("{}/center_old.npz".format(DUMP_DIR))
+        center.dump("{}/center_{}.npz".format(DUMP_DIR, DUMP_SUFFIX))
     center = np.squeeze(np.sqrt(np.abs(center)))
     center[:, :, 0] = 0
 
     offset = np.concatenate([off_l, off_t, off_r, off_b],
                             axis=3)  # h x w x boxes_cnt * 4
     if DUMP_FLAG:
-        offset.dump("{}/offset_old.npz".format(DUMP_DIR))
+        offset.dump("{}/offset_{}.npz".format(DUMP_DIR, DUMP_SUFFIX))
     cls = gt_boxes[:, 4]
 
     cls_res_list = []

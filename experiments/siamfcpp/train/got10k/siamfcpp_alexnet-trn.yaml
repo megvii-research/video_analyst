@@ -39,6 +39,7 @@ test:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
         subsets: ["val", "test"]  # (val|test)
+        device_num: 2
       LaSOTTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
@@ -86,7 +87,7 @@ train:
       exp_save: *TRAIN_SAVE
       num_epochs: 20
       minibatch: &MINIBATCH 32  # 64
-      num_workers: 32
+      num_workers: 64
       nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 400000
       pin_memory: false
       datapipeline:
