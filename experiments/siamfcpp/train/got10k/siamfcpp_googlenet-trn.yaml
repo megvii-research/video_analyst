@@ -40,8 +40,8 @@ test:
       GOT10kTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
-        device_num: 1
         subsets: ["val", "test"]  # (val|test)
+        device_num: 4
       LaSOTTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE

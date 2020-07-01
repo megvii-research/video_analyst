@@ -59,7 +59,7 @@ cp videoanalyst/evaluation/vot_benchmark/vot_list/vot2018/list.json datasets/VOT
 ```
 
 ### Download Links for Datasets
-#### SOT
+#### VOT
 We provide download links for VOT2018 / VOT2019:
 
 - [Google Drive](https://drive.google.com/open?id=18vaGhvrr_rt70sZr_TisrWl7meO9NE0J)
@@ -69,6 +69,12 @@ __Acknowledgement:__: Following datasets have been downloaded with [TrackDat](ht
 
 - VOT2018
 - VOT2019
+
+#### TrackingNet
+
+As the official TrackingNet is hosted on Google Disk (with weekly download quota), we share a replica downloaded by us on BaiduDisk to facilitate others' life.
+
+[BaiduDisk](https://pan.baidu.com/s/1PXSRAqcw-KMfBIJYUtI4Aw), code: nkb9
 
 ## Set models
 

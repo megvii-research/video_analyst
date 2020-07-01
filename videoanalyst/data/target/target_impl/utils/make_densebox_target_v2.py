@@ -7,26 +7,31 @@ import torch
 
 DUMP_FLAG = False  # dump intermediate results for debugging
 DUMP_DIR = "dump"
-DUMP_SUFFIX = "v2_1"
+DUMP_SUFFIX = "v2"
 if not os.path.exists(DUMP_DIR):
     os.makedirs(DUMP_DIR)
 
 
 def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
-    """ v2.1, 
-          fix indexing type cast (compatible with previous)
+    """ v2
+          move label generation from numpy to pytorch
     Model training target generation function for densebox
         Target processing code changed from numpy to pytorch
         Only one resolution layer is taken into consideration
         Refined & documented in detail, comparing to precedented version
     
-    About Training Accuracy w.r.t. previous version (torch==1.5.1)
-        siamfcpp-alexnet: ao@got10k-val = 73.3
-        siamfcpp-googlenet: ao@got10k-val = 76.3
+    About Training Accuracy w.r.t. previous version (torch==1.4.0 [?])
+        siamfcpp-alexnet: ao@got10k-val = 73.4
+        siamfcpp-googlenet: ao@got10k-val = 75.5
 
-    About alignmenet w.r.t. v2
+    About alignmenet w.r.t. v1
     - classification target: aligned
-    - centerness target: aligned
+    - centerness target: slightly differ, 
+                           e.g. 
+                             max_err ~= 1e-8 in final centerness
+                             max_err ~= 1e-6 in dense centerness
+                         May due to the difference in implementation
+                         of math operation (e.g. division)
     - bbox target: aligned
 
     Arguments
@@ -71,14 +76,13 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
             [gt_boxes, np.ones(
                 (gt_boxes.shape[0], 1))], axis=1)  # boxes_cnt x 5
 
-    gt_boxes = torch.from_numpy(gt_boxes).type(torch.float32)
+    gt_boxes = torch.from_numpy(gt_boxes).type(torch.FloatTensor)
     # gt box area
     #   TODO: consider change to max - min + 1?
     # (#boxes, 4-d_box + 1-d_cls)
     #   append dummy box (0, 0, 0, 0) at first for convenient
     #   #boxes++
-    gt_boxes = torch.cat([torch.zeros(1, 5, dtype=torch.float32), gt_boxes],
-                         dim=0)
+    gt_boxes = torch.cat([torch.zeros(1, 5), gt_boxes], dim=0)
 
     gt_boxes_area = (torch.abs(
         (gt_boxes[:, 2] - gt_boxes[:, 0]) * (gt_boxes[:, 3] - gt_boxes[:, 1])))
@@ -89,17 +93,17 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     boxes_cnt = len(gt_boxes)
 
     # coordinate meshgrid on image, shape=(H. W)
-    x_coords = torch.arange(0, raw_width, dtype=torch.int64)  # (W, )
-    y_coords = torch.arange(0, raw_height, dtype=torch.int64)  # (H, )
+    x_coords = torch.arange(0, raw_width)  # (W, )
+    y_coords = torch.arange(0, raw_height)  # (H, )
     y_coords, x_coords = torch.meshgrid(x_coords, y_coords)  # (H, W)
 
-    off_l = (x_coords[:, :, np.newaxis, np.newaxis].type(torch.float32) -
+    off_l = (x_coords[:, :, np.newaxis, np.newaxis] -
              gt_boxes[np.newaxis, np.newaxis, :, 0, np.newaxis])
-    off_t = (y_coords[:, :, np.newaxis, np.newaxis].type(torch.float32) -
+    off_t = (y_coords[:, :, np.newaxis, np.newaxis] -
              gt_boxes[np.newaxis, np.newaxis, :, 1, np.newaxis])
-    off_r = -(x_coords[:, :, np.newaxis, np.newaxis].type(torch.float32) -
+    off_r = -(x_coords[:, :, np.newaxis, np.newaxis] -
               gt_boxes[np.newaxis, np.newaxis, :, 2, np.newaxis])
-    off_b = -(y_coords[:, :, np.newaxis, np.newaxis].type(torch.float32) -
+    off_b = -(y_coords[:, :, np.newaxis, np.newaxis] -
               gt_boxes[np.newaxis, np.newaxis, :, 3, np.newaxis])
 
     if DUMP_FLAG:
@@ -139,8 +143,8 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     stride = total_stride
 
     # coordinate meshgrid on feature map, shape=(h, w)
-    x_coords_on_fm = torch.arange(0, fm_width, dtype=torch.int64)  # (w, )
-    y_coords_on_fm = torch.arange(0, fm_height, dtype=torch.int64)  # (h, )
+    x_coords_on_fm = torch.arange(0, fm_width)  # (w, )
+    y_coords_on_fm = torch.arange(0, fm_height)  # (h, )
     y_coords_on_fm, x_coords_on_fm = torch.meshgrid(x_coords_on_fm,
                                                     y_coords_on_fm)  # (h, w)
     y_coords_on_fm = y_coords_on_fm.reshape(-1)  # (hxw, ), flattened
@@ -150,11 +154,10 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     offset_on_fm = offset[fm_offset + y_coords_on_fm * stride, fm_offset +
                           x_coords_on_fm * stride]  # will reduce dim by 1
     # (hxw, #gt_boxes, )
-    is_in_boxes = (offset_on_fm > 0).all(dim=2).type(torch.uint8)
+    is_in_boxes = (offset_on_fm > 0).all(axis=2)
     # (h, w, #gt_boxes, ), boolean
     #   valid mask
-    offset_valid = torch.zeros((fm_height, fm_width, boxes_cnt),
-                               dtype=torch.uint8)
+    offset_valid = np.zeros((fm_height, fm_width, boxes_cnt))
     offset_valid[
         y_coords_on_fm,
         x_coords_on_fm, :] = is_in_boxes  #& is_in_layer  # xy[:, 0], xy[:, 1] reduce dim by 1 to match is_in_boxes.shape & is_in_layer.shape
@@ -166,10 +169,6 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     #   if not match any box, fall on dummy box at index 0
     #   if conflict, choose box with smaller index
     #   P.S. boxes already ordered by box's area
-    #   Attention: be aware of definition of _argmax_ here
-    #       which is assumed to find the FIRST OCCURENCE of the max value
-    #       currently torch.argmax's behavior is not aligned with np.argmax
-    #       c.f. https://github.com/pytorch/pytorch/issues/22853
     hit_gt_ind = np.argmax(offset_valid, axis=2)
 
     # (h, w, 4-d_box)

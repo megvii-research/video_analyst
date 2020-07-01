@@ -28,6 +28,7 @@ def get_xy_ctr(score_size, score_offset, total_stride):
     xy_ctr = xy_list.repeat(batch, 1, 1, 1).reshape(
         batch, -1,
         2)  # .broadcast([batch, fm_height, fm_width, 2]).reshape(batch, -1, 2)
+    # TODO: consider use float32 type from the beginning of this function
     xy_ctr = xy_ctr.type(torch.Tensor)
     return xy_ctr
 
@@ -46,7 +47,8 @@ def get_xy_ctr_np(score_size, score_offset, total_stride):
     xy_ctr = np.repeat(xy_list, batch, axis=0).reshape(
         batch, -1,
         2)  # .broadcast([batch, fm_height, fm_width, 2]).reshape(batch, -1, 2)
-    xy_ctr = torch.from_numpy(xy_ctr)
+    # TODO: consider use float32 type from the beginning of this function
+    xy_ctr = torch.from_numpy(xy_ctr.astype(np.float32))
     return xy_ctr
 
 
