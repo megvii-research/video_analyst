@@ -16,7 +16,7 @@ bash compile.sh
 
 ## Set datasets
 
-Set soft link to dataset directory (see [config example](../experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml))
+Set soft link to dataset directory (see [config example](../../experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml))
 
 ```bash
 ln -s path_to_datasets datasets
