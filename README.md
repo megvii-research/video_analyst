@@ -113,6 +113,26 @@ For detail, please refer to markdown files under _docs_.
 * video_analyst/evaluation/got_benchmark and other related code have been borrowed from [got-toolkit](https://github.com/got-10k/toolkit.git)
 * [detectron2](https://github.com/facebookresearch/detectron2)
 
+## References
+
+```
+@inproceedings{xu2020siamfc++,
+  title={SiamFC++: Towards Robust and Accurate Visual Tracking with Target Estimation Guidelines.},
+  author={Xu, Yinda and Wang, Zeyu and Li, Zuoxin and Yuan, Ye and Yu, Gang},
+  booktitle={AAAI},
+  pages={12549--12556},
+  year={2020}
+}
+```
+```
+@inproceedings{chen2020state,
+  title={State-Aware Tracker for Real-Time Video Object Segmentation},
+  author={Chen, Xi and Li, Zuoxin and Yuan, Ye and Yu, Gang and Shen, Jianxin and Qi, Donglian},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={9384--9393},
+  year={2020}
+}
+```
 ## Contact
 
 Maintainer (sorted by family name):
