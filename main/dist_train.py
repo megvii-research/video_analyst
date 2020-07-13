@@ -142,6 +142,8 @@ def run_dist_training(rank_id: int, world_size: int, task: str,
             trainer.save_snapshot()
         dist_utils.synchronize()  # one synchronization per epoch
 
+    if rank_id == 0:
+        trainer.save_snapshot(model_param_only=True)
     # clean up distributed
     cleanup()
 
