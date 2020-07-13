@@ -136,12 +136,17 @@ class TrainerBase:
             snapshot_dir, snapshot_file = self._infer_snapshot_dir_file_from_epoch(
                 epoch)
         # prepare snapshot dict to save 
-        snapshot_dict = {
-            'epoch': epoch,
-            'model_state_dict': unwrap_model(self._model).state_dict(),
-        }
         if model_param_only:
-            snapshot_dict['optimizer_state_dict'] = self._optimizer.state_dict()
+            snapshot_dict = {
+                'epoch': epoch,
+                'model_state_dict': unwrap_model(self._model).state_dict(),
+            }
+        else:
+            snapshot_dict = {
+                'epoch': epoch,
+                'model_state_dict': unwrap_model(self._model).state_dict(),
+                'optimizer_state_dict': self._optimizer.state_dict(),
+            }
         # ensure & save
         ensure_dir(snapshot_dir)
         torch.save(snapshot_dict, snapshot_file)
