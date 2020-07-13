@@ -135,7 +135,7 @@ class TrainerBase:
         else:
             snapshot_dir, snapshot_file = self._infer_snapshot_dir_file_from_epoch(
                 epoch)
-        # prepare snapshot dict to save 
+        # prepare snapshot dict to save
         if model_param_only:
             snapshot_dict = {
                 'epoch': epoch,
