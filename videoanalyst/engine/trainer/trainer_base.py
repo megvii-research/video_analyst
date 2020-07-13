@@ -123,20 +123,29 @@ class TrainerBase:
 
         logger.info("Train from epoch %d" % (self._state["epoch"] + 1))
 
-    def save_snapshot(self, ):
-        r""" 
+    def save_snapshot(self, model_param_only=False):
+        r"""
         save snapshot for current epoch
         """
         epoch = self._state["epoch"]
-        snapshot_dir, snapshot_file = self._infer_snapshot_dir_file_from_epoch(
-            epoch)
+        # save dir/filename
+        if model_param_only:
+            snapshot_dir = self._state["snapshot_dir"]
+            snapshot_file = osp.join(snapshot_dir, "final_model.pkl")
+        else:
+            snapshot_dir, snapshot_file = self._infer_snapshot_dir_file_from_epoch(
+                epoch)
+        # prepare snapshot dict to save 
         snapshot_dict = {
             'epoch': epoch,
             'model_state_dict': unwrap_model(self._model).state_dict(),
-            'optimizer_state_dict': self._optimizer.state_dict()
         }
+        if model_param_only:
+            snapshot_dict['optimizer_state_dict'] = self._optimizer.state_dict()
+        # ensure & save
         ensure_dir(snapshot_dir)
         torch.save(snapshot_dict, snapshot_file)
+        # retrying in case of failure (e.g. nfs error)
         while not osp.exists(snapshot_file):
             logger.info("retrying")
             torch.save(snapshot_dict, snapshot_file)
