@@ -88,14 +88,14 @@ train:
       num_epochs: 20
       minibatch: &MINIBATCH 32  # 64
       num_workers: 64
-      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 400000
+      nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 300000 # 400000
       pin_memory: false
       datapipeline:
         name: "RegularDatapipeline"
       sampler:
         name: "TrackPairSampler"
         TrackPairSampler:
-          negative_pair_ratio: 0.1
+          negative_pair_ratio: 0.15 # 0.1
         submodules:
           dataset:
             names: ["LaSOTDataset",]  # (GOT10kDataset|LaSOTDataset)
