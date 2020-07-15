@@ -17,10 +17,12 @@ VOT test configuration directory: _experiments/siamfcpp/test/vot_
 | Backbone | Pipeline | Dataset | A | R | EAO | FPS@GTX2080Ti | FPS@GTX1080Ti | Config. File |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | AlexNet | SiamFCppTracker | VOT2018 |0.576 | 0.183 | 0.393| ~200| ~185 | [siamfcpp_alexnet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml)
-| GoogLeNet | SiamFCppTracker | VOT2018 | 0.583 | 0.173 | 0.426 | ~80 | ~65 | [siamfcpp_googlenet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_googlenet.yaml) |
+| GoogLeNet | SiamFCppTracker | VOT2018 | 0.581 | 0.169 | 0.428 | ~80 | ~65 | [siamfcpp_googlenet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_googlenet.yaml) |
 | GoogLeNet* | SiamFCppTracker | VOT2018 | 0.584 | 0.178 | 0.425 | ~120 | / | [siamfcpp_googlenet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_googlenet.yaml) |
 
 \* means using TensorRT to accelerate the backbone feature extraction, and you can set **trt_mode** True in the config yaml to enable it.
+
+Consider using dockerfile under [docs/ENVIRONMENT/DOCKER/video_analyst-vot](../ENVIRONMENT/DOCKER/video_analyst-vot) for exact reproduction of the above results (only VOT benchmark need this dockerfile for environment control).
 
 #### Multi-template
 
@@ -148,3 +150,6 @@ We recommend keeping up-to-date with latest package version, and thus the points
 Nevertheless, reproducibility of training under GOT-10k has been confirmed with repetition. Thus, there are no need to change software version (package/CUDA/CUDNN) unless you are obligated to verify the VOT result.
 
 In addition, we strongly recommend to train and benchmark trackers on datasets like [GOT-10k](http://got-10k.aitestunion.com), not only because of its rigurous split of train/val/test, but also due to its large scale and diversity which make results stable.
+
+[UPDATE 2020/07/14]
+We provide under a dockerfile [docs/ENVIRONMENT/DOCKER/video_analyst-vot](../ENVIRONMENT/DOCKER/video_analyst-vot) from which you can build a Docker container that _exactly_ reproduce the VOT results reported here.
