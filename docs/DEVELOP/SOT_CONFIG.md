@@ -14,7 +14,15 @@ Example _experiments/siamfcpp/train/got10k/siamfcpp_alexnet-trn.yaml_
   - train.track.optim.optimizer.SGD.lr_policy
   - L172: _"max_epoch": 19_
 
-### How to modify the nmber of image pairs of each epoch
+### How to modify the minibatch size
+
+- Modify the value in YAML
+  - train.track.data.minibatch
+  - L89: _minibatch: &MINIBATCH 32_
+
+Note that the number of iterations is determined as follows: #iterations = _nr_image_per_epoch // minibatch
+
+### How to modify the number of image pairs of each epoch
 
 - Modify the value in YAML
   - train.track.data.nr_image_per_epoch
@@ -37,3 +45,8 @@ Example _experiments/siamfcpp/train/got10k/siamfcpp_alexnet-trn.yaml_
 
 - Modify the value in JSON (lr_policy)
   - train.track.optim.grad_modifier
+
+### How to change the number of GPUs
+- Modify the value in YAML
+  - train.track.num_processes
+  - L51: _num_processes: 2_
