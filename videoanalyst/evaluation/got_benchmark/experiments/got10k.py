@@ -151,7 +151,7 @@ class ExperimentGOT10k(object):
                 os.chdir(result_dir)
                 save_file = '../%s' % tracker_name
                 compress('.', save_file)
-                print('Records saved at', save_file + '.zip')
+                print('Records saved at', os.path.realpath(save_file + '.zip'))
 
             # print submission guides
             print('\033[93mLogin and follow instructions on')

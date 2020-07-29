@@ -29,7 +29,7 @@ def make_parser():
                         '--output',
                         default='',
                         type=str,
-                        help='output onnx file name')
+                        help='output trt file name')
 
     return parser
 
@@ -40,6 +40,8 @@ def to_numpy(tensor):
 
 
 def export_siamfcpp_fea_trt(task_cfg, parsed_args):
+    """ export phase "feature" (basemodel/c_z_k/r_z_k) to trt model
+    """
     model = model_builder.build("track", task_cfg.model)
     model = model.eval().cuda()
     model.phase = "feature"
@@ -61,6 +63,8 @@ def export_siamfcpp_fea_trt(task_cfg, parsed_args):
 
 
 def export_siamfcpp_track_fea_trt(task_cfg, parsed_args):
+    """ export phase "freeze_track_fea" (basemodel/c_x/r_x) to trt model 
+    """
     model = model_builder.build("track", task_cfg.model)
     model.eval().cuda()
     model.phase = "freeze_track_fea"

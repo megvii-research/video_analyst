@@ -113,6 +113,8 @@ This project use [yacs](https://github.com/rbgirshick/yacs) for configuration/hy
 
 Before the training starts, the merged configuration file will be backed up at _EXP_SAVE/EXP_NAME/logs_.
 
+For descriptions of customization of your own configuration, please checkout [SOT_CONFIG.md](../DEVELOP/SOT_CONFIG.md)
+
 ### Training details of SOT
 
 Harware configuration:

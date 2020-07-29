@@ -45,6 +45,7 @@ test:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
         subsets: ["test"]  # (train_test|test)
+        device_num: 4
 train:
   track:
     exp_name: &TRAIN_NAME "siamfcpp_googlenet-lasot"
@@ -88,7 +89,7 @@ train:
     data:
       exp_name: *TRAIN_NAME
       exp_save: *TRAIN_SAVE
-      num_epochs: 20
+      num_epochs: &NUM_EPOCHS 20
       minibatch: &MINIBATCH 128  # 256
       num_workers: 32
       nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 150000
@@ -137,7 +138,7 @@ train:
       RegularTrainer:
         exp_name: *TRAIN_NAME
         exp_save: *TRAIN_SAVE
-        max_epoch: 20
+        max_epoch: *NUM_EPOCHS
         minibatch: *MINIBATCH
         nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
         snapshot: ""

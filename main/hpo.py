@@ -8,6 +8,7 @@ from copy import deepcopy
 import pandas as pd
 import yaml
 from loguru import logger
+import torch
 
 from main.test import build_sat_tester, build_siamfcpp_tester
 from videoanalyst.config.config import cfg as root_cfg
@@ -58,6 +59,8 @@ if __name__ == '__main__':
 
     csv_file = osp.join(hpo_cfg["exp_save"],
                         "hpo_{}.csv".format(task_cfg_origin["exp_name"]))
+
+    torch.multiprocessing.set_start_method('spawn', force=True)
 
     while True:
         task_cfg = deepcopy(task_cfg_origin)

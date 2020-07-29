@@ -110,4 +110,6 @@ if __name__ == '__main__':
     while not trainer.is_completed():
         trainer.train()
         trainer.save_snapshot()
+    # export final model
+    trainer.save_snapshot(model_param_only=True)
     logger.info("Training completed.")

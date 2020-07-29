@@ -28,9 +28,9 @@ test:
     pipeline:
       name: "SiamFCppTracker"
       SiamFCppTracker:
-        test_lr: 0.5093639624865886
-        window_influence: 0.2444928917567117
-        penalty_k: 0.06721247775471334
+        test_lr: 0.5313209385365896
+        window_influence: 0.2436713998124133
+        penalty_k: 0.06452602542113622
         x_size: *X_SIZE_TEST
         num_conv3x3: *NUM_CONV3x3
     tester:
@@ -38,5 +38,5 @@ test:
       VOTTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
-        device_num: 1
+        device_num: 2
         dataset_names: ["VOT2018"]

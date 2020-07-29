@@ -33,7 +33,7 @@ test:
       TrackingNetTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
-        device_num: 1
+        device_num: 2
         subsets: ["test"]  # (train|test|train0,1,...)
 train:
   track:
@@ -76,7 +76,7 @@ train:
     data:
       exp_name: *TRAIN_NAME
       exp_save: *TRAIN_SAVE
-      num_epochs: 20
+      num_epochs: &NUM_EPOCHS 20
       minibatch: &MINIBATCH 32  # 64
       num_workers: 32
       nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 400000
@@ -120,7 +120,7 @@ train:
       RegularTrainer:
         exp_name: *TRAIN_NAME
         exp_save: *TRAIN_SAVE
-        max_epoch: 20
+        max_epoch: *NUM_EPOCHS
         minibatch: *MINIBATCH
         nr_image_per_epoch: *NR_IMAGE_PER_EPOCH
         snapshot: ""
