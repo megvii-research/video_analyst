@@ -37,7 +37,8 @@ class SiamTrack(ModuleBase):
                                 corr_fea_output=False,
                                 trt_mode=False,
                                 trt_fea_model_path="",
-                                trt_track_model_path="")
+                                trt_track_model_path="",
+                                mix_precision=False)
 
     support_phases = ["train", "feature", "track", "freeze_track_fea"]
 
@@ -58,7 +59,31 @@ class SiamTrack(ModuleBase):
     def phase(self, p):
         assert p in self.support_phases
         self._phase = p
-
+    def train_forward(self, training_data):
+        target_img = training_data["im_z"]
+        search_img = training_data["im_x"]
+        # backbone feature
+        f_z = self.basemodel(target_img)
+        f_x = self.basemodel(search_img)
+        # feature adjustment
+        c_z_k = self.c_z_k(f_z)
+        r_z_k = self.r_z_k(f_z)
+        c_x = self.c_x(f_x)
+        r_x = self.r_x(f_x)
+        # feature matching
+        r_out = xcorr_depthwise(r_x, r_z_k)
+        c_out = xcorr_depthwise(c_x, c_z_k)
+        # head
+        fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final, corr_fea = self.head(
+            c_out, r_out)
+        predict_data = dict(
+            cls_pred=fcos_cls_score_final,
+            ctr_pred=fcos_ctr_score_final,
+            box_pred=fcos_bbox_final,
+        )
+        if self._hyper_params["corr_fea_output"]:
+            predict_data["corr_fea"] = corr_fea
+        return predict_data
     def forward(self, *args, phase=None):
         r"""
         Perform tracking process for different phases (e.g. train / init / track)
@@ -86,31 +111,12 @@ class SiamTrack(ModuleBase):
         # used during training
         if phase == 'train':
             # resolve training data
-            training_data = args[0]
-            target_img = training_data["im_z"]
-            search_img = training_data["im_x"]
-            # backbone feature
-            f_z = self.basemodel(target_img)
-            f_x = self.basemodel(search_img)
-            # feature adjustment
-            c_z_k = self.c_z_k(f_z)
-            r_z_k = self.r_z_k(f_z)
-            c_x = self.c_x(f_x)
-            r_x = self.r_x(f_x)
-            # feature matching
-            r_out = xcorr_depthwise(r_x, r_z_k)
-            c_out = xcorr_depthwise(c_x, c_z_k)
-            # head
-            fcos_cls_score_final, fcos_ctr_score_final, fcos_bbox_final, corr_fea = self.head(
-                c_out, r_out)
-            predict_data = dict(
-                cls_pred=fcos_cls_score_final,
-                ctr_pred=fcos_ctr_score_final,
-                box_pred=fcos_bbox_final,
-            )
-            if self._hyper_params["corr_fea_output"]:
-                predict_data["corr_fea"] = corr_fea
-            return predict_data
+            if self._hyper_params["mix_precision"]:
+                with torch.cuda.amp.autocast():
+                    return self.train_forward(args[0])
+            else:
+                return self.train_forward(args[0])
+
         # used for template feature extraction (normal mode)
         elif phase == 'feature':
             target_img, = args

@@ -112,7 +112,10 @@ class RegularTrainer(TrainerBase):
 
             # backward propagation
             with Timer(name="bwd", output_dict=time_dict):
-                total_loss.backward()
+                if self._optimizer.grad_scaler is not None:
+                    self._optimizer.grad_scaler.scale(total_loss).backward()
+                else:
+                    total_loss.backward()
             self._optimizer.modify_grad(epoch, iteration)
             with Timer(name="optim", output_dict=time_dict):
                 self._optimizer.step()

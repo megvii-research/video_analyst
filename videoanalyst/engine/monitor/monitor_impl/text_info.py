@@ -1,16 +1,6 @@
 # -*- coding: utf-8 -*
-import itertools
 from typing import Dict
-
-import cv2
-import numpy as np
-from loguru import logger
-from tqdm import tqdm
-
 import torch
-
-from videoanalyst.utils import dist_utils
-
 from ..monitor_base import TRACK_MONITORS, VOS_MONITORS, MonitorBase
 
 
@@ -66,5 +56,7 @@ class TextInfo(MonitorBase):
         # pring elapsed time
         for k in time_dict:
             print_str += "%s: %.1e, " % (k, time_dict[k])
+        max_mem_mb = torch.cuda.max_memory_allocated() / 1024.0 / 1024.0
+        print_str += " max mem: {:.1f}M".format(max_mem_mb)
 
         engine_state["print_str"] = print_str

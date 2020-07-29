@@ -56,13 +56,14 @@ class SigmoidCrossEntropyCenterness(ModuleBase):
         pred = pred_data["ctr_pred"]
         label = target_data["ctr_gt"]
         mask = (~(label == self.background)).type(torch.Tensor).to(pred.device)
-        not_neg_mask = (pred >= 0).type(torch.Tensor).to(pred.device)
-        loss = (pred * not_neg_mask - pred * label +
-                self.safelog(1. + torch.exp(-torch.abs(pred)))) * mask
-        loss_residual = (-label * self.safelog(label) -
-                         (1 - label) * self.safelog(1 - label)
-                         ) * mask  # suppress loss residual (original vers.)
-        loss = loss - loss_residual.detach()
+        #not_neg_mask = (pred >= 0).type(torch.Tensor).to(pred.device)
+        #loss = (pred * not_neg_mask - pred * label +
+        #        self.safelog(1. + torch.exp(-torch.abs(pred)))) * mask
+        #loss_residual = (-label * self.safelog(label) -
+        #                 (1 - label) * self.safelog(1 - label)
+        #                 ) * mask  # suppress loss residual (original vers.)
+        #loss = loss - loss_residual.detach()
+        loss = F.binary_cross_entropy_with_logits(pred, label, reduce="none")*mask
 
         loss = loss.sum() / torch.max(mask.sum(),
                                       self.t_one) * self._hyper_params["weight"]

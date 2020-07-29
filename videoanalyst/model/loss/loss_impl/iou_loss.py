@@ -22,7 +22,7 @@ class IOULoss(ModuleBase):
         weight=1.0,
     )
 
-    def __init__(self, background=0, ignore_label=-1):
+    def __init__(self):
         super().__init__()
         self.safelog = SafeLog()
         self.register_buffer("t_one", torch.tensor(1., requires_grad=False))
