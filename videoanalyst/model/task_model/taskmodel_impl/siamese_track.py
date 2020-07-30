@@ -59,6 +59,7 @@ class SiamTrack(ModuleBase):
     def phase(self, p):
         assert p in self.support_phases
         self._phase = p
+
     def train_forward(self, training_data):
         target_img = training_data["im_z"]
         search_img = training_data["im_x"]
@@ -84,6 +85,7 @@ class SiamTrack(ModuleBase):
         if self._hyper_params["corr_fea_output"]:
             predict_data["corr_fea"] = corr_fea
         return predict_data
+
     def forward(self, *args, phase=None):
         r"""
         Perform tracking process for different phases (e.g. train / init / track)

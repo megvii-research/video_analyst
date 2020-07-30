@@ -124,33 +124,15 @@ class OptimizerBase:
             try:
                 self.grad_scaler = torch.cuda.amp.GradScaler()
             except:
-                logger.error("mix precsion training is only supported for torch >=1.6")
+                logger.error(
+                    "mix precision training is only supported from torch >=1.6")
                 exit()
             logger.info("enabel auto mix precision training")
 
-    # def set_model(self, model: nn.Module):
-    #     r"""
-    #     Register model to optimize
-
-    #     Arguments
-    #     ---------
-    #     model: nn.Module
-    #         model to registered in optimizer
-    #     """
-    #     self._model = model
 
     def set_grad_modifier(self, grad_modifier):
         self._grad_modifier = grad_modifier
 
-    # def set_scheduler(self, scheduler: SchedulerBase):
-    #     r"""
-    #     Set scheduler and register self (optimizer) to scheduler
-    #     Arguments
-    #     ---------
-    #     model: nn.Module
-    #         model to registered in optimizer
-    #     """
-    #     self._scheduler = scheduler
 
     def zero_grad(self):
         self._optimizer.zero_grad()

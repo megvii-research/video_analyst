@@ -38,7 +38,7 @@ test:
       GOT10kTester:
         exp_name: *TEST_NAME
         exp_save: *TEST_SAVE
-        subsets: ["val"]  # (val|test)
+        subsets: ["val", "test"]  # (val|test)
         device_num: 2
       LaSOTTester:
         exp_name: *TEST_NAME
@@ -88,7 +88,7 @@ train:
         name: "SiamTrack"
         SiamTrack:
           pretrain_model_path: ""
-          mix_precision: &mix_precision True
+          mix_precision: &mix_precision False # True to enable mix precision training from pytorch>=1.6
 # ==================================================
     data:
       exp_name: *TRAIN_NAME
