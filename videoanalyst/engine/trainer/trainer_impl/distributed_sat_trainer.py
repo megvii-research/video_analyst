@@ -112,7 +112,10 @@ class DistributedSATTrainer(TrainerBase):
                 total_loss = sum(training_losses.values())
             # backward propagation
             with Timer(name="bwd", output_dict=time_dict):
-                total_loss.backward()
+                if self._optimizer.grad_scaler is not None:
+                    self._optimizer.grad_scaler.scale(total_loss).backward()
+                else:
+                    total_loss.backward()
             with Timer(name="optim", output_dict=time_dict):
                 self._optimizer.step()
             cost_time = (num_iterations - iteration) * (time.time() -

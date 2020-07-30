@@ -21,7 +21,7 @@ class SatVOS(ModuleBase):
         path to parameter to be loaded into module
     """
 
-    default_hyper_params = dict(pretrain_model_path="", )
+    default_hyper_params = dict(pretrain_model_path="", amp=False)
 
     def __init__(self, GML_extractor, joint_encoder, decoder, loss):
         super(SatVOS, self).__init__()
@@ -29,6 +29,13 @@ class SatVOS(ModuleBase):
         self.joint_encoder = joint_encoder
         self.decoder = decoder
         self.loss = loss
+
+    def train_forward(self, saliency_image, corr_feature, filtered_image):
+        global_feature = self.GML_extractor(filtered_image)
+        enc_features = self.joint_encoder(saliency_image, corr_feature)
+        decoder_features = [global_feature] + enc_features
+        out_list = self.decoder(decoder_features, phase="train")
+        return out_list
 
     def forward(self, *args, phase="train"):
         r"""
@@ -57,11 +64,13 @@ class SatVOS(ModuleBase):
         # phase: train
         if phase == 'train':
             saliency_image, corr_feature, filtered_image = args
-            global_feature = self.GML_extractor(filtered_image)
-            enc_features = self.joint_encoder(saliency_image, corr_feature)
-            decoder_features = [global_feature] + enc_features
-            out_list = self.decoder(decoder_features, phase="train")
-
+            if self._hyper_params["amp"]:
+                with torch.cuda.amp.autocast():
+                    out_list = self.train_forward(saliency_image, corr_feature,
+                                                  filtered_image)
+            else:
+                out_list = self.train_forward(saliency_image, corr_feature,
+                                              filtered_image)
         # phase: feature
         elif phase == 'global_feature':
             filtered_image, = args

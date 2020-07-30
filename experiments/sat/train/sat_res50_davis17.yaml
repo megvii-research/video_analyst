@@ -2,7 +2,7 @@ train:
   vos:
     exp_name: &TRAIN_NAME "sat_res50_davis17"
     exp_save: &TRAIN_SAVE "snapshots"
-    num_processes: 8
+    num_processes: 4
     data:
       exp_name: *TRAIN_NAME
       exp_save: *TRAIN_SAVE
@@ -92,6 +92,8 @@ train:
         names: ["MultiBCELoss"]
       task_model:
         name: "SatVOS"
+        SatVOS:
+          amp: &amp True
       use_sync_bn: True
     trainer:
       name: "DistributedSATTrainer"
@@ -116,6 +118,7 @@ train:
       optimizer:
         name: "SGD"
         SGD:
+          amp: *amp
           lr: 0.004
           momentum: 0.9
           weight_decay: 0.00005
