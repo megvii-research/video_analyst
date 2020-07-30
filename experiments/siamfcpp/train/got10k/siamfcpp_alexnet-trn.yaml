@@ -88,7 +88,7 @@ train:
         name: "SiamTrack"
         SiamTrack:
           pretrain_model_path: ""
-          mix_precision: &mix_precision False # True to enable mix precision training from pytorch>=1.6
+          amp: &amp False # True to enable auto mixed precision training from pytorch>=1.6
 # ==================================================
     data:
       exp_name: *TRAIN_NAME
@@ -160,7 +160,7 @@ train:
         name: "SGD"
         SGD:
           # to adjust learning rate, please modify "start_lr" and "end_lr" in lr_policy module bellow
-          mix_precision: *mix_precision
+          amp: *amp
           momentum: 0.9
           weight_decay: 0.00005
           minibatch: *MINIBATCH

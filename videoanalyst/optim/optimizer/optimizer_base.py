@@ -34,7 +34,7 @@ class OptimizerBase:
         nr_image_per_epoch=1,
         lr_policy=[],
         lr_multiplier=[],
-        mix_precision=False,
+        amp=False,
     )
 
     def __init__(self, cfg: CfgNode, model: nn.Module) -> None:
@@ -120,7 +120,7 @@ class OptimizerBase:
         self._state["params"] = params
 
         # mix precision
-        if self._hyper_params["mix_precision"]:
+        if self._hyper_params["amp"]:
             try:
                 self.grad_scaler = torch.cuda.amp.GradScaler()
             except:
@@ -129,10 +129,8 @@ class OptimizerBase:
                 exit()
             logger.info("enabel auto mix precision training")
 
-
     def set_grad_modifier(self, grad_modifier):
         self._grad_modifier = grad_modifier
-
 
     def zero_grad(self):
         self._optimizer.zero_grad()

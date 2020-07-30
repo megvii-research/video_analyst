@@ -38,7 +38,7 @@ class SiamTrack(ModuleBase):
                                 trt_mode=False,
                                 trt_fea_model_path="",
                                 trt_track_model_path="",
-                                mix_precision=False)
+                                amp=False)
 
     support_phases = ["train", "feature", "track", "freeze_track_fea"]
 
@@ -113,7 +113,7 @@ class SiamTrack(ModuleBase):
         # used during training
         if phase == 'train':
             # resolve training data
-            if self._hyper_params["mix_precision"]:
+            if self._hyper_params["amp"]:
                 with torch.cuda.amp.autocast():
                     return self.train_forward(args[0])
             else:
