@@ -50,7 +50,7 @@ train:
   track:
     exp_name: &TRAIN_NAME "siamfcpp_googlenet-got"
     exp_save: &TRAIN_SAVE "snapshots"
-    num_processes: 2
+    num_processes: 8
     model:
       backbone:
         name: "Inception3"
@@ -87,7 +87,7 @@ train:
         name: "SiamTrack"
         SiamTrack:
           pretrain_model_path: ""
-          amp: &amp True
+          amp: &amp False
 # ==================================================
     data:
       exp_name: *TRAIN_NAME
@@ -96,7 +96,7 @@ train:
       minibatch: &MINIBATCH 128  # 256
       num_workers: 32
       nr_image_per_epoch: &NR_IMAGE_PER_EPOCH 150000
-      pin_memory: True
+      pin_memory: False
       datapipeline:
         name: "RegularDatapipeline"
       sampler:

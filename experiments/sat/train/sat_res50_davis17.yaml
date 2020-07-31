@@ -2,7 +2,7 @@ train:
   vos:
     exp_name: &TRAIN_NAME "sat_res50_davis17"
     exp_save: &TRAIN_SAVE "snapshots"
-    num_processes: 4
+    num_processes: 8
     data:
       exp_name: *TRAIN_NAME
       exp_save: *TRAIN_SAVE
@@ -93,7 +93,7 @@ train:
       task_model:
         name: "SatVOS"
         SatVOS:
-          amp: &amp True
+          amp: &amp False
       use_sync_bn: True
     trainer:
       name: "DistributedSATTrainer"

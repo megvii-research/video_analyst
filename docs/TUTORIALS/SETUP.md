@@ -66,3 +66,7 @@ cd cocoapi
 make
 make install  # may need sudo if it fails
 ```
+
+### Auto mixed precision training
+
+AMP is supported from pytorch >= 1.6. It can reduce about 50% of the GPU memory usage on RTX2018Ti without preformance drop. If you want to enable it, just set the amp `True` as in [config](../../experiments/siamfcpp/train/got10k/siamfcpp_alexnet-trn.yaml).
