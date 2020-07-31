@@ -50,7 +50,7 @@ train:
   track:
     exp_name: &TRAIN_NAME "siamfcpp_googlenet-got"
     exp_save: &TRAIN_SAVE "snapshots"
-    num_processes: 8
+    num_processes: 4
     model:
       backbone:
         name: "Inception3"
