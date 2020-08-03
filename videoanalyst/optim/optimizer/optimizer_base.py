@@ -8,6 +8,7 @@ import numpy as np
 from yacs.config import CfgNode
 
 import torch
+from loguru import logger
 from torch import nn
 from torch.optim.optimizer import Optimizer
 
@@ -33,6 +34,7 @@ class OptimizerBase:
         nr_image_per_epoch=1,
         lr_policy=[],
         lr_multiplier=[],
+        amp=False,
     )
 
     def __init__(self, cfg: CfgNode, model: nn.Module) -> None:
@@ -64,6 +66,7 @@ class OptimizerBase:
         self._model = model
         self._optimizer = None
         self._grad_modifier = None
+        self.grad_scaler = None
 
     def get_hps(self) -> dict:
         r"""
@@ -116,35 +119,28 @@ class OptimizerBase:
 
         self._state["params"] = params
 
-    # def set_model(self, model: nn.Module):
-    #     r"""
-    #     Register model to optimize
-
-    #     Arguments
-    #     ---------
-    #     model: nn.Module
-    #         model to registered in optimizer
-    #     """
-    #     self._model = model
+        # mix precision
+        if self._hyper_params["amp"]:
+            try:
+                self.grad_scaler = torch.cuda.amp.GradScaler()
+            except:
+                logger.error(
+                    "mix precision training is only supported from torch >=1.6")
+                exit()
+            logger.info("enabel auto mix precision training")
 
     def set_grad_modifier(self, grad_modifier):
         self._grad_modifier = grad_modifier
-
-    # def set_scheduler(self, scheduler: SchedulerBase):
-    #     r"""
-    #     Set scheduler and register self (optimizer) to scheduler
-    #     Arguments
-    #     ---------
-    #     model: nn.Module
-    #         model to registered in optimizer
-    #     """
-    #     self._scheduler = scheduler
 
     def zero_grad(self):
         self._optimizer.zero_grad()
 
     def step(self):
-        self._optimizer.step()
+        if self.grad_scaler is not None:
+            self.grad_scaler.step(self._optimizer)
+            self.grad_scaler.update()
+        else:
+            self._optimizer.step()
 
     def state_dict(self):
         return self._optimizer.state_dict()

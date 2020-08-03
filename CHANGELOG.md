@@ -2,6 +2,9 @@
 
 Date format: YY/MM/DD
 
+## 2020/07/30
+* support amp from pytorch>=1.6
+
 ## 2020/06/29
 * support acclerating tracking by tensorRT
 

@@ -116,7 +116,10 @@ class DistributedRegularTrainer(TrainerBase):
                 total_loss = sum(training_losses.values())
             # backward propagation
             with Timer(name="bwd", output_dict=time_dict):
-                total_loss.backward()
+                if self._optimizer.grad_scaler is not None:
+                    self._optimizer.grad_scaler.scale(total_loss).backward()
+                else:
+                    total_loss.backward()
             # TODO: No need for average_gradients() when wrapped model with DDP?
             # TODO: need to register _optimizer.modify_grad as hook
             #       see https://discuss.pytorch.org/t/distributeddataparallel-modify-gradient-before-averaging/59291
