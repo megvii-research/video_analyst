@@ -1,10 +1,9 @@
 import numpy as np
-import torch
-
-import importlib
 # from IPython import embed;embed()
-from make_densebox_target import make_densebox_target as make_densebox_target_old
-from make_densebox_target_dev import make_densebox_target as make_densebox_target_new
+from make_densebox_target import \
+    make_densebox_target as make_densebox_target_old
+from make_densebox_target_dev import \
+    make_densebox_target as make_densebox_target_new
 
 gt_boxes = np.asarray([[150, 250, 130, 60, 1]])
 config_dict = dict(

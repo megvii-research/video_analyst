@@ -6,7 +6,6 @@ import numpy as np
 from loguru import logger
 
 import torch
-import torch.nn as nn
 
 from videoanalyst.pipeline.pipeline_base import TRACK_PIPELINES, PipelineBase
 from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
@@ -450,10 +449,10 @@ class SiamFCppLTTracker(PipelineBase):
         :return:
             box_in_frame: (4, ), cxywh, box in original frame
         """
-        x = (box_in_crop[..., 0]) / scale_x + target_pos[0] - (x_size //
-                                                               2) / scale_x
-        y = (box_in_crop[..., 1]) / scale_x + target_pos[1] - (x_size //
-                                                               2) / scale_x
+        x = (box_in_crop[...,
+                         0]) / scale_x + target_pos[0] - (x_size // 2) / scale_x
+        y = (box_in_crop[...,
+                         1]) / scale_x + target_pos[1] - (x_size // 2) / scale_x
         w = box_in_crop[..., 2] / scale_x
         h = box_in_crop[..., 3] / scale_x
         box_in_frame = np.stack([x, y, w, h], axis=-1)

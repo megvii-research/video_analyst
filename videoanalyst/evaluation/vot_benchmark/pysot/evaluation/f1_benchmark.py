@@ -1,11 +1,7 @@
-import os
 import numpy as np
+from colorama import Fore, Style
 
-from glob import glob
-from tqdm import tqdm
-from colorama import Style, Fore
-
-from ..utils import determine_thresholds, calculate_accuracy, calculate_f1
+from ..utils import calculate_accuracy, calculate_f1, determine_thresholds
 
 
 class F1Benchmark:
@@ -71,7 +67,9 @@ class F1Benchmark:
                     calculate_f1(overlaps, score, (video.width,video.height),thresholds, N)
         return precision, recall, f1
 
-    def show_result(self, result, show_video_level=False,
+    def show_result(self,
+                    result,
+                    show_video_level=False,
                     helight_threshold=0.5):
         """pretty print result
         Args:

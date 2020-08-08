@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*
 import copy
-import itertools
 import math
 import os
 from os import makedirs
@@ -14,12 +13,12 @@ from tqdm import tqdm
 
 import torch
 import torch.multiprocessing as mp
-from torch.multiprocessing import Manager, Pool
+from torch.multiprocessing import Manager
 
 from videoanalyst.evaluation import davis_benchmark
 from videoanalyst.utils import ensure_dir
 
-from ..tester_base import TRACK_TESTERS, VOS_TESTERS, TesterBase
+from ..tester_base import VOS_TESTERS, TesterBase
 
 
 @VOS_TESTERS.register

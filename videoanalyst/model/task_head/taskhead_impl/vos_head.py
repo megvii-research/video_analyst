@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*
 
-import numpy as np
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from videoanalyst.model.common_opr.common_block import projector, upsample_block
+from videoanalyst.model.common_opr.common_block import (projector,
+                                                        upsample_block)
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.model.task_head.taskhead_base import VOS_HEADS
 

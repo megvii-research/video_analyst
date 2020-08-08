@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*
-from itertools import chain
 
 from loguru import logger
 
 import torch
 import torch.multiprocessing
-from torch.utils.data import DataLoader, Dataset
-
-from videoanalyst.utils.misc import Timer
+from torch.utils.data import Dataset
 
 from .datapipeline import builder as datapipeline_builder
 
@@ -24,12 +21,12 @@ class AdaptorDataset(Dataset):
     _SEED_DIVIDER = 1000003  # better to be a prime number
 
     def __init__(
-            self,
-            task,
-            cfg,
-            num_epochs=1,
-            nr_image_per_epoch=1,
-            seed: int = 0,
+        self,
+        task,
+        cfg,
+        num_epochs=1,
+        nr_image_per_epoch=1,
+        seed: int = 0,
     ):
         self.datapipeline = None
         self.task = task

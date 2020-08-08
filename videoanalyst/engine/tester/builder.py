@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*
 from typing import Dict, List
 
-from loguru import logger
 from yacs.config import CfgNode
 
 from videoanalyst.pipeline.pipeline_base import PipelineBase

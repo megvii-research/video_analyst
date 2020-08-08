@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*
 from copy import deepcopy
 
-from torch import nn
-
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.utils import Registry
 
@@ -56,6 +54,7 @@ class PipelineBase:
         r"""
         an interface for update params
         """
+
     def init(self, im, state):
         r"""
         an interface for pipeline initialization (e.g. template feature extraction)

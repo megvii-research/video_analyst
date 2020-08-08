@@ -1,8 +1,6 @@
 from .bbox_helper import cxy_wh_2_rect, get_axis_aligned_bbox
 from .benchmark_helper import get_img, load_dataset
 from .pysot.datasets import VOTDataset, VOTLTDataset
-# from .pysot.evaluation import AccuracyRobustnessBenchmark, EAOBenchmark
-# from .pysot.utils.region import vot_float2str, vot_overlap
 
 
 def show_result(self, result, topk=10, result_file=None):
@@ -44,3 +42,9 @@ def show_result(self, result, topk=10, result_file=None):
                 formatter.format(*[result[tracker_name][x]
                                    for x in self.tags]) + '\n')
         result_file.write(bar + '\n')
+
+
+__all__ = [
+    cxy_wh_2_rect, get_axis_aligned_bbox, get_img, load_dataset, VOTDataset,
+    VOTLTDataset, show_result
+]

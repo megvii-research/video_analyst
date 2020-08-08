@@ -1,13 +1,13 @@
 from __future__ import absolute_import, print_function
 
-import os
 import glob
-import six
-import numpy as np
-import xml.etree.ElementTree as ET
-import json
-from collections import OrderedDict
+import os
 import pickle
+import xml.etree.ElementTree as ET
+from collections import OrderedDict
+
+import numpy as np
+import six
 
 
 class ImageNetVID(object):

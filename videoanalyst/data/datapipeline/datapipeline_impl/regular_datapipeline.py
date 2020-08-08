@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Dict, List
 
-import cv2
-import numpy as np
-from yacs.config import CfgNode
-
 from videoanalyst.utils import convert_numpy_to_tensor
 
 from ...sampler.sampler_base import SamplerBase
@@ -24,9 +20,9 @@ class RegularDatapipeline(DatapipelineBase):
     default_hyper_params = dict()
 
     def __init__(
-            self,
-            sampler: SamplerBase,
-            pipeline: List = [],
+        self,
+        sampler: SamplerBase,
+        pipeline: List = [],
     ) -> None:
         super().__init__()
         self.sampler = sampler

@@ -1,12 +1,12 @@
 from __future__ import absolute_import, print_function
 
-import os
 import glob
-import six
-import numpy as np
-
-from typing import List, Tuple, Dict
+import os
 import pickle
+from typing import List, Tuple
+
+import numpy as np
+import six
 from loguru import logger
 from tqdm import tqdm
 

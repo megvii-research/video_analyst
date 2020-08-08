@@ -2,9 +2,8 @@
 import os
 import os.path as osp
 
-from loguru import logger
 import cv2
-import numpy as np
+from loguru import logger
 
 
 class VideoWriter(object):

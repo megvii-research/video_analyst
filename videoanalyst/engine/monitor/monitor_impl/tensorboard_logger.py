@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*
-import itertools
 import os.path as osp
 from collections import Mapping
 from typing import Dict
 
-import cv2
-import numpy as np
 from loguru import logger
-from tqdm import tqdm
 
-import torch
 from torch.utils.tensorboard.writer import SummaryWriter
 
 from videoanalyst.utils import ensure_dir

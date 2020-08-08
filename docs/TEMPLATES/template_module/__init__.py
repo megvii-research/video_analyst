@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-from .template_module_impl import *
+from .template_module_impl import *  # noqa

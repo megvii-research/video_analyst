@@ -5,7 +5,6 @@ URL: https://github.com/pytorch/vision/blob/master/torchvision/models/inception.
 Pretrained weights downloaded from:
     https://download.pytorch.org/models/inception_v3_google-1a9a5a14.pth
 """
-from loguru import logger
 
 import torch
 import torch.nn as nn
@@ -124,8 +123,8 @@ class Inception3(ModuleBase):
 
         # cropping to alleviate
         crop_pad = self.crop_pad
-        x = x[:, :, crop_pad:x.size(2) - crop_pad, crop_pad:x.size(3) -
-              crop_pad]
+        x = x[:, :, crop_pad:x.size(2) - crop_pad,
+              crop_pad:x.size(3) - crop_pad]
         x = self.channel_reduce(x)
         return x
 

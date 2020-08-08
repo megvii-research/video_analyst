@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*
 from typing import Dict, List
 
-from loguru import logger
 from yacs.config import CfgNode
 
 from videoanalyst.model.module_base import ModuleBase
@@ -10,11 +9,11 @@ from videoanalyst.utils import merge_cfg_into_hps
 
 
 def build(
-        task: str,
-        cfg: CfgNode,
-        model: ModuleBase = None,
-        segmenter: ModuleBase = None,
-        tracker: ModuleBase = None,
+    task: str,
+    cfg: CfgNode,
+    model: ModuleBase = None,
+    segmenter: ModuleBase = None,
+    tracker: ModuleBase = None,
 ):
     r"""
     Builder function.

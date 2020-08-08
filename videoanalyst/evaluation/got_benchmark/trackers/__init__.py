@@ -1,7 +1,8 @@
 from __future__ import absolute_import
 
-import numpy as np
 import time
+
+import numpy as np
 from PIL import Image
 
 from ..utils.viz import show_frame
@@ -40,6 +41,3 @@ class Tracker(object):
                 show_frame(image, boxes[f, :])
 
         return boxes, times
-
-
-from .identity_tracker import IdentityTracker

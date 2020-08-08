@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*
-from .trainer_impl import *
+from .trainer_impl import *  # noqa

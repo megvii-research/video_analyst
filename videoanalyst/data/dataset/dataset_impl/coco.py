@@ -5,7 +5,6 @@ import os
 import os.path as osp
 import pickle
 
-import cv2
 import numpy as np
 from loguru import logger
 from pycocotools import mask as MaskApi
@@ -212,7 +211,6 @@ class COCODataset(DatasetBase):
                                     if len(poly) % 2 == 0 and len(poly) >= 6
                                 ]
                                 if len(segm) == 0:
-                                    num_instances_without_valid_segmentation += 1
                                     continue  # ignore this instance
                             obj["segmentation"] = segm
                         else:

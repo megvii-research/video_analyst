@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 from abc import ABCMeta
 
-import cv2 as cv
-import numpy as np
-from yacs.config import CfgNode
-
-import torch
-from torch import nn, optim
+from torch import nn
 
 from videoanalyst.utils import Registry
 
@@ -71,6 +66,7 @@ class GradModifierBase:
         r"""
         an interface for update params
         """
+
     def modify_grad(self, module: nn.Module, epoch: int, iteration: int = -1):
         r"""
         Schedule the underlying optimizer/model

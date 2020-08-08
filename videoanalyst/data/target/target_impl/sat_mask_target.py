@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import cv2
-import numpy as np
-from yacs.config import CfgNode
 
 from videoanalyst.data.utils.crop_track_pair import crop_track_pair_for_sat
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy

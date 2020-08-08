@@ -2,7 +2,6 @@
 
 from yacs.config import CfgNode
 
-import torch
 from torch import nn
 
 from .grad_modifier import builder as grad_modifier_builder
@@ -10,9 +9,9 @@ from .optimizer import builder as optimizer_builder
 
 
 def build(
-        task: str,
-        cfg: CfgNode,
-        model: nn.Module,
+    task: str,
+    cfg: CfgNode,
+    model: nn.Module,
 ):
     r"""
     Builder function.

@@ -3,11 +3,6 @@
 from abc import ABCMeta
 from typing import Dict
 
-import cv2 as cv
-import numpy as np
-from yacs.config import CfgNode
-
-from videoanalyst.data.dataset.dataset_base import DatasetBase
 from videoanalyst.utils import Registry
 
 TRACK_FILTERS = Registry('TRACK_FILTERS')
@@ -74,6 +69,7 @@ class FilterBase:
         r"""
         an interface for update params
         """
+
     def __call__(self, data: Dict) -> bool:
         r"""
         An interface to filter data

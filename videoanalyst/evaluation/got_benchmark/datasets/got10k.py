@@ -1,11 +1,10 @@
 from __future__ import absolute_import, print_function
 
-import os
 import glob
-import numpy as np
+import os
 import pickle
-import six
 
+import numpy as np
 from loguru import logger
 from tqdm import tqdm
 
