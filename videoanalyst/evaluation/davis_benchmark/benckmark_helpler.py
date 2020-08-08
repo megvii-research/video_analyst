@@ -1,10 +1,9 @@
-import numpy as np
-import os
-from loguru import logger
-from os import makedirs
-from os.path import join, isdir
-from collections import OrderedDict
 import glob
+from collections import OrderedDict
+from os.path import join
+
+import numpy as np
+from loguru import logger
 
 
 def uint82bin(n, count=8):

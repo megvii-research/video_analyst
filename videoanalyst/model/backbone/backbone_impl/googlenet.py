@@ -5,7 +5,6 @@ URL: https://github.com/pytorch/vision/blob/master/torchvision/models/inception.
 Pretrained weights downloaded from:
     https://download.pytorch.org/models/inception_v3_google-1a9a5a14.pth
 """
-from loguru import logger
 
 import torch
 import torch.nn as nn

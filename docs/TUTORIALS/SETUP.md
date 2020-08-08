@@ -19,6 +19,7 @@ You can choose either using native python (with pip/pip3) or using virtual envir
 
 ```Bash
 pip3 install -U -r requirements.txt
+pre-commit install
 ```
 
 ### GPU assignement

@@ -5,7 +5,6 @@ import os.path as osp
 import time
 
 import cv2
-import numpy as np
 from loguru import logger
 
 import torch
@@ -13,8 +12,8 @@ import torch
 from videoanalyst.config.config import cfg, specify_task
 from videoanalyst.model import builder as model_builder
 from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.pipeline.utils.bbox import xywh2xyxy, xyxy2xywh
-from videoanalyst.utils import complete_path_wt_root_in_cfg, load_image
+from videoanalyst.pipeline.utils.bbox import xywh2xyxy
+from videoanalyst.utils import complete_path_wt_root_in_cfg
 from videoanalyst.utils.image import ImageFileVideoStream, ImageFileVideoWriter
 from videoanalyst.utils.visualization import VideoWriter
 

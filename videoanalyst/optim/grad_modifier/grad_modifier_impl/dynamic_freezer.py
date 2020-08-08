@@ -2,11 +2,6 @@
 import json
 import re
 
-import cv2
-import numpy as np
-from yacs.config import CfgNode
-
-import torch
 from torch import nn
 
 from ..grad_modifier_base import GRAD_MODIFIERS, GradModifierBase

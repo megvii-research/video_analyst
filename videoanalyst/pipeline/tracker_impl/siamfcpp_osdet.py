@@ -3,7 +3,6 @@
 import numpy as np
 
 import torch
-import torch.nn as nn
 
 from videoanalyst.pipeline.pipeline_base import TRACK_PIPELINES, PipelineBase
 from videoanalyst.pipeline.utils import (cxywh2xywh, cxywh2xyxy, get_crop,
@@ -166,7 +165,7 @@ class SiamFCppOneShotDetector(PipelineBase):
         # extract template feature
         features, im_z_crop, avg_chans = self.feature(im, target_pos, target_sz)
 
-        score_size = self._hyper_params['score_size']
+        self._hyper_params['score_size']
         # if self._hyper_params['windowing'] == 'cosine':
         #     window = np.outer(np.hanning(score_size), np.hanning(score_size))
         #     window = window.reshape(-1)

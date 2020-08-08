@@ -3,11 +3,6 @@
 from abc import ABCMeta
 from typing import Dict
 
-import cv2 as cv
-import numpy as np
-from yacs.config import CfgNode
-
-from videoanalyst.data.dataset.dataset_base import DatasetBase
 from videoanalyst.utils import Registry
 
 TRACK_FILTERS = Registry('TRACK_FILTERS')

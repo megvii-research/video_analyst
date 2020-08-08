@@ -1,8 +1,7 @@
 import numpy as np
+from colorama import Fore, Style
 
-from colorama import Style, Fore
-
-from ..utils import overlap_ratio, success_overlap, success_error
+from ..utils import success_error, success_overlap
 
 
 class OPEBenchmark:

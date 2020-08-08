@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*
-import numpy as np
 
 import torch
-import torch.nn.functional as F
-from torch import nn, tensor
 
+from ...common_opr.common_loss import sigmoid_focal_loss_jit
 from ...module_base import ModuleBase
 from ..loss_base import TRACK_LOSSES
-from ...common_opr.common_loss import sigmoid_focal_loss_jit
 
 
 @TRACK_LOSSES.register

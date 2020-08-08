@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*
-import os
 import sys
 from time import time
-import argparse
 
 import numpy as np
 import pandas as pd
+
 from ..davis_benchmark.davis2017.davis_evaluation import DAVISEvaluation
 
 dataset = 'val'

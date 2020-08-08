@@ -4,8 +4,6 @@ import os.path as osp
 import cv2
 import numpy as np
 
-import torch
-
 DEBUG = False
 
 im_path = osp.join(osp.dirname(osp.realpath(__file__)), 'example.jpg')

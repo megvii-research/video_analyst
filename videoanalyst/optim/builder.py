@@ -2,7 +2,6 @@
 
 from yacs.config import CfgNode
 
-import torch
 from torch import nn
 
 from .grad_modifier import builder as grad_modifier_builder

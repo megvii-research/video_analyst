@@ -1,12 +1,17 @@
 from __future__ import absolute_import
 
-from .got10k import GOT10k
-from .otb import OTB
-from .vot import VOT
 from .dtb70 import DTB70
-from .tcolor128 import TColor128
-from .uav123 import UAV123
-from .nfs import NfS
+from .got10k import GOT10k
 from .lasot import LaSOT
+from .nfs import NfS
+from .otb import OTB
+from .tcolor128 import TColor128
 from .trackingnet import TrackingNet
+from .uav123 import UAV123
 from .vid import ImageNetVID
+from .vot import VOT
+
+__all__ = [
+    GOT10k, OTB, VOT, DTB70, TColor128, UAV123, NfS, LaSOT, TrackingNet,
+    ImageNetVID
+]

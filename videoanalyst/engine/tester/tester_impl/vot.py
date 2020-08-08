@@ -239,7 +239,7 @@ class VOTTester(TesterBase):
         start_frame, end_frame, lost_times, toc = 0, len(image_files), 0, 0
         for f, image_file in enumerate(tqdm(image_files)):
             im = vot_benchmark.get_img(image_file)
-            im_show = im.copy().astype(np.uint8)
+            im.copy().astype(np.uint8)
 
             tic = cv2.getTickCount()
             if f == start_frame:  # init

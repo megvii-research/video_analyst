@@ -26,3 +26,6 @@ class DatasetFactory(object):
         else:
             raise Exception("unknow dataset {}".format(kwargs['name']))
         return dataset
+
+
+__all__ = [VOTDataset, VOTLTDataset, DatasetFactory]

@@ -2,10 +2,6 @@
 from copy import deepcopy
 from typing import Dict
 
-from torch import nn
-from torch.utils.data import DataLoader
-
-from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.utils import Registry
 
 TRACK_MONITORS = Registry('TRACK_MONITOR')

@@ -3,10 +3,8 @@ import copy
 import os.path as osp
 from typing import Dict, List
 
-import cv2
 import numpy as np
 from loguru import logger
-from yacs.config import CfgNode
 
 from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, DatasetBase
 from videoanalyst.evaluation.got_benchmark.datasets import GOT10k

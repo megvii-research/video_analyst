@@ -3,10 +3,8 @@
 from copy import deepcopy
 
 import numpy as np
-from loguru import logger
 
 import torch
-import torch.nn as nn
 
 from videoanalyst.pipeline.pipeline_base import TRACK_PIPELINES, PipelineBase
 from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,

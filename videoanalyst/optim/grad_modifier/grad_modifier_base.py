@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 from abc import ABCMeta
 
-import cv2 as cv
-import numpy as np
-from yacs.config import CfgNode
-
-import torch
-from torch import nn, optim
+from torch import nn
 
 from videoanalyst.utils import Registry
 

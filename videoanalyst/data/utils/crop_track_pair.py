@@ -18,7 +18,6 @@ Procedure
 
 """
 
-import cv2
 import numpy as np
 
 from videoanalyst.pipeline.utils.bbox import cxywh2xyxy, xyxy2cxywh

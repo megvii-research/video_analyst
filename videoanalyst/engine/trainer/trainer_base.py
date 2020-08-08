@@ -7,10 +7,8 @@ from typing import Dict, List, Tuple
 from loguru import logger
 
 import torch
-from torch import nn
 from torch.utils.data import DataLoader
 
-from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.optim.optimizer.optimizer_base import OptimizerBase
 from videoanalyst.utils import Registry, ensure_dir, unwrap_model
 

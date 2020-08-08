@@ -1,15 +1,14 @@
 from __future__ import absolute_import, print_function
 
-import os
 import glob
 import json
-import numpy as np
-import six
-from typing import Dict
+import os
 import pickle
-from tqdm import tqdm
+from typing import Dict
 
+import numpy as np
 from loguru import logger
+from tqdm import tqdm
 
 _VALID_SUBSETS = ['train', 'test']
 

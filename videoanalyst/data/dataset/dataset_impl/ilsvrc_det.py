@@ -4,13 +4,9 @@ import os.path as osp
 import pickle
 import xml.etree.ElementTree as ET
 
-import cv2
-import numpy as np
 from tqdm import tqdm
-from yacs.config import CfgNode
 
 from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, DatasetBase
-from videoanalyst.evaluation.got_benchmark.datasets import ImageNetVID
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
 # from .utils import Dataset, extract_fname, LazzyList

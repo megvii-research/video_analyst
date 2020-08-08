@@ -3,19 +3,15 @@
 from abc import ABCMeta
 from typing import Dict
 
-import cv2 as cv
-import numpy as np
+from loguru import logger
 from yacs.config import CfgNode
 
 import torch
-from loguru import logger
 from torch import nn
-from torch.optim.optimizer import Optimizer
 
 from videoanalyst.utils import Registry
 
 from .optimizer_impl.utils.lr_multiply import build as build_lr_multiplier
-from .optimizer_impl.utils.lr_multiply import multiply_lr
 from .optimizer_impl.utils.lr_policy import build as build_lr_policy
 from .optimizer_impl.utils.lr_policy import schedule_lr
 

@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-from .contrib_module_impl import *
+from .contrib_module_impl import *  # noqa

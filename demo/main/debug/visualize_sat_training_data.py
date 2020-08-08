@@ -12,15 +12,8 @@ import torch
 
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.config.config import specify_task
-from videoanalyst.data import builder as dataloader_builder
 from videoanalyst.data.datapipeline import builder as datapipeline_builder
 from videoanalyst.data.dataset import builder as dataset_buidler
-from videoanalyst.data.utils.visualization import show_img_FCOS
-from videoanalyst.engine import builder as engine_builder
-from videoanalyst.model import builder as model_builder
-from videoanalyst.model.loss import builder as losses_builder
-from videoanalyst.optim import builder as optim_builder
-from videoanalyst.pipeline import builder as pipeline_builder
 from videoanalyst.utils import (Timer, complete_path_wt_root_in_cfg,
                                 convert_tensor_to_numpy, ensure_dir)
 
@@ -76,8 +69,9 @@ if __name__ == '__main__':
     task_cfg.freeze()
     if parsed_args.target == "dataset":
         logger.info("visualize for dataset")
-        from videoanalyst.utils import load_image
         import numpy as np
+
+        from videoanalyst.utils import load_image
         datasets = dataset_buidler.build(
             task, task_cfg.data.sampler.submodules.dataset)
         dataset = datasets[0]
