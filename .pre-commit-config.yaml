@@ -10,4 +10,4 @@
     rev: master
     hooks:
     -   id: yapf
-        args: [-p, -r, -i, ./main]
+        args: [-p, -r, -i, main]
