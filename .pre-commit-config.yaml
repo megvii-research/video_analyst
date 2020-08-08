@@ -7,17 +7,17 @@
     rev: master
     hooks:
     -   id: requirements-txt-fixer
-#-   repo: https://github.com/myint/autoflake
-#    rev: master
-#    hooks:
-#    -   id: autoflake
-#        args:
-#          - --in-place
-#          - --remove-unused-variables
-#          - --remove-all-unused-imports
-#          - --expand-star-imports
-#          - -r
-#          - main
+-   repo: https://github.com/myint/autoflake
+    rev: master
+    hooks:
+    -   id: autoflake
+        args:
+          - --in-place
+          - --remove-unused-variables
+          - --remove-all-unused-imports
+          - --expand-star-imports
+          - -r
+          - main
 -   repo: https://github.com/pre-commit/mirrors-yapf
     rev: master
     hooks:
