@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*
 from copy import deepcopy
 
-from torch import nn
-
 from videoanalyst.model.module_base import ModuleBase
 from videoanalyst.utils import Registry
 

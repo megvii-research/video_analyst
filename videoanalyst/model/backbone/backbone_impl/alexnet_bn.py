@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*
-from loguru import logger
 
-import torch
 import torch.nn as nn
 
 from videoanalyst.model.backbone.backbone_base import (TRACK_BACKBONES,

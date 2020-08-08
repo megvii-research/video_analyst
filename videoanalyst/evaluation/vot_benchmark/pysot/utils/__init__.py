@@ -6,5 +6,5 @@
 # @project https://github.com/StrangerZhang/pysot-toolkit.git
 # Revised for SiamMask by foolwood
 # --------------------------------------------------------
-from . import region
-from .statistics import *
+from . import region  # noqa
+from .statistics import *  # noqa

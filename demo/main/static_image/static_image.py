@@ -3,9 +3,7 @@ from paths import ROOT_PATH  # isort:skip
 from copy import deepcopy
 
 import cv2
-from loguru import logger
 
-import demo
 from demo.resources.static_img_example.getImage import (bbox, im, im_x, im_z,
                                                         search_bbox,
                                                         target_bbox)

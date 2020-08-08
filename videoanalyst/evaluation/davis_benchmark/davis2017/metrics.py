@@ -1,6 +1,7 @@
 import math
-import numpy as np
+
 import cv2
+import numpy as np
 
 
 def db_eval_iou(annotation, segmentation, void_pixels=None):

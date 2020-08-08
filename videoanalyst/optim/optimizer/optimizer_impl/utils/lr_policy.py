@@ -33,7 +33,6 @@ from abc import ABCMeta, abstractmethod
 from typing import List
 
 import numpy as np
-from yacs.config import CfgNode
 
 from videoanalyst.utils import Registry
 
@@ -229,6 +228,7 @@ def plot_LR(LR: BaseLR, title='Untitled'):
     """ plot learning rate scheduling plan of an BaseLR object """
     assert isinstance(LR, BaseLR)
     import itertools
+
     import matplotlib.pyplot as plt
     max_iter = LR.max_iter
     max_epoch = len(LR)

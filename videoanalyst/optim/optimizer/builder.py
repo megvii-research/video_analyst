@@ -2,7 +2,6 @@
 
 from yacs.config import CfgNode
 
-import torch
 from torch import nn
 
 from videoanalyst.utils import merge_cfg_into_hps

@@ -1,10 +1,6 @@
 import os.path as osp
 from typing import Dict
 
-import cv2
-import numpy as np
-from yacs.config import CfgNode
-
 from videoanalyst.data.dataset.dataset_base import TRACK_DATASETS, DatasetBase
 from videoanalyst.evaluation.got_benchmark.datasets import LaSOT
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy

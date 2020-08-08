@@ -108,7 +108,6 @@ class VOTLTTester(TesterBase):
         nr_records = len(keys)
         pbar = tqdm(total=nr_records)
         mean_speed = -1
-        total_lost = 0
         speed_list = []
         speed_queue = mp.Queue(500)
         # set worker
@@ -174,7 +173,7 @@ class VOTLTTester(TesterBase):
         tracker_name = self._hyper_params["exp_name"]
         result_csv = "%s.csv" % tracker_name
 
-        csv_to_write = open(join(self.tracker_dir, result_csv), 'a+')
+        open(join(self.tracker_dir, result_csv), 'a+')
         dataset = vot_benchmark.VOTLTDataset(
             self.dataset_name,
             self._hyper_params["data_root"][self.dataset_name])
@@ -206,7 +205,6 @@ class VOTLTTester(TesterBase):
             package="vot_float2str").vot_float2str
         regions = []
         scores = []
-        times = []
         video = self.dataset[video]
         image_files, gt = video['image_files'], video['gt']
         start_frame, end_frame, toc = 0, len(image_files), 0

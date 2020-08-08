@@ -1,1 +1,1 @@
-from .taskmodel_impl import *
+from .taskmodel_impl import *  # noqa

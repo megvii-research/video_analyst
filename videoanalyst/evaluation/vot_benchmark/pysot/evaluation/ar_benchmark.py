@@ -11,7 +11,6 @@ import itertools
 import warnings
 
 import numpy as np
-from colorama import Fore, Style
 
 from ..utils import calculate_accuracy, calculate_failures
 
@@ -230,7 +229,6 @@ class AccuracyRobustnessBenchmark:
     def _calculate_accuracy_robustness(self, tracker_name):
         overlaps = {}
         failures = {}
-        all_length = {}
         for i in range(len(self.dataset)):
             video = self.dataset[i]
             gt_traj = video.gt_traj

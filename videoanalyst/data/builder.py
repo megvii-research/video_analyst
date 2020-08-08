@@ -5,13 +5,10 @@ from typing import Dict, List
 from loguru import logger
 from yacs.config import CfgNode
 
-import torch
-import torch.distributed as dist
-from torch.utils.data import DataLoader, Dataset
-from torch.utils.data.dataloader import default_collate
+from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
 
-from videoanalyst.utils import Timer, dist_utils, ensure_dir
+from videoanalyst.utils import dist_utils
 
 from .adaptor_dataset import AdaptorDataset
 from .datapipeline import builder as datapipeline_builder

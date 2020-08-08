@@ -8,13 +8,10 @@ import os
 import os.path as osp
 import pickle
 
-import cv2
-import numpy as np
 from loguru import logger
 
 from videoanalyst.data.dataset.dataset_base import (TRACK_DATASETS,
                                                     VOS_DATASETS, DatasetBase)
-from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 
 
 @VOS_DATASETS.register

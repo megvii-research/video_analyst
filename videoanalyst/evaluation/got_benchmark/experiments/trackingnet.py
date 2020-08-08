@@ -1,14 +1,12 @@
 from __future__ import absolute_import
 
 import os
-import numpy as np
 
 from loguru import logger
 
-from .otb import ExperimentOTB
 from ..datasets import TrackingNet
-from ..utils.metrics import rect_iou, center_error
 from ..utils.ioutils import compress
+from .otb import ExperimentOTB
 
 
 class ExperimentTrackingNet(ExperimentOTB):

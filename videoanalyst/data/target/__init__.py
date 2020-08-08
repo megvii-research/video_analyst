@@ -1,1 +1,1 @@
-from .target_impl import *
+from .target_impl import *  # noqa

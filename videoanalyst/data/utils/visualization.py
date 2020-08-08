@@ -29,7 +29,7 @@ def show_img_FCOS(cfg,
     total_stride = cfg.total_stride
     score_size = cfg.score_size
     x_size = cfg.x_size
-    num_conv3x3 = cfg.num_conv3x3
+    cfg.num_conv3x3
     score_offset = (x_size - 1 - (score_size - 1) * total_stride) // 2
 
     color = dict()

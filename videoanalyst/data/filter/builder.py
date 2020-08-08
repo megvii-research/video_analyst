@@ -6,10 +6,10 @@ from yacs.config import CfgNode
 
 from videoanalyst.utils import merge_cfg_into_hps
 
-from .filter_base import TASK_FILTERS, DatasetBase
+from .filter_base import TASK_FILTERS, FilterBase
 
 
-def build(task: str, cfg: CfgNode) -> DatasetBase:
+def build(task: str, cfg: CfgNode) -> FilterBase:
     assert task in TASK_FILTERS, "invalid task name"
     MODULES = TASK_FILTERS[task]
 

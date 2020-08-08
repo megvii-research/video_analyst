@@ -8,13 +8,11 @@ from loguru import logger
 
 import torch
 
-import demo
 from demo.resources.static_img_example.get_image import (bbox, im, im_x, im_z,
                                                          search_bbox,
                                                          target_bbox)
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.config.config import specify_task
-from videoanalyst.engine.builder import build as tester_builder
 from videoanalyst.model import builder as model_builder
 from videoanalyst.pipeline import builder as pipeline_builder
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy, xyxy2xywh

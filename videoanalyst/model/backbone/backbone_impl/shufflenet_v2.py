@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 
 from ...module_base import ModuleBase
-from ..backbone_base import TRACK_BACKBONES, VOS_BACKBONES
+from ..backbone_base import TRACK_BACKBONES
 
 
 @TRACK_BACKBONES.register
@@ -52,7 +52,6 @@ class ShuffleNetV2_x0_5(ModuleBase):
         self._hyper_params = deepcopy(self.default_hyper_params)
 
     def update_params(self):
-        arch = "shufflenetv2_x0.5"
         kwargs = self._hyper_params
         # build module
         self._model = _shufflenetv2('shufflenetv2_x0.5',

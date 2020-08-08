@@ -5,9 +5,7 @@ from collections import OrderedDict
 from typing import Dict, List
 
 from loguru import logger
-from yacs.config import CfgNode
 
-import torch
 from torch import nn
 
 

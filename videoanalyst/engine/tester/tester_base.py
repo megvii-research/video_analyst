@@ -2,10 +2,6 @@
 from copy import deepcopy
 from typing import Dict
 
-from yacs.config import CfgNode
-
-from torch import nn
-
 from videoanalyst.pipeline.pipeline_base import PipelineBase
 from videoanalyst.utils import Registry
 

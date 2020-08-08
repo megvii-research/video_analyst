@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*
-import itertools
 from typing import Dict
-
-import cv2
-import numpy as np
-from loguru import logger
-from tqdm import tqdm
-
-import torch
 
 from ..monitor_base import TRACK_MONITORS, VOS_MONITORS, MonitorBase
 

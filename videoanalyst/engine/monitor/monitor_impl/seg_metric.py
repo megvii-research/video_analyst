@@ -1,16 +1,9 @@
 # -*- coding: utf-8 -*
-import itertools
 import os
 from typing import Dict
 
 import cv2
 import numpy as np
-from loguru import logger
-from tqdm import tqdm
-
-import torch
-
-from videoanalyst.utils import dist_utils
 
 from ..monitor_base import VOS_MONITORS, MonitorBase
 from .utils import (AverageMeter, fast_hist, labelcolormap, mask_colorize,

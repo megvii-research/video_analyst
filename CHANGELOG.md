@@ -2,6 +2,10 @@
 
 Date format: YY/MM/DD
 
+## 2020/08/08
+* adopt pre-commit to format code while committing
+* reformat code with isort, autoflake and yapf
+
 ## 2020/07/30
 * support amp from pytorch>=1.6
 

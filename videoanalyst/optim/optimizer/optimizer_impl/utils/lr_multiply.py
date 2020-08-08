@@ -4,9 +4,7 @@ import re
 from typing import List
 
 from loguru import logger
-from yacs.config import CfgNode
 
-import torch
 from torch import nn, optim
 
 

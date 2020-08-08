@@ -1,14 +1,15 @@
 from __future__ import absolute_import
 
-import os
 import json
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
+import os
 
-from .otb import ExperimentOTB
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+
 from ..datasets import LaSOT
-from ..utils.metrics import rect_iou, center_error, normalized_center_error
+from ..utils.metrics import center_error, normalized_center_error, rect_iou
+from .otb import ExperimentOTB
 
 
 class ExperimentLaSOT(ExperimentOTB):

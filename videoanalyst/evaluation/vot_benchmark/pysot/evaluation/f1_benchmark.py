@@ -1,11 +1,7 @@
-import os
 import numpy as np
+from colorama import Fore, Style
 
-from glob import glob
-from tqdm import tqdm
-from colorama import Style, Fore
-
-from ..utils import determine_thresholds, calculate_accuracy, calculate_f1
+from ..utils import calculate_accuracy, calculate_f1, determine_thresholds
 
 
 class F1Benchmark:

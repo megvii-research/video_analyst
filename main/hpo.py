@@ -5,17 +5,14 @@ import argparse
 import os.path as osp
 from copy import deepcopy
 
-import pandas as pd
 import yaml
 from loguru import logger
+
 import torch
 
 from main.test import build_sat_tester, build_siamfcpp_tester
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.config.config import specify_task
-from videoanalyst.engine.builder import build as tester_builder
-from videoanalyst.model import builder as model_builder
-from videoanalyst.pipeline import builder as pipeline_builder
 from videoanalyst.utils import complete_path_wt_root_in_cfg, hpo
 
 

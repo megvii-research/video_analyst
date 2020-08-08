@@ -1,8 +1,9 @@
 # encoding: utf-8
-from typing import Dict, Tuple
 import os
+from typing import Dict, Tuple
 
 import numpy as np
+
 import torch
 
 DUMP_FLAG = False  # dump intermediate results for debugging

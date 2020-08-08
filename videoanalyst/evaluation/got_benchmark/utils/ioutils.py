@@ -1,10 +1,10 @@
 from __future__ import absolute_import, division
 
-import wget
 import os
 import shutil
 import zipfile
-import sys
+
+import wget
 
 
 def download(url, filename):

@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import numpy as np
 from yacs.config import CfgNode
 
 import torch
 from torch import optim
-
-from videoanalyst.data.dataset.dataset_base import DatasetBase
-from videoanalyst.evaluation.got_benchmark.datasets import got10k
 
 from ..optimizer_base import OPTIMIZERS, OptimizerBase
 

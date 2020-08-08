@@ -3,10 +3,8 @@
 from abc import ABCMeta
 from typing import Dict, List
 
-import cv2 as cv
 import numpy as np
 from loguru import logger
-from yacs.config import CfgNode
 
 from videoanalyst.utils import Registry
 

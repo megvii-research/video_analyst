@@ -1,11 +1,11 @@
-import cv2
-import json
 import os
 from glob import glob
 
+import cv2
 import numpy as np
-from tqdm import tqdm
 from loguru import logger
+from tqdm import tqdm
+
 from ...benchmark_helper import get_json
 from .dataset import Dataset
 from .video import Video

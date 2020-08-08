@@ -3,12 +3,10 @@ import copy
 import os.path as osp
 
 from loguru import logger
-from yacs.config import CfgNode
 
 import torch
 import torch.multiprocessing as mp
 
-from videoanalyst.evaluation import got_benchmark
 from videoanalyst.evaluation.got_benchmark.experiments import ExperimentUAV123
 
 from ..tester_base import TRACK_TESTERS, TesterBase

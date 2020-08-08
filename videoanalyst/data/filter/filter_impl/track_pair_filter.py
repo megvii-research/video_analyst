@@ -1,9 +1,7 @@
 from typing import Dict
 
 import cv2
-import numpy as np
 from loguru import logger
-from yacs.config import CfgNode
 
 from videoanalyst.data.utils.filter_box import \
     filter_unreasonable_training_boxes

@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*
-from .segmenter_impl import *
-from .tracker_impl import *
+from .segmenter_impl import *  # noqa
+from .tracker_impl import *  # noqa
