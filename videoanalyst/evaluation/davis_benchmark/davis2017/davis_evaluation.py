@@ -1,18 +1,21 @@
 import sys
-from tqdm import tqdm
 import warnings
+
+from tqdm import tqdm
+
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 import numpy as np
+from scipy.optimize import linear_sum_assignment
+
+from ..davis2017 import utils
 #from evaluation.tracking.davis_benchmark.davis2017.davis import DAVIS
 #from evaluation.tracking.davis_benchmark.davis2017.metrics import db_eval_boundary, db_eval_iou
 #from evaluation.tracking.davis_benchmark.davis2017 import utils
 #from evaluation.tracking.davis_benchmark.davis2017.results import Results
 from ..davis2017.davis import DAVIS
 from ..davis2017.metrics import db_eval_boundary, db_eval_iou
-from ..davis2017 import utils
 from ..davis2017.results import Results
-from scipy.optimize import linear_sum_assignment
 
 
 class DAVISEvaluation(object):
@@ -90,9 +93,10 @@ class DAVISEvaluation(object):
         for ii in range(all_gt_masks.shape[0]):
             for jj in range(all_res_masks.shape[0]):
                 if 'J' in metric:
-                    j_metrics_res[jj, ii, :] = db_eval_iou(
-                        all_gt_masks[ii, ...], all_res_masks[jj, ...],
-                        all_void_masks)
+                    j_metrics_res[jj,
+                                  ii, :] = db_eval_iou(all_gt_masks[ii, ...],
+                                                       all_res_masks[jj, ...],
+                                                       all_void_masks)
                 if 'F' in metric:
                     f_metrics_res[jj, ii, :] = db_eval_boundary(
                         all_gt_masks[ii, ...], all_res_masks[jj, ...],

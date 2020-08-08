@@ -1,14 +1,15 @@
 from __future__ import absolute_import
 
-import os
 import json
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
+import os
 
-from .otb import ExperimentOTB
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+
 from ..datasets import LaSOT
-from ..utils.metrics import rect_iou, center_error, normalized_center_error
+from ..utils.metrics import center_error, normalized_center_error, rect_iou
+from .otb import ExperimentOTB
 
 
 class ExperimentLaSOT(ExperimentOTB):
@@ -162,8 +163,8 @@ class ExperimentLaSOT(ExperimentOTB):
     def _calc_curves(self, ious, center_errors, norm_center_errors):
         ious = np.asarray(ious, float)[:, np.newaxis]
         center_errors = np.asarray(center_errors, float)[:, np.newaxis]
-        norm_center_errors = np.asarray(norm_center_errors,
-                                        float)[:, np.newaxis]
+        norm_center_errors = np.asarray(norm_center_errors, float)[:,
+                                                                   np.newaxis]
 
         thr_iou = np.linspace(0, 1, self.nbins_iou)[np.newaxis, :]
         thr_ce = np.arange(0, self.nbins_ce)[np.newaxis, :]

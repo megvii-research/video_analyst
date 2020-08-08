@@ -4,11 +4,11 @@ import torch.nn.functional as F
 
 
 def sigmoid_focal_loss(
-        inputs: torch.Tensor,
-        targets: torch.Tensor,
-        alpha: float = -1,
-        gamma: float = 2,
-        reduction: str = "none",
+    inputs: torch.Tensor,
+    targets: torch.Tensor,
+    alpha: float = -1,
+    gamma: float = 2,
+    reduction: str = "none",
 ) -> torch.Tensor:
     """
     Loss used in RetinaNet for dense detection: https://arxiv.org/abs/1708.02002.
@@ -52,11 +52,11 @@ sigmoid_focal_loss_jit = torch.jit.script(
 
 
 def sigmoid_focal_loss_star(
-        inputs: torch.Tensor,
-        targets: torch.Tensor,
-        alpha: float = -1,
-        gamma: float = 1,
-        reduction: str = "none",
+    inputs: torch.Tensor,
+    targets: torch.Tensor,
+    alpha: float = -1,
+    gamma: float = 1,
+    reduction: str = "none",
 ) -> torch.Tensor:
     """
     FL* described in RetinaNet paper Appendix: https://arxiv.org/abs/1708.02002.

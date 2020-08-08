@@ -13,8 +13,8 @@ _HPO_RANGE_POSTFIX = "_hpo_range"
 _DELIMITER = ","
 
 
-def parse_hp_path_and_range(hpo_cfg: CfgNode,
-                            ) -> List[Tuple[List[str], Tuple[float, float]]]:
+def parse_hp_path_and_range(
+    hpo_cfg: CfgNode, ) -> List[Tuple[List[str], Tuple[float, float]]]:
     """Parse hyper-parameter ranges from hp config via recursive method
     
     Parameters
