@@ -9,9 +9,9 @@ from .optimizer import builder as optimizer_builder
 
 
 def build(
-    task: str,
-    cfg: CfgNode,
-    model: nn.Module,
+        task: str,
+        cfg: CfgNode,
+        model: nn.Module,
 ):
     r"""
     Builder function.

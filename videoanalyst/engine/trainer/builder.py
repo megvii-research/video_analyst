@@ -9,10 +9,7 @@ from ..monitor import builder as monitor_builder
 from .trainer_base import TASK_TRAINERS, TrainerBase
 
 
-def build(task: str,
-          cfg: CfgNode,
-          optimizer,
-          dataloader,
+def build(task: str, cfg: CfgNode, optimizer, dataloader,
           tracker=None) -> TrainerBase:
     r"""
     Builder function.

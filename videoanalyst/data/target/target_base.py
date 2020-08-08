@@ -69,7 +69,6 @@ class TargetBase:
         r"""
         an interface for update params
         """
-
     def __call__(self, sampled_data: Dict) -> Dict:
         r"""
         An interface to mkae target

@@ -27,16 +27,16 @@ _MAX_RETRY = 50
 
 
 def crop_track_pair(
-    im_temp,
-    bbox_temp,
-    im_curr,
-    bbox_curr,
-    config=None,
-    avg_chans=None,
-    rng=np.random,
-    DEBUG=False,
-    mask_tmp=None,
-    mask_curr=None,
+        im_temp,
+        bbox_temp,
+        im_curr,
+        bbox_curr,
+        config=None,
+        avg_chans=None,
+        rng=np.random,
+        DEBUG=False,
+        mask_tmp=None,
+        mask_curr=None,
 ):
     context_amount = config["context_amount"]
     z_size = config["z_size"]
@@ -157,16 +157,16 @@ def crop_track_pair(
 
 
 def crop_track_pair_for_sat(
-    im_temp,
-    bbox_temp,
-    im_curr,
-    bbox_curr,
-    config=None,
-    avg_chans=None,
-    rng=np.random,
-    DEBUG=False,
-    mask_tmp=None,
-    mask_curr=None,
+        im_temp,
+        bbox_temp,
+        im_curr,
+        bbox_curr,
+        config=None,
+        avg_chans=None,
+        rng=np.random,
+        DEBUG=False,
+        mask_tmp=None,
+        mask_curr=None,
 ):
     context_amount = config["context_amount"]
     z_size = config["track_z_size"]

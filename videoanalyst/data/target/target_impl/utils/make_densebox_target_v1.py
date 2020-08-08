@@ -144,8 +144,8 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
 
         # gt_boxes
         gt_boxes_res = np.zeros((fm_height, fm_width, 4))
-        gt_boxes_res[xy[:, 0], xy[:, 1]] = gt_boxes[hit_gt_ind[xy[:, 0],
-                                                               xy[:, 1]], :4]
+        gt_boxes_res[xy[:, 0],
+                     xy[:, 1]] = gt_boxes[hit_gt_ind[xy[:, 0], xy[:, 1]], :4]
         gt_boxes_res_list.append(gt_boxes_res.reshape(-1, 4))
 
         # cls
@@ -155,8 +155,9 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
 
         # center
         center_res = np.zeros((fm_height, fm_width))
-        center_res[xy[:, 0], xy[:, 1]] = center[fm_offset + xy[:, 0] * stride,
-                                                fm_offset + xy[:, 1] * stride,
+        center_res[xy[:, 0], xy[:, 1]] = center[fm_offset +
+                                                xy[:, 0] * stride, fm_offset +
+                                                xy[:, 1] * stride,
                                                 hit_gt_ind[xy[:, 0], xy[:, 1]]]
         ctr_res_list.append(center_res.reshape(-1))
         # from IPython import embed;embed()

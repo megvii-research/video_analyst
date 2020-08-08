@@ -66,7 +66,6 @@ class GradModifierBase:
         r"""
         an interface for update params
         """
-
     def modify_grad(self, module: nn.Module, epoch: int, iteration: int = -1):
         r"""
         Schedule the underlying optimizer/model

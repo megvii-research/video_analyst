@@ -9,11 +9,11 @@ from videoanalyst.utils import merge_cfg_into_hps
 
 
 def build(
-    task: str,
-    cfg: CfgNode,
-    model: ModuleBase = None,
-    segmenter: ModuleBase = None,
-    tracker: ModuleBase = None,
+        task: str,
+        cfg: CfgNode,
+        model: ModuleBase = None,
+        segmenter: ModuleBase = None,
+        tracker: ModuleBase = None,
 ):
     r"""
     Builder function.

@@ -21,12 +21,12 @@ class AdaptorDataset(Dataset):
     _SEED_DIVIDER = 1000003  # better to be a prime number
 
     def __init__(
-        self,
-        task,
-        cfg,
-        num_epochs=1,
-        nr_image_per_epoch=1,
-        seed: int = 0,
+            self,
+            task,
+            cfg,
+            num_epochs=1,
+            nr_image_per_epoch=1,
+            seed: int = 0,
     ):
         self.datapipeline = None
         self.task = task

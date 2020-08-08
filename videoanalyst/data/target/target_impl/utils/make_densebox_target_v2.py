@@ -175,24 +175,22 @@ def make_densebox_target(gt_boxes: np.array, config: Dict) -> Tuple:
     # (h, w, 4-d_box)
     #   gt_boxes
     gt_boxes_res = torch.zeros((fm_height, fm_width, 4))
-    gt_boxes_res[y_coords_on_fm, x_coords_on_fm] = gt_boxes[hit_gt_ind[
-        y_coords_on_fm, x_coords_on_fm], :4]  # gt_boxes: (#boxes, 5)
+    gt_boxes_res[y_coords_on_fm, x_coords_on_fm] = gt_boxes[
+        hit_gt_ind[y_coords_on_fm, x_coords_on_fm], :4]  # gt_boxes: (#boxes, 5)
     gt_boxes_res = gt_boxes_res.reshape(-1, 4)
     # gt_boxes_res_list.append(gt_boxes_res.reshape(-1, 4))
 
     # (h, w, 1-d_cls_score)
     cls_res = torch.zeros((fm_height, fm_width))
-    cls_res[y_coords_on_fm, x_coords_on_fm] = cls[hit_gt_ind[y_coords_on_fm,
-                                                             x_coords_on_fm]]
+    cls_res[y_coords_on_fm, x_coords_on_fm] = cls[
+        hit_gt_ind[y_coords_on_fm, x_coords_on_fm]]
     cls_res = cls_res.reshape(-1, 1)
 
     # (h, w, 1-d_centerness)
     center_res = torch.zeros((fm_height, fm_width))
-    center_res[y_coords_on_fm,
-               x_coords_on_fm] = center[fm_offset + y_coords_on_fm * stride,
-                                        fm_offset + x_coords_on_fm * stride,
-                                        hit_gt_ind[y_coords_on_fm,
-                                                   x_coords_on_fm]]
+    center_res[y_coords_on_fm, x_coords_on_fm] = center[
+        fm_offset + y_coords_on_fm * stride, fm_offset +
+        x_coords_on_fm * stride, hit_gt_ind[y_coords_on_fm, x_coords_on_fm]]
     center_res = center_res.reshape(-1, 1)
 
     return cls_res, center_res, gt_boxes_res

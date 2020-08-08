@@ -20,9 +20,9 @@ class RegularDatapipeline(DatapipelineBase):
     default_hyper_params = dict()
 
     def __init__(
-        self,
-        sampler: SamplerBase,
-        pipeline: List = [],
+            self,
+            sampler: SamplerBase,
+            pipeline: List = [],
     ) -> None:
         super().__init__()
         self.sampler = sampler

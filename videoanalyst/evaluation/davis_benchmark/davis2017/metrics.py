@@ -40,9 +40,7 @@ def db_eval_iou(annotation, segmentation, void_pixels=None):
     return j
 
 
-def db_eval_boundary(annotation,
-                     segmentation,
-                     void_pixels=None,
+def db_eval_boundary(annotation, segmentation, void_pixels=None,
                      bound_th=0.008):
     assert annotation.shape == segmentation.shape
     if void_pixels is not None:
@@ -204,8 +202,8 @@ if __name__ == '__main__':
     # Test timing F measure
     for seq in dataset.get_sequences():
         all_gt_masks, _, all_masks_id = dataset.get_all_masks(seq, True)
-        all_gt_masks, all_masks_id = all_gt_masks[:, 1:-1, :, :], all_masks_id[
-            1:-1]
+        all_gt_masks, all_masks_id = all_gt_masks[:, 1:
+                                                  -1, :, :], all_masks_id[1:-1]
         all_res_masks = results.read_masks(seq, all_masks_id)
         f_metrics_res = np.zeros(all_gt_masks.shape[:2])
         for ii in range(all_gt_masks.shape[0]):

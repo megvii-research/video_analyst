@@ -19,8 +19,8 @@ def ensure_dir(dir_path: str):
 
 
 def complete_path_wt_root_in_cfg(
-    cfg: CfgNode,
-    root_dir: str,
+        cfg: CfgNode,
+        root_dir: str,
 ):
     r"""
     Arguments

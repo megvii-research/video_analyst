@@ -21,7 +21,7 @@
           - videoanalyst
           - demo
 -   repo: https://github.com/pre-commit/mirrors-yapf
-    rev: master
+    rev: v0.28.0
     hooks:
     -   id: yapf
-        args: [-p, -r, -d, main, videoanalyst, demo]
+        args: [-p, -r, -i, --style=.style.yapf, main, videoanalyst, demo]

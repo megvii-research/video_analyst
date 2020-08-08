@@ -73,7 +73,6 @@ class TesterBase:
         r"""
         an interface for update params
         """
-
     def test(self) -> Dict:
         r"""
         an interface to start testing
