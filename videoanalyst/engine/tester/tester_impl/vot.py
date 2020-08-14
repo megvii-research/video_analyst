@@ -66,9 +66,6 @@ class VOTTester(TesterBase):
         super(VOTTester, self).__init__(*args, **kwargs)
         self._state['speed'] = -1
 
-    def update_params(self):
-        pass
-
     def test(self) -> Dict:
         r"""
         Run test
@@ -161,7 +158,7 @@ class VOTTester(TesterBase):
         speed_queue:
             queue for fps measurement collecting
         """
-        # tracker = copy.deepcopy(self._pipeline)
+        self.set_random_seed()
         tracker = self._pipeline
         tracker.set_device(dev)
         for v_id, video in enumerate(records):

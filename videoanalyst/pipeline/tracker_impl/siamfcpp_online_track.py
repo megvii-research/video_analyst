@@ -8,12 +8,12 @@ import numpy as np
 import torch
 
 from videoanalyst.pipeline.pipeline_base import TRACK_PIPELINES, PipelineBase
-from videoanalyst.pipeline.utils import (bbox, cxywh2xywh, get_crop,
+from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
                                          get_subwindow_tracking,
                                          imarray_to_tensor, tensor_to_numpy,
                                          xywh2cxywh, xyxy2cxywh)
 
-from .classifier.base_classifier import BaseClassifier
+from ..utils.online_classifier.base_classifier import BaseClassifier
 from .config import cfg as config
 
 
@@ -419,7 +419,7 @@ class SiamFCppOnlineTracker(PipelineBase):
                      (box_wh[:, 2] / box_wh[:, 3]))  # ratio penalty
         penalty = np.exp(-(r_c * s_c - 1) * penalty_k)
         pscore = penalty * score
-        pscore = pscore * online_score
+        pscore = 0.5 * pscore + 0.5 * online_score
 
         # ipdb.set_trace()
         # cos window (motion model)
