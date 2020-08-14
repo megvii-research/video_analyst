@@ -1,6 +1,3 @@
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import math
 
 import cv2
@@ -10,11 +7,11 @@ import torch
 import torch.nn
 import torch.nn.functional as F
 
-from .libs import TensorList, augmentation, dcf, fourier, operation
-from .libs.optimization import (ConjugateGradient, GaussNewtonCG,
-                                GradientDescent, GradientDescentL2, NewtonCG)
-from .libs.plotting import show_tensor
 from .optim import ConvProblem, FactorizedConvProblem
+from .utils import TensorList, augmentation, dcf, fourier, operation
+from .utils.optimization import (ConjugateGradient, GaussNewtonCG,
+                                 GradientDescent, GradientDescentL2, NewtonCG)
+from .utils.plotting import show_tensor
 
 
 class BaseClassifier(object):
@@ -29,14 +26,13 @@ class BaseClassifier(object):
         self.frame_num = 1
 
         self.img_sample_sz = torch.round(
-            torch.Tensor([cfg.TRACK.INSTANCE_SIZE, cfg.TRACK.INSTANCE_SIZE]))
+            torch.Tensor([cfg["x_size"], cfg["x_size"]]))
         #if 'alex' in cfg.META_ARC:
-        l = cfg.TRACK.INSTANCE_SIZE // cfg.ANCHOR.STRIDE - cfg.ANCHOR.STRIDE - 1
+        l = cfg["x_size"] // cfg.ANCHOR.STRIDE - cfg.ANCHOR.STRIDE - 1
         # else:
-        #     l = cfg.TRACK.INSTANCE_SIZE // cfg.ANCHOR.STRIDE
+        #     l = cfg["x_size"] // cfg.ANCHOR.STRIDE
         l = 26
-        self.output_sz = torch.Tensor(
-            (cfg.TRACK.INSTANCE_SIZE, cfg.TRACK.INSTANCE_SIZE))
+        self.output_sz = torch.Tensor((cfg["x_size"], cfg["x_size"]))
         self.feature_sz = TensorList([torch.Tensor([l, l])])
         self.kernel_size = TensorList([cfg.TRACK.KERNEL_SIZE])
         self.score_sz = cfg.TRAIN.OUTPUT_SIZE
@@ -111,6 +107,7 @@ class BaseClassifier(object):
         optimizer = cfg.TRACK.OPTIMIZER
 
         # Setup factorized joint optimization
+        plot_show = cfg.TRACK.DEBUG_CLASS and cfg.TRACK.VISUALIZE_CLASS
         if self.update_projection_matrix:
             self.projection_reg = TensorList([cfg.TRACK.PROJECTION_REG])
 
@@ -134,7 +131,6 @@ class BaseClassifier(object):
                 joint_var = self.filter.concat(self.projection_matrix)
 
             # Initialize optimizer
-            plot_show = cfg.TRACK.DEBUG_CLASS and cfg.TRACK.VISUALIZE_CLASS
             if optimizer == 'GaussNewtonCG':
                 self.joint_optimizer = GaussNewtonCG(
                     self.joint_problem,
@@ -387,7 +383,6 @@ class BaseClassifier(object):
 
     def extract_transformed_samples(self, im: torch.Tensor, transforms):
         ims_augmented = torch.cat([T(im) for T in transforms])
-        #for i in range(ims_augmented.size(0)):
         feature_map = self.extract_sample(ims_augmented)
 
         return feature_map, ims_augmented
@@ -416,15 +411,15 @@ class BaseClassifier(object):
                                 compressed_samples[0].size(1), 1, 1).cuda()
                 ])
 
-            if cfg.TRACK.SPATIAL_ATTENTION == 'none':
+            if cfg.TRACK.SPATIAL_ATTENTION == 'pool':
+                spatial_attention = operation.spatial_attention(
+                    compressed_samples, dim=1, keepdim=True)
+            else:
                 spatial_attention = TensorList([
                     torch.zeros(compressed_samples[0].size(0), 1,
                                 compressed_samples[0].size(2),
                                 compressed_samples[0].size(3)).cuda()
                 ])
-            elif cfg.TRACK.SPATIAL_ATTENTION == 'pool':
-                spatial_attention = operation.spatial_attention(
-                    compressed_samples, dim=1, keepdim=True)
 
             compressed_samples = operation.matmul(compressed_samples, spatial_attention) + \
                                  operation.matmul(compressed_samples, channel_attention)
@@ -614,6 +609,7 @@ class BaseClassifier(object):
             self.projection_matrix = TensorList([None] * len(x))
 
     def init_attention_layer(self, x):
+        cfg = self.cfg
 
         self.compressed_dim = TensorList([cfg.TRACK.COMPRESSED_DIM])
         self.channel_att_fc1 = TensorList([
@@ -772,6 +768,7 @@ class BaseClassifier(object):
         return train_y
 
     def transform_score(self, scores_raw):
+        cfg = self.cfg
 
         sf_weighted = fourier.cfft2(scores_raw) / (scores_raw.size(2) *
                                                    scores_raw.size(3))

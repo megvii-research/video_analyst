@@ -2,7 +2,7 @@ import math
 
 import torch
 
-from .libs import TensorList, operation, optimization
+from .utils import TensorList, operation, optimization
 
 
 class FactorizedConvProblem(optimization.L2Problem):

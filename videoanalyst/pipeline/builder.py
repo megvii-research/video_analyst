@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*
 from typing import Dict, List
 
+from loguru import logger
 from yacs.config import CfgNode
 
 from videoanalyst.model.module_base import ModuleBase
@@ -44,7 +45,9 @@ def build(
         pipeline = pipelines[pipeline_name](model)
     elif task == 'vos':
         pipeline = pipelines[pipeline_name](segmenter, tracker)
-
+    else:
+        logger.error("unknown task {} for pipline".format(task))
+        exit(-1)
     hps = pipeline.get_hps()
     hps = merge_cfg_into_hps(cfg[pipeline_name], hps)
     pipeline.set_hps(hps)
@@ -63,7 +66,6 @@ def get_config(task_list: List) -> Dict[str, CfgNode]:
         config with list of available components
     """
     cfg_dict = {name: CfgNode() for name in task_list}
-    #print(PIPELINES)
     for cfg_name, task_module in PIPELINES.items():
         cfg = cfg_dict[cfg_name]
         cfg["name"] = "unknown"
