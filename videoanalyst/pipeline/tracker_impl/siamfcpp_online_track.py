@@ -14,7 +14,6 @@ from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
                                          xywh2cxywh, xyxy2cxywh)
 
 from ..utils.online_classifier.base_classifier import BaseClassifier
-from .config import cfg as config
 
 
 # ============================== Tracker definition ============================== #
@@ -53,6 +52,108 @@ class SiamFCppOnlineTracker(PipelineBase):
             phase name for target search
         corr_fea_output: bool
             whether output corr feature
+        debug_show: bool
+            whether show result in the tracking
+        raw_fea_size: int
+            the output size of the feature from backbone
+        projection_reg: float
+            Projection regularization factor
+        use_projection_matrix: bool
+            Use projection matrix, i.e. use the factorized convolution formulation
+        update_projection_matrix: bool
+            Whether the projection matrix should be optimized or not
+        compressed_dim: int
+            Dimension output of projection matrix
+        proj_init_method: str
+            Method for initializing the projection matrix
+        projection_activation: str
+            Activation function after projection ('none', 'relu', 'elu' or 'mlu')
+        use_attention_layer: bool
+            Whether use attention layer
+        channel_attention: bool
+            whether use channel-wise attention
+        spatial_attention: str
+            method of spatial-wise attention such ('none', 'pool')
+        att_activation: str # none|relu|elu|mlu
+            Activation function after attention ('none', 'relu', 'elu', 'mlu')
+        filter_reg: float
+            Filter regularization factor
+        z_kernel_size: tupe
+            Kernel size of filter
+        filter_init_method: str
+            Method for initializing the spatial filter
+        reponse_activation: str or tupe
+            Activation function on the output scores ('none', 'relu', 'elu' or 'mlu')
+        use_augmentation: bool
+            Whether use augmentation for examples for init training
+        augmentation_expansion_factor: float
+            How much to expand sample when doing augmentation
+        augmentation_shift_factor: float
+            How much random shift to do on each augmented sample
+        augmentation_shift: bool
+            whether use random shift in aug
+        augmentation_scale: bool
+            whether use random scale in aug
+        augmentation_rotate: list
+            the retate scales in aug
+        augmentation_relativeshift: list
+            the relative shift in aug
+        augmentation_fliplr: bool
+            whether use flip in aug
+        augmentation_blur: list
+            blur factor in aug
+        augmentation_dropout: tupe
+            (drop_img_num, drop_rate) in aug
+        CG_optimizer: bool
+            whether enable CG optimizer
+        precond_learning_rate: float
+            Learning rate
+        init_samples_minimum_weight: float
+
+        sample_memory_size: int
+            Memory size
+        output_sigma_factor: float
+            Standard deviation of Gaussian label relative to target size
+        # Gauss-Newton CG
+        optimizer: str
+            optimizer name
+        init_CG_iter: int
+            The total number of Conjugate Gradient iterations used in the first frame
+        init_GN_iter: int
+            The number of Gauss-Newton iterations used in the first frame (only if the projection matrix is updated)
+        train_skipping: int
+            How often to run training (every n-th frame)
+        CG_iter: int
+            The number of Conjugate Gradient iterations in each update after the first frame
+        post_init_CG_iter: int
+            CG iterations to run after GN
+        fletcher_reeves: bool
+            Use the Fletcher-Reeves (true) or Polak-Ribiere (false) formula in the Conjugate Gradient
+        CG_forgetting_rate: bool
+            Forgetting rate of the last conjugate direction
+        #SGD
+        optimizer_step_length: int
+            Gradient step length in SGD
+        optimizer_momentum: float
+            Gradient momentum in SGD
+        # advanced localization -hard negtive mining & absence assessment
+        advanced_localization: bool
+            Use this or not
+        analyze_convergence: bool
+        hard_negative_learning_rate: float
+            Learning rate if hard negative detected
+        hard_negative_CG_iter: int
+            Number of optimization iterations to use if hard negative detected
+        target_not_found_threshold: float
+            Absolute score threshold to detect target missing
+        target_neighborhood_scale: float
+            Dispacement to consider for distractors
+        distractor_threshold: float
+            Relative threshold to find distractors
+        displacement_scale: float
+            Dispacement to consider for distractors
+        hard_negative_threshold: float
+            Relative threshold to find hard negative samples
 
     Hyper-parameters (to be calculated at runtime)
     ----------------------------------------------
@@ -62,6 +163,7 @@ class SiamFCppOnlineTracker(PipelineBase):
         final feature map
     """
     default_hyper_params = dict(
+        # global set
         total_stride=8,
         score_size=17,
         score_offset=87,
@@ -79,6 +181,71 @@ class SiamFCppOnlineTracker(PipelineBase):
         phase_track="track",
         corr_fea_output=False,
         debug_show=False,
+        # online model param
+        projection_reg=1e-4,
+        # first layer compression
+        use_projection_matrix=True,
+        update_projection_matrix=True,
+        compressed_dim=128,
+        proj_init_method="pca",
+        projection_activation="none",  # relu|elu|none|mlu
+        # second layer attention
+        use_attention_layer=True,
+        channel_attention=True,
+        att_fc1_reg=1e-4,
+        att_fc2_reg=1e-4,
+        att_init_method="randn",
+        spatial_attention="pool",
+        att_activation="relu",  # none|relu|elu|mlu
+        # third layer (filter)
+        filter_reg=1e-1,
+        raw_fea_size=26,
+        z_kernel_size=(4, 4),
+        filter_init_method="randn",  # zeros|"randn"
+        reponse_activation=("mlu", 0.05),
+        # augmentation params
+        use_augmentation=True,
+        augmentation_expansion_factor=2,
+        augmentation_shift_factor=1 / 3,
+        augmentation_shift=False,
+        augmentation_scale=False,
+        augmentation_rotate=[
+            5, -5, 10, -10, 20, -20, 30, -30, 45, -45, -60, 60
+        ],
+        augmentation_relativeshift=[(0.6, 0.6), (-0.6, 0.6), (0.6, -0.6),
+                                    (-0.6, -0.6)],
+        augmentation_fliplr=True,
+        augmentation_blur=[(2, 0.2), (0.2, 2), (3, 1), (1, 3), (2, 2)],
+        augmentation_dropout=(7, 0.2),
+        # optimization params
+        CG_optimizer=True,
+        precond_learning_rate=0.01,
+        init_samples_minimum_weight=0.25,
+        sample_memory_size=250,
+        output_sigma_factor=0.25,
+
+        # Gauss-Newton CG
+        optimizer='GaussNewtonCG',
+        init_CG_iter=60,
+        init_GN_iter=6,
+        train_skipping=10,
+        CG_iter=5,
+        post_init_CG_iter=0,
+        fletcher_reeves=False,
+        CG_forgetting_rate=False,
+        #SGD
+        optimizer_step_length=10,
+        optimizer_momentum=0.9,
+        # advanced localization -hard negtive mining & absence assessment
+        advanced_localization=True,
+        analyze_convergence=False,
+        hard_negative_learning_rate=0.02,
+        hard_negative_CG_iter=5,
+        target_not_found_threshold=0.25,
+        target_neighborhood_scale=2.2,
+        distractor_threshold=0.8,
+        displacement_scale=0.8,
+        hard_negative_threshold=0.5,
     )
 
     def __init__(self, *args, **kwargs):
@@ -116,7 +283,7 @@ class SiamFCppOnlineTracker(PipelineBase):
             hps['x_size'] - 1 -
             (hps['score_size'] - 1) * hps['total_stride']) // 2
         self._hyper_params = hps
-        self.online_classifier = BaseClassifier(self._model, config)
+        self.online_classifier = BaseClassifier(self._model, hps)
 
     def feature(self, im: np.array, target_pos, target_sz, avg_chans=None):
         """Extract feature
@@ -275,7 +442,10 @@ class SiamFCppOnlineTracker(PipelineBase):
                 self.lost_count = 0
 
             #confidence = Image.fromarray(s.detach().cpu().numpy())
-            confidence = s.detach().cpu().numpy()[5:-5, 5:-5]
+            confidence = s.detach().cpu().numpy()
+            offset = (confidence.shape[0] -
+                      self._hyper_params["score_size"]) // 2
+            confidence = confidence[offset:-offset, offset:-offset]
             #confidence = np.array(confidence.resize((self._hyper_params["score_size"], self._hyper_params["score_size"])))
             confidence = normalize(confidence).flatten()
             #pscore = pscore.reshape(5, -1) * (1 - cfg.TRACK.COEE_CLASS) + \

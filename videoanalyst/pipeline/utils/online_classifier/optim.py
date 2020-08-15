@@ -46,7 +46,7 @@ class FactorizedConvProblem(optimization.L2Problem):
 
         # Attention module
         if self.use_attetion:
-            if cfg.TRACK.CHANNEL_ATTENTION:
+            if cfg["channel_attention"]:
                 global_average = operation.adaptive_avg_pool2d(
                     compressed_samples, 1)
                 temp_variables = operation.conv1x1(global_average, fc1).apply(
@@ -59,13 +59,13 @@ class FactorizedConvProblem(optimization.L2Problem):
                                 compressed_samples[0].size(1), 1, 1).cuda()
                 ])
 
-            if cfg.TRACK.SPATIAL_ATTENTION == 'none':
+            if cfg["spatial_attention"] == 'none':
                 spatial_attention = TensorList([
                     torch.zeros(compressed_samples[0].size(0), 1,
                                 compressed_samples[0].size(2),
                                 compressed_samples[0].size(3)).cuda()
                 ])
-            elif cfg.TRACK.SPATIAL_ATTENTION == 'pool':
+            elif cfg["spatial_attention"] == 'pool':
                 spatial_attention = operation.spatial_attention(
                     compressed_samples, dim=1, keepdim=True)
             else:

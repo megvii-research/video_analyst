@@ -1,6 +1,5 @@
 import math
 
-import cv2
 import numpy as np
 
 import torch
@@ -27,36 +26,29 @@ class BaseClassifier(object):
 
         self.img_sample_sz = torch.round(
             torch.Tensor([cfg["x_size"], cfg["x_size"]]))
-        #if 'alex' in cfg.META_ARC:
-        l = cfg["x_size"] // cfg.ANCHOR.STRIDE - cfg.ANCHOR.STRIDE - 1
-        # else:
-        #     l = cfg["x_size"] // cfg.ANCHOR.STRIDE
-        l = 26
+        raw_fea_size = cfg["raw_fea_size"]
         self.output_sz = torch.Tensor((cfg["x_size"], cfg["x_size"]))
-        self.feature_sz = TensorList([torch.Tensor([l, l])])
-        self.kernel_size = TensorList([cfg.TRACK.KERNEL_SIZE])
-        self.score_sz = cfg.TRAIN.OUTPUT_SIZE
+        self.feature_sz = TensorList(
+            [torch.Tensor([raw_fea_size, raw_fea_size])])
+        self.kernel_size = TensorList([cfg["z_kernel_size"]])
 
         # Get all geometry information
         self.pos = torch.Tensor(
             [state[1] + (state[3] - 1) / 2, state[0] + (state[2] - 1) / 2])
         self.target_sz = torch.Tensor([state[3], state[2]])
 
-        wc_z = self.target_sz[1] + cfg.TRACK.CONTEXT_AMOUNT * sum(
-            self.target_sz)
-        hc_z = self.target_sz[0] + cfg.TRACK.CONTEXT_AMOUNT * sum(
-            self.target_sz)
+        wc_z = self.target_sz[1] + cfg["context_amount"] * sum(self.target_sz)
+        hc_z = self.target_sz[0] + cfg["context_amount"] * sum(self.target_sz)
         s_z = np.sqrt(wc_z * hc_z)
-        self.scale = cfg.TRACK.EXEMPLAR_SIZE / s_z
+        self.scale = cfg["z_size"] / s_z
 
         # hinge mask
-        self.use_attention_layer = cfg.TRACK.USE_ATTENTION_LAYER and (
-            cfg.TRACK.CHANNEL_ATTENTION
-            or cfg.TRACK.SPATIAL_ATTENTION != 'none')
+        self.use_attention_layer = cfg["use_attention_layer"] and (
+            cfg["channel_attention"] or cfg["spatial_attention"] != 'none')
 
         # Optimization options
-        self.precond_learning_rate = cfg.TRACK.LEARNING_RATE
-        self.CG_forgetting_rate = cfg.TRACK.CG_FORGETTING_RATE
+        self.precond_learning_rate = cfg["precond_learning_rate"]
+        self.CG_forgetting_rate = cfg["CG_forgetting_rate"]
         if not self.CG_forgetting_rate or self.precond_learning_rate >= 1:
             self.direction_forget_factor = 0
         else:
@@ -89,7 +81,7 @@ class BaseClassifier(object):
     def init_optimization(self, train_x, init_y):
         # Initialize filter
         cfg = self.cfg
-        filter_init_method = cfg.TRACK.FILTER_INIT_METHOD
+        filter_init_method = cfg["filter_init_method"]
         self.filter = TensorList([
             x.new_zeros(1, cdim, sz[0], sz[1]) for x, cdim, sz in zip(
                 train_x, self.compressed_dim, self.kernel_size)
@@ -103,13 +95,13 @@ class BaseClassifier(object):
             raise ValueError('Unknown "filter_init_method"')
 
         # Get parameters
-        self.update_projection_matrix = cfg.TRACK.UPDATE_PROJECTION_MATRIX and cfg.TRACK.USE_PROJECTION_MATRIX
-        optimizer = cfg.TRACK.OPTIMIZER
-
+        self.update_projection_matrix = cfg["update_projection_matrix"] and cfg[
+            "use_projection_matrix"]
+        optimizer = cfg["optimizer"]
         # Setup factorized joint optimization
-        plot_show = cfg.TRACK.DEBUG_CLASS and cfg.TRACK.VISUALIZE_CLASS
+        plot_show = cfg["debug_show"]
         if self.update_projection_matrix:
-            self.projection_reg = TensorList([cfg.TRACK.PROJECTION_REG])
+            self.projection_reg = TensorList([cfg["projection_reg"]])
 
             self.joint_problem = FactorizedConvProblem(
                 self.init_training_samples,
@@ -136,44 +128,44 @@ class BaseClassifier(object):
                     self.joint_problem,
                     joint_var,
                     plotting=plot_show,
-                    analyze=cfg.TRACK.ANALYZE_CONVERGENCE,
+                    analyze=cfg["analyze_convergence"],
                     fig_num=(12, 13, 14))
             elif optimizer == 'GradientDescentL2':
                 self.joint_optimizer = GradientDescentL2(
                     self.joint_problem,
                     joint_var,
-                    cfg.TRACK.OPTIMIZER_STEP_LENGTH,
-                    cfg.TRACK.OPTIMIZER_MOMENTUM,
+                    cfg["optimizer_step_length"],
+                    cfg["optimizer_momentum"],
                     plotting=plot_show,
-                    debug=cfg.TRACK.ANALYZE_CONVERGENCE,
+                    debug=cfg["analyze_convergence"],
                     fig_num=(12, 13))
             elif optimizer == 'NewtonCG':
                 self.joint_optimizer = NewtonCG(
                     self.joint_problem,
                     joint_var,
                     plotting=plot_show,
-                    analyze=cfg.TRACK.ANALYZE_CONVERGENCE,
+                    analyze=cfg["analyze_convergence"],
                     fig_num=(12, 13, 14))
             elif optimizer == 'GradientDescent':
                 self.joint_optimizer = GradientDescent(
                     self.joint_problem,
                     joint_var,
-                    cfg.TRACK.OPTIMIZER_STEP_LENGTH,
-                    cfg.TRACK.OPTIMIZER_MOMENTUM,
+                    cfg["optimizer_step_length"],
+                    cfg["optimizer_momentum"],
                     plotting=plot_show,
-                    debug=cfg.TRACK.ANALYZE_CONVERGENCE,
+                    debug=cfg["analyze_convergence"],
                     fig_num=(12, 13))
 
             # Do joint optimization
-            if isinstance(cfg.TRACK.INIT_CG_ITER, (list, tuple)):
-                self.joint_optimizer.run(cfg.TRACK.INIT_CG_ITER)
+            if isinstance(cfg["init_CG_iter"], (list, tuple)):
+                self.joint_optimizer.run(cfg["init_CG_iter"])
             else:
                 self.joint_optimizer.run(
-                    cfg.TRACK.INIT_CG_ITER // cfg.TRACK.INIT_GN_ITER,
-                    cfg.TRACK.INIT_GN_ITER)
+                    cfg["init_CG_iter"] // cfg["init_GN_iter"],
+                    cfg["init_GN_iter"])
 
-            if cfg.TRACK.ANALYZE_CONVERGENCE:
-                opt_name = 'CG' if cfg.TRACK.CG_OPTIMIZER else 'GD'
+            if cfg["analyze_convergence"]:
+                opt_name = 'CG' if cfg["CG_optimizer"] else 'GD'
                 for val_name, values in zip(['loss', 'gradient'], [
                         self.joint_optimizer.losses,
                         self.joint_optimizer.gradient_mags
@@ -201,7 +193,7 @@ class BaseClassifier(object):
             self.filter_optimizer = ConjugateGradient(
                 self.conv_problem,
                 self.filter,
-                fletcher_reeves=cfg.TRACK.FLETCHER_REEVES,
+                fletcher_reeves=cfg["fletcher_reeves"],
                 direction_forget_factor=self.direction_forget_factor,
                 debug=plot_show,
                 fig_num=(12, 13))
@@ -209,8 +201,8 @@ class BaseClassifier(object):
             self.filter_optimizer = GradientDescent(
                 self.conv_problem,
                 self.filter,
-                cfg.TRACK.OPTIMIZER_STEP_LENGTH,
-                cfg.TRACK.OPTIMIZER_MOMENTUM,
+                cfg["optimizer_step_length"],
+                cfg["optimizer_momentum"],
                 debug=plot_show,
                 fig_num=12)
 
@@ -220,10 +212,10 @@ class BaseClassifier(object):
             self.filter_optimizer.losses = self.joint_optimizer.losses
 
         if not self.update_projection_matrix:
-            self.filter_optimizer.run(cfg.TRACK.INIT_CG_ITER)
+            self.filter_optimizer.run(cfg["init_CG_iter"])
 
         # Post optimization
-        self.filter_optimizer.run(cfg.TRACK.POST_INIT_CG_ITER)
+        self.filter_optimizer.run(cfg["post_init_CG_iter"])
 
         # Free memory
         del self.init_training_samples
@@ -243,7 +235,7 @@ class BaseClassifier(object):
         scores_raw = self.apply_filter(self.feat_x)
         s, flag = self.localize_target(scores_raw)
 
-        if cfg.TRACK.VISUALIZE_CLASS:
+        if cfg["debug_show"]:
             show_tensor(s,
                         5,
                         title='Classification Max score = {:.2f}'.format(
@@ -263,7 +255,9 @@ class BaseClassifier(object):
         # Check flags and set learning rate if hard negative
         update_flag = flag not in ['not_found', 'uncertain']
         hard_negative = (flag == 'hard_negative')
-        learning_rate = cfg.TRACK.HARD_NEGATIVE_LEARNING_RATE if hard_negative else cfg.TRACK.LEARNING_RATE
+        learning_rate = cfg[
+            "hard_negative_learning_rate"] if hard_negative else cfg[
+                "precond_learning_rate"]
 
         if update_flag:
             # Create label for sample
@@ -276,9 +270,9 @@ class BaseClassifier(object):
 
         # Train filter
         if hard_negative:
-            self.filter_optimizer.run(cfg.TRACK.HARD_NEGATIVE_CG_ITER)
-        elif (self.frame_num - 1) % cfg.TRACK.TRAIN_SKIPPING == 0:
-            self.filter_optimizer.run(cfg.TRACK.CG_ITER)
+            self.filter_optimizer.run(cfg["hard_negative_CG_iter"])
+        elif (self.frame_num - 1) % cfg["train_skipping"] == 0:
+            self.filter_optimizer.run(cfg["CG_iter"])
 
     def apply_filter(self, sample_x: TensorList):
         return operation.conv2d(sample_x, self.filter, mode='same')
@@ -296,11 +290,11 @@ class BaseClassifier(object):
         output_sz = torch.Tensor((27, 27))
         scores = fourier.sample_fs(scores_fs, output_sz).squeeze()
 
-        if cfg.TRACK.ADVANCED_LOCALIZATION:
+        if cfg["advanced_localization"]:
             return self.localize_advanced(scores)
 
         # Shift the score output for visualization purposes
-        if cfg.TRACK.VISUALIZE_CLASS:
+        if cfg["debug_show"]:
             sz = scores.shape[-2:]
             scores = torch.cat(
                 [scores[..., sz[0] // 2:, :], scores[..., :sz[0] // 2, :]], -2)
@@ -327,11 +321,12 @@ class BaseClassifier(object):
         max_disp1 = max_disp1.float().cpu().view(-1)
         target_disp1 = max_disp1 - self.output_sz // 2
 
-        if max_score1.item() < cfg.TRACK.TARGET_NOT_FOUND_THRESHOLD:
+        if max_score1.item() < cfg["target_not_found_threshold"]:
             return scores, 'not_found'
 
         # Mask out target neighborhood
-        target_neigh_sz = cfg.TRACK.TARGET_NEIGHBORHOOD_SCALE * self.target_sz * self.scale
+        target_neigh_sz = cfg[
+            "target_neighborhood_scale"] * self.target_sz * self.scale
         tneigh_top = max(
             round(max_disp1[0].item() - target_neigh_sz[0].item() / 2), 0)
         tneigh_bottom = min(
@@ -352,10 +347,10 @@ class BaseClassifier(object):
         target_disp2 = max_disp2 - self.output_sz // 2
 
         # Handle the different cases
-        if max_score2 > cfg.TRACK.DISTRACTOR_THRESHOLD * max_score1:
+        if max_score2 > cfg["distractor_threshold"] * max_score1:
             disp_norm1 = torch.sqrt(torch.sum(target_disp1**2))
             disp_norm2 = torch.sqrt(torch.sum(target_disp2**2))
-            disp_threshold = cfg.TRACK.DISPLACEMENT_SCALE * math.sqrt(
+            disp_threshold = cfg["displacement_scale"] * math.sqrt(
                 sz[0] * sz[1]) / 2
 
             if disp_norm2 > disp_threshold and disp_norm1 < disp_threshold:
@@ -368,7 +363,9 @@ class BaseClassifier(object):
             # If also the distractor is close, return with highest score
             return scores, 'uncertain'
 
-        if max_score2 > cfg.TRACK.HARD_NEGATIVE_THRESHOLD * max_score1 and max_score2 > cfg.TRACK.TARGET_NOT_FOUND_THRESHOLD:
+        if max_score2 > cfg[
+                "hard_negative_threshold"] * max_score1 and max_score2 > cfg[
+                    "target_not_found_threshold"]:
             return scores, 'hard_negative'
 
         return scores, None
@@ -397,7 +394,7 @@ class BaseClassifier(object):
             self.projection_activation)
 
         if self.use_attention_layer:
-            if cfg.TRACK.CHANNEL_ATTENTION:
+            if cfg["channel_attention"]:
                 global_average = operation.adaptive_avg_pool2d(
                     compressed_samples, 1)
                 temp_variables = operation.conv1x1(global_average,
@@ -411,7 +408,7 @@ class BaseClassifier(object):
                                 compressed_samples[0].size(1), 1, 1).cuda()
                 ])
 
-            if cfg.TRACK.SPATIAL_ATTENTION == 'pool':
+            if cfg["spatial_attention"] == 'pool':
                 spatial_attention = operation.spatial_attention(
                     compressed_samples, dim=1, keepdim=True)
             else:
@@ -440,10 +437,10 @@ class BaseClassifier(object):
     def init_learning(self):
         cfg = self.cfg
         # Filter regularization
-        self.filter_reg = TensorList([cfg.TRACK.FILTER_REG])
+        self.filter_reg = TensorList([cfg["filter_reg"]])
 
         # Activation function after the projection matrix (phi_1 in the paper)
-        projection_activation = cfg.TRACK.PROJECTION_ACTIVATION
+        projection_activation = cfg["projection_activation"]
         if isinstance(projection_activation, tuple):
             projection_activation, act_param = projection_activation
 
@@ -460,7 +457,7 @@ class BaseClassifier(object):
             raise ValueError('Unknown activation')
 
         # Activation function for attention layer
-        att_activation = cfg.TRACK.ATT_ACTIVATION
+        att_activation = cfg["att_activation"]
         if isinstance(att_activation, tuple):
             att_activation, act_param = att_activation
         if att_activation == 'none':
@@ -476,7 +473,7 @@ class BaseClassifier(object):
             raise ValueError('Unknown activation')
 
         # Activation function after the output scores (phi_2 in the paper)
-        response_activation = cfg.TRACK.RESPONSE_ACTIVATION
+        response_activation = cfg["reponse_activation"]
         if isinstance(response_activation, tuple):
             response_activation, act_param = response_activation
 
@@ -497,7 +494,7 @@ class BaseClassifier(object):
 
         # Compute augmentation size
         cfg = self.cfg
-        aug_expansion_factor = cfg.TRACK.AUGMENTATION_EXPANSION_FACTOR
+        aug_expansion_factor = cfg["augmentation_expansion_factor"]
         aug_expansion_sz = self.img_sample_sz.clone()
         aug_output_sz = None
         if aug_expansion_factor is not None and aug_expansion_factor != 1:
@@ -510,7 +507,7 @@ class BaseClassifier(object):
 
         # Random shift operator
         self.get_rand_shift = lambda: None
-        self.random_shift_factor = cfg.TRACK.RANDOM_SHIFT_FACTOR
+        self.random_shift_factor = cfg["augmentation_shift_factor"]
         if self.random_shift_factor > 0:
             self.get_rand_shift = lambda: (
                 (torch.rand(2) - 0.5) * self.img_sample_sz * self.
@@ -518,37 +515,37 @@ class BaseClassifier(object):
 
         # Create transofmations
         self.transforms = [augmentation.Identity(aug_output_sz)]
-        if cfg.TRACK.AUGMENTATION_SHIFT:
+        if cfg["augmentation_shift"]:
             self.transforms.extend([
                 augmentation.Translation(shift, aug_output_sz)
-                for shift in cfg.TRACK.AUGMENTATION_SHIFT
+                for shift in cfg["augmentation_shift"]
             ])
-        if cfg.TRACK.AUGMENTATION_RELATIVESHIFT:
+        if cfg["augmentation_relativeshift"]:
             get_absolute = lambda shift: (torch.Tensor(shift) * self.
                                           img_sample_sz / 2).long().tolist()
             self.transforms.extend([
                 augmentation.Translation(get_absolute(shift), aug_output_sz)
-                for shift in cfg.TRACK.AUGMENTATION_RELATIVESHIFT
+                for shift in cfg["augmentation_relativeshift"]
             ])
-        if cfg.TRACK.AUGMENTATION_FLIPLR:
+        if cfg["augmentation_fliplr"]:
             self.transforms.append(
                 augmentation.FlipHorizontal(aug_output_sz,
                                             self.get_rand_shift()))
-        if cfg.TRACK.AUGMENTATION_BLUR:
+        if cfg["augmentation_blur"]:
             self.transforms.extend([
                 augmentation.Blur(sigma, aug_output_sz, self.get_rand_shift())
-                for sigma in cfg.TRACK.AUGMENTATION_BLUR
+                for sigma in cfg["augmentation_blur"]
             ])
-        if cfg.TRACK.AUGMENTATION_SCALE:
+        if cfg["augmentation_scale"]:
             self.transforms.extend([
                 augmentation.Scale(scale_factor, aug_output_sz,
                                    self.get_rand_shift())
-                for scale_factor in cfg.TRACK.AUGMENTATION_SCALE
+                for scale_factor in cfg["augmentation_scale"]
             ])
-        if cfg.TRACK.AUGMENTATION_ROTATE:
+        if cfg["augmentation_rotate"]:
             self.transforms.extend([
                 augmentation.Rotate(angle, aug_output_sz, self.get_rand_shift())
-                for angle in cfg.TRACK.AUGMENTATION_ROTATE
+                for angle in cfg["augmentation_rotate"]
             ])
 
         # Generate initial samples
@@ -556,16 +553,15 @@ class BaseClassifier(object):
             im, self.transforms)
 
         # Remove augmented samples for those that shall not have
-        for i, use_aug in enumerate(TensorList([cfg.TRACK.USE_AUGMENTATION])):
+        for i, use_aug in enumerate(TensorList([cfg["use_augmentation"]])):
             if not use_aug:
                 init_samples[i] = init_samples[i][0:1, ...]
 
         # Add dropout samples
-        if cfg.TRACK.AUGMENTATION_DROUPOUT:
-            num, prob = cfg.TRACK.AUGMENTATION_DROUPOUT
+        if cfg["augmentation_dropout"]:
+            num, prob = cfg["augmentation_dropout"]
             self.transforms.extend(self.transforms[:1] * num)
-            for i, use_aug in enumerate(TensorList([cfg.TRACK.USE_AUGMENTATION
-                                                    ])):
+            for i, use_aug in enumerate(TensorList([cfg["use_augmentation"]])):
                 if use_aug:
                     init_samples[i] = torch.cat([
                         init_samples[i],
@@ -580,11 +576,11 @@ class BaseClassifier(object):
     def init_projection_matrix(self, x):
         # Set if using projection matrix
         cfg = self.cfg
-        self.use_projection_matrix = cfg.TRACK.USE_PROJECTION_MATRIX
+        self.use_projection_matrix = cfg["use_projection_matrix"]
 
         if self.use_projection_matrix:
-            self.compressed_dim = TensorList([cfg.TRACK.COMPRESSED_DIM])
-            proj_init_method = cfg.TRACK.PROJ_INIT_METHOD
+            self.compressed_dim = TensorList([cfg["compressed_dim"]])
+            proj_init_method = cfg["proj_init_method"]
             if proj_init_method == 'pca':
                 x_mat = TensorList([
                     e.permute(1, 0, 2, 3).reshape(e.shape[1], -1).clone()
@@ -611,7 +607,7 @@ class BaseClassifier(object):
     def init_attention_layer(self, x):
         cfg = self.cfg
 
-        self.compressed_dim = TensorList([cfg.TRACK.COMPRESSED_DIM])
+        self.compressed_dim = TensorList([cfg["compressed_dim"]])
         self.channel_att_fc1 = TensorList([
             None if cdim is None else ex.new_zeros(
                 cdim // 2, cdim, 1, 1).normal_(0, 1 / math.sqrt(cdim))
@@ -627,12 +623,12 @@ class BaseClassifier(object):
         cfg = self.cfg
         # Allocate label function
         self.y = TensorList([
-            x.new_zeros(cfg.TRACK.SAMPLE_MEMORY_SIZE, 1, x.shape[2], x.shape[3])
+            x.new_zeros(cfg["sample_memory_size"], 1, x.shape[2], x.shape[3])
             for x in train_x
         ])
 
         # Output sigma factor
-        output_sigma_factor = cfg.TRACK.OUTPUT_SIGMA_FACTOR
+        output_sigma_factor = cfg["output_sigma_factor"]
 
         self.sigma = (
             self.feature_sz / self.img_sample_sz * self.target_sz *
@@ -645,14 +641,6 @@ class BaseClassifier(object):
             center_pos = sz * target_center_norm + 0.5 * torch.Tensor(
                 [(ksz[0] + 1) % 2, (ksz[1] + 1) % 2])
             for i, T in enumerate(self.transforms[:x.shape[0]]):
-                if i < 20:
-                    real_pos = center_pos + torch.Tensor(T.shift)
-                    real_pos = real_pos.numpy()
-                    img = self.aug_imgs[i].permute(1, 2,
-                                                   0).numpy().astype(np.uint8)
-                    img = cv2.circle(
-                        img, (int(real_pos[1]) + 151, int(real_pos[0]) + 151),
-                        5, (0, 255, 0), 1)
                 sample_center = center_pos + torch.Tensor(
                     T.shift) / self.img_sample_sz * sz
                 #y[i, 0, ...] = dcf.label_function_spatial(sz, sig, sample_center, scale)
@@ -675,7 +663,7 @@ class BaseClassifier(object):
         self.num_stored_samples = self.num_init_samples.copy()
         self.previous_replace_ind = [None] * len(self.num_stored_samples)
         self.sample_weights = TensorList(
-            [x.new_zeros(cfg.TRACK.SAMPLE_MEMORY_SIZE) for x in train_x])
+            [x.new_zeros(cfg["sample_memory_size"]) for x in train_x])
         for sw, init_sw, num in zip(self.sample_weights,
                                     self.init_sample_weights,
                                     self.num_init_samples):
@@ -683,8 +671,7 @@ class BaseClassifier(object):
 
         # Initialize memory
         self.training_samples = TensorList([
-            x.new_zeros(cfg.TRACK.SAMPLE_MEMORY_SIZE, cdim, x.shape[2],
-                        x.shape[3])
+            x.new_zeros(cfg["sample_memory_size"], cdim, x.shape[2], x.shape[3])
             for x, cdim in zip(train_x, self.compressed_dim)
         ])
 
@@ -722,7 +709,7 @@ class BaseClassifier(object):
             # if lr is None:
             #     lr = fpar.learning_rate
 
-            init_samp_weight = cfg.TRACK.INIT_SAMPLES_MINIMUM_WEIGHT
+            init_samp_weight = cfg["init_samples_minimum_weight"]
             if init_samp_weight == 0:
                 init_samp_weight = None
             s_ind = 0 if init_samp_weight is None else num_init
@@ -780,7 +767,7 @@ class BaseClassifier(object):
         scores_fs = fourier.sum_fs(sf_weighted)
         scores = fourier.sample_fs(scores_fs, self.output_sz).squeeze()
 
-        if cfg.TRACK.VISUALIZE_CLASS:
+        if cfg["debug_show"]:
             sz = scores.shape[-2:]
             scores = torch.cat(
                 [scores[..., sz[0] // 2:, :], scores[..., :sz[0] // 2, :]], -2)
