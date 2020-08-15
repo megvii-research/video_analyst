@@ -99,7 +99,7 @@ class BaseClassifier(object):
             "use_projection_matrix"]
         optimizer = cfg["optimizer"]
         # Setup factorized joint optimization
-        plot_show = cfg["debug_show"]
+        plot_show = cfg["online_debug_show"]
         if self.update_projection_matrix:
             self.projection_reg = TensorList([cfg["projection_reg"]])
 
@@ -235,7 +235,7 @@ class BaseClassifier(object):
         scores_raw = self.apply_filter(self.feat_x)
         s, flag = self.localize_target(scores_raw)
 
-        if cfg["debug_show"]:
+        if cfg["online_debug_show"]:
             show_tensor(s,
                         5,
                         title='Classification Max score = {:.2f}'.format(
@@ -294,7 +294,7 @@ class BaseClassifier(object):
             return self.localize_advanced(scores)
 
         # Shift the score output for visualization purposes
-        if cfg["debug_show"]:
+        if cfg["online_debug_show"]:
             sz = scores.shape[-2:]
             scores = torch.cat(
                 [scores[..., sz[0] // 2:, :], scores[..., :sz[0] // 2, :]], -2)
@@ -767,7 +767,7 @@ class BaseClassifier(object):
         scores_fs = fourier.sum_fs(sf_weighted)
         scores = fourier.sample_fs(scores_fs, self.output_sz).squeeze()
 
-        if cfg["debug_show"]:
+        if cfg["online_debug_show"]:
             sz = scores.shape[-2:]
             scores = torch.cat(
                 [scores[..., sz[0] // 2:, :], scores[..., :sz[0] // 2, :]], -2)

@@ -2,6 +2,10 @@
 
 Date format: YY/MM/DD
 
+## 2020/08/15
+* add atom online module from pytracking & DROL
+* update speed defination in vot test
+
 ## 2020/08/08
 * adopt pre-commit to format code while committing
 * reformat code with isort, autoflake and yapf
