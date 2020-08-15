@@ -82,11 +82,11 @@ class SiamFCppOnlineTracker(PipelineBase):
             Activation function after attention ('none', 'relu', 'elu', 'mlu')
         filter_reg: float
             Filter regularization factor
-        z_kernel_size: tupe
+        z_kernel_size: tuple
             Kernel size of filter
         filter_init_method: str
             Method for initializing the spatial filter
-        reponse_activation: str or tupe
+        reponse_activation: str or tuple
             Activation function on the output scores ('none', 'relu', 'elu' or 'mlu')
         use_augmentation: bool
             Whether use augmentation for examples for init training
@@ -106,7 +106,7 @@ class SiamFCppOnlineTracker(PipelineBase):
             whether use flip in aug
         augmentation_blur: list
             blur factor in aug
-        augmentation_dropout: tupe
+        augmentation_dropout: tuple
             (drop_img_num, drop_rate) in aug
         CG_optimizer: bool
             whether enable CG optimizer
