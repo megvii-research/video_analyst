@@ -54,6 +54,10 @@ class SiamFCppOnlineTracker(PipelineBase):
             whether output corr feature
         debug_show: bool
             whether show result in the tracking
+        online_debug_show: bool
+            debug for online module
+        online_score_weight: float
+            the online score weight 
         raw_fea_size: int
             the output size of the feature from backbone
         projection_reg: float
@@ -181,6 +185,8 @@ class SiamFCppOnlineTracker(PipelineBase):
         phase_track="track",
         corr_fea_output=False,
         debug_show=False,
+        online_debug_show=False,
+        online_score_weight=0.5,
         # online model param
         projection_reg=1e-4,
         # first layer compression
@@ -367,8 +373,6 @@ class SiamFCppOnlineTracker(PipelineBase):
         self._state['avg_chans'] = avg_chans
         self._state['features'] = features
         self._state['window'] = window
-        # self.state['target_pos'] = target_pos
-        # self.state['target_sz'] = target_sz
         self._state['state'] = (target_pos, target_sz)
         # init online classifier
         z_size = self._hyper_params['z_size']
@@ -441,16 +445,11 @@ class SiamFCppOnlineTracker(PipelineBase):
             else:
                 self.lost_count = 0
 
-            #confidence = Image.fromarray(s.detach().cpu().numpy())
             confidence = s.detach().cpu().numpy()
             offset = (confidence.shape[0] -
                       self._hyper_params["score_size"]) // 2
             confidence = confidence[offset:-offset, offset:-offset]
-            #confidence = np.array(confidence.resize((self._hyper_params["score_size"], self._hyper_params["score_size"])))
             confidence = normalize(confidence).flatten()
-            #pscore = pscore.reshape(5, -1) * (1 - cfg.TRACK.COEE_CLASS) + \
-            #    normalize(confidence) * cfg.TRACK.COEE_CLASS
-            #pscore = pscore.flatten()
         box_wh = xyxy2cxywh(box)
 
         # score post-processing
@@ -541,7 +540,6 @@ class SiamFCppOnlineTracker(PipelineBase):
                                            update_state=True)
 
         # save underlying state
-        # self.state['target_pos'], self.state['target_sz'] = target_pos, target_sz
         self._state['state'] = target_pos, target_sz
 
         # return rect format
@@ -589,7 +587,9 @@ class SiamFCppOnlineTracker(PipelineBase):
                      (box_wh[:, 2] / box_wh[:, 3]))  # ratio penalty
         penalty = np.exp(-(r_c * s_c - 1) * penalty_k)
         pscore = penalty * score
-        pscore = 0.5 * pscore + 0.5 * online_score
+        pscore = (
+            1 - self._hyper_params["online_score_weight"]
+        ) * pscore + self._hyper_params["online_score_weight"] * online_score
 
         # ipdb.set_trace()
         # cos window (motion model)
