@@ -4,6 +4,9 @@ from typing import Tuple
 import torch
 import torch.nn.functional as F
 
+from .complex import exp_imag, mult, real
+from .fourier import get_frequency_coord, rfftshift2
+
 
 def hann1d(sz: int, centered=True) -> torch.Tensor:
     """1D cosine window."""
@@ -96,7 +99,7 @@ def get_interp_fourier(sz: torch.Tensor,
                        windowing=False,
                        device='cpu'):
 
-    ky, kx = fourier.get_frequency_coord(sz)
+    ky, kx = get_frequency_coord(sz)
 
     if method == 'ideal':
         interp_y = torch.ones(ky.shape) / sz[0]
@@ -108,10 +111,8 @@ def get_interp_fourier(sz: torch.Tensor,
         raise ValueError('Unknown method.')
 
     if centering:
-        interp_y = complex.mult(interp_y,
-                                complex.exp_imag((-math.pi / sz[0]) * ky))
-        interp_x = complex.mult(interp_x,
-                                complex.exp_imag((-math.pi / sz[1]) * kx))
+        interp_y = mult(interp_y, exp_imag((-math.pi / sz[0]) * ky))
+        interp_x = mult(interp_x, exp_imag((-math.pi / sz[1]) * kx))
 
     if windowing:
         raise NotImplementedError
@@ -122,9 +123,9 @@ def get_interp_fourier(sz: torch.Tensor,
 def interpolate_dft(a: torch.Tensor, interp_fs) -> torch.Tensor:
 
     if isinstance(interp_fs, torch.Tensor):
-        return complex.mult(a, interp_fs)
+        return mult(a, interp_fs)
     if isinstance(interp_fs, (tuple, list)):
-        return complex.mult(complex.mult(a, interp_fs[0]), interp_fs[1])
+        return mult(mult(a, interp_fs[0]), interp_fs[1])
     raise ValueError('"interp_fs" must be tensor or tuple of tensors.')
 
 
@@ -165,7 +166,7 @@ def get_reg_filter(sz: torch.Tensor, target_sz: torch.Tensor, params):
 
     # Compute DFT and enforce sparsity
     reg_window_dft = torch.rfft(reg_window, 2) / sz.prod()
-    reg_window_dft_abs = complex.abs(reg_window_dft)
+    reg_window_dft_abs = abs(reg_window_dft)
     reg_window_dft[reg_window_dft_abs < params.reg_sparsity_threshold *
                    reg_window_dft_abs.max(), :] = 0
 
@@ -175,7 +176,7 @@ def get_reg_filter(sz: torch.Tensor, target_sz: torch.Tensor, params):
                                     signal_sizes=sz.long().tolist())
     reg_window_dft[0, 0, 0, 0, 0] += params.reg_window_min - sz.prod(
     ) * reg_window_sparse.min()
-    reg_window_dft = complex.real(fourier.rfftshift2(reg_window_dft))
+    reg_window_dft = real(rfftshift2(reg_window_dft))
 
     # Remove zeros
     max_inds, _ = reg_window_dft.nonzero().max(dim=0)
