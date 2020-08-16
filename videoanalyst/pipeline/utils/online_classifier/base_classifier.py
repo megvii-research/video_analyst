@@ -287,8 +287,7 @@ class BaseClassifier(object):
                 math.pi * (1 - torch.Tensor([ksz[0] % 2, ksz[1] % 2]) / sz))
 
         scores_fs = fourier.sum_fs(sf_weighted)
-        output_sz = torch.Tensor((27, 27))
-        scores = fourier.sample_fs(scores_fs, output_sz).squeeze()
+        scores = fourier.sample_fs(scores_fs, None).squeeze()
 
         if cfg["advanced_localization"]:
             return self.localize_advanced(scores)
