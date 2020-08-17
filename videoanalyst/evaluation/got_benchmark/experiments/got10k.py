@@ -1,20 +1,21 @@
 from __future__ import absolute_import, division, print_function
 
-import os
-import numpy as np
-import glob
 import ast
+import glob
 import json
+import os
 import time
-import matplotlib.pyplot as plt
-import matplotlib
-from PIL import Image
+
 import cv2
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+from PIL import Image
 
 from ..datasets import GOT10k
+from ..utils.ioutils import compress
 from ..utils.metrics import rect_iou
 from ..utils.viz import show_frame
-from ..utils.ioutils import compress
 
 
 class ExperimentGOT10k(object):
@@ -218,11 +219,13 @@ class ExperimentGOT10k(object):
                             times[seq_name] = seq_times
 
                     # store sequence-wise performance
-                    ao, sr, speed, _ = self._evaluate(seq_ious, seq_times)
+                    ao, sr50, sr75, speed, _ = self._evaluate(
+                        seq_ious, seq_times)
                     performance[name]['seq_wise'].update({
                         seq_name: {
                             'ao': ao,
-                            'sr': sr,
+                            'sr50': sr50,
+                            'sr75': sr75,
                             'speed_fps': speed,
                             'length': len(anno) - 1
                         }
@@ -232,11 +235,12 @@ class ExperimentGOT10k(object):
                 times = np.concatenate(list(times.values()))
 
                 # store overall performance
-                ao, sr, speed, succ_curve = self._evaluate(ious, times)
+                ao, sr50, sr75, speed, succ_curve = self._evaluate(ious, times)
                 performance[name].update({
                     'overall': {
                         'ao': ao,
-                        'sr': sr,
+                        'sr50': sr50,
+                        'sr75': sr75,
                         'speed_fps': speed,
                         'succ_curve': succ_curve.tolist()
                     }
@@ -328,7 +332,8 @@ class ExperimentGOT10k(object):
     def _evaluate(self, ious, times):
         # AO, SR and tracking speed
         ao = np.mean(ious)
-        sr = np.mean(ious > 0.5)
+        sr50 = np.mean(ious > 0.5)
+        sr75 = np.mean(ious > 0.75)
         if len(times) > 0:
             # times has to be an array of positive values
             speed_fps = np.mean(1. / times)
@@ -341,7 +346,7 @@ class ExperimentGOT10k(object):
         bin_iou = np.greater(ious[:, None], thr_iou[None, :])
         succ_curve = np.mean(bin_iou, axis=0)
 
-        return ao, sr, speed_fps, succ_curve
+        return ao, sr50, sr75, speed_fps, succ_curve
 
     def plot_curves(self, report_files, tracker_names, extension='.png'):
         assert isinstance(report_files, list), \

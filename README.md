@@ -113,6 +113,8 @@ For detail, please refer to markdown files under _docs_.
 * video_analyst/evaluation/got_benchmark and other related code have been borrowed from [got-toolkit](https://github.com/got-10k/toolkit.git)
 * [detectron2](https://github.com/facebookresearch/detectron2)
 * [fvcore](https://github.com/facebookresearch/fvcore)
+* [pytracking](https://github.com/visionml/pytracking/tree/f0fc646b98166cc28c33f6b12f5169bb6f0647be)
+* [DROL](https://github.com/shallowtoil/DROL)
 
 ## References
 

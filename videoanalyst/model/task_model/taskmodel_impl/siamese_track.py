@@ -83,6 +83,12 @@ class SiamTrack(ModuleBase):
             predict_data["corr_fea"] = corr_fea
         return predict_data
 
+    def instance(self, img):
+        f_z = self.basemodel(img)
+        # template as kernel
+        c_x = self.c_x(f_z)
+        self.cf = c_x
+
     def forward(self, *args, phase=None):
         r"""
         Perform tracking process for different phases (e.g. train / init / track)
@@ -179,6 +185,7 @@ class SiamTrack(ModuleBase):
             fcos_score_final = fcos_cls_prob_final * fcos_ctr_prob_final
             # register extra output
             extra = dict(c_x=c_x, r_x=r_x, corr_fea=corr_fea)
+            self.cf = c_x
             # output
             out_list = fcos_score_final, fcos_bbox_final, fcos_cls_prob_final, fcos_ctr_prob_final, extra
         else:

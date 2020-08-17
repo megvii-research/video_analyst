@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*
+import os
+import random
 from copy import deepcopy
 from typing import Dict
+
+import numpy as np
+
+import torch
 
 from videoanalyst.pipeline.pipeline_base import PipelineBase
 from videoanalyst.utils import Registry
@@ -25,6 +31,7 @@ class TesterBase:
     default_hyper_params = dict(
         exp_name="",
         exp_save="",
+        random_seed=12345,
     )
 
     def __init__(self, pipeline: PipelineBase):
@@ -81,3 +88,12 @@ class TesterBase:
         Dict
             result object which need to contain the key "main_performance" in case of hyper-parameter optimization
         """
+    def set_random_seed(self):
+        seed = self._hyper_params["random_seed"]
+        random.seed(seed)
+        os.environ['PYTHONHASHSEED'] = str(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = True
