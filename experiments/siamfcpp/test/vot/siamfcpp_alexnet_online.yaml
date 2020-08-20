@@ -24,11 +24,12 @@ test:
     pipeline:
       name: "SiamFCppOnlineTracker"
       SiamFCppOnlineTracker:
-        test_lr: 0.58
-        window_influence: 0.21
-        penalty_k: 0.08
+        test_lr: 0.5074
+        window_influence: 0.237
+        penalty_k: 0.0588
         x_size: *X_SIZE_TEST
         num_conv3x3: *NUM_CONV3x3
+        online_score_weight: 0.6
     tester:
       names: ["VOTTester",]
       VOTTester:

@@ -40,6 +40,8 @@ class VOTTester(TesterBase):
         vot dataset root directory. dict(dataset_name: path_to_root)
     dataset_names: str
         daataset name (VOT2018|VOT2019)
+    video_name_list: list
+        the list of video name for test
     """
 
     extra_hyper_params = dict(
@@ -50,6 +52,7 @@ class VOTTester(TesterBase):
         dataset_names=[
             "VOT2018",
         ],
+        video_name_list=[],
     )
 
     def __init__(self, *args, **kwargs):
@@ -100,6 +103,8 @@ class VOTTester(TesterBase):
         self.dataset = dataset
         keys = list(dataset.keys())
         keys.sort()
+        if self._hyper_params["video_name_list"]:
+            keys = self._hyper_params["video_name_list"]
         nr_records = len(keys)
         pbar = tqdm(total=nr_records)
         mean_speed = -1

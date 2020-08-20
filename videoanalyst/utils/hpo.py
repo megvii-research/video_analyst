@@ -91,7 +91,7 @@ def sample_and_update_single_hp(target_cfg: CfgNode, node_name_path: List[str],
         random_hpo_value = np.random.randint(hpo_lb, hpo_ub)
     else:
         hpo_lb, hpo_ub = float(hpo_range[0]), float(hpo_range[1])
-        random_hpo_value = np.random.uniform(hpo_lb, hpo_ub)
+        random_hpo_value = round(np.random.uniform(hpo_lb, hpo_ub), 4)
 
     set_cfg_value_wt_path(target_cfg, node_name_path, random_hpo_value)
     return random_hpo_value
