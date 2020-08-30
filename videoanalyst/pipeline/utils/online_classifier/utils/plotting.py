@@ -1,6 +1,7 @@
 import matplotlib
 
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')  # disabled as Import Error with tk interactive framework
+                           # TODO: verify
 import matplotlib.pyplot as plt
 import numpy as np
 
