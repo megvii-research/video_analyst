@@ -73,7 +73,7 @@ ImportError: Cannot load backend 'TkAgg' which requires the 'tk' interactive fra
 Please change Matplotlib's backend by setting:
 
 ```Bash
-export MPLBACKEND=TKAgg
+export MPLBACKEND=TkAgg
 ```
 
 ### pycocotools
