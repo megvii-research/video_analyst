@@ -25,4 +25,4 @@ tqdm
 wget
 yacs
 yapf==0.28.0
-
+pre-commit

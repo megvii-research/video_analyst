@@ -22,6 +22,12 @@ pip3 install -U -r requirements.txt
 pre-commit install
 ```
 
+### Setup root paths/environment variables
+
+```Bash
+source setup.sh
+```
+
 ### GPU assignement
 
 By default, code use all GPUs visible for Python program with index starting from 0.
