@@ -1,3 +1,3 @@
 #!/bin/bash
-export MPLBACKEND=TKAgg
+export MPLBACKEND=TkAgg
 export PYTHONPATH=$(pwd)  # 
