@@ -36,6 +36,8 @@ class SigmoidCrossEntropyCenterness(ModuleBase):
         Center-ness loss
         Computation technique originated from this implementation:
             https://www.tensorflow.org/api_docs/python/tf/nn/sigmoid_cross_entropy_with_logits
+        
+        P.S. previous implementation can be found at the commit 232141cdc5ac94602c28765c9cf173789da7415e
 
         Arguments
         ---------
@@ -57,6 +59,10 @@ class SigmoidCrossEntropyCenterness(ModuleBase):
         mask = (~(label == self.background)).type(torch.Tensor).to(pred.device)
         loss = F.binary_cross_entropy_with_logits(pred, label,
                                                   reduction="none") * mask
+        # suppress loss residual (original vers.)
+        loss_residual = F.binary_cross_entropy(label, label,
+                                               reduction="none") * mask
+        loss = loss - loss_residual.detach()
 
         loss = loss.sum() / torch.max(mask.sum(),
                                       self.t_one) * self._hyper_params["weight"]
