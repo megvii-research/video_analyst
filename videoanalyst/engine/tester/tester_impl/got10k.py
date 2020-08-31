@@ -94,6 +94,7 @@ class GOT10kTester(TesterBase):
         return test_result_dict
 
     def worker(self, dev_id, dev, subset, slicing_quantile):
+        self.set_random_seed()
         logger.debug("Worker starts: slice {} at {}".format(
             slicing_quantile, dev))
         tracker_name = self._hyper_params["exp_name"]

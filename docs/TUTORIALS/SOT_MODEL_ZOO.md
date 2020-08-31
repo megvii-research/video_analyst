@@ -19,6 +19,7 @@ VOT test configuration directory: _experiments/siamfcpp/test/vot_
 | AlexNet | SiamFCppTracker | VOT2018 |0.576 | 0.183 | 0.393| ~200| ~185 | [siamfcpp_alexnet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_alexnet.yaml)
 | GoogLeNet | SiamFCppTracker | VOT2018 | 0.581 | 0.169 | 0.428 | ~80 | ~65 | [siamfcpp_googlenet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_googlenet.yaml) |
 | GoogLeNet* | SiamFCppTracker | VOT2018 | 0.584 | 0.178 | 0.425 | ~120 | / | [siamfcpp_googlenet.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_googlenet.yaml) |
+| AlexNet | SiamFCppOnlineTracker | VOT2018 |0.577 | 0.136 | 0.415| ~100| / | [siamfcpp_alexnet_online.yaml](../../experiments/siamfcpp/test/vot/siamfcpp_alexnet_online.yaml)
 
 \* means using TensorRT to accelerate the backbone feature extraction, and you can set **trt_mode** True in the config yaml to enable it.
 
@@ -44,6 +45,7 @@ GOT-10k test configuration directory_experiments/siamfcpp/test/got10k_
 | Backbone | Pipeline | Dataset | AO (val) | SR.50 (val) | SR.75 (val) | AO (test) | SR.50 (test) | SR.75 (test) | Config. File |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | AlexNet | SiamFCppTracker | GOT-10k | 72.0 | 85.0 | 63.3 | 52.6 | 62.5 | 34.7 | [siamfcpp_alexnet-got.yaml](../../experiments/siamfcpp/test/got10k/siamfcpp_alexnet-got.yaml) |
+| AlexNet | SiamFCppOnlineTracker | GOT-10k | 73.0 | 86.0 | 63.5 | 53.7 | 63.9 | 34.4 | [siamfcpp_alexnet-got-online.yaml](../../experiments/siamfcpp/test/got10k/siamfcpp_alexnet-got-online.yaml) |
 | GoogLeNet | SiamFCppTracker | GOT-10k | 76.4 | 90.4 | 71.8 | 60.4 | 73.7 | 46.4 | [siamfcpp_googlenet-got.yaml](../../experiments/siamfcpp/test/got10k/siamfcpp_googlenet-got.yaml) |
 | ShuffleNetV2x0.5 | SiamFCppTracker | GOT-10k | 74.2 | 87.0| 67.1 | 52.9 | 61.7 | 38.1 | [siamfcpp_shufflenetv2x0_5-got.yaml](../../siamfcpp_shufflenetv2x0_5-got.yaml) |
 | ShuffleNetV2x1.0 | SiamFCppTracker | GOT-10k-val | 76.6 | 88.8 | 71.5 | 57.9 | 68.1 | 43.6 | [siamfcpp_shufflenetv2x1_0-got.yaml](../../experiments/siamfcpp/test/got10k/siamfcpp_shufflenetv2x1_0-got.yaml) |

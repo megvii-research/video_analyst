@@ -40,6 +40,8 @@ class VOTTester(TesterBase):
         vot dataset root directory. dict(dataset_name: path_to_root)
     dataset_names: str
         daataset name (VOT2018|VOT2019)
+    video_name_list: list
+        the list of video name for test
     """
 
     extra_hyper_params = dict(
@@ -50,6 +52,7 @@ class VOTTester(TesterBase):
         dataset_names=[
             "VOT2018",
         ],
+        video_name_list=[],
     )
 
     def __init__(self, *args, **kwargs):
@@ -65,9 +68,6 @@ class VOTTester(TesterBase):
         """
         super(VOTTester, self).__init__(*args, **kwargs)
         self._state['speed'] = -1
-
-    def update_params(self):
-        pass
 
     def test(self) -> Dict:
         r"""
@@ -103,6 +103,8 @@ class VOTTester(TesterBase):
         self.dataset = dataset
         keys = list(dataset.keys())
         keys.sort()
+        if self._hyper_params["video_name_list"]:
+            keys = self._hyper_params["video_name_list"]
         nr_records = len(keys)
         pbar = tqdm(total=nr_records)
         mean_speed = -1
@@ -161,7 +163,7 @@ class VOTTester(TesterBase):
         speed_queue:
             queue for fps measurement collecting
         """
-        # tracker = copy.deepcopy(self._pipeline)
+        self.set_random_seed()
         tracker = self._pipeline
         tracker.set_device(dev)
         for v_id, video in enumerate(records):
@@ -237,6 +239,7 @@ class VOTTester(TesterBase):
         video = self.dataset[video]
         image_files, gt = video['image_files'], video['gt']
         start_frame, end_frame, lost_times, toc = 0, len(image_files), 0, 0
+        track_num = 0
         for f, image_file in enumerate(tqdm(image_files)):
             im = vot_benchmark.get_img(image_file)
             im.copy().astype(np.uint8)
@@ -251,7 +254,7 @@ class VOTTester(TesterBase):
                 pred_polygon = None
             elif f > start_frame:  # tracking
                 location = tracker.update(im)
-
+                track_num += 1
                 gt_polygon = (gt[f][0], gt[f][1], gt[f][2], gt[f][3], gt[f][4],
                               gt[f][5], gt[f][6], gt[f][7])
                 pred_polygon = (location[0], location[1],
@@ -275,9 +278,9 @@ class VOTTester(TesterBase):
                     regions.append(2)
                     lost_times += 1
                     start_frame = f + 5  # skip 5 frames
+                toc += cv2.getTickCount() - tic
             else:  # skip
                 regions.append(0)
-            toc += cv2.getTickCount() - tic
 
         toc /= cv2.getTickFrequency()
 
@@ -292,9 +295,9 @@ class VOTTester(TesterBase):
 
         logger.info(
             '({:d}) Video: {:12s} Time: {:02.1f}s Speed: {:3.1f}fps Lost: {:d} '
-            .format(v_id, video['name'], toc, f / toc, lost_times))
+            .format(v_id, video['name'], toc, track_num / toc, lost_times))
 
-        return lost_times, f / toc
+        return lost_times, track_num / toc
 
     def write_result_to_csv(self,
                             ar_result,
