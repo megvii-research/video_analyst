@@ -22,6 +22,12 @@ pip3 install -U -r requirements.txt
 pre-commit install
 ```
 
+### Setup root paths/environment variables
+
+```Bash
+source setup.sh
+```
+
 ### GPU assignement
 
 By default, code use all GPUs visible for Python program with index starting from 0.
@@ -37,13 +43,15 @@ CUDA_VISIBLE_DEVICES=2,3 python train.py --config experiments/siamfcpp/test/got1
 c.f. https://stackoverflow.com/questions/39649102/how-do-i-select-which-gpu-to-run-a-job-on
 
 
-## Misc issue
+
+
+## Troubleshootings
 
 ### python-tkinter
 
 In case of:
 
-```Python
+```Bash
 ModuleNotFoundError: No module named 'tkinter'
 ```
 
@@ -51,6 +59,21 @@ Please install python3-tk by running:
 
 ```Bash
 sudo apt-get install python3-tk
+```
+
+
+### Matplotlib backend
+
+Incase of:
+
+```Bash
+ImportError: Cannot load backend 'TkAgg' which requires the 'tk' interactive framework, as 'headless' is currently running
+```
+
+Please change Matplotlib's backend by setting:
+
+```Bash
+export MPLBACKEND=TkAgg
 ```
 
 ### pycocotools
@@ -68,6 +91,8 @@ make
 make install  # may need sudo if it fails
 ```
 
-### Auto mixed precision training
+
+
+## Auto mixed precision training
 
 AMP is supported from pytorch >= 1.6. It can reduce about 50% of the GPU memory usage on RTX2018Ti without preformance drop. If you want to enable it, just set the amp `True` as in [config](../../experiments/siamfcpp/train/got10k/siamfcpp_alexnet-trn.yaml). `SigmoidCrossEntropyRetina` should be replaced by `FocalLoss` if you want to enable amp.
