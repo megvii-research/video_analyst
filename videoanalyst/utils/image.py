@@ -72,9 +72,8 @@ class ImageFileVideoStream:
         frame_idx = self._state["counter"]
         frame_file = self._state["frame_files"][frame_idx]
         frame_img = load_image(frame_file)
-        success_flag = (frame_img is not None)
         self._state["counter"] += 1
-        return success_flag, frame_img
+        return frame_idx, frame_img
 
     def release(self, ):
         self._state["counter"] = 0
