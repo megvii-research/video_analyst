@@ -18,15 +18,10 @@ cd video_analyst
 You can choose either using native python (with pip/pip3) or using virtual environment.
 
 ```Bash
-pip3 install -U -r requirements.txt
+python setup.py develop
 pre-commit install
 ```
 
-### Setup root paths/environment variables
-
-```Bash
-source setup.sh
-```
 
 ### GPU assignement
 

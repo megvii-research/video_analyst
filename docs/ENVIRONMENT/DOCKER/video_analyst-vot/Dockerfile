@@ -132,7 +132,7 @@ RUN apt update && \
 # video_analyst
 # ------------------------------------------------------------------
 COPY ./requirements.txt /root/ 
-RUN $PIP_INSTALL -r /root/requirements.txt && \
+RUN python setup.py develop && \
     echo "ended."
 
 # TODO: only wget & install: https://github.com/MARMOTatZJU/video_analyst/blob/dev/requirements.txt
