@@ -7,10 +7,9 @@ import torch
 
 from videoanalyst.pipeline.pipeline_base import TRACK_PIPELINES
 from videoanalyst.pipeline.tracker_impl.siamfcpp_track import SiamFCppTracker
-from videoanalyst.pipeline.utils import (cxywh2xywh, get_crop,
-                                         get_subwindow_tracking,
+from videoanalyst.pipeline.utils import (get_crop, get_subwindow_tracking,
                                          imarray_to_tensor, tensor_to_numpy,
-                                         xywh2cxywh, xyxy2cxywh)
+                                         xyxy2cxywh)
 
 eps = 1e-7
 

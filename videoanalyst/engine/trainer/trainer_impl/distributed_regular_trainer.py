@@ -8,8 +8,7 @@ from tqdm import tqdm
 import torch
 from torch import nn
 
-from videoanalyst.utils import (Timer, average_gradients, ensure_dir,
-                                move_data_to_device, unwrap_model)
+from videoanalyst.utils import Timer, move_data_to_device
 
 from ..trainer_base import TRACK_TRAINERS, TrainerBase
 

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*
-from paths import ROOT_PATH  # isort:skip
 import argparse
 import os.path as osp
 import time
@@ -13,7 +12,6 @@ from videoanalyst.config.config import cfg, specify_task
 from videoanalyst.model import builder as model_builder
 from videoanalyst.pipeline import builder as pipeline_builder
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy
-from videoanalyst.utils import complete_path_wt_root_in_cfg
 from videoanalyst.utils.image import ImageFileVideoStream, ImageFileVideoWriter
 from videoanalyst.utils.visualization import VideoWriter
 
@@ -83,7 +81,7 @@ def main(args):
     logger.info("Load experiment configuration at: %s" % args.config)
 
     # resolve config
-    root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
+    #root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.test
     task, task_cfg = specify_task(root_cfg)
     task_cfg.freeze()

@@ -6,8 +6,7 @@ import cv2
 import numpy as np
 
 from ..monitor_base import VOS_MONITORS, MonitorBase
-from .utils import (AverageMeter, fast_hist, labelcolormap, mask_colorize,
-                    np_sigmoid)
+from .utils import AverageMeter, fast_hist, labelcolormap, mask_colorize
 
 
 @VOS_MONITORS.register

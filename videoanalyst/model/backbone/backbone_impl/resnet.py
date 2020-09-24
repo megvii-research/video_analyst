@@ -3,8 +3,7 @@
 import torch
 import torch.nn as nn
 
-from videoanalyst.model.backbone.backbone_base import (TRACK_BACKBONES,
-                                                       VOS_BACKBONES)
+from videoanalyst.model.backbone.backbone_base import VOS_BACKBONES
 from videoanalyst.model.common_opr.common_block import conv_bn_relu, projector
 from videoanalyst.model.module_base import ModuleBase
 
