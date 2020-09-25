@@ -3,8 +3,7 @@
 import torch
 
 from videoanalyst.model.module_base import ModuleBase
-from videoanalyst.model.task_model.taskmodel_base import (TRACK_TASKMODELS,
-                                                          VOS_TASKMODELS)
+from videoanalyst.model.task_model.taskmodel_base import VOS_TASKMODELS
 
 torch.set_printoptions(precision=8)
 

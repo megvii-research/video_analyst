@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*
-from paths import ROOT_PATH  # isort:skip
 import argparse
 
 import cv2
@@ -13,7 +12,6 @@ from videoanalyst.data.dataset import builder as dataset_buidler
 from videoanalyst.model import builder as model_builder
 from videoanalyst.pipeline import builder as pipeline_builder
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy, xyxy2xywh
-from videoanalyst.utils import complete_path_wt_root_in_cfg
 from videoanalyst.utils.image import load_image
 
 color = dict(
@@ -63,7 +61,6 @@ root_cfg.merge_from_file(exp_cfg_path)
 logger.info("Load experiment configuration at: %s" % exp_cfg_path)
 
 # resolve config
-root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
 test_cfg = root_cfg.test
 task, task_cfg = specify_task(test_cfg)
 task_cfg.freeze()

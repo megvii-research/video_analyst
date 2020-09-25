@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from paths import ROOT_PATH  # isort:skip
 
 import argparse
 import os.path as osp
@@ -19,8 +18,7 @@ from videoanalyst.data import builder as dataloader_builder
 from videoanalyst.engine import builder as engine_builder
 from videoanalyst.model import builder as model_builder
 from videoanalyst.optim import builder as optim_builder
-from videoanalyst.utils import (Timer, complete_path_wt_root_in_cfg, dist_utils,
-                                ensure_dir)
+from videoanalyst.utils import Timer, dist_utils, ensure_dir
 
 cv2.setNumThreads(1)
 
@@ -149,7 +147,6 @@ if __name__ == '__main__':
     exp_cfg_path = osp.realpath(parsed_args.config)
     root_cfg.merge_from_file(exp_cfg_path)
     # resolve config
-    root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.train
     task, task_cfg = specify_task(root_cfg)
     task_cfg.freeze()

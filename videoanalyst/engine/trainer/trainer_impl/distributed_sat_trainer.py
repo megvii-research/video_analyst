@@ -8,8 +8,7 @@ from loguru import logger
 import torch
 from torch import nn
 
-from videoanalyst.utils import (Timer, average_gradients, dist_utils,
-                                ensure_dir, move_data_to_device, unwrap_model)
+from videoanalyst.utils import Timer, dist_utils, move_data_to_device
 
 from ..trainer_base import VOS_TRAINERS, TrainerBase
 

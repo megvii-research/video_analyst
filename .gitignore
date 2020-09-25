@@ -73,3 +73,5 @@ venv
 *.onnx
 *.trt
 debug
+*.txt
+PKG-INFO

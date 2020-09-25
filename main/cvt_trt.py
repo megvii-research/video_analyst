@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
-from paths import ROOT_PATH  # isort:skip
-
 import argparse
 import os.path as osp
 
+import numpy as np
 from loguru import logger
-from torch2trt import TRTModule
+from torch2trt import TRTModule, torch2trt
 
 import torch
 
-import numpy as np
-
-from torch2trt import torch2trt
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.config.config import specify_task
 from videoanalyst.model import builder as model_builder
