@@ -1,5 +1,3 @@
-import matplotlib
-
 # matplotlib.use('TkAgg')  # disabled as Import Error with tk interactive framework
 # TODO: verify if this matplotlib backend is necessary
 import matplotlib.pyplot as plt

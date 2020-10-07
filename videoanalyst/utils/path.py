@@ -12,9 +12,7 @@ def ensure_dir(dir_path: str):
     dir_path: str
         path to be ensured
     """
-    if osp.exists(dir_path):
-        return
-    else:
+    if not osp.exists(dir_path):
         os.makedirs(dir_path)
 
 

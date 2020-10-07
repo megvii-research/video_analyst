@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*
-from paths import ROOT_PATH  # isort:skip
 import argparse
 
 import cv2
@@ -8,16 +7,13 @@ from loguru import logger
 
 import torch
 
-from demo.resources.static_img_example.get_image import (bbox, im, im_x, im_z,
-                                                         search_bbox,
-                                                         target_bbox)
+from demo.resources.static_img_example.get_image import bbox, im
 from videoanalyst.config.config import cfg as root_cfg
 from videoanalyst.config.config import specify_task
 from videoanalyst.model import builder as model_builder
 from videoanalyst.pipeline import builder as pipeline_builder
 from videoanalyst.pipeline.utils.bbox import xywh2xyxy, xyxy2xywh
 from videoanalyst.pipeline.utils.crop import get_subwindow
-from videoanalyst.utils import complete_path_wt_root_in_cfg
 
 color = dict(
     target=(0, 255, 0),
@@ -60,7 +56,6 @@ root_cfg.merge_from_file(exp_cfg_path)
 logger.info("Load experiment configuration at: %s" % exp_cfg_path)
 
 # resolve config
-root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
 root_cfg = root_cfg.test
 task, task_cfg = specify_task(root_cfg)
 task_cfg.freeze()

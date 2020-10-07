@@ -12,8 +12,7 @@ import numpy as np
 from loguru import logger
 from PIL import Image
 
-from videoanalyst.data.dataset.dataset_base import (TRACK_DATASETS,
-                                                    VOS_DATASETS, DatasetBase)
+from videoanalyst.data.dataset.dataset_base import VOS_DATASETS, DatasetBase
 
 
 @VOS_DATASETS.register
