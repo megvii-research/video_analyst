@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*
-from paths import ROOT_PATH  # isort:skip
 import argparse
 import hashlib
 import json
 import os
+
 from loguru import logger
-from videoanalyst.evaluation.got_benchmark.utils.ioutils import download, extract
+
+from videoanalyst.evaluation.got_benchmark.utils.ioutils import (download,
+                                                                 extract)
 
 
 def download_vot(version, root_dir):

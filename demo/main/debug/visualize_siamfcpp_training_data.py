@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from paths import ROOT_PATH  # isort:skip
 
 import argparse
 import os.path as osp
@@ -15,7 +14,7 @@ from videoanalyst.data import builder as dataloader_builder
 from videoanalyst.data.datapipeline import builder as datapipeline_builder
 from videoanalyst.data.dataset import builder as dataset_buidler
 from videoanalyst.data.utils.visualization import show_img_FCOS
-from videoanalyst.utils import Timer, complete_path_wt_root_in_cfg
+from videoanalyst.utils import Timer
 
 cv2.setNumThreads(1)
 
@@ -63,7 +62,6 @@ if __name__ == '__main__':
     logger.info(
         "Merged with root_cfg imported from videoanalyst.config.config.cfg")
     # resolve config
-    root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.train
     task, task_cfg = specify_task(root_cfg)
     task_cfg.data.num_workers = 2

@@ -81,7 +81,6 @@ def main(args):
     logger.info("Load experiment configuration at: %s" % args.config)
 
     # resolve config
-    #root_cfg = complete_path_wt_root_in_cfg(root_cfg, ROOT_PATH)
     root_cfg = root_cfg.test
     task, task_cfg = specify_task(root_cfg)
     task_cfg.freeze()
