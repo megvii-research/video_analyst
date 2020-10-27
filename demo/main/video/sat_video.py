@@ -222,7 +222,7 @@ def main(args):
                 "init_box/template released, press key s again to select object."
             )
             init_mask = None
-            init_mask = None
+            init_box = None
             template = None
         if (init_mask is not None) and (template is None):
             template = cv2.resize(
