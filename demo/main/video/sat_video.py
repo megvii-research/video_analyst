@@ -12,7 +12,6 @@ import torch
 from videoanalyst.config.config import cfg, specify_task
 from videoanalyst.engine.monitor.monitor_impl.utils import (labelcolormap,
                                                             mask_colorize)
-from videoanalyst.evaluation.davis_benchmark.davis2017.utils import color_map
 from videoanalyst.model import builder as model_builder
 from videoanalyst.pipeline import builder as pipeline_builder
 from videoanalyst.utils.image import ImageFileVideoStream, ImageFileVideoWriter
