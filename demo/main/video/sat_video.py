@@ -4,32 +4,47 @@ import os.path as osp
 import time
 
 import cv2
+import numpy as np
 from loguru import logger
 
 import torch
 
 from videoanalyst.config.config import cfg, specify_task
+from videoanalyst.engine.monitor.monitor_impl.utils import (labelcolormap,
+                                                            mask_colorize)
 from videoanalyst.model import builder as model_builder
 from videoanalyst.pipeline import builder as pipeline_builder
-from videoanalyst.pipeline.utils.bbox import xywh2xyxy
 from videoanalyst.utils.image import ImageFileVideoStream, ImageFileVideoWriter
 from videoanalyst.utils.visualization import VideoWriter
 
 font_size = 0.5
 font_width = 1
+color_map = labelcolormap(10)
+polygon_points = []
+lbt_flag = False
+rbt_flag = False
+
+
+def draw_polygon(event, x, y, flags, param):
+    global polygon_points, lbt_flag, rbt_flag
+    if event == cv2.EVENT_LBUTTONDOWN:
+        lbt_flag = True
+        polygon_points.append((x, y))  # 用于画点
+    if event == cv2.EVENT_RBUTTONDOWN:
+        rbt_flag = True
 
 
 def make_parser():
     parser = argparse.ArgumentParser(
-        description="press s to select the target box,\n \
+        description=
+        "press s to select the target mask, left click for new pt, right click to finish,\n \
                         then press enter or space to confirm it or press c to cancel it,\n \
                         press c to stop track and press q to exit program")
-    parser.add_argument(
-        "-cfg",
-        "--config",
-        default="experiments/siamfcpp/test/got10k/siamfcpp_alexnet-got.yaml",
-        type=str,
-        help='experiment configuration')
+    parser.add_argument("-cfg",
+                        "--config",
+                        default="experiments/sat/test/sat_res50-davis17.yaml",
+                        type=str,
+                        help='experiment configuration')
     parser.add_argument("-d",
                         "--device",
                         default="cpu",
@@ -66,16 +81,11 @@ def make_parser():
         help=
         "only dump, do not show image (in cases where cv2.imshow inccurs errors)"
     )
-    parser.add_argument("-i",
-                        "--init-bbox",
-                        type=float,
-                        nargs="+",
-                        default=[-1.0],
-                        help="initial bbox, length=4, format=xywh")
     return parser
 
 
 def main(args):
+    global polygon_points, lbt_flag, rbt_flag
     root_cfg = cfg
     root_cfg.merge_from_file(args.config)
     logger.info("Load experiment configuration at: %s" % args.config)
@@ -85,16 +95,24 @@ def main(args):
     task, task_cfg = specify_task(root_cfg)
     task_cfg.freeze()
     window_name = task_cfg.exp_name
+    cv2.namedWindow(window_name)
+    cv2.setMouseCallback(window_name, draw_polygon)
     # build model
-    model = model_builder.build(task, task_cfg.model)
+    tracker_model = model_builder.build("track", task_cfg.tracker_model)
+    tracker = pipeline_builder.build("track",
+                                     task_cfg.tracker_pipeline,
+                                     model=tracker_model)
+    segmenter = model_builder.build('vos', task_cfg.segmenter)
     # build pipeline
-    pipeline = pipeline_builder.build(task, task_cfg.pipeline, model)
+    pipeline = pipeline_builder.build('vos',
+                                      task_cfg.pipeline,
+                                      segmenter=segmenter,
+                                      tracker=tracker)
     dev = torch.device(args.device)
     pipeline.set_device(dev)
+    init_mask = None
     init_box = None
     template = None
-    if len(args.init_bbox) == 4:
-        init_box = args.init_bbox
 
     video_name = "untitled"
     vw = None
@@ -135,21 +153,20 @@ def main(args):
         key = 255
         ret, frame = vs.read()
         if ret:
-            logger.debug("frame: {}".format(frame_idx))
             if template is not None:
                 time_a = time.time()
-                rect_pred = pipeline.update(frame)
-                logger.debug(rect_pred)
-                show_frame = frame.copy()
+                score_map = pipeline.update(frame)
+                mask = (score_map > 0.5).astype(np.uint8) * 2
+                color_mask = mask_colorize(mask, 10, color_map)
+                color_mask = cv2.resize(color_mask,
+                                        (frame.shape[1], frame.shape[0]),
+                                        interpolation=cv2.INTER_NEAREST)
+                show_frame = cv2.addWeighted(frame, 0.6, color_mask, 0.4, 0)
                 time_cost = time.time() - time_a
-                bbox_pred = xywh2xyxy(rect_pred)
-                bbox_pred = tuple(map(int, bbox_pred))
                 cv2.putText(show_frame,
                             "track cost: {:.4f} s".format(time_cost), (128, 20),
                             cv2.FONT_HERSHEY_COMPLEX, font_size, (0, 0, 255),
                             font_width)
-                cv2.rectangle(show_frame, bbox_pred[:2], bbox_pred[2:],
-                              (0, 255, 0))
                 if template is not None:
                     show_frame[:128, :128] = template
             else:
@@ -164,14 +181,12 @@ def main(args):
         else:
             break
         # catch key if
-        if (init_box is None) or (vw is None):
-            logger.debug("Press key s to select object.")
+        if (init_mask is None) or (vw is None):
             if (frame_idx == 0):
                 wait_time = 5000
             else:
                 wait_time = 30
             key = cv2.waitKey(wait_time) & 0xFF
-        logger.debug("key: {}".format(key))
         if key == ord("q"):
             break
         # if the 's' key is selected, we are going to "select" a bounding
@@ -179,25 +194,41 @@ def main(args):
         elif key == ord("s"):
             # select the bounding box of the object we want to track (make
             # sure you press ENTER or SPACE after selecting the ROI)
-            logger.debug("Select object to track")
-            box = cv2.selectROI(window_name,
-                                frame,
-                                fromCenter=False,
-                                showCrosshair=True)
-            if box[2] > 0 and box[3] > 0:
-                init_box = box
+            logger.debug(
+                "Select points object to track, left click for new pt, right click to finish"
+            )
+            polygon_points = []
+            while not rbt_flag:
+                if lbt_flag:
+                    print(polygon_points[-1])
+                    cv2.circle(show_frame, polygon_points[-1], 5, (0, 0, 255),
+                               2)
+                    if len(polygon_points) > 1:
+                        cv2.line(show_frame, polygon_points[-2],
+                                 polygon_points[-1], (255, 0, 0), 2)
+                    lbt_flag = False
+                cv2.imshow(window_name, show_frame)
+                key = cv2.waitKey(10) & 0xFF
+            if len(polygon_points) > 2:
+                np_pts = np.array(polygon_points)
+                init_box = cv2.boundingRect(np_pts)
+                zero_mask = np.zeros((show_frame.shape[0], show_frame.shape[1]),
+                                     dtype=np.uint8)
+                init_mask = cv2.fillPoly(zero_mask, [np_pts], (1, ))
+            rbt_flag = False
         elif key == ord("c"):
             logger.debug(
                 "init_box/template released, press key s again to select object."
             )
+            init_mask = None
             init_box = None
             template = None
-        if (init_box is not None) and (template is None):
+        if (init_mask is not None) and (template is None):
             template = cv2.resize(
                 frame[int(init_box[1]):int(init_box[1] + init_box[3]),
                       int(init_box[0]):int(init_box[0] + init_box[2])],
                 (128, 128))
-            pipeline.init(frame, init_box)
+            pipeline.init(frame, init_box, init_mask)
             logger.debug("pipeline initialized with bbox : {}".format(init_box))
         frame_idx += 1
 
