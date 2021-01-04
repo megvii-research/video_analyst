@@ -24,7 +24,7 @@ Current implementation list:
 
 ### Setup
 
-Please refer to [SOT_SETUP.md](docs/TUTORIALS/SOT_SETUP.md)
+Please refer to [SETUP.md](docs/TUTORIALS/SETUP.md), [SOT_SETUP.md](docs/TUTORIALS/SOT_SETUP.md)
 ### Demo
 
 #### SOT video demo

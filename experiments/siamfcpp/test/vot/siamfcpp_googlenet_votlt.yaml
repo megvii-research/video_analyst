@@ -18,6 +18,7 @@ test:
           x_size: &X_SIZE_TEST 303
           num_conv3x3: &NUM_CONV3x3 2
           head_conv_bn: [False, False]
+          input_size_adapt: True
       task_model:
         name: "SiamTrack"
         SiamTrack:
