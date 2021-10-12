@@ -9,7 +9,7 @@ tensorboard
 ipython
 Cython==0.27.3
 yapf==0.28.0
-opencv-python==3.4.1.15
+opencv-python==3.4.7.28
 numpy==1.16.0
 torch==1.1.0
 torchvision==0.3.0
