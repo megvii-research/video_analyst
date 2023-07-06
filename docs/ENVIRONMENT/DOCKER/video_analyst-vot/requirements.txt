@@ -18,6 +18,6 @@ numba==0.49.1
 matplotlib
 wget
 shapely==1.7.0
-scipy==1.2.1
+scipy==1.10.0
 loguru==0.4.1
 scikit-image
