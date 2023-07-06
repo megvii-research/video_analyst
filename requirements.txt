@@ -16,7 +16,7 @@ pre-commit
 pycocotools
 pylint
 scikit-image
-scipy==1.4.1
+scipy==1.10.0
 shapely==1.7.0
 tensorboard
 torch>=1.4.0
