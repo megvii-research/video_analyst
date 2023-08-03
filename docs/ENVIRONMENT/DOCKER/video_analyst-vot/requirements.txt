@@ -19,5 +19,5 @@ matplotlib
 wget
 shapely==1.7.0
 scipy==1.2.1
-loguru==0.4.1
+loguru==0.5.3
 scikit-image
